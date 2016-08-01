@@ -22,4 +22,4 @@ Additional topics are the useage and maintainability of the API like
 ##License
 This software is released under [MIT License] (https://opensource.org/licenses/MIT)
 
-<pre class="command-line"><code> new Test().call(); </code></pre>
+``` new Test().call(); ```
