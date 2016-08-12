@@ -44,6 +44,7 @@ public class Node implements Cloneable {
 	private float[] demand;
 
 	private final float[][] timeWindowArr;
+	private final float earliestPickupTimeAtDepot;
 	private final float serviceTime;
 	private final float serviceTimeForSite;
 	private int depotId = -1;
@@ -102,7 +103,8 @@ public class Node implements Cloneable {
 			float weightOfPackage,
 			float loadBearingOfPackage,
 			int stackingGroupOfPackage,
-			int containerTypeOfPackage			
+			int containerTypeOfPackage,
+			float earliestPickupAtDepot
 	) {
 		this.globalIdx = globalIdx;
 		this.externID = externID;
@@ -126,6 +128,7 @@ public class Node implements Cloneable {
 		this.loadBearingOfPackage = loadBearingOfPackage;
 		this.stackingGroupOfPackage = stackingGroupOfPackage;
 		this.containerTypeOfPackage = containerTypeOfPackage;
+		this.earliestPickupTimeAtDepot = earliestPickupAtDepot;
 	}
 
 	/**
@@ -493,5 +496,12 @@ public class Node implements Cloneable {
 	 */
 	public void setDemand(float val) {
 		this.demand[0] = val;
+	}
+
+	/**
+	 * @return the earliestPickupAtDepot
+	 */
+	public float getEarliestPickupTimeAtDepot() {
+		return earliestPickupTimeAtDepot;
 	}
 }

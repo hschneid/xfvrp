@@ -196,6 +196,7 @@ public class FlexiImporter implements Serializable{
 		lastDepotData = null;
 		lastCustomerData = null;
 		lastVehicleData = null;
+		lastReplenishData = null;
 	}
 
 	/**
@@ -203,6 +204,7 @@ public class FlexiImporter implements Serializable{
 	 */
 	public void clearCustomers() {
 		customerList.clear();
+		lastCustomerData = null;
 	}
 
 	/**
@@ -210,6 +212,7 @@ public class FlexiImporter implements Serializable{
 	 */
 	public void clearDepots() {
 		depotList.clear();
+		lastDepotData = null;
 	}
 
 	/**
@@ -218,7 +221,16 @@ public class FlexiImporter implements Serializable{
 	 */
 	public void clearVehicles() {
 		vehicleList.clear();
+		lastVehicleData = null;
 		vehicleList.add(defaultVehicle);
+	}
+	
+	/**
+	 * Clears all imported replenishment sites.
+	 */
+	public void clearReplenishments() {
+		replenishList.clear();
+		lastReplenishData = null;
 	}
 
 	/**

@@ -84,7 +84,8 @@ public class InternalReplenishData extends ReplenishData {
 				LoadType.REPLENISH,
 				0,
 				0,
-				"",0,0,0,0,0,0,0,0 // Load planning parameters
+				"",0,0,0,0,0,0,0,0, // Load planning parameters
+				0
 				);
 		
 		return n;

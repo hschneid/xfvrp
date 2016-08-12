@@ -62,7 +62,8 @@ public class XFVRPSolution implements Solution {
 
 		// Wenn die Giant Route Kunden enthält
 		if(findNextCustomer(giantRoute, 0) != -1) {
-			final float[][] routeDepotServiceMap = createRouteDepotServiceMap(giantRoute);
+			float[][] routeDepotServiceMap = createRouteDepotServiceMap(giantRoute);
+			float[] earliestPickupTimesAtDepot = createEarliestPickupAtDepotMap(giantRoute, model);
 
 			Node lastNode = giantRoute[0];
 			Node currNode;
@@ -72,7 +73,7 @@ public class XFVRPSolution implements Solution {
 
 			Node lastDepot = lastNode;
 
-			RouteReport tRep = createNewRoute(lastNode, giantRoute[findNextCustomer(giantRoute, 0)], routeDepotServiceMap);
+			RouteReport tRep = createNewRoute(lastNode, giantRoute[findNextCustomer(giantRoute, 0)], routeDepotServiceMap, earliestPickupTimesAtDepot);
 
 			List<RouteReport> routeReports = new ArrayList<>();
 			boolean routeHasCustomers = false;
@@ -104,7 +105,7 @@ public class XFVRPSolution implements Solution {
 					// Wenn es noch weitere Kunden gibt, erzeuge weitere RouteReports.
 					int nextCustomerIdx = findNextCustomer(giantRoute, i);
 					nextCustomerIdx = (nextCustomerIdx == -1) ? i : nextCustomerIdx;
-					tRep = createNewRoute(currNode, giantRoute[nextCustomerIdx], routeDepotServiceMap);
+					tRep = createNewRoute(currNode, giantRoute[nextCustomerIdx], routeDepotServiceMap, earliestPickupTimesAtDepot);
 
 					lastDepot = currNode;
 				} else {
@@ -196,10 +197,10 @@ public class XFVRPSolution implements Solution {
 	 * @param routeDepotServiceMap 
 	 * @return Route report
 	 */
-	private RouteReport createNewRoute(Node depotNode, Node nextNode, float[][] routeDepotServiceMap) {
+	private RouteReport createNewRoute(Node depotNode, Node nextNode, float[][] routeDepotServiceMap, float[] earliestPickupTimeAtDepot) {
 		if (depotNode.getSiteType() != SiteType.DEPOT)
 			throw new IllegalStateException("Found unexpected site type for depot ("+depotNode.getSiteType().toString()+")");
-		
+
 		final float depotOpeningTime = depotNode.getTimeWindow(0)[0];
 
 		RouteReport tRep = new RouteReport(vehicle);
@@ -216,6 +217,9 @@ public class XFVRPSolution implements Solution {
 				depotOpeningTime + loadingTime,
 				nextNode.getTimeWindow(time)[0] - nextNodeTime
 				);
+
+		if(depotNode != nextNode && earliestPickupTimeAtDepot != null)
+			time = Math.max(time, earliestPickupTimeAtDepot[depotNode.getDepotId()]);
 
 		Event e = new Event(depotNode);
 		e.setAmount(0);
@@ -273,9 +277,9 @@ public class XFVRPSolution implements Solution {
 	protected void addLoadingPlan(List<RouteReport> routeReports) {
 		if(model.getParameter().isWithLoadPlanning()) {
 			int routeIdx = 0;
-			
+
 			LPReport[] lpReports = XFVRPLPBridge.getLoadingPlan(giantRoute, model);
-			
+
 			// Create a loading plan for each route with the package planning
 			// of the LP-Solver
 			for (LPReport lpReport : lpReports) {
@@ -352,6 +356,38 @@ public class XFVRPSolution implements Solution {
 					throw new IllegalStateException("Found unexpected site type ("+siteType.toString()+")");
 			}
 			return list;
+		}
+
+		return null;
+	}
+
+	/**
+	 * 
+	 * @param giantRoute
+	 * @param model 
+	 * @return For each route it saves the earliest pickup time at the starting depot
+	 */
+	private float[] createEarliestPickupAtDepotMap(Node[] giantRoute, XFVRPModel model) {
+		List<Float> list = new ArrayList<>();
+
+		if(model.getParameter().considerEarliestPickupTimeAtDepot()) {
+			float earliestPickupTimeAtDepot = 0;
+
+			for (int i = 1; i < giantRoute.length; i++) {
+				if(giantRoute[i].getSiteType() == SiteType.DEPOT) {
+					list.add(earliestPickupTimeAtDepot);
+					earliestPickupTimeAtDepot = 0;
+				} else if(giantRoute[i].getSiteType() == SiteType.CUSTOMER) {
+					if(giantRoute[i].getLoadType() == LoadType.DELIVERY)
+						earliestPickupTimeAtDepot = Math.max(earliestPickupTimeAtDepot, giantRoute[i].getEarliestPickupTimeAtDepot());
+				}
+			}
+
+			float[] arr = new float[list.size()];
+			for (int i = 0; i < arr.length; i++)
+				arr[i] = list.get(i);
+
+			return arr;
 		}
 
 		return null;

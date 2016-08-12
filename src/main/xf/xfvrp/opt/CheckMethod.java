@@ -49,6 +49,10 @@ public class CheckMethod {
 	 */
 	public Quality check(Node[] giantRoute, XFVRPModel model) {
 		Quality q = new Quality(null);
+		
+		if(giantRoute.length == 0)
+			return q;
+		
 		Vehicle vehicle = model.getVehicle();
 
 		// Active nodes for evalution are true, duplicates or empty routes are false
@@ -69,6 +73,7 @@ public class CheckMethod {
 
 		// Service times at the depot for amount on the route
 		float[][] routeDepotServiceMap = createRouteDepotServiceMap(giantRoute, model);
+		float[] earliestPickupTimesAtDepot = createEarliestPickupAtDepotMap(giantRoute, model);
 
 		// Feasibility check
 		{
@@ -81,13 +86,13 @@ public class CheckMethod {
 		// Begin first route (there is always a first route)
 		Node currentDepot = giantRoute[0];
 
-		beginRoute(routeVar, amountArr, currentDepot, findNextCustomer(giantRoute, 0), routeDepotServiceMap, model);
+		beginRoute(routeVar, amountArr, currentDepot, findNextCustomer(giantRoute, 0), routeDepotServiceMap, earliestPickupTimesAtDepot, model);
 		Node lastNode = currentDepot;
 		for (int i = 1; i < giantRoute.length; i++) {
 			if(!activeNodes[i])	continue;
-			
-//			if(Debug.debug && i > 900)
-//				System.out.println();
+
+			//			if(Debug.debug && i > 900)
+			//				System.out.println();
 
 			Node currNode = giantRoute[i];
 			final SiteType currSiteType = currNode.getSiteType();
@@ -128,7 +133,7 @@ public class CheckMethod {
 			if(currSiteType == SiteType.DEPOT) {
 				finishRoute(routeVar, amountArr, vehicle, q, model);
 
-				beginRoute(routeVar, amountArr, giantRoute[i], findNextCustomer(giantRoute, i), routeDepotServiceMap, model);
+				beginRoute(routeVar, amountArr, giantRoute[i], findNextCustomer(giantRoute, i), routeDepotServiceMap, earliestPickupTimesAtDepot, model);
 				lastPresetSequenceRankArr[BlockNameConverter.DEFAULT_BLOCK_IDX] = Integer.MIN_VALUE;
 
 				// Check for black listed nodes on route
@@ -197,18 +202,18 @@ public class CheckMethod {
 			routeVar[TIME] += depotServiceTime;
 			routeVar[DURATION] += depotServiceTime;
 		}
-	
+
 		float[] tw = currNode.getTimeWindow(routeVar[TIME]);
 		routeVar[DELAY] += (routeVar[TIME] - tw[1] > 0) ? routeVar[TIME] - tw[1] : 0;
-	
+
 		// Wenn der letzte Knoten ein Depot war, wird die
 		// Wartezeit nicht mitberechnet, die er h�tte sp�ter abfahren k�nnen
 		float waiting = (routeVar[TIME] < tw[0]) ? tw[0] - routeVar[TIME] : 0;
-	
+
 		// Check maxWaiting penalty
 		if(waiting > vehicle.maxWaitingTime)
 			q.addPenalty(1, Quality.PENALTY_REASON_DURATION);
-	
+
 		float serviceTime = (dist[0] == 0) ? currNode.getServiceTime() : currNode.getServiceTime() + currNode.getServiceTimeForSite();
 		routeVar[TIME] = (routeVar[TIME] > tw[0]) ? routeVar[TIME] : tw[0];
 		routeVar[TIME] += serviceTime;
@@ -388,13 +393,14 @@ public class CheckMethod {
 	/**
 	 * 
 	 * @param routeVar
-	 * @param subRouteVar
 	 * @param amountArr
 	 * @param currNode
 	 * @param nextNode
-	 * @param routeDepotServiceMap 
+	 * @param routeDepotServiceMap
+	 * @param earliestPickupTimesAtDepot
+	 * @param model
 	 */
-	private void beginRoute(float[] routeVar, float[] amountArr, Node currNode, Node nextNode, float[][] routeDepotServiceMap, XFVRPModel model) {
+	private void beginRoute(float[] routeVar, float[] amountArr, Node currNode, Node nextNode, float[][] routeDepotServiceMap, float[] earliestPickupTimesAtDepot, XFVRPModel model) {
 		float earliestDepartureTime = 0;
 		if(nextNode != null)
 			earliestDepartureTime = nextNode.getTimeWindow(0)[0] - model.getTime(currNode, nextNode);
@@ -404,7 +410,7 @@ public class CheckMethod {
 		// If loading time at depot should be considered, service time of all
 		// deliveries at the route is added to starting time at depot
 		float loadingTime = 0;
-		if(model.getParameter().isWithLoadingTimeAtDepot() && nextNode != null)
+		if(nextNode != null && model.getParameter().isWithLoadingTimeAtDepot())
 			loadingTime = routeDepotServiceMap[(int)routeVar[ROUTE_IDX]][0];
 
 		routeVar[TIME] = 
@@ -412,6 +418,17 @@ public class CheckMethod {
 						currNode.getTimeWindow(0)[0] + loadingTime, 
 						earliestDepartureTime
 						);
+
+		// If one node at this route has a delivery, which depends on a certain 
+		// pickup time at the depot, then the earliest departure of this route
+		// is reset to the earliest pickup time at depot.
+
+		if(nextNode != null && earliestPickupTimesAtDepot != null)
+			routeVar[TIME] = 
+			Math.max(
+					routeVar[TIME],
+					earliestPickupTimesAtDepot[(int)routeVar[ROUTE_IDX]]
+					);
 
 		routeVar[DRIVING_TIME] = 0;
 		routeVar[NBR_OF_STOPS] = 0;
@@ -435,7 +452,7 @@ public class CheckMethod {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * 
 	 * @param amountArr
@@ -447,7 +464,7 @@ public class CheckMethod {
 		for (int i = 0; i < amountArr.length / 3; i++)
 			for (int j = 0; j < 3; j++)
 				penalty += Math.max(0, amountArr[i * 3 + j] - v.capacity[i]);
-		
+
 		q.addPenalty(penalty, Quality.PENALTY_REASON_CAPACITY);
 
 		Arrays.fill(amountArr, 0);
@@ -457,7 +474,7 @@ public class CheckMethod {
 	 * 
 	 * @param giantRoute
 	 * @param model 
-	 * @return
+	 * @return For each route it saves the service time at starting and ending depot
 	 */
 	private float[][] createRouteDepotServiceMap(Node[] giantRoute, XFVRPModel model) {
 		List<float[]> list = new ArrayList<>();
@@ -481,6 +498,38 @@ public class CheckMethod {
 					throw new IllegalStateException("Found unexpected site type ("+giantRoute[i].getSiteType().toString()+")");
 			}
 			return list.toArray(new float[0][]);
+		}
+
+		return null;
+	}
+
+	/**
+	 * 
+	 * @param giantRoute
+	 * @param model 
+	 * @return For each route it saves the earliest pickup time at the starting depot
+	 */
+	private float[] createEarliestPickupAtDepotMap(Node[] giantRoute, XFVRPModel model) {
+		List<Float> list = new ArrayList<>();
+
+		if(model.getParameter().considerEarliestPickupTimeAtDepot()) {
+			float earliestPickupTimeAtDepot = 0;
+
+			for (int i = 1; i < giantRoute.length; i++) {
+				if(giantRoute[i].getSiteType() == SiteType.DEPOT) {
+					list.add(earliestPickupTimeAtDepot);
+					earliestPickupTimeAtDepot = 0;
+				} else if(giantRoute[i].getSiteType() == SiteType.CUSTOMER) {
+					if(giantRoute[i].getLoadType() == LoadType.DELIVERY)
+						earliestPickupTimeAtDepot = Math.max(earliestPickupTimeAtDepot, giantRoute[i].getEarliestPickupTimeAtDepot());
+				}
+			}
+
+			float[] arr = new float[list.size()];
+			for (int i = 0; i < arr.length; i++)
+				arr[i] = list.get(i);
+
+			return arr;
 		}
 
 		return null;

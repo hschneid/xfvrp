@@ -59,6 +59,15 @@ public class XFVRPParameter implements Serializable {
 	 */
 	private boolean isWithPDP = false;
 	
+	/*
+	 * For pickups at the depot, the depot opening time might not be the
+	 * earliest possible pickup time of a certain amount. With this toggle
+	 * the CheckMethod searches for the earliest possible starting time at
+	 * the depot to get all pickup demands on the truck, which is greater 
+	 * than the opening time of depot.
+	 */
+	private boolean considerEarliestPickupTimeAtDepot = false;
+	
 	/**
 	 * Reset of all parameters to default value
 	 */
@@ -74,6 +83,7 @@ public class XFVRPParameter implements Serializable {
 		predefinedSolutionString = null;
 		nbrOfILSLoops = 50;
 		maxRunningTimeInSec = Long.MAX_VALUE;
+		considerEarliestPickupTimeAtDepot = false;
 	}
 
 	/**
@@ -232,5 +242,19 @@ public class XFVRPParameter implements Serializable {
 	 */
 	public void setMaxRunningTimeInSec(long maxRunningTimeInSec) {
 		this.maxRunningTimeInSec = maxRunningTimeInSec;
+	}
+
+	/**
+	 * @return the considerEarliestPickupTimeAtDepot
+	 */
+	public boolean considerEarliestPickupTimeAtDepot() {
+		return considerEarliestPickupTimeAtDepot;
+	}
+
+	/**
+	 * @param considerEarliestPickupTimeAtDepot the considerEarliestPickupTimeAtDepot to set
+	 */
+	public void setConsiderEarliestPickupTimeAtDepot(boolean considerEarliestPickupTimeAtDepot) {
+		this.considerEarliestPickupTimeAtDepot = considerEarliestPickupTimeAtDepot;
 	}
 }

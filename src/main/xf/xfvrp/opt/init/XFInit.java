@@ -9,8 +9,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
-import util.collection.ListMap;
 import xf.xfvrp.base.InvalidReason;
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.Quality;
@@ -89,24 +90,25 @@ public class XFInit extends XFVRPBase<XFVRPModel> {
 	 * @param plannedCustomers 
 	 * @return list of valid nodes
 	 */
-	public Node[] precheck(Node[] nodes, Vehicle vehicle, boolean[] plannedCustomers) {
+	public Node[] precheck(final Node[] nodes, Vehicle vehicle, boolean[] plannedCustomers) {
 		if(nodes.length == 0) {
 			statusManager.fireMessage(StatusCode.ABORT, "No nodes found.");
 			throw new IllegalArgumentException("No nodes found.");
 		}
 
 		// Fetch block informations
-		ListMap<Integer, Node> blockMap = ListMap.create();
-		Arrays.stream(nodes)
-		.filter(n -> n.getSiteType() == SiteType.CUSTOMER)
-		.filter(n-> n.getPresetBlockIdx() != BlockNameConverter.DEFAULT_BLOCK_IDX)
-		.forEach(n -> blockMap.put(n.getPresetBlockIdx(), n));
-
-		List<Node> nodeList = new ArrayList<>(Arrays.asList(nodes));
+		Map<Integer, List<Node>> blockMap = 
+				Arrays.stream(nodes)
+				.filter(n -> n.getSiteType() == SiteType.CUSTOMER)
+				.filter(n-> n.getPresetBlockIdx() != BlockNameConverter.DEFAULT_BLOCK_IDX)
+				.collect(Collectors.groupingBy(n -> n.getPresetBlockIdx()));
 
 		// Already planned customers (true = planned, false = unplanned, DEPOTS/REPLENISH always false)
-		for (int i = 0; i < plannedCustomers.length; i++)
-			if(plannedCustomers[i]) nodeList.remove(nodes[i]);
+		List<Node> nodeList = IntStream
+				.range(0, plannedCustomers.length)
+				.filter(i -> !plannedCustomers[i])
+				.mapToObj(i -> nodes[i])
+				.collect(Collectors.toList());
 
 		// Check if customer is allowed for this vehicle type
 		for (Node node : nodes) {
@@ -118,7 +120,9 @@ public class XFInit extends XFVRPBase<XFVRPModel> {
 
 					// Remove all customers from block of invalid customer
 					if(blockMap.containsKey(node.getPresetBlockIdx())) {
-						blockMap.get(node.getPresetBlockIdx()).forEach(n -> {
+						blockMap
+						.get(node.getPresetBlockIdx())
+						.forEach(n -> {
 							n.setInvalidReason(InvalidReason.WRONG_VEHICLE_TYPE);
 							nodeList.remove(n);
 						});
@@ -138,33 +142,27 @@ public class XFInit extends XFVRPBase<XFVRPModel> {
 	 * @return
 	 */
 	@Override
-	protected Node[] execute(Node[] giantTour) {
+	protected Node[] execute(Node[] giantRoute) {
 		List<Node> validNodes = new ArrayList<>();
 		List<Node> validDepots = new ArrayList<>();
 		List<Node> validReplenish = new ArrayList<>();
+		
+		Map<Integer, List<Node>> blockMap = Arrays.stream(model.getNodeArr()).collect(Collectors.groupingBy(g -> g.getPresetBlockIdx()));
 
-		ListMap<Integer, Node> blockMap = ListMap.create();
-		for (Node node : model.getNodeArr())
-			blockMap.put(node.getPresetBlockIdx(), node);
-
-		boolean containsValidCustomers = false;
 		OUTER:
 			for (int blockIdx : blockMap.keySet()) {
 				List<Node> nodeList = blockMap.get(blockIdx);
 				Set<Integer> seqPosSet = new HashSet<>();
 
-				Collections.sort(nodeList, new Comparator<Node>() {
-					@Override
-					public int compare(Node o1, Node o2) {					
-						return o1.getPresetBlockPos() - o2.getPresetBlockPos();
-					}
-				});
+				// Sort nodes with smallest block position at first
+				nodeList.sort((o1, o2) -> o1.getPresetBlockPos() - o2.getPresetBlockPos());
 
 				for (Node node : nodeList) {
 					if(node.getSiteType() == SiteType.DEPOT)
 						validDepots.add(node);
 					else if(node.getSiteType() == SiteType.REPLENISH)
 						validReplenish.add(node);
+					// Check customer data
 					else if(checkCustomer(node, model)) {
 						validNodes.add(node);
 						if(node.getPresetBlockRank() < 0)
@@ -174,12 +172,10 @@ public class XFInit extends XFVRPBase<XFVRPModel> {
 						if(node.getPresetBlockPos() >=0 && seqPosSet.contains(node.getPresetBlockPos()))
 							throw new IllegalArgumentException("The sequence position " + node.getPresetBlockPos() + " in block " + node.getPresetBlockIdx() + " is given multiple times, which is forbidden.");
 						seqPosSet.add(node.getPresetBlockPos());
-
-						containsValidCustomers = true;
 					} else {
 						// If this is not the default block and one node
-						// of this block is invalid, then all nodes are
-						// set to invalid.
+						// of this block is invalid, then all nodes are 
+						// need to be set to invalid.
 						if(blockIdx != BlockNameConverter.DEFAULT_BLOCK_IDX) {
 							// Copy invalid reason to all nodes of block
 							for (Node n : nodeList)
@@ -205,21 +201,23 @@ public class XFInit extends XFVRPBase<XFVRPModel> {
 				checkMaxWaiting(nodeList, model);
 			}
 
-		// If all nodes are invalid for this vehicle and parameters
+		// If all customer nodes are invalid for this vehicle and parameters
 		// optimization has to be skipped.
-		if(!containsValidCustomers)
+		if(validNodes.size() == 0)
 			return new Node[0];
 
 		// Consider Preset Rank and Position
-		Collections.sort(validNodes, new Comparator<Node>() {
-			@Override
-			public int compare(Node arg0, Node arg1) {
-				int diff = arg0.getPresetBlockIdx() - arg1.getPresetBlockIdx();
-				if(diff == 0)
-					diff = arg0.getPresetBlockPos() - arg1.getPresetBlockPos();
-				return diff;
-			}
+		validNodes.sort((s1, s2) -> {
+			int diff = s1.getPresetBlockIdx() - s2.getPresetBlockIdx();
+			if(diff == 0)
+				diff = s1.getPresetBlockPos() - s2.getPresetBlockPos();
+			return diff;
 		});
+
+		// Set the ordering of nodes
+		// 1. Depots
+		// 2. Replenishments
+		// 3. Customers
 		validDepots.addAll(validReplenish);
 		validDepots.addAll(validNodes);
 		validNodes = validDepots;
@@ -228,7 +226,85 @@ public class XFInit extends XFVRPBase<XFVRPModel> {
 		if(model.getParameter().getPredefinedSolutionString() != null)
 			return buildPredefinedGiantRoute(validNodes, model);
 
+		// Else build a trivial solution with each customer (or block of customers) at one route
 		return buildGiantRoute(validNodes, model);
+	}
+
+	/**
+	 * Checks a customers whether it can be served within all constraints.
+	 * If one constraint is violated, the customer is invalid for optimization.
+	 * 
+	 * The checked constraints are:
+	 *  - A customer have to be allowed for this vehicle type
+	 *  - No customer must have more demand than max loading capacity
+	 *  - All customers must be reached from one depot (see Multiple Depots) directly within their time windows.
+	 *  - The route duration for direct service from one depot (see Multiple Depots) must be smaller than maximal route duration.
+	 * 
+	 * If a customer leads to an invalid route plan, then the cause for this is written into the invalid reason at the customer object 
+	 * 
+	 * @param cust Customer node
+	 * @param model Model with all necessary data
+	 * @return Can the customer be served within given constraints?
+	 */
+	private boolean checkCustomer(Node cust, XFVRPModel model) {
+		if(cust.getSiteType() != SiteType.CUSTOMER)
+			throw new IllegalStateException("XFInit - Check of customer for no customer node.");
+	
+		// Check each depot if this customer can be serviced by this depot
+		// with valid constraints
+		boolean canBeValid = false;
+		for (int i = 0; i < model.getNbrOfDepots(); i++) {
+			Node depot = model.getNodeArr()[i];
+	
+			float travelTime = model.getTime(depot, cust);
+			float travelTime2 = model.getTime(cust, depot);		
+	
+			// Check route duration with this customer
+			float time = travelTime + travelTime2 + cust.getServiceTime();
+			if(time > model.getVehicle().maxRouteDuration){
+				cust.setInvalidReason(InvalidReason.TRAVEL_TIME, "Customer " + cust.getExternID() + " - Traveltime required: " + time);
+				continue;
+			}
+	
+			// Check time window
+			float[] depTW = depot.getTimeWindow(0);
+			float departureAtDepot = Math.max(depTW[0], cust.getEarliestPickupTimeAtDepot());
+			float arrTime = departureAtDepot + travelTime;
+			float[] custTW = cust.getTimeWindow(arrTime);
+			arrTime = Math.max(arrTime, custTW[0]);
+			// Check later than customer closing time
+			if(arrTime > custTW[1]) {
+				cust.setInvalidReason(InvalidReason.TIME_WINDOW);
+				continue;
+			}
+			// Check later than depot closing time
+			if(arrTime + travelTime2 + cust.getServiceTime() > depTW[1]) {
+				cust.setInvalidReason(InvalidReason.TIME_WINDOW);
+				continue;
+			}
+	
+			canBeValid = true;
+		}
+	
+		// Time Windows or duration
+		if(!canBeValid)			
+			return false;
+	
+		// Capacities
+		float[] demandArr = cust.getDemand();
+		float[] capArr = model.getVehicle().capacity;
+	
+		for (int i = 0; i < Math.min(demandArr.length, capArr.length); i++) {
+			if(	demandArr[i] > capArr[i]) {
+				cust.setInvalidReason(
+						InvalidReason.CAPACITY,
+						"Customer " + cust.getExternID() + " - Capacity " + (i + 1) + " demand: " +capArr[i]+" required: "+demandArr[i]
+						);
+				return false;
+			} 				
+		}
+	
+		return true;
 	}
 
 	/**
@@ -342,81 +418,6 @@ public class XFInit extends XFVRPBase<XFVRPModel> {
 		gL.add(Util.createIdNode(nodes.get(depotIdx % depots.size()), maxIdx++));
 
 		return gL.toArray(new Node[0]);
-	}
-
-	/**
-	 * Checks a customers whether it can be served within all constraints.
-	 * If one constraint is violated, the customer is invalid for optimization.
-	 * 
-	 * The checked constraints are:
-	 *  - A customer have to be allowed for this vehicle type
-	 *  - No customer must have more demand than max loading capacity
-	 *  - All customers must be reached from one depot (see Multiple Depots) directly within their time windows.
-	 *  - The route duration for direct service from one depot (see Multiple Depots) must be smaller than maximal route duration.
-	 * 
-	 * If a customer leads to an invalid route plan, then the cause for this is written into the invalid reason at the customer object 
-	 * 
-	 * @param cust Customer node
-	 * @param model Model with all necessary data
-	 * @return Can the customer be served within given constraints?
-	 */
-	private boolean checkCustomer(Node cust, XFVRPModel model) {
-		if(cust.getSiteType() != SiteType.CUSTOMER)
-			throw new IllegalStateException("XFInit - Check of customer for no customer node.");
-
-		// Check each depot if this customer can be serviced by this depot
-		// with valid constraints
-		boolean canBeValid = false;
-		for (int i = 0; i < model.getNbrOfDepots(); i++) {
-			Node depot = model.getNodeArr()[i];
-
-			float travelTime = model.getTime(depot, cust);
-			float travelTime2 = model.getTime(cust, depot);		
-
-			// Check route duration with this customer
-			float time = travelTime + travelTime2 + cust.getServiceTime();
-			if(time > model.getVehicle().maxRouteDuration){
-				cust.setInvalidReason(InvalidReason.TRAVEL_TIME, "Customer " + cust.getExternID() + " - Traveltime required: " + time);
-				continue;
-			}
-
-			// Check time window
-			float[] depTW = depot.getTimeWindow(0);
-			float arrTime = depTW[0] + travelTime;
-			float[] custTW = cust.getTimeWindow(arrTime);
-			arrTime = Math.max(arrTime, custTW[0]);
-			if(arrTime > custTW[1]) {
-				cust.setInvalidReason(InvalidReason.TIME_WINDOW);
-				continue;
-			}
-			if(arrTime + travelTime2 + cust.getServiceTime() > depTW[1]) {
-				cust.setInvalidReason(InvalidReason.TIME_WINDOW);
-				continue;
-			}
-
-			canBeValid = true;
-		}
-
-		// Time Windows or duration
-		if(!canBeValid){			
-			return false;
-		}
-
-		// Capacities
-		float[] demandArr = cust.getDemand();
-		float[] capArr = model.getVehicle().capacity;
-
-		for (int i = 0; i < demandArr.length; i++) {
-			if(	demandArr[i] > capArr[i]) {
-				cust.setInvalidReason(
-						InvalidReason.CAPACITY,
-						"Customer " + cust.getExternID() + " - Capacity " + (i + 1) + " demand: " +capArr[i]+" required: "+demandArr[i]
-						);
-				return false;
-			} 				
-		}
-		
-		return true;
 	}
 
 	/**

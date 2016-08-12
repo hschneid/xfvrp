@@ -33,6 +33,7 @@ public abstract class CustomerData extends DepotData {
 	protected float[] demand = new float[]{0, 0, 0};
 	protected float serviceTime = 0;
 	protected float serviceTimeForSite = 0;
+	protected float earliestPickupAtDepot = 0;
 
 	/** Efficient Load - parameter **/
 	protected String shipID = "";
@@ -320,6 +321,15 @@ public abstract class CustomerData extends DepotData {
 	 */
 	public CustomerData setPresetDepotList(Set<String> depotSet) {
 		presetDepotList.addAll(depotSet);
+		return this;
+	}
+
+	/**
+	 * @param earliestPickupAtDepot the earliestPickupAtDepot to set
+	 * @return
+	 */
+	public CustomerData setEarliestPickupAtDepot(float earliestPickupAtDepot) {
+		this.earliestPickupAtDepot = earliestPickupAtDepot;
 		return this;
 	}
 }

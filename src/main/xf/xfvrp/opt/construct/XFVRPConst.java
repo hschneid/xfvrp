@@ -2,9 +2,8 @@ package xf.xfvrp.opt.construct;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import util.collection.ListMap;
 import xf.xfvrp.base.Node;
@@ -44,36 +43,31 @@ public class XFVRPConst extends XFVRPOptBase {
 
 		// Separate giantRoute into pieces of nearest allocated customers
 		List<Node> giantList = new ArrayList<>();
-		{
-			int depIDGlobal = 0;
-			for (int depIdx : allocMap.keySet()) {
-				Node dep = model.getNodeArr()[depIdx];
-				List<Node> customers = allocMap.get(depIdx);
 
-				// Prepare customer list: customers with same block are placed togehter
-				Collections.sort(customers, new Comparator<Node>() {
-					@Override
-					public int compare(Node arg0, Node arg1) {
-						int diff = arg0.getPresetBlockIdx() - arg1.getPresetBlockIdx();
-						if(diff == 0)
-							diff = arg0.getPresetBlockPos() - arg1.getPresetBlockPos();
-						return diff;
-					}
-				});
+		int depIDGlobal = 0;
+		for (int depIdx : allocMap.keySet()) {
+			Node dep = model.getNodeArr()[depIdx];
+			List<Node> customers = allocMap.get(depIdx);
 
-				// Create temp giant tour with only one depot and allocated customers
-				Node[] gT = buildGiantRouteForOptimization(dep, customers);
+			// Prepare customer list: customers with same block are placed togehter
+			customers.sort((c1, c2) -> 
+			(c1.getPresetBlockIdx() - c2.getPresetBlockIdx() == 0) ?
+					c1.getPresetBlockPos() - c2.getPresetBlockPos() :
+						c1.getPresetBlockIdx() - c2.getPresetBlockIdx()
+					);
 
-				// Run optimizers for each piece and choose best
-				gT = savings.execute(gT, model, statusManager);
+			// Create temp giant route with only one depot and allocated customers
+			Node[] gT = buildGiantRouteForOptimization(dep, customers);
 
-				// Concatenate piece to new giant tour
-				for (Node n : gT) {
-					if(n.getSiteType() == SiteType.DEPOT)
-						giantList.add(Util.createIdNode(dep, depIDGlobal++));
-					else
-						giantList.add(n);
-				}
+			// Run optimizers for each piece and choose best
+			gT = savings.execute(gT, model, statusManager);
+
+			// Concatenate piece to new giant route
+			for (Node n : gT) {
+				if(n.getSiteType() == SiteType.DEPOT)
+					giantList.add(Util.createIdNode(dep, depIDGlobal++));
+				else
+					giantList.add(n);
 			}
 		}
 
@@ -87,14 +81,14 @@ public class XFVRPConst extends XFVRPOptBase {
 	private ListMap<Integer, Node> allocateNearestDepot(Node[] giantTour) {
 		ListMap<Integer, Node> allocMap = ListMap.create();
 		{
-			List<Node> depotList = new ArrayList<>();
-			for (Node n : model.getNodeArr()) 
-				if(n.getSiteType() == SiteType.DEPOT)
-					depotList.add(n);
+			List<Node> depotList = Arrays
+					.stream(model.getNodeArr())
+					.filter(n -> n.getSiteType() == SiteType.DEPOT)
+					.collect(Collectors.toList());
 
 			for (int i = 0; i < giantTour.length; i++) {
 				Node n = giantTour[i];
-				
+
 				if(n.getSiteType() == SiteType.CUSTOMER) {
 
 					int bestIdx = -1;

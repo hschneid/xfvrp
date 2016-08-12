@@ -53,7 +53,9 @@ public class StringWriter {
 				Event e = tRep.getEvents().get(j);
 				sb.append(
 						"+; "+(j+1)+"; "+e.getID()+"; "+e.getDistance()+"; "+e.getAmount()+"; "+
-								e.getArrival()+"; "+e.getDeparture()+"; "+e.getService()+"; "+e.getWaiting()+"; "+e.getLoadType()+"; "+blockMap.get(e.getID())+"; "+posMap.get(e.getID())+"\n"
+								e.getArrival()+"; "+e.getDeparture()+"; "+e.getService()+"; "+e.getWaiting()+"; "+e.getLoadType()+"; "+blockMap.get(e.getID())+"; "+posMap.get(e.getID())
+								// TODO Get Invalid reasons - (tRep.getVehicle().name.equals("UNVALID")) ? e. : ""
+								+"\n"
 				);
 			}
 		}

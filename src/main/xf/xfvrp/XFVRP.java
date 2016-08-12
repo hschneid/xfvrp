@@ -18,6 +18,7 @@ import xf.xfpdp.XFPDPInit;
 import xf.xfvrp.base.InvalidReason;
 import xf.xfvrp.base.LoadType;
 import xf.xfvrp.base.Node;
+import xf.xfvrp.base.Quality;
 import xf.xfvrp.base.SiteType;
 import xf.xfvrp.base.Util;
 import xf.xfvrp.base.Vehicle;
@@ -38,6 +39,7 @@ import xf.xfvrp.base.monitor.StatusCode;
 import xf.xfvrp.base.preset.BlockNameConverter;
 import xf.xfvrp.base.preset.VehiclePriorityInitialiser;
 import xf.xfvrp.base.xfvrp.XFVRP_Parameter;
+import xf.xfvrp.opt.CheckMethod;
 import xf.xfvrp.opt.XFVRPOptBase;
 import xf.xfvrp.opt.XFVRPOptSplitter;
 import xf.xfvrp.opt.XFVRPOptType;
@@ -171,7 +173,12 @@ public class XFVRP extends XFVRP_Parameter {
 		else
 			route = new XFInit().initGiantRoute(model, statusManager, new ArrayList<Node>());
 
-		// VRP optimizations, if initiated route has appropriate length
+		// Check - Start solution must be valid!!!
+		Quality quality = new CheckMethod().check(route, model);
+		if(quality.getPenalty() > 0) 
+			throw new IllegalStateException("Input data lead to an incorrect start solution, which can not be accepted. Check data first.");
+		
+		// VRP optimizations
 		if(route.length > 0) {
 			/*
 			 * For each given optimization procedure the current

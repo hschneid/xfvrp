@@ -80,7 +80,8 @@ public class InternalDepotData extends DepotData {
 				0,
 				0,
 				null, 0, 0,
-				"",0,0,0,0,0,0,0,0 // Load planning parameters
+				"",0,0,0,0,0,0,0,0, // Load planning parameters
+				0 
 				);
 		
 		return n;

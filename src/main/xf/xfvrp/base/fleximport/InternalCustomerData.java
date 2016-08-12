@@ -179,6 +179,13 @@ public class InternalCustomerData extends CustomerData {
 	public Set<String> getPresetDepotList() {
 		return presetDepotList;
 	}
+	
+	/**
+	 * @return the earliestPickupAtDepot
+	 */
+	public float getEarliestPickupAtDepot() {
+		return earliestPickupAtDepot;
+	}
 
 	/**
 	 * 
@@ -210,7 +217,8 @@ public class InternalCustomerData extends CustomerData {
 				weightOfPackage,
 				loadBearingOfPackage,
 				stackingGroupOfPackage,
-				containerTypeOfPackage
+				containerTypeOfPackage,
+				(loadType == LoadType.DELIVERY) ? earliestPickupAtDepot : 0
 				);
 
 		return n;

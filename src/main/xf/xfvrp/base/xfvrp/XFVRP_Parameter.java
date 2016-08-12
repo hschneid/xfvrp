@@ -108,6 +108,16 @@ public abstract class XFVRP_Parameter extends XFVRP_Data {
 	}
 
 	/**
+	 * Activates the consideration of the customer field 'earliestPickupTimeAtDepot', so
+	 * that for a delivery node the route can start at the depot only after the given 
+	 * pickup time of this node.
+	 * 
+	 */
+	public void allowsPickupTimeAtDepot() {
+		parameter.setConsiderEarliestPickupTimeAtDepot(true);
+	}
+
+	/**
 	 * With this parameter a predefined solution can be inserted into the XFVRP. The solution string
 	 * is strictly formated. The nodes are denotated by their name (ORT_ID). All unknown or invalid nodes
 	 * are ignored by the reading routine. Double entries are resolved by ignoring later doublettes. 
