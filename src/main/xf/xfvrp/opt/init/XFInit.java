@@ -23,6 +23,7 @@ import xf.xfvrp.base.XFVRPModel;
 import xf.xfvrp.base.monitor.StatusCode;
 import xf.xfvrp.base.monitor.StatusManager;
 import xf.xfvrp.base.preset.BlockNameConverter;
+import xf.xfvrp.opt.CheckMethod;
 import xf.xfvrp.opt.XFVRPOptBase;
 import xf.xfvrp.opt.XFVRPOptType;
 
@@ -146,7 +147,7 @@ public class XFInit extends XFVRPBase<XFVRPModel> {
 		List<Node> validNodes = new ArrayList<>();
 		List<Node> validDepots = new ArrayList<>();
 		List<Node> validReplenish = new ArrayList<>();
-		
+
 		Map<Integer, List<Node>> blockMap = Arrays.stream(model.getNodeArr()).collect(Collectors.groupingBy(g -> g.getPresetBlockIdx()));
 
 		OUTER:
@@ -249,23 +250,23 @@ public class XFInit extends XFVRPBase<XFVRPModel> {
 	private boolean checkCustomer(Node cust, XFVRPModel model) {
 		if(cust.getSiteType() != SiteType.CUSTOMER)
 			throw new IllegalStateException("XFInit - Check of customer for no customer node.");
-	
+
 		// Check each depot if this customer can be serviced by this depot
 		// with valid constraints
 		boolean canBeValid = false;
 		for (int i = 0; i < model.getNbrOfDepots(); i++) {
 			Node depot = model.getNodeArr()[i];
-	
+
 			float travelTime = model.getTime(depot, cust);
 			float travelTime2 = model.getTime(cust, depot);		
-	
+
 			// Check route duration with this customer
 			float time = travelTime + travelTime2 + cust.getServiceTime();
 			if(time > model.getVehicle().maxRouteDuration){
 				cust.setInvalidReason(InvalidReason.TRAVEL_TIME, "Customer " + cust.getExternID() + " - Traveltime required: " + time);
 				continue;
 			}
-	
+
 			// Check time window
 			float[] depTW = depot.getTimeWindow(0);
 			float departureAtDepot = Math.max(depTW[0], cust.getEarliestPickupTimeAtDepot());
@@ -282,18 +283,18 @@ public class XFInit extends XFVRPBase<XFVRPModel> {
 				cust.setInvalidReason(InvalidReason.TIME_WINDOW);
 				continue;
 			}
-	
+
 			canBeValid = true;
 		}
-	
+
 		// Time Windows or duration
 		if(!canBeValid)			
 			return false;
-	
+
 		// Capacities
 		float[] demandArr = cust.getDemand();
 		float[] capArr = model.getVehicle().capacity;
-	
+
 		for (int i = 0; i < Math.min(demandArr.length, capArr.length); i++) {
 			if(	demandArr[i] > capArr[i]) {
 				cust.setInvalidReason(
@@ -303,7 +304,7 @@ public class XFInit extends XFVRPBase<XFVRPModel> {
 				return false;
 			} 				
 		}
-	
+
 		return true;
 	}
 
@@ -379,34 +380,42 @@ public class XFInit extends XFVRPBase<XFVRPModel> {
 		int depotIdx = 0;
 		int maxIdx = 0;
 		int lastBlockIdx = Integer.MAX_VALUE;
+
 		// Create single routes for each block or single customer without block
-		// Consider preset depot
-		Set<Integer> depots = new HashSet<>();
-		for (Node dep : nodes.subList(0, model.getNbrOfDepots()))
-			depots.add(dep.getGlobalIdx());
+		// Consider preset depots
+		Set<Integer> depots = nodes.stream()
+				.filter(f -> f.getSiteType() == SiteType.DEPOT)
+				.map(m -> m.getGlobalIdx())
+				.collect(Collectors.toSet());
+
 		Set<Integer> allowedDepots = new HashSet<>(depots); 
 		for (int i = model.getNbrOfDepots() + model.getNbrOfReplenish(); i < nodes.size(); i++) {
 			Node currNode = nodes.get(i);
 
-			// Reduce allowed depots to preset allowed depots
-			if(currNode.getPresetDepotList().size() > 0)
-				allowedDepots.retainAll(currNode.getPresetDepotList());
-
-			// Add a depot after each change of block or unblocked customer
+			// Add a depot after each blocked customers or unblocked customer
 			final int blockIdx = currNode.getPresetBlockIdx();
 			if(blockIdx == BlockNameConverter.DEFAULT_BLOCK_IDX || blockIdx != lastBlockIdx) {
+				// Reduce allowed depots to preset depots
+				if(currNode.getPresetDepotList().size() > 0)
+					allowedDepots.retainAll(currNode.getPresetDepotList());
+
+				// Reduce allowed depots to legal depots
+				allowedDepots = reduceToLegalDepots(allowedDepots, currNode, depotMap, model);
+
 				// Get an index for an element of allowed depots
 				int idx = depotIdx % allowedDepots.size();
 				// Add depot with new own id
 				gL.add(Util.createIdNode(depotMap.get(allowedDepots.toArray(new Integer[0])[idx]), maxIdx++));
 				// Refill allowedDepots
 				allowedDepots = new HashSet<>(depots);
+
+				// Change the inserted depot
+				depotIdx++;
 			}
 
 			// Add customer
 			gL.add(currNode);
 
-			depotIdx++;
 			lastBlockIdx = blockIdx;
 		}
 		// Add last depot
@@ -418,6 +427,42 @@ public class XFInit extends XFVRPBase<XFVRPModel> {
 		gL.add(Util.createIdNode(nodes.get(depotIdx % depots.size()), maxIdx++));
 
 		return gL.toArray(new Node[0]);
+	}
+
+	/**
+	 * Reduces a list of given depots for legal
+	 * depots considering all restrictions.
+	 * 
+	 * @param allowedDepots
+	 * @param customer
+	 * @param depotMap
+	 * @param model
+	 * @return
+	 */
+	private Set<Integer> reduceToLegalDepots(
+			Set<Integer> allowedDepots,
+			Node customer,
+			Map<Integer, Node> depotMap,
+			XFVRPModel model) {
+		CheckMethod check = new CheckMethod();
+
+		return allowedDepots.stream()
+				.map(m -> depotMap.get(m))
+				.filter(f -> {
+					// Build single customer route with allowed depot
+					Node[] route = new Node[3];
+					route[0] = Util.createIdNode(f, 1);
+					route[1] = customer;
+					route[2] = Util.createIdNode(f, 2);
+
+					// Get quality of route
+					Quality q = check.check(route, model);
+
+					// Filter for invalids
+					return (q.getPenalty() == 0);
+				})
+				.map(m -> m.getGlobalIdx())
+				.collect(Collectors.toSet());
 	}
 
 	/**

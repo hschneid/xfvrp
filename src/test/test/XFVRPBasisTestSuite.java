@@ -112,6 +112,38 @@ public class XFVRPBasisTestSuite {
 		}
 		assertTrue(failure);
 	}
+	
+	/*
+	 * 
+	 */
+	@Test
+	public void testMultiDepot() {
+		boolean failure = false;
+		try {
+			XFVRP v = createXFVRPEuclead();
+			v.addDepot().setExternID("DEP1").setXlong(0).setYlat(0).setOpen1(0).setClose1(5);
+			v.addDepot().setExternID("DEP2").setXlong(10).setYlat(10).setOpen1(0).setClose1(5);
+			addCustomer(v, "1", 2, 0);
+			addCustomer(v, "2", 12, 10);
+			addCustomer(v, "3", 12, 10);
+			addCustomer(v, "4", 2, 0);
+
+			v.addOptType(XFVRPOptType.CONST);
+			v.executeRoutePlanning();
+
+			Report rep = v.getReport();
+			assertTrue(rep.getSummary().getNbrOfUsedVehicles() == 2);
+			assertTrue(rep.getRoutes().size() == 2);
+			assertTrue(rep.getRoutes().get(0).getEvents().get(0).getID().equals("DEP1"));
+			assertTrue(rep.getRoutes().get(1).getEvents().get(0).getID().equals("DEP2"));
+			
+			System.out.println(StringWriter.write(rep));
+		} catch (Exception e) {
+			e.printStackTrace();
+			failure = true;
+		}
+		assertFalse(failure);
+	}
 
 	/*
 	 * 
