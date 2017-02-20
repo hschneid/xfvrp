@@ -7,6 +7,7 @@ import xf.xfvrp.base.Quality;
 import xf.xfvrp.base.SiteType;
 import xf.xfvrp.base.Util;
 import xf.xfvrp.base.XFVRPModel;
+import xf.xfvrp.opt.Solution;
 import xf.xfvrp.opt.XFVRPLPBridge;
 import xf.xfvrp.opt.XFVRPOptBase;
 
@@ -55,7 +56,7 @@ public abstract class XFVRPOptImpBase extends XFVRPOptBase {
 	 * @param bestResult
 	 * @return
 	 */
-	protected abstract Quality improve(Node[] giantTour, Quality bestResult);
+	protected abstract Quality improve(Solution giantTour, Quality bestResult);
 	
 	/**
 	 * This method calls the abstract improve method of this optimization class with
@@ -69,7 +70,7 @@ public abstract class XFVRPOptImpBase extends XFVRPOptBase {
 	 * @param model
 	 * @return
 	 */
-	protected Quality improve(Node[] giantTour, Quality bestResult, XFVRPModel model) {
+	protected Quality improve(Solution giantTour, Quality bestResult, XFVRPModel model) {
 		this.model = model;
 		
 		return improve(giantTour, bestResult);
@@ -77,10 +78,10 @@ public abstract class XFVRPOptImpBase extends XFVRPOptBase {
 	
 	/*
 	 * (non-Javadoc)
-	 * @see de.fhg.iml.vlog.xftour.model.XFBase#execute(de.fhg.iml.vlog.xftour.model.XFNode[])
+	 * @see xf.xfvrp.base.XFVRPBase#execute(xf.xfvrp.opt.Solution)
 	 */
 	@Override
-	public Node[] execute(Node[] giantRoute) {
+	public Solution execute(Solution giantRoute) {
 		// Evaluate current solution
 		Quality bestResult = check(giantRoute);
 
@@ -145,7 +146,7 @@ public abstract class XFVRPOptImpBase extends XFVRPOptBase {
 	 * @param route A sequence of Nodes
 	 * @return A loading footprint if parameter for load planning is activated otherwise null
 	 */
-	protected Set<String> getLoadingFootprint(Node[] route) {
+	protected Set<String> getLoadingFootprint(Solution route) {
 		if(model.getParameter().isWithLoadPlanning())
 			return XFVRPLPBridge.getFootprints(route);
 		return null;
@@ -161,7 +162,7 @@ public abstract class XFVRPOptImpBase extends XFVRPOptBase {
 	 * @param loadingFootprint A pre-evaluated footprint of load planning
 	 * @return The quality of the new solution. If it is null, then the new solution is not better than the current best solution.
 	 */
-	protected Quality check(Node[] giantRoute, Set<String> loadingFootprint) {
+	protected Quality check(Solution giantRoute, Set<String> loadingFootprint) {
 		// Evaluate the costs and restrictions (penalties) of a giant route
 		Quality result = check(giantRoute);
 

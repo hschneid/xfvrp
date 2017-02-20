@@ -38,7 +38,7 @@ public class XFVRPLPBridge {
 	 * @param model
 	 * @param q The current quality of the whole giant route. This method only adds penalties to this quality object.
 	 */
-	public static void check(Node[] giantRoute, Set<String> footprint, XFVRPModel model, Quality q) {
+	public static void check(Solution giantRoute, Set<String> footprint, XFVRPModel model, Quality q) {
 		if(!model.getParameter().isWithLoadPlanning())
 			return;
 
@@ -82,7 +82,7 @@ public class XFVRPLPBridge {
 	 * @param model The data model to the giant route
 	 * @return A set of reports to loading plans
 	 */
-	public static LPReport[] getLoadingPlan(Node[] giantRoute, XFVRPModel model) {
+	public static LPReport[] getLoadingPlan(Solution giantRoute, XFVRPModel model) {
 		if(!model.getParameter().isWithLoadPlanning())
 			return null;
 
@@ -124,7 +124,7 @@ public class XFVRPLPBridge {
 	 * @param giantTour The routes in giant route representation
 	 * @return Set of unique string representations
 	 */
-	public static Set<String> getFootprints(Node[] giantTour) {
+	public static Set<String> getFootprints(Solution giantTour) {
 		Set<String> routeFootprint = new HashSet<>();
 
 		List<List<Node>> routes = splitRoutes(giantTour);
@@ -156,7 +156,7 @@ public class XFVRPLPBridge {
 	 * @param giantRoute The routes in giant route representation
 	 * @return List of node lists, where each node list has all nodes of one route
 	 */
-	private static List<List<Node>> splitRoutes(Node[] giantTour) { 
+	private static List<List<Node>> splitRoutes(Solution solution) { 
 		List<List<Node>> routes = new ArrayList<>();
 		
 		// Cut giant route into separated routes
@@ -164,6 +164,7 @@ public class XFVRPLPBridge {
 		// Depot nodes are exkluded.
 		
 		List<Node> list = new ArrayList<>();
+		Node[] giantTour = solution.getGiantRoute();
 		for (int i = 1; i < giantTour.length; i++) {
 			Node node = giantTour[i];
 
