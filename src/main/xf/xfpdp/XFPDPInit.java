@@ -14,6 +14,7 @@ import xf.xfvrp.base.Node;
 import xf.xfvrp.base.SiteType;
 import xf.xfvrp.base.Util;
 import xf.xfvrp.base.XFVRPModel;
+import xf.xfvrp.opt.Solution;
 
 /** 
  * Copyright (c) 2012-present Holger Schneider
@@ -115,7 +116,7 @@ public class XFPDPInit {
 	 * @param invalidCustomers 
 	 * @return
 	 */
-	public Node[] buildInitPDP(XFVRPModel model, List<Node> invalidNodes) {
+	public Solution buildInitPDP(XFVRPModel model, List<Node> invalidNodes) {
 		Node[] nodeArr = model.getNodeArr();
 		if (nodeArr.length == 0)
 			return new Node[0];

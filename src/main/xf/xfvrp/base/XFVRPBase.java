@@ -1,6 +1,7 @@
 package xf.xfvrp.base;
 
 import xf.xfvrp.base.monitor.StatusManager;
+import xf.xfvrp.opt.Solution;
 
 /** 
  * Copyright (c) 2012-present Holger Schneider
@@ -26,7 +27,7 @@ public abstract class XFVRPBase<M extends XFVRPModel> {
 	 * @param giantRoute
 	 * @return
 	 */
-	protected abstract Node[] execute(Node[] giantTour);
+	protected abstract Solution execute(Solution giantTour);
 
 	/**
 	 * Sets necessary variables and 
@@ -37,7 +38,7 @@ public abstract class XFVRPBase<M extends XFVRPModel> {
 	 * @param statusManager
 	 * @return
 	 */
-	public Node[] execute(Node[] giantRoute, M model, StatusManager statusManager) {
+	public Solution execute(Solution giantRoute, M model, StatusManager statusManager) {
 		this.model = model;
 		this.statusManager = statusManager;
 		

@@ -173,7 +173,7 @@ public class XFVRP extends XFVRP_Parameter {
 			route = new XFInit().initGiantRoute(model, statusManager, new ArrayList<Node>());
 
 		// VRP optimizations, if initiated route has appropriate length
-		if(route.length > 0) {
+		if(route.getGiantRoute().length > 0) {
 			/*
 			 * For each given optimization procedure the current
 			 * route plan is searched for optimizations. If route
@@ -281,7 +281,7 @@ public class XFVRP extends XFVRP_Parameter {
 	 * @param routes Tour reports from getReport()
 	 * @param model
 	 */
-	private Node[] reconstructGiantRoute(List<RouteReport> routes, XFVRPModel model) {
+	private Solution reconstructGiantRoute(List<RouteReport> routes, XFVRPModel model) {
 		Map<String, Node> nodeMap = new HashMap<>();
 		Arrays.stream(model.getNodeArr()).forEach(n -> nodeMap.put(n.getExternID(), n));
 		
@@ -308,7 +308,10 @@ public class XFVRP extends XFVRP_Parameter {
 					al.add(node);
 			}
 		}
-		return al.stream().toArray(Node[]::new);
+		
+		Solution solution = new Solution();
+		solution.setGiantRoute(al.stream().toArray(Node[]::new));
+		return solution;
 	}
 
 	/**
@@ -374,7 +377,7 @@ public class XFVRP extends XFVRP_Parameter {
 
 			Node[] nodes = nodeList.toArray(new Node[0]);
 
-			Node[] giantRoute = buildGiantRouteForInvalidNodes(unplanned, nodes[0]);
+			Solution giantRoute = buildGiantRouteForInvalidNodes(unplanned, nodes[0]);
 
 			// Create solution with single routes for each invalid node
 			InternalMetric internalMetric = AcceleratedMetricTransformator.transform(metric, nodes, vehicles[0]);
@@ -406,7 +409,7 @@ public class XFVRP extends XFVRP_Parameter {
 	 * @param depotList List of depot nodes. Only first depot node is used for invalid nodes.
 	 * @return Giant route with single routes for each invalid node.
 	 */
-	private Node[] buildGiantRouteForInvalidNodes(List<Node> unplannedNodes, Node depot) {
+	private Solution buildGiantRouteForInvalidNodes(List<Node> unplannedNodes, Node depot) {
 		Node[] giantRoute = new Node[unplannedNodes.size() * 2 + 2];
 
 		// Cluster blocked nodes
@@ -444,7 +447,9 @@ public class XFVRP extends XFVRP_Parameter {
 			giantRoute[i++] = Util.createIdNode(depot, maxDepotId++);
 		}
 
-		return Arrays.copyOf(giantRoute, i);
+		Solution solution = new Solution();
+		solution.setGiantRoute(Arrays.copyOf(giantRoute, i));
+		return solution;
 	}
 
 	/**

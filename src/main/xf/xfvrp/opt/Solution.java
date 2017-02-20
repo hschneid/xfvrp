@@ -1,5 +1,7 @@
 package xf.xfvrp.opt;
 
+import java.util.Arrays;
+
 import xf.xfvrp.base.Node;
 
 public class Solution {
@@ -18,6 +20,13 @@ public class Solution {
 	 */
 	public void setGiantRoute(Node[] giantRoute) {
 		this.giantRoute = giantRoute;
+	}
+	
+	public Solution copy() {
+		Solution solution = new Solution();
+		solution.setGiantRoute(Arrays.copyOf(giantRoute, giantRoute.length));
+		
+		return solution;
 	}
 	
 }

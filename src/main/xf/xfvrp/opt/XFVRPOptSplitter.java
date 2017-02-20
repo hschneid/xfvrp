@@ -55,7 +55,7 @@ public class XFVRPOptSplitter {
 	 * @param statusManager
 	 * @return Optimized route plan 
 	 */
-	public Node[] execute(final Node[] giantTour, XFVRPModel model, StatusManager statusManager, XFVRPOptBase opt) {
+	public Solution execute(final Solution giantTour, XFVRPModel model, StatusManager statusManager, XFVRPOptBase opt) {
 		ALLOWED_NBR_OF_BLOCKS = (int)Math.max(1, model.getNbrOfNodes() / (float)ALLOWED_NBR_OF_CUSTOMERS_IN_BLOCK);
 		
 		Node[] best = Arrays.copyOf(giantTour, giantTour.length);
@@ -131,7 +131,7 @@ public class XFVRPOptSplitter {
 	 * @param model Current model with nodes, distances and parameters
 	 * @return Fitness of current solution
 	 */
-	private float getCost(Node[] giantTour, XFVRPModel model) {
+	private float getCost(Solution giantTour, XFVRPModel model) {
 		XFVRPSolution sol = new XFVRPSolution(giantTour, model);
 		return sol.getReport().getSummary().getCost();
 	}

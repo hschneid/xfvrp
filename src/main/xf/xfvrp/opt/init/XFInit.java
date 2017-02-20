@@ -22,6 +22,7 @@ import xf.xfvrp.base.XFVRPModel;
 import xf.xfvrp.base.monitor.StatusCode;
 import xf.xfvrp.base.monitor.StatusManager;
 import xf.xfvrp.base.preset.BlockNameConverter;
+import xf.xfvrp.opt.Solution;
 import xf.xfvrp.opt.XFVRPOptBase;
 import xf.xfvrp.opt.XFVRPOptType;
 
@@ -73,7 +74,7 @@ public class XFInit extends XFVRPBase<XFVRPModel> {
 	 * @param invalidNodes
 	 * @return giant route 
 	 */
-	public Node[] initGiantRoute(XFVRPModel model, StatusManager statusManager, List<Node> invalidNodes) {
+	public Solution initGiantRoute(XFVRPModel model, StatusManager statusManager, List<Node> invalidNodes) {
 		this.invalidNodes = invalidNodes;
 		this.statusManager = statusManager;
 		this.model = model;
@@ -138,7 +139,7 @@ public class XFInit extends XFVRPBase<XFVRPModel> {
 	 * @return
 	 */
 	@Override
-	protected Node[] execute(Node[] giantTour) {
+	protected Solution execute(Solution giantTour) {
 		List<Node> validNodes = new ArrayList<>();
 		List<Node> validDepots = new ArrayList<>();
 		List<Node> validReplenish = new ArrayList<>();
@@ -288,7 +289,7 @@ public class XFInit extends XFVRPBase<XFVRPModel> {
 	 * @param model Current model of nodes, distances and parameters
 	 * @return Current route plan of single trips per customer
 	 */
-	private Node[] buildGiantRoute(List<Node> nodes, XFVRPModel model) {
+	private Solution buildGiantRoute(List<Node> nodes, XFVRPModel model) {
 		if(nodes.size() == 0)
 			return new Node[0];
 
@@ -425,7 +426,7 @@ public class XFInit extends XFVRPBase<XFVRPModel> {
 	 * @param model
 	 * @return
 	 */
-	private Node[] buildPredefinedGiantRoute(List<Node> nodes, XFVRPModel model) {
+	private Solution buildPredefinedGiantRoute(List<Node> nodes, XFVRPModel model) {
 		String predefinedSolutionString = model.getParameter().getPredefinedSolutionString();
 
 		if(!checkPredefinedSolutionString(predefinedSolutionString))

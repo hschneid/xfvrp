@@ -9,7 +9,6 @@ import xf.xflp.report.LPReport;
 import xf.xfvrp.base.LoadType;
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.SiteType;
-import xf.xfvrp.base.Solution;
 import xf.xfvrp.base.Vehicle;
 import xf.xfvrp.base.XFVRPModel;
 import xf.xfvrp.report.Event;
@@ -46,8 +45,8 @@ public class XFVRPSolution {
 	 * @param giantRoute
 	 * @param model
 	 */
-	public XFVRPSolution(Node[] giantRoute, XFVRPModel model) {
-		this.giantRoute = giantRoute;
+	public XFVRPSolution(Solution giantRoute, XFVRPModel model) {
+		this.giantRoute = giantRoute.getGiantRoute();
 		this.model = model;
 		this.vehicle = model.getVehicle();
 	}

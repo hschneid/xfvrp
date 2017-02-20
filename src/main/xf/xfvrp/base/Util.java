@@ -3,6 +3,8 @@ package xf.xfvrp.base;
 import java.util.ArrayList;
 import java.util.List;
 
+import xf.xfvrp.opt.Solution;
+
 
 /** 
  * Copyright (c) 2012-present Holger Schneider
@@ -85,7 +87,7 @@ public class Util {
 	 * @param giantRoute node sequence with unknown number of empty routes
 	 * @return node sequence with one empty routes for each depot site.
 	 */
-	public static Node[] normalizeRoute(Node[] giantTour, XFVRPModel model) {
+	public static Solution normalizeRoute(Solution giantTour, XFVRPModel model) {
 		Node[] nodeArr = model.getNodeArr();
 		final int nbrOfDepots = model.getNbrOfDepots();
 
