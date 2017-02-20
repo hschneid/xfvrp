@@ -38,6 +38,7 @@ import xf.xfvrp.base.monitor.StatusCode;
 import xf.xfvrp.base.preset.BlockNameConverter;
 import xf.xfvrp.base.preset.VehiclePriorityInitialiser;
 import xf.xfvrp.base.xfvrp.XFVRP_Parameter;
+import xf.xfvrp.opt.Solution;
 import xf.xfvrp.opt.XFVRPOptBase;
 import xf.xfvrp.opt.XFVRPOptSplitter;
 import xf.xfvrp.opt.XFVRPOptType;
@@ -164,7 +165,7 @@ public class XFVRP extends XFVRP_Parameter {
 		XFVRPModel model = init(nodes, veh);
 
 		// Init giant route
-		Node[] route = null;
+		Solution route = null;
 
 		if(parameter.isWithPDP())
 			route = new XFPDPInit().buildInitPDP(model, new ArrayList<Node>());

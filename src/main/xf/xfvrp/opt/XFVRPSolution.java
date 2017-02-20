@@ -31,7 +31,7 @@ import xf.xfvrp.report.RouteReport;
  * @author hschneid
  *
  */
-public class XFVRPSolution implements Solution {
+public class XFVRPSolution {
 
 	protected Node[] giantRoute;
 	protected XFVRPModel model;
@@ -52,11 +52,10 @@ public class XFVRPSolution implements Solution {
 		this.vehicle = model.getVehicle();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see de.fhg.iml.vlog.xftour.model.Solution#getReport()
+	/**
+	 * 
+	 * @return
 	 */
-	@Override
 	public Report getReport() {
 		Report rep = new Report(giantRoute, model);
 
@@ -357,11 +356,10 @@ public class XFVRPSolution implements Solution {
 		return null;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see xf.model.Solution#getModel()
+	/**
+	 * 
+	 * @return
 	 */
-	@Override
 	public XFVRPModel getModel() {
 		return model;
 	}
