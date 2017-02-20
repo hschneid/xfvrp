@@ -208,8 +208,11 @@ public class XFInit extends XFVRPBase<XFVRPModel> {
 
 		// If all nodes are invalid for this vehicle and parameters
 		// optimization has to be skipped.
-		if(!containsValidCustomers)
-			return new Node[0];
+		if(!containsValidCustomers) {
+			Solution solution = new Solution();
+			solution.setGiantRoute(new Node[0]);
+			return solution;
+		}
 
 		// Consider Preset Rank and Position
 		Collections.sort(validNodes, new Comparator<Node>() {
@@ -254,12 +257,7 @@ public class XFInit extends XFVRPBase<XFVRPModel> {
 	private boolean checkBlock(List<Node> nodeList, XFVRPModel model) {
 		XFVRPOptBase opt = XFVRPOptType.RELOCATE.createInstance();
 
-		Collections.sort(nodeList, new Comparator<Node>() {
-			@Override
-			public int compare(Node arg0, Node arg1) {
-				return arg0.getPresetBlockPos() - arg1.getPresetBlockPos();
-			}
-		});
+		nodeList.sort((c1, c2) -> c1.getPresetBlockPos() - c2.getPresetBlockPos());
 
 		boolean returnVal = false;
 		// A block can be allocated to each depot in multi depot problems
@@ -274,8 +272,11 @@ public class XFInit extends XFVRPBase<XFVRPModel> {
 
 			// Check with Relocate optimization, if there is a sequence of nodes
 			// in the block, which are valid for the constraints.
-			blockGiantRoute = opt.execute(blockGiantRoute, model, statusManager);
-			Quality q = opt.check(blockGiantRoute);
+			Solution solution = new Solution();
+			solution.setGiantRoute(blockGiantRoute);
+			
+			solution = opt.execute(solution, model, statusManager);
+			Quality q = opt.check(solution);
 			if(q.getPenalty() == 0)
 				returnVal |= true;
 		}
@@ -290,8 +291,11 @@ public class XFInit extends XFVRPBase<XFVRPModel> {
 	 * @return Current route plan of single trips per customer
 	 */
 	private Solution buildGiantRoute(List<Node> nodes, XFVRPModel model) {
-		if(nodes.size() == 0)
-			return new Node[0];
+		if(nodes.size() == 0) {
+			Solution solution = new Solution();
+			solution.setGiantRoute(new Node[0]);
+			return solution;
+		}
 
 		List<Node> gL = new ArrayList<>();
 
@@ -342,7 +346,9 @@ public class XFInit extends XFVRPBase<XFVRPModel> {
 			gL.add(model.getNodeArr()[i].copy());
 		gL.add(Util.createIdNode(nodes.get(depotIdx % depots.size()), maxIdx++));
 
-		return gL.toArray(new Node[0]);
+		Solution solution = new Solution();
+		solution.setGiantRoute(gL.toArray(new Node[0]));
+		return solution;
 	}
 
 	/**
@@ -497,7 +503,9 @@ public class XFInit extends XFVRPBase<XFVRPModel> {
 		}
 		giantRoute.add(Util.createIdNode(nodes.get(depotIdx), depotId++));
 
-		return giantRoute.toArray(new Node[0]);
+		Solution solution = new Solution();
+		solution.setGiantRoute(giantRoute.toArray(new Node[0]));
+		return solution;
 	}
 
 	/**
