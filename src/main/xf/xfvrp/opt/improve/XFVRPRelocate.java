@@ -7,6 +7,7 @@ import java.util.Set;
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.Quality;
 import xf.xfvrp.base.SiteType;
+import xf.xfvrp.opt.Solution;
 
 /** 
  * Copyright (c) 2012-present Holger Schneider
@@ -35,9 +36,10 @@ public class XFVRPRelocate extends XFVRPOptImpBase {
 	 * @see de.fhg.iml.vlog.xftour.xfvrp.opt.improve.XFVRPOptImpBase#improve(de.fhg.iml.vlog.xftour.model.XFNode[], de.fhg.iml.vlog.xftour.model.Quality)
 	 */
 	@Override
-	public Quality improve(final Node[] giantTour, Quality bestResult) {
-		final Set<String> loadingFootprint = getLoadingFootprint(giantTour);
+	public Quality improve(final Solution solution, Quality bestResult) {
+		final Set<String> loadingFootprint = getLoadingFootprint(solution);
 
+		Node[] giantTour = solution.getGiantRoute();
 		List<float[]> improvingStepList = new ArrayList<>();
 
 		if(model.getNbrOfDepots() == 1)
@@ -53,16 +55,16 @@ public class XFVRPRelocate extends XFVRPOptImpBase {
 			int src = (int) val[0];
 			int dst = (int) val[1];
 
-			move(giantTour, src, dst);
+			move(solution, src, dst);
 
-			Quality result = check(giantTour, loadingFootprint);
+			Quality result = check(solution, loadingFootprint);
 			if(result != null && result.getFitness() < bestResult.getFitness())
 				return result;
 
 			if(src > dst)
-				move(giantTour, dst, src + 1);
+				move(solution, dst, src + 1);
 			else
-				move(giantTour, dst - 1, src);
+				move(solution, dst - 1, src);
 		}
 
 		return null;

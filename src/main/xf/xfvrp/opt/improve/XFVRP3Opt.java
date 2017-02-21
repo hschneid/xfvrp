@@ -6,6 +6,7 @@ import java.util.Set;
 
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.Quality;
+import xf.xfvrp.opt.Solution;
 
 /** 
  * Copyright (c) 2012-present Holger Schneider
@@ -31,12 +32,13 @@ public class XFVRP3Opt extends XFVRPOptImpBase {
 	 * @see de.fhg.iml.vlog.xftour.xfvrp.opt.improve.XFVRPOptImpBase#improve(de.fhg.iml.vlog.xftour.model.XFNode[], de.fhg.iml.vlog.xftour.model.Quality)
 	 */
 	@Override
-	public Quality improve(final Node[] giantTour, Quality bestResult) {
-		final Set<String> loadingFootprint = getLoadingFootprint(giantTour);
+	public Quality improve(final Solution solution, Quality bestResult) {
+		final Set<String> loadingFootprint = getLoadingFootprint(solution);
 		
 		if(model.getNbrOfDepots() > 1)
 			throw new UnsupportedOperationException(this.getClass().getName()+" supports no multi depot");
 		
+		Node[] giantTour = solution.getGiantRoute();
 		List<float[]> improvingStepList = new ArrayList<>();
 
 		// Suche alle verbessernden L�sungen
@@ -58,15 +60,15 @@ public class XFVRP3Opt extends XFVRPOptImpBase {
 			int c = (int) val[2];
 			int m = (int) val[3];
 
-			swap3Opt(giantTour, a, b, c, m);
+			swap3Opt(solution, a, b, c, m);
 			
-			Quality result = check(giantTour, loadingFootprint);
+			Quality result = check(solution, loadingFootprint);
 			if(result != null && result.getFitness() < bestResult.getFitness()) {
 				return result;
 			}
 
 			m = revertMethod(m);
-			swap3Opt(giantTour, a, b, c, m);
+			swap3Opt(solution, a, b, c, m);
 		}
 
 		return null;
@@ -145,66 +147,68 @@ public class XFVRP3Opt extends XFVRPOptImpBase {
 	 * @param c
 	 * @param m
 	 */
-	private void swap3Opt(Node[] giantTour, int a, int b, int c, int m) {
+	private void swap3Opt(Solution solution, int a, int b, int c, int m) {
+		
+		
 		switch(m) {
 		case 0 : {
 			// Invert (b + 1 - c)
-			swap(giantTour, b + 1, c);
+			swap(solution, b + 1, c);
 			break;
 		}
 		case 1 : {
 			// Invert (a + 1 - b)
-			swap(giantTour, a + 1, b);
+			swap(solution, a + 1, b);
 			break;
 		}
 		case 2 : {
 			// Invert (a + 1 - b UND b + 1 - c)
-			swap(giantTour, a + 1, b);
-			swap(giantTour, b + 1, c);
+			swap(solution, a + 1, b);
+			swap(solution, b + 1, c);
 			break;
 		}
 		case 3 : {
 			// Invert (a + 1 - c UND a + 1 - b UND b + 1 - c)
-			swap(giantTour, a + 1, b);
-			swap(giantTour, b + 1, c);
-			swap(giantTour, a + 1, c);
+			swap(solution, a + 1, b);
+			swap(solution, b + 1, c);
+			swap(solution, a + 1, c);
 			break;
 		}
 		case 4 : {
 			// Invert (a + 1 - c UND a + 1 - b)
 			// There for first exchange b+1 - c AND then whole range
-			swap(giantTour, b + 1, c);
-			swap(giantTour, a + 1, c);
+			swap(solution, b + 1, c);
+			swap(solution, a + 1, c);
 			break;
 		}
 		case 5 : {
 			// Invert (a + 1 - c UND b + 1 - c)
-			swap(giantTour, a + 1, b);
-			swap(giantTour, a + 1, c);
+			swap(solution, a + 1, b);
+			swap(solution, a + 1, c);
 			break;
 		}
 		case 6 : {
 			// Invert (a + 1 - c)
-			swap(giantTour, a + 1, c);
+			swap(solution, a + 1, c);
 			break;
 		}
 		case 7 : {
 			// Revert move of case 3
-			swap(giantTour, a + 1, c);
-			swap(giantTour, a + 1, b);
-			swap(giantTour, b + 1, c);
+			swap(solution, a + 1, c);
+			swap(solution, a + 1, b);
+			swap(solution, b + 1, c);
 			break;
 		}
 		case 8 : {
 			// Revert move of case 4
-			swap(giantTour, a + 1, c);
-			swap(giantTour, b + 1, c);
+			swap(solution, a + 1, c);
+			swap(solution, b + 1, c);
 			break;
 		}
 		case 9 : {
 			// Revert move of case 5
-			swap(giantTour, a + 1, c);
-			swap(giantTour, a + 1, b);
+			swap(solution, a + 1, c);
+			swap(solution, a + 1, b);
 			break;
 		}
 		default:

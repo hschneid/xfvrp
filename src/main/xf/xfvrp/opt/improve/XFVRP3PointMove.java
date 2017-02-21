@@ -7,6 +7,7 @@ import java.util.Set;
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.Quality;
 import xf.xfvrp.base.SiteType;
+import xf.xfvrp.opt.Solution;
 
 
 /** 
@@ -27,9 +28,10 @@ public class XFVRP3PointMove extends XFVRPOptImpBase {
 	 * @see de.fhg.iml.vlog.xftour.xfvrp.opt.improve.XFVRPOptImpBase#improve(de.fhg.iml.vlog.xftour.model.XFNode[], de.fhg.iml.vlog.xftour.model.Quality)
 	 */
 	@Override
-	public Quality improve(final Node[] giantTour, Quality bestResult) {
-		final Set<String> loadingFootprint = getLoadingFootprint(giantTour);
+	public Quality improve(final Solution solution, Quality bestResult) {
+		final Set<String> loadingFootprint = getLoadingFootprint(solution);
 
+		Node[] giantTour = solution.getGiantRoute();
 		List<float[]> improvingStepList = new ArrayList<>();
 
 		if(model.getNbrOfDepots() == 1)
@@ -45,16 +47,16 @@ public class XFVRP3PointMove extends XFVRPOptImpBase {
 			int a = (int) val[0];
 			int b = (int) val[1];
 
-			swap3Point(giantTour, a, b);
+			swap3Point(solution, a, b);
 
-			Quality result = check(giantTour, loadingFootprint);
+			Quality result = check(solution, loadingFootprint);
 			if(result != null && result.getFitness() < bestResult.getFitness())
 				return result;
 
 			if(a < b)
-				swap3Point(giantTour, b - 1, a);
+				swap3Point(solution, b - 1, a);
 			else 
-				swap3Point(giantTour, b, a + 1);
+				swap3Point(solution, b, a + 1);
 		}
 
 		return null;
@@ -175,7 +177,9 @@ public class XFVRP3PointMove extends XFVRPOptImpBase {
 	 * @param a
 	 * @param b
 	 */
-	private void swap3Point(Node[] giantTour, int a, int b) {
+	private void swap3Point(Solution solution, int a, int b) {
+		Node[] giantTour = solution.getGiantRoute();
+		
 		Node[] arr = new Node[]{giantTour[a], giantTour[a + 1]};
 
 		if(a < b) {

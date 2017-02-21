@@ -87,7 +87,7 @@ public class Util {
 	 * @param giantRoute node sequence with unknown number of empty routes
 	 * @return node sequence with one empty routes for each depot site.
 	 */
-	public static Solution normalizeRoute(Solution giantTour, XFVRPModel model) {
+	public static Solution normalizeRoute(Solution solution, XFVRPModel model) {
 		Node[] nodeArr = model.getNodeArr();
 		final int nbrOfDepots = model.getNbrOfDepots();
 
@@ -96,6 +96,7 @@ public class Util {
 		int maxDepotId = 0;
 
 		// Remove empty routes and reindex depot nodes (depotId)
+		Node[] giantTour = solution.getGiantRoute();
 		for (int i = 0; i < giantTour.length - 1; i++) {
 			final SiteType currType = giantTour[i].getSiteType();
 			final SiteType nextType = giantTour[i+1].getSiteType();
@@ -136,7 +137,9 @@ public class Util {
 			list.add(Util.createIdNode(nodeArr[0], maxDepotId++));
 		}
 
-		return list.toArray(new Node[list.size()]);
+		Solution newSolution = new Solution();
+		newSolution.setGiantRoute(list.toArray(new Node[list.size()]));
+		return newSolution;
 	}
 
 	/**

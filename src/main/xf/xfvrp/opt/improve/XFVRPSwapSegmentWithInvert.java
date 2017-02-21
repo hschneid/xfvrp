@@ -7,6 +7,7 @@ import java.util.Set;
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.Quality;
 import xf.xfvrp.base.SiteType;
+import xf.xfvrp.opt.Solution;
 
 /** 
  * Copyright (c) 2012-present Holger Schneider
@@ -35,9 +36,10 @@ public class XFVRPSwapSegmentWithInvert extends XFVRPOptImpBase {
 	 * @see de.fhg.iml.vlog.xftour.xfvrp.opt.improve.XFVRPOptImpBase#improve(de.fhg.iml.vlog.xftour.model.XFNode[], de.fhg.iml.vlog.xftour.model.Quality)
 	 */
 	@Override
-	public Quality improve(final Node[] giantTour, Quality bestResult) {
-		final Set<String> loadingFootprint = getLoadingFootprint(giantTour);
+	public Quality improve(final Solution solution, Quality bestResult) {
+		final Set<String> loadingFootprint = getLoadingFootprint(solution);
 
+		Node[] giantTour = solution.getGiantRoute();
 		List<float[]> improvingStepList = new ArrayList<>();
 
 		if(model.getNbrOfDepots() == 1)
@@ -56,15 +58,15 @@ public class XFVRPSwapSegmentWithInvert extends XFVRPOptImpBase {
 			int ll = (int) val[3];
 			int i = (int) val[4];
 
-			invert(giantTour, a, b, l, ll, i);
-			exchange(giantTour, a, b, l, ll);
+			invert(solution, a, b, l, ll, i);
+			exchange(solution, a, b, l, ll);
 
-			Quality result = check(giantTour, loadingFootprint);
+			Quality result = check(solution, loadingFootprint);
 			if(result != null && result.getCost() < bestResult.getCost())
 				return result;
 
-			exchange(giantTour, a, b + ((ll + 1) - (l + 1)), ll, l);
-			invert(giantTour, a, b, l, ll, i);
+			exchange(solution, a, b + ((ll + 1) - (l + 1)), ll, l);
+			invert(solution, a, b, l, ll, i);
 		}
 
 		return null;
@@ -237,19 +239,19 @@ public class XFVRPSwapSegmentWithInvert extends XFVRPOptImpBase {
 	 * @param lb
 	 * @param i
 	 */
-	private void invert(Node[] giantTour, int a, int b, int la, int lb, int i) {
+	private void invert(Solution solution, int a, int b, int la, int lb, int i) {
 		switch (i) {
 			case A_INVERT: {
-				swap(giantTour, a, a + la);
+				swap(solution, a, a + la);
 				break;
 			}
 			case B_INVERT: {
-				swap(giantTour, b, b + lb);
+				swap(solution, b, b + lb);
 				break;
 			}
 			case BOTH_INVERT: {
-				swap(giantTour, a, a + la);
-				swap(giantTour, b, b + lb);
+				swap(solution, a, a + la);
+				swap(solution, b, b + lb);
 				break;
 			}
 			default:

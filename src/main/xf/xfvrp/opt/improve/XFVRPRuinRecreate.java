@@ -14,6 +14,7 @@ import xf.xfvrp.base.Node;
 import xf.xfvrp.base.Quality;
 import xf.xfvrp.base.Util;
 import xf.xfvrp.base.monitor.StatusCode;
+import xf.xfvrp.opt.Solution;
 import xf.xfvrp.opt.XFVRPOptBase;
 
 /** 
@@ -37,11 +38,11 @@ public class XFVRPRuinRecreate extends XFVRPOptBase {
 	 * @see de.fhg.iml.vlog.xfvrp.base.XFVRPBase#execute(de.fhg.iml.vlog.xfvrp.base.Node[])
 	 */
 	@Override
-	protected Node[] execute(Node[] giantRoute) {
+	protected Solution execute(Solution solution) {
 		init();
 
-		Node[] bestRoute = giantRoute;
-		Quality bestQuality = check(giantRoute);
+		Solution bestRoute = solution;
+		Quality bestQuality = check(solution);
 
 		statusManager.fireMessage(StatusCode.RUNNING, this.getClass().getSimpleName()+" is starting with "+model.getParameter().getILSLoops()+" loops and ruin fraction " + (ruinFraction * 100f) + "%.");
 		statusManager.fireMessage(StatusCode.RUNNING, this.getClass().getSimpleName()+" starts with solution "+bestQuality);
@@ -52,7 +53,7 @@ public class XFVRPRuinRecreate extends XFVRPOptBase {
 			// Remove selected customers from solution
 			List<Node> ruinedRoute = removeFromRoute(bestRoute, unassigned);
 			// Insert customers per FirstBestInsert 
-			Node[] recreatedRoute = bestInsertion(ruinedRoute, unassigned);
+			Solution recreatedRoute = bestInsertion(ruinedRoute, unassigned);
 
 			Quality qNew = check(recreatedRoute);
 
@@ -106,7 +107,9 @@ public class XFVRPRuinRecreate extends XFVRPOptBase {
 	 * @param unassigned
 	 * @return
 	 */
-	private List<Node> removeFromRoute(Node[] giantRoute, Set<Node> unassigned) {
+	private List<Node> removeFromRoute(Solution solution, Set<Node> unassigned) {
+		
+		Node[] giantRoute = solution.getGiantRoute();
 		List<Node> al = new ArrayList<>();
 		for (int i = 0; i < giantRoute.length; i++)
 			if (!unassigned.contains(giantRoute[i])) al.add(giantRoute[i]);
@@ -119,7 +122,7 @@ public class XFVRPRuinRecreate extends XFVRPOptBase {
 	 * @param unassigned
 	 * @return
 	 */
-	private Node[] bestInsertion(List<Node> ruinedGiantRoute, Set<Node> unassigned) {
+	private Solution bestInsertion(List<Node> ruinedGiantRoute, Set<Node> unassigned) {
 		List<Node> badJobs = new ArrayList<>();
 		List<Node> alUnassigned = new ArrayList<>(unassigned);
 		Collections.shuffle(alUnassigned, rand);
@@ -148,7 +151,9 @@ public class XFVRPRuinRecreate extends XFVRPOptBase {
 				ruinedGiantRoute.add(bestInsPos, unassignedNode);
 		});
 
-		return ruinedGiantRoute.toArray(new Node[0]);
+		Solution solution = new Solution();
+		solution.setGiantRoute(ruinedGiantRoute.toArray(new Node[0]));
+		return solution;
 	}
 
 	/**
@@ -179,8 +184,9 @@ public class XFVRPRuinRecreate extends XFVRPOptBase {
 			nodes.add((int)p[0], unassignedNode);
 
 			// Evaluate the insertion
-
-			Quality q = check(nodes.toArray(new Node[0]));
+			Solution solution = new Solution();
+			solution.setGiantRoute(nodes.toArray(new Node[0]));
+			Quality q = check(solution);
 			if (q.getPenalty() == 0)
 				return p;
 

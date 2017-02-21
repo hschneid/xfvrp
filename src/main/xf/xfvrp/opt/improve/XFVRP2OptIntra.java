@@ -7,6 +7,7 @@ import java.util.Set;
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.Quality;
 import xf.xfvrp.base.SiteType;
+import xf.xfvrp.opt.Solution;
 
 
 /** 
@@ -32,9 +33,11 @@ public class XFVRP2OptIntra extends XFVRPOptImpBase {
 	 * @see de.fhg.iml.vlog.xftour.xfvrp.opt.improve.XFVRPOptImpBase#improve(de.fhg.iml.vlog.xftour.model.XFNode[], de.fhg.iml.vlog.xftour.model.Quality)
 	 */
 	@Override
-	public Quality improve(final Node[] giantTour, Quality bestResult) {
-		final Set<String> loadingFootprint = getLoadingFootprint(giantTour);
+	public Quality improve(final Solution solution, Quality bestResult) {
+		final Set<String> loadingFootprint = getLoadingFootprint(solution);
 
+		Node[] giantTour = solution.getGiantRoute();
+		
 		if(model.getNbrOfDepots() > 1)
 			throw new UnsupportedOperationException(this.getClass().getName()+" supports no multi depot");
 		
@@ -78,13 +81,13 @@ public class XFVRP2OptIntra extends XFVRPOptImpBase {
 			int i = (int) val[0];
 			int j = (int) val[1];
 
-			swap(giantTour, i, j);
+			swap(solution, i, j);
 
-			Quality result = check(giantTour, loadingFootprint);
+			Quality result = check(solution, loadingFootprint);
 			if(result != null && result.getFitness() < bestResult.getFitness())
 				return result;
 			
-			swap(giantTour, i, j);
+			swap(solution, i, j);
 		}
 
 		return null;

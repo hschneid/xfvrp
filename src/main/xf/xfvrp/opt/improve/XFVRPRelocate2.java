@@ -6,6 +6,7 @@ import java.util.Set;
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.Quality;
 import xf.xfvrp.base.SiteType;
+import xf.xfvrp.opt.Solution;
 
 /** 
  * Copyright (c) 2012-present Holger Schneider
@@ -30,9 +31,11 @@ public class XFVRPRelocate2 extends XFVRPOptImpBase {
 	 * @see de.fhg.iml.vlog.xftour.xfvrp.opt.improve.XFVRPOptImpBase#improve(de.fhg.iml.vlog.xftour.model.XFNode[], de.fhg.iml.vlog.xftour.model.Quality)
 	 */
 	@Override
-	public Quality improve(final Node[] giantTour, Quality bestResult) {
-		final Set<String> loadingFootprint = getLoadingFootprint(giantTour);
+	public Quality improve(final Solution solution, Quality bestResult) {
+		final Set<String> loadingFootprint = getLoadingFootprint(solution);
 
+		Node[] giantTour = solution.getGiantRoute();
+		
 		if(model.getNbrOfDepots() > 1)
 			throw new UnsupportedOperationException(XFVRPRelocate2.class.getName()+" supports no multi depot");
 
@@ -51,9 +54,9 @@ public class XFVRPRelocate2 extends XFVRPOptImpBase {
 				if(j == i)
 					continue;
 
-				move(gT, i, j);
+				move(solution, i, j);
 				
-				Quality result = check(giantTour, loadingFootprint);
+				Quality result = check(solution, loadingFootprint);
 				if(result != null) {
 					bR = result;
 					bI = i;
@@ -63,9 +66,9 @@ public class XFVRPRelocate2 extends XFVRPOptImpBase {
 				}					
 
 				if(i > j)
-					move(gT, j, i - 1);
+					move(solution, j, i - 1);
 				else
-					move(gT, j+1, i);
+					move(solution, j+1, i);
 			}
 		}
 
@@ -77,10 +80,10 @@ public class XFVRPRelocate2 extends XFVRPOptImpBase {
 
 		int k = bestI;
 		int i = bestJ;
-		move(giantTour, k, i);
+		move(solution, k, i);
 
 		// Update Datenstrukturen
-		bestResult = check(giantTour);
+		bestResult = check(solution);
 
 		return bestResult;
 	}

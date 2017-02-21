@@ -45,7 +45,9 @@ public abstract class XFVRPOptBase extends XFVRPBase<XFVRPModel> {
 	 * @param start starting index of range (incl.)
 	 * @param end ending index of range (incl.)
 	 */
-	protected void swap(Node[] giantTour, int start, int end) {
+	protected void swap(Solution solution, int start, int end) {
+		Node[] giantTour = solution.getGiantRoute();
+		
 		int offset = 0;
 		while (end - offset > start + offset) {
 			Node tmp = giantTour[end - offset];
@@ -63,7 +65,9 @@ public abstract class XFVRPOptBase extends XFVRPBase<XFVRPModel> {
 	 * @param src index of the node, which will be moved.
 	 * @param dst index of the node, where src-node will be inserted before.
 	 */
-	protected void move(Node[] giantTour, int src, int dst) {
+	protected void move(Solution solution, int src, int dst) {
+		Node[] giantTour = solution.getGiantRoute();
+		
 		// If src is equal to dst, than nothing can be done.
 		if(src == dst)
 			return;
@@ -92,7 +96,9 @@ public abstract class XFVRPOptBase extends XFVRPBase<XFVRPModel> {
 	 * @param srcEnd index of the node, which is the ending point of the segment, which will be moved.
 	 * @param dst index of the node, where the segment will be inserted before.
 	 */
-	protected void pathMove(Node[] giantTour, int srcStart, int srcEnd, int dst) {
+	protected void pathMove(Solution solution, int srcStart, int srcEnd, int dst) {
+		Node[] giantTour = solution.getGiantRoute();
+		
 		Node[] arr = new Node[srcEnd - srcStart + 1];
 		System.arraycopy(giantTour, srcStart, arr, 0, arr.length);
 
@@ -113,7 +119,9 @@ public abstract class XFVRPOptBase extends XFVRPBase<XFVRPModel> {
 	 * @param i index of the node, which will be moved to position j.
 	 * @param j index of the node, which will be moved to position i.
 	 */
-	protected void exchange(Node[] giantTour, int i, int j) {
+	protected void exchange(Solution solution, int i, int j) {
+		Node[] giantTour = solution.getGiantRoute();
+		
 		Node tmp = giantTour[i];
 		giantTour[i] = giantTour[j];
 		giantTour[j] = tmp;
@@ -131,11 +139,13 @@ public abstract class XFVRPOptBase extends XFVRPBase<XFVRPModel> {
 	 * @param la number of nodes in first segment
 	 * @param lb number of nodes in second segment
 	 */
-	protected void exchange(Node[] giantTour, int a, int b, int la, int lb) {
+	protected void exchange(Solution solution, int a, int b, int la, int lb) {
 		if(la == lb) {
 			for (int i = 0; i <= la; i++)
-				exchange(giantTour, a+i, b+i);
+				exchange(solution, a+i, b+i);
 		} else {
+			Node[] giantTour = solution.getGiantRoute();
+			
 			Node[] aArr = new Node[la + 1];
 			System.arraycopy(giantTour, a , aArr, 0, aArr.length);
 			Node[] bArr = new Node[lb + 1];

@@ -7,6 +7,7 @@ import java.util.Set;
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.Quality;
 import xf.xfvrp.base.SiteType;
+import xf.xfvrp.opt.Solution;
 
 /** 
  * Copyright (c) 2012-present Holger Schneider
@@ -42,9 +43,10 @@ public class XFVRPOrOptWithInvert extends XFVRPOptImpBase {
 	 * @see de.fhg.iml.vlog.xftour.xfvrp.opt.improve.XFVRPOptImpBase#improve(de.fhg.iml.vlog.xftour.model.XFNode[], de.fhg.iml.vlog.xftour.model.Quality)
 	 */
 	@Override
-	public Quality improve(final Node[] giantTour, Quality bestResult) {
-		final Set<String> loadingFootprint = getLoadingFootprint(giantTour);
+	public Quality improve(final Solution solution, Quality bestResult) {
+		final Set<String> loadingFootprint = getLoadingFootprint(solution);
 
+		Node[] giantTour = solution.getGiantRoute();
 		List<float[]> improvingStepList = new ArrayList<>();
 
 		if(model.getNbrOfDepots() == 1)
@@ -63,19 +65,19 @@ public class XFVRPOrOptWithInvert extends XFVRPOptImpBase {
 			int i = (int) val[3];
 
 			// Variation
-			if(i == INVERT) swap(giantTour, a, a + l);
-			pathMove(giantTour, a, a + l, b);
+			if(i == INVERT) swap(solution, a, a + l);
+			pathMove(solution, a, a + l, b);
 
-			Quality result = check(giantTour, loadingFootprint);
+			Quality result = check(solution, loadingFootprint);
 			if(result != null && result.getCost() < bestResult.getCost())
 				return result;
 
 			// Reverse-Variation
 			if(b > a)
-				pathMove(giantTour, b - l - 1, b - 1, a);
+				pathMove(solution, b - l - 1, b - 1, a);
 			else
-				pathMove(giantTour, b, b + l, a + l + 1);
-			if(i == INVERT) swap(giantTour, a, a + l);
+				pathMove(solution, b, b + l, a + l + 1);
+			if(i == INVERT) swap(solution, a, a + l);
 		}
 
 		return null;

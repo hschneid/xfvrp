@@ -1,9 +1,7 @@
 package xf.xfvrp.opt.improve;
 
-import java.util.Arrays;
-
-import xf.xfvrp.base.Node;
 import xf.xfvrp.base.Quality;
+import xf.xfvrp.opt.Solution;
 
 /** 
  * Copyright (c) 2012-present Holger Schneider
@@ -36,27 +34,28 @@ public class XFVRPPathExchange extends XFVRPOptImpBase {
 	 * @see de.fhg.iml.vlog.xftour.xfvrp.opt.improve.XFVRPOptImpBase#improve(de.fhg.iml.vlog.xftour.model.XFNode[], de.fhg.iml.vlog.xftour.model.Quality)
 	 */
 	@Override
-	protected Quality improve(Node[] giantTour, Quality bestResult) {
+	protected Quality improve(Solution solution, Quality bestResult) {
 		Quality bestQ = bestResult;
 
-		Node[] best = null;
+		Solution best = null;
 
 		Object[] o = null;
 		{
-			o = opt(giantTour, bestResult, bestQ, rel);
-			if(o != null) {best = (Node[]) o[0]; bestQ = (Quality) o[1];}
-			o = opt(giantTour, bestResult, bestQ, swa);
-			if(o != null) {best = (Node[]) o[0]; bestQ = (Quality) o[1];}
-			o = opt(giantTour, bestResult, bestQ, or);
-			if(o != null) {best = (Node[]) o[0]; bestQ = (Quality) o[1];}
-			o = opt(giantTour, bestResult, bestQ, bod);
-			if(o != null) {best = (Node[]) o[0]; bestQ = (Quality) o[1];}
+			o = opt(solution, bestResult, bestQ, rel);
+			if(o != null) {best = (Solution) o[0]; bestQ = (Quality) o[1];}
+			o = opt(solution, bestResult, bestQ, swa);
+			if(o != null) {best = (Solution) o[0]; bestQ = (Quality) o[1];}
+			o = opt(solution, bestResult, bestQ, or);
+			if(o != null) {best = (Solution) o[0]; bestQ = (Quality) o[1];}
+			o = opt(solution, bestResult, bestQ, bod);
+			if(o != null) {best = (Solution) o[0]; bestQ = (Quality) o[1];}
 		}
 
 		if(best != null) {
-			System.arraycopy(best, 0, giantTour, 0, giantTour.length);
+			solution.setGiantRoute(best.getGiantRoute());
 			return bestQ;
 		}
+		
 		return null;
 	}
 
@@ -68,12 +67,12 @@ public class XFVRPPathExchange extends XFVRPOptImpBase {
 	 * @param opt
 	 * @return
 	 */
-	private Object[] opt(Node[] giantTour, Quality bestResult, Quality bestQ, XFVRPOptImpBase opt) {
+	private Object[] opt(Solution solution, Quality bestResult, Quality bestQ, XFVRPOptImpBase opt) {
 		try {
-			Node[] gT = Arrays.copyOf(giantTour, giantTour.length);
-			Quality result = opt.improve(gT, bestResult, model);
+			Solution newSolution = solution.copy(); 
+			Quality result = opt.improve(newSolution, bestResult, model);
 			if(result != null && result.getFitness() < bestQ.getFitness())
-				return new Object[]{gT, result};
+				return new Object[]{newSolution, result};
 		} catch (Exception e) {}
 		return null;
 	}

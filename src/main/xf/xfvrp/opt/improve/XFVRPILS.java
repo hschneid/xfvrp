@@ -9,6 +9,7 @@ import xf.xfvrp.base.Util;
 import xf.xfvrp.base.Vehicle;
 import xf.xfvrp.base.monitor.StatusCode;
 import xf.xfvrp.base.preset.BlockNameConverter;
+import xf.xfvrp.opt.Solution;
 import xf.xfvrp.opt.XFVRPOptBase;
 
 /** 
@@ -46,15 +47,15 @@ public class XFVRPILS extends XFVRPOptBase {
 	 * @see de.fhg.iml.vlog.xftour.model.XFBase#execute(de.fhg.iml.vlog.xftour.model.XFNode[])
 	 */
 	@Override
-	public Node[] execute(Node[] giantTour) {
-		Node[] bestRoute = Arrays.copyOf(giantTour, giantTour.length);
-		Node[] bestBestTour = Arrays.copyOf(giantTour, giantTour.length);
-		Quality bestBestQ = check(giantTour);
+	public Solution execute(Solution solution) {
+		Solution bestRoute = solution.copy(); 
+		Solution bestBestTour = solution.copy();
+		Quality bestBestQ = check(solution);
 
 		statusManager.fireMessage(StatusCode.RUNNING, this.getClass().getSimpleName()+" is starting with "+model.getParameter().getILSLoops()+" loops.");
 
 		for (int i = 0; checkTerminationCriteria(i); i++) {
-			Node[] gT = Arrays.copyOf(bestRoute, bestRoute.length);
+			Solution gT = bestRoute.copy();
 
 			// Variation
 			perturb2(gT, model.getVehicle());
@@ -86,13 +87,13 @@ public class XFVRPILS extends XFVRPOptBase {
 	 * @param giantRoute
 	 * @param vehicle
 	 */
-	private void perturb2(Node[] giantRoute, Vehicle vehicle) {
+	private void perturb2(Solution solution, Vehicle vehicle) {
 		int nbrOfVariations = 5;
 		int[] param = new int[3];
 		for (int i = 0; i < nbrOfVariations; i++) {
 			// Search source node
 			// Restriction: no depot
-			chooseSrc(param, giantRoute);
+			chooseSrc(param, solution);
 
 			// Search destination
 			// Restriction: 
@@ -103,13 +104,13 @@ public class XFVRPILS extends XFVRPOptBase {
 			
 			while(true) {
 				// Choose
-				chooseDst(param, giantRoute);
+				chooseDst(param, solution);
 
 				// Move
-				pathMove(giantRoute, param[0], param[0] + param[1], param[2]);
+				pathMove(solution, param[0], param[0] + param[1], param[2]);
 				
 				// Eval
-				Quality q = check(giantRoute);
+				Quality q = check(solution);
 				if(q.getPenalty() == 0) {
 					changed = true;
 					break;
@@ -117,9 +118,9 @@ public class XFVRPILS extends XFVRPOptBase {
 
 				// Re-Move
 				if(param[2] > param[0])
-					pathMove(giantRoute, param[2] - param[1] - 1, param[2] - 1, param[0]);
+					pathMove(solution, param[2] - param[1] - 1, param[2] - 1, param[0]);
 				else
-					pathMove(giantRoute, param[2], param[2] + param[1], param[0] + param[1] + 1);
+					pathMove(solution, param[2], param[2] + param[1], param[0] + param[1] + 1);
 				
 				// Terminate for infinity
 				if(cnt > 100)
@@ -138,7 +139,9 @@ public class XFVRPILS extends XFVRPOptBase {
 	 * @param param
 	 * @param giantRoute
 	 */
-	private void chooseSrc(int[] param, Node[] giantRoute) {
+	private void chooseSrc(int[] param, Solution solution) {
+		Node[] giantRoute = solution.getGiantRoute();
+		
 		// Choose a random source node (customer or replenish)
 		int src = -1;
 		do {
@@ -179,7 +182,9 @@ public class XFVRPILS extends XFVRPOptBase {
 	 * @param param
 	 * @param giantRoute
 	 */
-	private void chooseDst(int[] param, Node[] giantRoute) {
+	private void chooseDst(int[] param, Solution solution) {
+		Node[] giantRoute = solution.getGiantRoute();
+		
 		int dst = -1;
 		do {
 			dst = rand.nextInt(giantRoute.length - 1) + 1;
@@ -208,7 +213,7 @@ public class XFVRPILS extends XFVRPOptBase {
 	 * @param vehicle
 	 * @return
 	 */
-	private Node[] localSearch(Node[] giantRoute, Vehicle vehicle) {
+	private Solution localSearch(Solution solution, Vehicle vehicle) {
 		boolean[] processedArr = new boolean[optArr.length];
 
 		Quality q = null;
@@ -218,10 +223,10 @@ public class XFVRPILS extends XFVRPOptBase {
 			int optIdx = choose(processedArr);
 
 			// Process
-			giantRoute = optArr[optIdx].execute(giantRoute, model, statusManager);
+			solution = optArr[optIdx].execute(solution, model, statusManager);
 
 			// Check
-			Quality qq = check(giantRoute);
+			Quality qq = check(solution);
 			if(q == null || qq.getFitness() < q.getFitness()) {
 				q = qq;
 				Arrays.fill(processedArr, false);
@@ -233,7 +238,7 @@ public class XFVRPILS extends XFVRPOptBase {
 			nbrOfProcessed++;
 		}
 
-		return giantRoute;
+		return solution;
 	}
 
 	/**
