@@ -5,9 +5,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import xf.xfvrp.base.Node;
 import xf.xfvrp.base.Vehicle;
 import xf.xfvrp.base.XFVRPModel;
+import xf.xfvrp.opt.Solution;
 
 /** 
  * Copyright (c) 2012-present Holger Schneider
@@ -38,9 +38,9 @@ public class Report {
 	 * 
 	 * @param model The used data model for gaining this solution.
 	 */
-	public Report(Node[] route, XFVRPModel model) {
+	public Report(Solution solution, XFVRPModel model) {
 		this.model = model;
-		errors.add(route);
+		errors.add(solution);
 	}
 
 	/**

@@ -32,7 +32,7 @@ import xf.xfvrp.report.RouteReport;
  */
 public class XFVRPSolution {
 
-	protected Node[] giantRoute;
+	protected Solution solution;
 	protected XFVRPModel model;
 	protected final Vehicle vehicle;
 
@@ -45,8 +45,8 @@ public class XFVRPSolution {
 	 * @param giantRoute
 	 * @param model
 	 */
-	public XFVRPSolution(Solution giantRoute, XFVRPModel model) {
-		this.giantRoute = giantRoute.getGiantRoute();
+	public XFVRPSolution(Solution solution, XFVRPModel model) {
+		this.solution = solution;
 		this.model = model;
 		this.vehicle = model.getVehicle();
 	}
@@ -56,7 +56,9 @@ public class XFVRPSolution {
 	 * @return
 	 */
 	public Report getReport() {
-		Report rep = new Report(giantRoute, model);
+		Report rep = new Report(solution, model);
+		
+		Node[] giantRoute = solution.getGiantRoute();
 
 		// Wenn die Giant Route Kunden enthält
 		if(findNextCustomer(giantRoute, 0) != -1) {
@@ -272,7 +274,7 @@ public class XFVRPSolution {
 		if(model.getParameter().isWithLoadPlanning()) {
 			int routeIdx = 0;
 			
-			LPReport[] lpReports = XFVRPLPBridge.getLoadingPlan(giantRoute, model);
+			LPReport[] lpReports = XFVRPLPBridge.getLoadingPlan(solution, model);
 			
 			// Create a loading plan for each route with the package planning
 			// of the LP-Solver

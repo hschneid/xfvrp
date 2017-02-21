@@ -7,6 +7,7 @@ import java.util.Map;
 
 import xf.xfvrp.base.InvalidReason;
 import xf.xfvrp.base.Node;
+import xf.xfvrp.opt.Solution;
 
 /** 
  * Copyright (c) 2012-present Holger Schneider
@@ -38,7 +39,8 @@ public class ErrorSummary {
 	 * 
 	 * @param route giant route with potential invalid customers.
 	 */
-	public void add(Node[] route) {
+	public void add(Solution solution) {
+		Node[] route = solution.getGiantRoute();
 		for (Node node : route) {
 			if(node.getInvalidReason() != InvalidReason.NONE) {
 				// Description
