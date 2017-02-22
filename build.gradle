@@ -33,4 +33,5 @@ dependencies {
     // testCompile dependency to testCompile 'org.testng:testng:6.8.1' and add
     // 'test.useTestNG()' to your build script.
     testCompile 'junit:junit:4.12'
+	testCompile "org.spockframework:spock-core:1.1-groovy-2.4-rc-2"
 }
