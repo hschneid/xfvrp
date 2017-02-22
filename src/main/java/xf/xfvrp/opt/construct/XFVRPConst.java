@@ -11,6 +11,7 @@ import xf.xfvrp.base.Node;
 import xf.xfvrp.base.SiteType;
 import xf.xfvrp.base.Util;
 import xf.xfvrp.base.preset.BlockNameConverter;
+import xf.xfvrp.opt.Solution;
 import xf.xfvrp.opt.XFVRPOptBase;
 
 /** 
@@ -38,9 +39,9 @@ public class XFVRPConst extends XFVRPOptBase {
 	 * @see de.fhg.iml.vlog.xftour.model.XFBase#execute(de.fhg.iml.vlog.xftour.model.XFNode[])
 	 */
 	@Override
-	public Node[] execute(Node[] giantRoute) {
+	public Solution execute(Solution solution) {
 		// Prepare: nearest allocation of customer to depots
-		ListMap<Integer, Node> allocMap = allocateNearestDepot(giantRoute);
+		ListMap<Integer, Node> allocMap = allocateNearestDepot(solution);
 
 		// Separate giantRoute into pieces of nearest allocated customers
 		List<Node> giantList = new ArrayList<>();
@@ -62,13 +63,13 @@ public class XFVRPConst extends XFVRPOptBase {
 				});
 
 				// Create temp giant tour with only one depot and allocated customers
-				Node[] gT = buildGiantRouteForOptimization(dep, customers);
-
+				Solution gT = buildGiantRouteForOptimization(dep, customers);
+				
 				// Run optimizers for each piece and choose best
 				gT = savings.execute(gT, model, statusManager);
 
 				// Concatenate piece to new giant tour
-				for (Node n : gT) {
+				for (Node n : gT.getGiantRoute()) {
 					if(n.getSiteType() == SiteType.DEPOT)
 						giantList.add(Util.createIdNode(dep, depIDGlobal++));
 					else
@@ -76,15 +77,17 @@ public class XFVRPConst extends XFVRPOptBase {
 				}
 			}
 		}
-
-		return Util.normalizeRoute(giantList.toArray(new Node[giantList.size()]), model);
+		
+		Solution newSolution = new Solution();
+		newSolution.setGiantRoute(giantList.toArray(new Node[giantList.size()]));
+		return Util.normalizeRoute(newSolution, model);
 	}
 
 	/**
 	 * @param giantRoute
 	 * @return
 	 */
-	private ListMap<Integer, Node> allocateNearestDepot(Node[] giantTour) {
+	private ListMap<Integer, Node> allocateNearestDepot(Solution solution) {
 		ListMap<Integer, Node> allocMap = ListMap.create();
 		{
 			List<Node> depotList = new ArrayList<>();
@@ -92,6 +95,7 @@ public class XFVRPConst extends XFVRPOptBase {
 				if(n.getSiteType() == SiteType.DEPOT)
 					depotList.add(n);
 
+			Node[] giantTour = solution.getGiantRoute();
 			for (int i = 0; i < giantTour.length; i++) {
 				Node n = giantTour[i];
 				
@@ -140,7 +144,7 @@ public class XFVRPConst extends XFVRPOptBase {
 	 * @param customers
 	 * @return
 	 */
-	private Node[] buildGiantRouteForOptimization(Node dep, List<Node> customers) {
+	private Solution buildGiantRouteForOptimization(Node dep, List<Node> customers) {
 		Node[] gT = new Node[customers.size() * 2 + 1];
 
 		int idx = 0;
@@ -159,6 +163,9 @@ public class XFVRPConst extends XFVRPOptBase {
 		}
 		gT[idx++] = Util.createIdNode(dep, depID++);
 
-		return Arrays.copyOf(gT, idx);
+		Solution solution = new Solution();
+		solution.setGiantRoute(Arrays.copyOf(gT, idx));
+		
+		return solution;
 	}
 }
