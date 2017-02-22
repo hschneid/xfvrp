@@ -8,9 +8,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import util.collection.LPListMap;
-
 import com.google.common.collect.HashBiMap;
+
+import util.collection.LPListMap;
 
 /** 
  * Copyright (c) 2012-present Holger Schneider
