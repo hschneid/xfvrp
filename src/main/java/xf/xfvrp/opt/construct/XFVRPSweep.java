@@ -12,6 +12,7 @@ import xf.xfvrp.base.Node;
 import xf.xfvrp.base.Quality;
 import xf.xfvrp.base.SiteType;
 import xf.xfvrp.base.Util;
+import xf.xfvrp.opt.Solution;
 import xf.xfvrp.opt.XFVRPLPBridge;
 import xf.xfvrp.opt.XFVRPOptBase;
 import xf.xfvrp.opt.improve.XFVRP2Opt;
@@ -37,7 +38,9 @@ public class XFVRPSweep extends XFVRPOptBase {
 	 * @see de.fhg.iml.vlog.xftour.model.XFBase#execute(de.fhg.iml.vlog.xftour.model.XFNode[])
 	 */
 	@Override
-	public Node[] execute(Node[] giantTour) {
+	public Solution execute(Solution solution) {
+		Node[] giantTour = solution.getGiantRoute();
+		
 		final XFVRPOptBase opt2 = new XFVRP2Opt();
 		final List<Node> nodeList = new ArrayList<>();
 		final Node depot = giantTour[0];
@@ -99,11 +102,14 @@ public class XFVRPSweep extends XFVRPOptBase {
 
 			Node[] gT = tour.toArray(new Node[tour.size()]);
 			
-			Quality q = check(gT);
+			Solution sol = new Solution();
+			sol.setGiantRoute(gT);
+			
+			Quality q = check(sol);
 			if(q.getPenalty() == 0) {
 				// Efficient Load Prüfung 
-				XFVRPLPBridge.check(gT, loadingFootprint, model, q);
-				loadingFootprint = XFVRPLPBridge.getFootprints(gT);
+				XFVRPLPBridge.check(sol, loadingFootprint, model, q);
+				loadingFootprint = XFVRPLPBridge.getFootprints(sol);
 			}
 
 			if(q.getPenalty() > 0) {
@@ -120,7 +126,7 @@ public class XFVRPSweep extends XFVRPOptBase {
 				tour.add(insertNode);
 				tour.add(Util.createIdNode(depot, depotId++));
 			} else if((currentIdx % 10) == 0) {
-				gT = opt2.execute(gT, model, statusManager);
+				gT = opt2.execute(sol, model, statusManager).getGiantRoute();
 				tour = new ArrayList<>(Arrays.asList(gT));
 			}
 
@@ -131,6 +137,8 @@ public class XFVRPSweep extends XFVRPOptBase {
 		tour.remove(0);
 		giantList.addAll(tour);
 
-		return Util.normalizeRoute(giantList.toArray(new Node[0]), model);
+		Solution newSolution = new Solution();
+		newSolution.setGiantRoute(giantList.toArray(new Node[0]));
+		return Util.normalizeRoute(newSolution, model);
 	}
 }

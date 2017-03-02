@@ -1,7 +1,7 @@
 package xf.xfvrp.opt.construct;
 
-import xf.xfvrp.base.Node;
 import xf.xfvrp.base.Quality;
+import xf.xfvrp.opt.Solution;
 
 
 /** 
@@ -29,16 +29,16 @@ public class XFVRPSavingsLamda extends XFVRPSavings {
 	 * @see de.fhg.iml.vlog.xftour.xfvrp.opt.construct.XFVRPSavings#execute(de.fhg.iml.vlog.xftour.model.XFNode[])
 	 */
 	@Override
-	public Node[] execute(Node[] giantTour) {
-		Node[] best = super.execute(giantTour.clone());
-		Node[] sol;
+	public Solution execute(Solution solution) {
+		Solution best = super.execute(solution.copy());
+		Solution sol;
 		Quality quality, bestQuality;
 
 		bestQuality = check(best);
 		
 		for (float l : lamdaParameters) {
 			this.lamda = l;
-			sol = super.execute(giantTour.clone());
+			sol = super.execute(solution.copy());
 			quality = check(sol);
 			if(quality.getFitness() < bestQuality.getFitness()) {
 				best = sol;

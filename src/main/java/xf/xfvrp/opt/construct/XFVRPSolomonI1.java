@@ -10,6 +10,7 @@ import xf.xfvrp.base.LoadType;
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.Quality;
 import xf.xfvrp.base.Util;
+import xf.xfvrp.opt.Solution;
 import xf.xfvrp.opt.XFVRPLPBridge;
 import xf.xfvrp.opt.XFVRPOptBase;
 
@@ -36,7 +37,7 @@ public class XFVRPSolomonI1 extends XFVRPOptBase {
 	 * @return giant tour
 	 */
 	@Override
-	public Node[] execute(Node[] unrecognized) {
+	public Solution execute(Solution solution) {
 		final Node[] nodeArr = model.getNodeArr();
 		if(model.getNbrOfDepots() > 1)
 			throw new UnsupportedOperationException(XFVRPSolomonI1.class.getName()+" supports no multi depot");
@@ -106,7 +107,9 @@ public class XFVRPSolomonI1 extends XFVRPOptBase {
 		tour.remove(0);
 		giantTour.addAll(tour);
 
-		return giantTour.toArray(new Node[0]);
+		Solution newSolution = new Solution();
+		newSolution.setGiantRoute(giantTour.toArray(new Node[0]));
+		return newSolution;
 	}
 
 	/**
@@ -324,7 +327,10 @@ public class XFVRPSolomonI1 extends XFVRPOptBase {
 					List<Node> newTour = new ArrayList<>(route);
 					newTour.add(cust);
 					Node[] newGiantTour = newTour.toArray(new Node[0]);
-					XFVRPLPBridge.check(newGiantTour, null, model, q);
+					
+					Solution solution = new Solution();
+					solution.setGiantRoute(newGiantTour);
+					XFVRPLPBridge.check(solution, null, model, q);
 
 					if(q.getPenalty() > 0)
 						continue;

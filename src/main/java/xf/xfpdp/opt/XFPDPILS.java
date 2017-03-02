@@ -9,6 +9,7 @@ import xf.xfvrp.base.SiteType;
 import xf.xfvrp.base.Util;
 import xf.xfvrp.base.Vehicle;
 import xf.xfvrp.base.monitor.StatusCode;
+import xf.xfvrp.opt.Solution;
 import xf.xfvrp.opt.XFVRPOptBase;
 
 /** 
@@ -41,15 +42,15 @@ public class XFPDPILS extends XFVRPOptBase {
 	 * @see de.fhg.iml.vlog.xftour.model.XFBase#execute(de.fhg.iml.vlog.xftour.model.XFNode[])
 	 */
 	@Override
-	public Node[] execute(Node[] giantTour) {
-		Node[] bestRoute = Arrays.copyOf(giantTour, giantTour.length);
-		Node[] bestBestTour = Arrays.copyOf(giantTour, giantTour.length);
-		Quality bestBestQ = check(giantTour);
+	public Solution execute(Solution solution) {
+		Solution bestRoute = solution.copy();
+		Solution bestBestTour = solution.copy();
+		Quality bestBestQ = check(solution);
 
 		statusManager.fireMessage(StatusCode.RUNNING, this.getClass().getSimpleName()+" is starting with "+model.getParameter().getILSLoops()+" loops.");
 
 		for (int i = 0; i < model.getParameter().getILSLoops(); i++) {
-			Node[] gT = Arrays.copyOf(bestRoute, bestRoute.length);
+			Solution gT = bestRoute.copy();
 
 			// Variation
 			perturbPDP(gT, model.getVehicle());
@@ -81,7 +82,9 @@ public class XFPDPILS extends XFVRPOptBase {
 	 * @param giantRoute
 	 * @param vehicle
 	 */
-	private void perturbPDP(Node[] giantRoute, Vehicle vehicle) {
+	private void perturbPDP(Solution solution, Vehicle vehicle) {
+		Node[] giantRoute = solution.getGiantRoute();
+		
 		int nbrOfVariations = 5;
 		int[] param = new int[4];
 		Node[] copy = new Node[giantRoute.length];
@@ -108,7 +111,9 @@ public class XFPDPILS extends XFVRPOptBase {
 				XFPDPUtils.move(giantRoute, param[0], param[1], param[2], param[3]);
 				
 				// Eval
-				Quality q = check(giantRoute);
+				Solution newSolution = new Solution();
+				newSolution.setGiantRoute(giantRoute);
+				Quality q = check(newSolution);
 				if(q.getPenalty() == 0) {
 					changed = true;
 					break;
@@ -205,7 +210,7 @@ public class XFPDPILS extends XFVRPOptBase {
 	 * @param vehicle
 	 * @return
 	 */
-	private Node[] localSearch(Node[] giantTour, Vehicle vehicle) {
+	private Solution localSearch(Solution solution, Vehicle vehicle) {
 		boolean[] processedArr = new boolean[optArr.length];
 
 		Quality q = null;
@@ -215,10 +220,10 @@ public class XFPDPILS extends XFVRPOptBase {
 			int optIdx = choose(processedArr);
 
 			// Process
-			giantTour = optArr[optIdx].execute(giantTour, model, statusManager);
+			solution = optArr[optIdx].execute(solution, model, statusManager);
 
 			// Check
-			Quality qq = check(giantTour);
+			Quality qq = check(solution);
 			if(q == null || qq.getFitness() < q.getFitness()) {
 				q = qq;
 				Arrays.fill(processedArr, false);
@@ -230,7 +235,7 @@ public class XFPDPILS extends XFVRPOptBase {
 			nbrOfProcessed++;
 		}
 
-		return giantTour;
+		return solution;
 	}
 
 	/**

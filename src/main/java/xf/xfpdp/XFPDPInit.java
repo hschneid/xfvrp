@@ -118,8 +118,11 @@ public class XFPDPInit {
 	 */
 	public Solution buildInitPDP(XFVRPModel model, List<Node> invalidNodes) {
 		Node[] nodeArr = model.getNodeArr();
-		if (nodeArr.length == 0)
-			return new Node[0];
+		if (nodeArr.length == 0) {
+			Solution solution = new Solution();
+			solution.setGiantRoute(new Node[0]);
+			return solution;
+		}
 
 		Map<Integer, int[]> ships = collectPairs(nodeArr);
 
@@ -148,7 +151,9 @@ public class XFPDPInit {
 
 		if (gL.size() > 0) gL.add(Util.createIdNode(nodeArr[depotIdx[0]], maxIdx[0]++));
 
-		return gL.toArray(new Node[0]);
+		Solution solution = new Solution();
+		solution.setGiantRoute(gL.toArray(new Node[0]));
+		return solution;
 	}
 
 	/**

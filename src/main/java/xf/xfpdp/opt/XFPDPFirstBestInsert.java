@@ -12,6 +12,7 @@ import xf.xfvrp.base.Node;
 import xf.xfvrp.base.Quality;
 import xf.xfvrp.base.SiteType;
 import xf.xfvrp.base.Util;
+import xf.xfvrp.opt.Solution;
 import xf.xfvrp.opt.XFVRPOptBase;
 
 /** 
@@ -44,11 +45,11 @@ public class XFPDPFirstBestInsert extends XFVRPOptBase {
 	 * @see de.fhg.iml.vlog.xftour.model.XFBase#execute(de.fhg.iml.vlog.xftour.model.XFNode[])
 	 */
 	@Override
-	public Node[] execute(Node[] giantRoute) {
+	public Solution execute(Solution solution) {
 		List<Node[]> shipments = getShipments();
-
+		
 		// Init with empty route (attention for multiple depots)
-		giantRoute = initRoute();
+		Node[] giantRoute = initRoute();
 
 		// Randomized ordering of shipment insertion
 		Collections.shuffle(shipments, rand);
@@ -60,7 +61,9 @@ public class XFPDPFirstBestInsert extends XFVRPOptBase {
 		for (int i = 0; i < 2/*model.getParameter().getILSLoops()*/; i++)
 			giantRoute = reinsertShipments(giantRoute, shipments);
 
-		return Util.normalizeRoute(giantRoute, model);
+		Solution newSolution = new Solution();
+		newSolution.setGiantRoute(giantRoute);
+		return Util.normalizeRoute(newSolution, model);
 	}
 
 	/**
@@ -94,9 +97,11 @@ public class XFPDPFirstBestInsert extends XFVRPOptBase {
 				insertShipment(giantRoute, newGiantRoute, shipment[0], shipment[1], (int)val[PICKUP_POS], (int)val[DELIVERY_POS]);
 
 				// Evaluate new solution
-				Quality qq = check(newGiantRoute);
+				Solution newSolution = new Solution();
+				newSolution.setGiantRoute(newGiantRoute);
+				Quality qq = check(newSolution);
 				if(qq.getPenalty() == 0) {
-					giantRoute = Util.normalizeRoute(newGiantRoute, model);
+					giantRoute = Util.normalizeRoute(newSolution, model).getGiantRoute();
 					break;
 				}
 			}
@@ -145,9 +150,11 @@ public class XFPDPFirstBestInsert extends XFVRPOptBase {
 				insertShipment(giantRoute, newGiantRoute, shipment[0], shipment[1], (int)val[PICKUP_POS], (int)val[DELIVERY_POS]);
 
 				// Evaluate new solution
-				Quality qq = check(newGiantRoute);
+				Solution newSolution = new Solution();
+				newSolution.setGiantRoute(newGiantRoute);
+				Quality qq = check(newSolution);
 				if(qq.getPenalty() == 0) {
-					giantRoute = Util.normalizeRoute(newGiantRoute, model);
+					giantRoute = Util.normalizeRoute(newSolution, model).getGiantRoute();
 					reducedGiantRoute = new Node[giantRoute.length - 2];
 					break;
 				}
@@ -190,7 +197,9 @@ public class XFPDPFirstBestInsert extends XFVRPOptBase {
 					route[deliCnt] = delivery;
 					
 					// Check for feasibility
-					Quality q = check(route);
+					Solution newSolution = new Solution();
+					newSolution.setGiantRoute(route);
+					Quality q = check(newSolution);
 					if(q != null && q.getPenalty() == 0) {
 						// If feasible, then get insertion cost 
 						float insertCost = getInsertCost(giantRoute, pickup, delivery, p, k);
@@ -296,7 +305,9 @@ public class XFPDPFirstBestInsert extends XFVRPOptBase {
 		route[0] = Util.createIdNode(model.getNodeArr()[0], 0);
 		route[1] = Util.createIdNode(model.getNodeArr()[0], 1);
 
-		return Util.normalizeRoute(route, model);
+		Solution newSolution = new Solution();
+		newSolution.setGiantRoute(route);
+		return Util.normalizeRoute(newSolution, model).getGiantRoute();
 	}
 
 	/**

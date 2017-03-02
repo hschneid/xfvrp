@@ -9,6 +9,7 @@ import xf.xfvrp.base.Quality;
 import xf.xfvrp.base.SiteType;
 import xf.xfvrp.base.Util;
 import xf.xfvrp.base.XFVRPModel;
+import xf.xfvrp.opt.Solution;
 import xf.xfvrp.opt.XFVRPLPBridge;
 import xf.xfvrp.opt.XFVRPOptBase;
 
@@ -38,7 +39,9 @@ public class XFVRPSavings extends XFVRPOptBase {
 	 * @return
 	 */
 	@Override
-	public Node[] execute(Node[] giantRoute) {		
+	public Solution execute(Solution solution) {
+		Node[] giantRoute = solution.getGiantRoute();
+		
 		final Node depot = giantRoute[0];
 
 		Node[][] routeArr = buildRouteLists(giantRoute, model);
@@ -117,11 +120,13 @@ public class XFVRPSavings extends XFVRPOptBase {
 				newRoute[newRoute.length - 1] = depotEnd;
 				
 				// Pr�fe die neue Tour
-				Quality q = check(newRoute);
+				Solution smallSolution = new Solution();
+				smallSolution.setGiantRoute(newRoute);
+				Quality q = check(smallSolution);
 
 				if(q.getPenalty() == 0) {
 					// Efficient Load Pr�fung (Achtung: Kein Footprint, da immer nur zwei Routen verkn�pft und bewertet werden!) 
-					XFVRPLPBridge.check(newRoute, null, model, q);
+					XFVRPLPBridge.check(smallSolution, null, model, q);
 
 					if(q.getPenalty() == 0) {
 						// Aktualisiere die Datenstrukturen
@@ -150,7 +155,9 @@ public class XFVRPSavings extends XFVRPOptBase {
 			break;
 		}
 
-		return buildGiantRoute(routeArr, depot);
+		Solution newSolution = new Solution();
+		newSolution.setGiantRoute(buildGiantRoute(routeArr, depot));
+		return newSolution;
 	}
 
 	/**

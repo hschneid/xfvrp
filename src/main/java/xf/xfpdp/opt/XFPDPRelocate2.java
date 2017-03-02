@@ -8,6 +8,7 @@ import xf.xfpdp.XFPDPUtils;
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.Quality;
 import xf.xfvrp.base.SiteType;
+import xf.xfvrp.opt.Solution;
 import xf.xfvrp.opt.improve.XFVRPOptImpBase;
 
 /** 
@@ -31,8 +32,9 @@ public class XFPDPRelocate2 extends XFVRPOptImpBase {
 	 * @see de.fhg.iml.vlog.xftour.xfvrp.opt.improve.XFVRPOptImpBase#improve(de.fhg.iml.vlog.xftour.model.XFNode[], de.fhg.iml.vlog.xftour.model.Quality)
 	 */
 	@Override
-	public Quality improve(final Node[] giantTour, Quality bestResult) {
-		final Set<String> loadingFootprint = getLoadingFootprint(giantTour);
+	public Quality improve(final Solution solution, Quality bestResult) {
+		final Set<String> loadingFootprint = getLoadingFootprint(solution);
+		Node[] giantTour = solution.getGiantRoute();
 
 		List<float[]> improvingStepList = new ArrayList<>();
 
@@ -55,7 +57,9 @@ public class XFPDPRelocate2 extends XFVRPOptImpBase {
 			System.arraycopy(giantTour, 0, copy, 0, giantTour.length);
 			XFPDPUtils.move2(giantTour, srcA, srcB, dstA, dstB);
 
-			Quality result = check(giantTour, loadingFootprint);
+			Solution newSolution = new Solution();
+			newSolution.setGiantRoute(giantTour);
+			Quality result = check(newSolution, loadingFootprint);
 			if(result != null && result.getFitness() < bestResult.getFitness()) {
 				return result;
 			}
