@@ -1,6 +1,5 @@
-package groovy
-
 import spock.lang.Specification
+import xf.xfvrp.base.Node
 import xf.xfvrp.opt.Solution
 import xf.xfvrp.opt.XFVRPOptBase
 import xf.xfvrp.opt.improve.XFVRPRelocate
@@ -15,7 +14,7 @@ class SwapSpec extends Specification {
 		def n3 = new Node(externID: "3");
 		def n4 = new Node(externID: "4");
 		
-		def sol = new Solution(giantRoute: [n1, n2, n3, n4])
+		def sol = new Solution(routes: [n1, n2, n3, n4])
 		
 		when:
 		service.swap(sol, 1, 2);

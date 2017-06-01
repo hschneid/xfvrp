@@ -22,32 +22,32 @@ import xf.xfvrp.base.preset.BlockNameConverter;
  *
  */
 public class Node implements Cloneable {
-	
+
 	/* External name of this order, must be unique */
-	private final String externID;
-	
+	private String externID;
+
 	/* Local index of the node during optimization. unique only in an optimization model */
 	private int idx;
-	
+
 	/* Global unique index of the node over all optimization processes */
 	private final int globalIdx;
-	
+
 	/* Unique index of a shipment of a pair of nodes. Shipment name is memorized in FlexiConverter. */
 	private int shipmentIdx = -1;
-	
+
 	private int geoId = -1;
 
 	private final LoadType loadType;
 	private final float xlong, ylat;
 	private SiteType siteType;
-	
+
 	private float[] demand;
 
 	private final float[][] timeWindowArr;
 	private final float serviceTime;
 	private final float serviceTimeForSite;
 	private int depotId = -1;
-	
+
 	/** Efficient Load parameter **/
 	private final String shipID;
 	private final int nbrOfPackages;
@@ -58,23 +58,45 @@ public class Node implements Cloneable {
 	private final float loadBearingOfPackage;
 	private final int stackingGroupOfPackage;
 	private final int containerTypeOfPackage;
-	
+
 	/** Preset parameter **/
 	private int presetBlockIdx = BlockNameConverter.UNDEF_BLOCK_IDX;
 	private int presetBlockPos;
 	private int presetBlockRank;
-	
+
 	private final Set<Integer> presetBlockVehicleList = new HashSet<>();
 	/** A list of depot node ids (global idx), where this customer must be allocated to one these depots. **/
 	private final Set<Integer> presetDepotList = new HashSet<>();
 	/** A list of node ids, which must not be routed with this node. **/
 	private final Set<Integer> presetRoutingBlackList = new HashSet<>();
 	/** If customer is invalid for whole route plan, the reason is written to invalid states **/
-	
+
 	private InvalidReason invalidReason = InvalidReason.NONE;
-	
+
 	private String invalidArguments = "";
-	
+
+	public Node() {
+		externID = "";
+		globalIdx = 0;
+
+		loadType = LoadType.DELIVERY;
+		xlong = 0;
+		ylat = 0;
+		timeWindowArr = new float[0][0];
+		serviceTime = 0;
+		serviceTimeForSite = 0;
+
+		shipID = "";
+		nbrOfPackages = 0;
+		heightOfPackage = 0;
+		widthOfPackage = 0;
+		lengthOfPackage = 0;
+		weightOfPackage = 0;
+		loadBearingOfPackage = 0;
+		stackingGroupOfPackage = 0;
+		containerTypeOfPackage = 0;
+	}
+
 	/**
 	 * Node constructor for use within Efficient Load
 	 * All external data of a node are set here.
@@ -103,7 +125,7 @@ public class Node implements Cloneable {
 			float loadBearingOfPackage,
 			int stackingGroupOfPackage,
 			int containerTypeOfPackage			
-	) {
+			) {
 		this.globalIdx = globalIdx;
 		this.externID = externID;
 		this.siteType = siteType;
@@ -150,7 +172,7 @@ public class Node implements Cloneable {
 	public SiteType getSiteType() {
 		return siteType;
 	}
-	
+
 	public void setSiteType(SiteType t){
 		this.siteType = t;
 	}
@@ -195,7 +217,7 @@ public class Node implements Cloneable {
 	public void setIdx(int idx) {
 		this.idx = idx;
 	}
-	
+
 	/**
 	 * 
 	 * @return
@@ -255,12 +277,12 @@ public class Node implements Cloneable {
 	public float[] getTimeWindow(float time) {
 		if(timeWindowArr.length == 1)
 			return timeWindowArr[0];
-		
+
 		// Choose first time window, that can hold the given time
 		for (int i = 0; i < timeWindowArr.length; i++)
 			if(time < timeWindowArr[i][1])
 				return timeWindowArr[i];
-		
+
 		// If no time window can hold the given time, than return the last time window
 		return timeWindowArr[timeWindowArr.length - 1];
 	}
@@ -351,7 +373,7 @@ public class Node implements Cloneable {
 	public void setPresetBlockIdx(int blockIdx) {
 		this.presetBlockIdx = blockIdx;
 	}
-	
+
 	/**
 	 * @return the presetBlockIdx
 	 */
@@ -373,7 +395,7 @@ public class Node implements Cloneable {
 	public int getPresetBlockRank() {
 		return presetBlockRank;
 	}
-	
+
 	public void setPresetBlockRank(int presetBlockRank) {
 		this.presetBlockRank = presetBlockRank;
 	}
@@ -384,7 +406,7 @@ public class Node implements Cloneable {
 	public Set<Integer> getPresetBlockVehicleList() {
 		return presetBlockVehicleList;
 	}
-	
+
 	/**
 	 * 
 	 * @return
@@ -392,7 +414,7 @@ public class Node implements Cloneable {
 	public float getServiceTimeForSite() {
 		return serviceTimeForSite;
 	}
-	
+
 	/**
 	 * Returns list with node ids which are not allowed to be
 	 * allocated with this node on one route together.
@@ -402,7 +424,7 @@ public class Node implements Cloneable {
 	public Set<Integer> getPresetRoutingBlackList() {
 		return presetRoutingBlackList;
 	}
-	
+
 	/**
 	 * 
 	 * @param globalIdx
@@ -410,7 +432,7 @@ public class Node implements Cloneable {
 	public void addToBlacklist(int globalIdx){
 		presetRoutingBlackList.add(globalIdx);
 	}
-	
+
 	/**
 	 * 
 	 * @return
@@ -418,7 +440,7 @@ public class Node implements Cloneable {
 	public int getShipmentIdx() {
 		return shipmentIdx;
 	}
-	
+
 	/**
 	 * 
 	 * @param shipmentIdx
@@ -438,7 +460,7 @@ public class Node implements Cloneable {
 		this.invalidReason = r;
 		this.invalidArguments = a;
 	}
-	
+
 	/**
 	 * 
 	 * @param r The reason why this customer leads to a invalid route plan
@@ -446,7 +468,7 @@ public class Node implements Cloneable {
 	public void setInvalidReason(InvalidReason r) {
 		setInvalidReason(r, "");
 	}
-	
+
 	/**
 	 * 
 	 * @return
@@ -462,14 +484,14 @@ public class Node implements Cloneable {
 	public InvalidReason getInvalidReason() {
 		return invalidReason;
 	}
-	
+
 	/**
 	 * @return
 	 */
 	public Set<Integer> getPresetDepotList() {
 		return presetDepotList;
 	}
-	
+
 	/**
 	 * 
 	 * @param globalIdx
