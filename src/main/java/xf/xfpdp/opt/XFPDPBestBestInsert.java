@@ -11,7 +11,6 @@ import xf.xfvrp.base.Node;
 import xf.xfvrp.base.Quality;
 import xf.xfvrp.base.SiteType;
 import xf.xfvrp.base.Util;
-import xf.xfvrp.opt.CheckMethod;
 import xf.xfvrp.opt.Solution;
 import xf.xfvrp.opt.XFVRPOptBase;
 
@@ -31,7 +30,6 @@ import xf.xfvrp.opt.XFVRPOptBase;
  */
 public class XFPDPBestBestInsert extends XFVRPOptBase {
 
-	private CheckMethod checker = new CheckMethod();
 	private int maxDepotId = 1;
 	
 	private int nbrOfUnplannedShipments;
@@ -68,7 +66,9 @@ public class XFPDPBestBestInsert extends XFVRPOptBase {
 				route[route.length - 3] = shipments[i][0];
 				route[route.length - 2] = shipments[i][1];
 
-				Quality currentQ = checker.check(route, model);
+				Solution oneRouteSolution = new Solution();
+				oneRouteSolution.setGiantRoute(route);
+				Quality currentQ = check(oneRouteSolution);
 
 				List<float[]> localImpList = new ArrayList<>();
 				searchSingleDepot(route, localImpList);
@@ -89,7 +89,9 @@ public class XFPDPBestBestInsert extends XFVRPOptBase {
 					System.arraycopy(route, 0, copy, 0, route.length);
 					XFPDPUtils.move(route, srcA, srcB, dstA, dstB);
 
-					Quality newQ = checker.check(route, model);
+					oneRouteSolution = new Solution();
+					oneRouteSolution.setGiantRoute(route);
+					Quality newQ = check(oneRouteSolution);
 
 					System.arraycopy(copy, 0, route, 0, route.length);
 
@@ -119,7 +121,9 @@ public class XFPDPBestBestInsert extends XFVRPOptBase {
 				route = buildRoot(depot, route, shipments);
 			}
 			
-			Quality newQ = checker.check(route, model);
+			Solution oneRouteSolution = new Solution();
+			oneRouteSolution.setGiantRoute(route);
+			Quality newQ = check(oneRouteSolution);
 			System.out.println(nbrOfUnplannedShipments+" "+newQ+" "+Arrays.toString(route));
 		}
 
@@ -162,8 +166,11 @@ public class XFPDPBestBestInsert extends XFVRPOptBase {
 			
 			route[route.length - 3] = shipments[i][0];
 			route[route.length - 2] = shipments[i][1];
+			
+			Solution newSolution = new Solution();
+			newSolution.setGiantRoute(route);
 
-			Quality q = checker.check(route, model);
+			Quality q = check(newSolution);
 			if(q != null && q.getFitness() < best.getFitness()) {
 				best = q;
 				bestShipIdx = i;

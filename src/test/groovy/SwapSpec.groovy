@@ -1,28 +1,59 @@
 import spock.lang.Specification
 import xf.xfvrp.base.Node
+import xf.xfvrp.base.SiteType
 import xf.xfvrp.opt.Solution
-import xf.xfvrp.opt.XFVRPOptBase
 import xf.xfvrp.opt.improve.XFVRPRelocate
 
 class SwapSpec extends Specification {
 
 	def service = new XFVRPRelocate();
 	
-	def "Test1"() {
-		def n1 = new Node(externID: "1");
-		def n2 = new Node(externID: "2");
-		def n3 = new Node(externID: "3");
-		def n4 = new Node(externID: "4");
+	def "Regular swap - one route"() {
+		def n1 = new Node(externID: "1", siteType: SiteType.DEPOT);
+		def n2 = new Node(externID: "2", siteType: SiteType.CUSTOMER);
+		def n3 = new Node(externID: "3", siteType: SiteType.CUSTOMER);
+		def n4 = new Node(externID: "4", siteType: SiteType.DEPOT);
 		
-		def sol = new Solution(routes: [n1, n2, n3, n4])
+		def sol = new Solution()
+		sol.setGiantRoute([n1, n2, n3, n4] as Node[])
 		
 		when:
 		service.swap(sol, 1, 2);
 		
+		def result = sol.getGiantRoute()
+		
 		then:
-		sol.giantRoute[0].externID == "1"
-		sol.giantRoute[1].externID == "3"
-		sol.giantRoute[2].externID == "2"
-		sol.giantRoute[3].externID == "4"
+		result[0].externID == "1"
+		result[1].externID == "3"
+		result[2].externID == "2"
+		result[3].externID == "1"
 	}
+	
+	def "Regular swap - two routes"() {
+		def n1 = new Node(externID: "1", siteType: SiteType.DEPOT);
+		def n2 = new Node(externID: "2", siteType: SiteType.CUSTOMER);
+		def n3 = new Node(externID: "3", siteType: SiteType.CUSTOMER);
+		def n4 = new Node(externID: "4", siteType: SiteType.DEPOT);
+		def n5 = new Node(externID: "5", siteType: SiteType.CUSTOMER);
+		def n6 = new Node(externID: "6", siteType: SiteType.CUSTOMER);
+		def n7 = new Node(externID: "7", siteType: SiteType.DEPOT);
+
+		def sol = new Solution()
+		sol.setGiantRoute([n1, n2, n3, n4, n5, n6, n7] as Node[])
+		
+		when:
+		service.swap(sol, 2, 4);
+		
+		def result = sol.getGiantRoute()
+		
+		then:
+		result[0].externID == "1"
+		result[1].externID == "2"
+		result[2].externID == "5"
+		result[3].externID == "4"
+		result[4].externID == "3"
+		result[5].externID == "6"
+		result[6].externID == "4"
+	}
+
 }

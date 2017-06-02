@@ -1,7 +1,6 @@
 package xf.xfvrp.opt;
 
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 
@@ -55,6 +54,8 @@ public abstract class XFVRPOptBase extends XFVRPBase<XFVRPModel> {
 			giantTour[start + offset] = tmp;
 			offset++;
 		}
+		
+		solution.setGiantRoute(giantTour);
 	}
 
 	/**
@@ -85,6 +86,8 @@ public abstract class XFVRPOptBase extends XFVRPBase<XFVRPModel> {
 			System.arraycopy(giantTour, src + 1, giantTour, src, dst - src);
 			System.arraycopy(arr, 0, giantTour, dst - 1, arr.length);
 		}
+		
+		solution.setGiantRoute(giantTour);
 	}
 
 	/**
@@ -109,6 +112,8 @@ public abstract class XFVRPOptBase extends XFVRPBase<XFVRPModel> {
 			System.arraycopy(giantTour, dst, giantTour, dst + (srcEnd - srcStart) + 1, srcStart - dst);
 			System.arraycopy(arr, 0, giantTour, dst, arr.length);
 		}
+		
+		solution.setGiantRoute(giantTour);
 	}
 
 	/**
@@ -125,6 +130,8 @@ public abstract class XFVRPOptBase extends XFVRPBase<XFVRPModel> {
 		Node tmp = giantTour[i];
 		giantTour[i] = giantTour[j];
 		giantTour[j] = tmp;
+		
+		solution.setGiantRoute(giantTour);
 	}
 
 	/**
@@ -156,6 +163,8 @@ public abstract class XFVRPOptBase extends XFVRPBase<XFVRPModel> {
 			System.arraycopy(bArr, 0 , giantTour, a, bArr.length);
 			System.arraycopy(iArr, 0 , giantTour, a + bArr.length, iArr.length);
 			System.arraycopy(aArr, 0 , giantTour, a + bArr.length + iArr.length, aArr.length);
+			
+			solution.setGiantRoute(giantTour);
 		}
 	}
 
@@ -168,14 +177,13 @@ public abstract class XFVRPOptBase extends XFVRPBase<XFVRPModel> {
 	 */
 	protected void sort(List<float[]> list, final int position) {
 		// Sortier absteigend nach Potenzial
-		Collections.sort(list, new Comparator<float[]>() {
-			@Override
-			public int compare(float[] o1, float[] o2) {
-				if(o1[position] > o2[position]) return -1;
-				if(o1[position] < o2[position]) return 1;
-				return 0;
-			}
-		});
+		Collections.sort(list, 
+				(o1, o2) -> {
+					if(o1[position] > o2[position]) return -1;
+					if(o1[position] < o2[position]) return 1;
+					return 0;
+				}
+		);
 	}
 
 	/**
@@ -184,8 +192,8 @@ public abstract class XFVRPOptBase extends XFVRPBase<XFVRPModel> {
 	 * @param giantRoute sequence of nodes
 	 * @return
 	 */
-	public Quality check(Solution giantRoute) {		
-		return check.check(giantRoute.getGiantRoute(), model);
+	public Quality check(Solution solution) {		
+		return check.check(solution, model);
 	}
 
 	/**

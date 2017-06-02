@@ -47,7 +47,9 @@ public class CheckMethod {
 	 * @param model The model which contains the main planning data
 	 * @return
 	 */
-	public Quality check(Node[] giantRoute, XFVRPModel model) {
+	public Quality check(Solution solution, XFVRPModel model) {
+		Node[] giantRoute = solution.getGiantRoute();
+		
 		Quality q = new Quality(null);
 		Vehicle vehicle = model.getVehicle();
 
