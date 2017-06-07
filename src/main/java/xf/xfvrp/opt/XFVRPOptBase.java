@@ -100,6 +100,9 @@ public abstract class XFVRPOptBase extends XFVRPBase<XFVRPModel> {
 	 * @param dst index of the node, where the segment will be inserted before.
 	 */
 	protected void pathMove(Solution solution, int srcStart, int srcEnd, int dst) {
+		if(srcEnd < srcStart)
+			throw new IllegalStateException();
+		
 		Node[] giantTour = solution.getGiantRoute();
 		
 		Node[] arr = new Node[srcEnd - srcStart + 1];
