@@ -45,13 +45,17 @@ public class Solution {
 				currentRoute.add(lastDepot);
 				list.add(currentRoute);
 				currentRoute = new ArrayList<>();
-				currentRoute.add(currentNode);
+				
+				if(i < giantRoute.length - 1)
+					currentRoute.add(currentNode);
 				
 				lastDepot = currentNode;
 			} else {
 				currentRoute.add(currentNode);
 			}
 		}
+		if(currentRoute.size() > 0)
+			list.add(currentRoute);
 		
 		routes = new Node[list.size()][];
 		for (int i = 0; i < list.size(); i++)
