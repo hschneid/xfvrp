@@ -9,6 +9,7 @@ import java.util.OptionalInt;
 import java.util.stream.IntStream;
 
 import xf.xfvrp.base.Node;
+import xf.xfvrp.base.NormalizeRouteService;
 import xf.xfvrp.base.Quality;
 import xf.xfvrp.base.SiteType;
 import xf.xfvrp.base.Util;
@@ -63,7 +64,7 @@ public class XFPDPFirstBestInsert extends XFVRPOptBase {
 
 		Solution newSolution = new Solution();
 		newSolution.setGiantRoute(giantRoute);
-		return Util.normalizeRoute(newSolution, model);
+		return NormalizeRouteService.normalizeRoute(newSolution, model);
 	}
 
 	/**
@@ -101,7 +102,7 @@ public class XFPDPFirstBestInsert extends XFVRPOptBase {
 				newSolution.setGiantRoute(newGiantRoute);
 				Quality qq = check(newSolution);
 				if(qq.getPenalty() == 0) {
-					giantRoute = Util.normalizeRoute(newSolution, model).getGiantRoute();
+					giantRoute = NormalizeRouteService.normalizeRoute(newSolution, model).getGiantRoute();
 					break;
 				}
 			}
@@ -154,7 +155,7 @@ public class XFPDPFirstBestInsert extends XFVRPOptBase {
 				newSolution.setGiantRoute(newGiantRoute);
 				Quality qq = check(newSolution);
 				if(qq.getPenalty() == 0) {
-					giantRoute = Util.normalizeRoute(newSolution, model).getGiantRoute();
+					giantRoute = NormalizeRouteService.normalizeRoute(newSolution, model).getGiantRoute();
 					reducedGiantRoute = new Node[giantRoute.length - 2];
 					break;
 				}
@@ -302,12 +303,12 @@ public class XFPDPFirstBestInsert extends XFVRPOptBase {
 	 */
 	private Node[] initRoute() {
 		Node[] route = new Node[2];
-		route[0] = Util.createIdNode(model.getNodeArr()[0], 0);
-		route[1] = Util.createIdNode(model.getNodeArr()[0], 1);
+		route[0] = Util.createIdNode(model.getNodes()[0], 0);
+		route[1] = Util.createIdNode(model.getNodes()[0], 1);
 
 		Solution newSolution = new Solution();
 		newSolution.setGiantRoute(route);
-		return Util.normalizeRoute(newSolution, model).getGiantRoute();
+		return NormalizeRouteService.normalizeRoute(newSolution, model).getGiantRoute();
 	}
 
 	/**
@@ -360,7 +361,7 @@ public class XFPDPFirstBestInsert extends XFVRPOptBase {
 		Map<String, Node[]> shipmentMap = new HashMap<>();
 
 		for (int i = model.getNbrOfDepots() + model.getNbrOfReplenish(); i < model.getNbrOfNodes(); i++) {
-			Node node = model.getNodeArr()[i];
+			Node node = model.getNodes()[i];
 			if(!shipmentMap.containsKey(node.getShipID()))
 				shipmentMap.put(node.getShipID(), new Node[2]);
 

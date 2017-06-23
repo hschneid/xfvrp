@@ -3,9 +3,9 @@ package xf.xfvrp.opt.improve;
 import java.util.Set;
 
 import xf.xfvrp.base.Node;
+import xf.xfvrp.base.NormalizeRouteService;
 import xf.xfvrp.base.Quality;
 import xf.xfvrp.base.SiteType;
-import xf.xfvrp.base.Util;
 import xf.xfvrp.base.XFVRPModel;
 import xf.xfvrp.opt.Solution;
 import xf.xfvrp.opt.XFVRPLPBridge;
@@ -98,7 +98,7 @@ public abstract class XFVRPOptImpBase extends XFVRPOptBase {
 		}
 		
 		// Normalize resulting solution - Remove empty routes
-		return Util.normalizeRoute(giantRoute, model);
+		return NormalizeRouteService.normalizeRoute(giantRoute, model);
 	}
 
 	/**
@@ -115,9 +115,9 @@ public abstract class XFVRPOptImpBase extends XFVRPOptBase {
 	protected float getDistance(Node a, Node b, int aa, int bb) {
 		if(aa != bb) {
 			if(b.getSiteType() == SiteType.DEPOT)
-				b = model.getNodeArr()[aa];
+				b = model.getNodes()[aa];
 			else if(a.getSiteType() == SiteType.DEPOT)
-				a = model.getNodeArr()[bb];
+				a = model.getNodes()[bb];
 		}
 		return model.getDistanceForOptimization(a, b);
 	}
@@ -133,7 +133,7 @@ public abstract class XFVRPOptImpBase extends XFVRPOptBase {
 	 */
 	protected float getDistance(Node a, Node b, int depotAlloc) {
 		if(b.getSiteType() == SiteType.DEPOT)
-			b = model.getNodeArr()[depotAlloc];
+			b = model.getNodes()[depotAlloc];
 		return model.getDistanceForOptimization(a, b);
 	}
 	

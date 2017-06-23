@@ -8,6 +8,7 @@ import java.util.List;
 
 import util.collection.ListMap;
 import xf.xfvrp.base.Node;
+import xf.xfvrp.base.NormalizeRouteService;
 import xf.xfvrp.base.SiteType;
 import xf.xfvrp.base.Util;
 import xf.xfvrp.base.preset.BlockNameConverter;
@@ -48,7 +49,7 @@ public class XFVRPConst extends XFVRPOptBase {
 		{
 			int depIDGlobal = 0;
 			for (int depIdx : allocMap.keySet()) {
-				Node dep = model.getNodeArr()[depIdx];
+				Node dep = model.getNodes()[depIdx];
 				List<Node> customers = allocMap.get(depIdx);
 
 				// Prepare customer list: customers with same block are placed togehter
@@ -80,7 +81,7 @@ public class XFVRPConst extends XFVRPOptBase {
 		
 		Solution newSolution = new Solution();
 		newSolution.setGiantRoute(giantList.toArray(new Node[giantList.size()]));
-		return Util.normalizeRoute(newSolution, model);
+		return NormalizeRouteService.normalizeRoute(newSolution, model);
 	}
 
 	/**
@@ -91,7 +92,7 @@ public class XFVRPConst extends XFVRPOptBase {
 		ListMap<Integer, Node> allocMap = ListMap.create();
 		{
 			List<Node> depotList = new ArrayList<>();
-			for (Node n : model.getNodeArr()) 
+			for (Node n : model.getNodes()) 
 				if(n.getSiteType() == SiteType.DEPOT)
 					depotList.add(n);
 

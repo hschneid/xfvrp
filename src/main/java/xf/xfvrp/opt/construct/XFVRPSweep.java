@@ -9,6 +9,7 @@ import java.util.Random;
 import java.util.Set;
 
 import xf.xfvrp.base.Node;
+import xf.xfvrp.base.NormalizeRouteService;
 import xf.xfvrp.base.Quality;
 import xf.xfvrp.base.SiteType;
 import xf.xfvrp.base.Util;
@@ -139,6 +140,6 @@ public class XFVRPSweep extends XFVRPOptBase {
 
 		Solution newSolution = new Solution();
 		newSolution.setGiantRoute(giantList.toArray(new Node[0]));
-		return Util.normalizeRoute(newSolution, model);
+		return NormalizeRouteService.normalizeRoute(newSolution, model);
 	}
 }

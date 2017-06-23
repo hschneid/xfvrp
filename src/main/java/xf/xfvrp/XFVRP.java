@@ -18,6 +18,7 @@ import xf.xfpdp.XFPDPInit;
 import xf.xfvrp.base.InvalidReason;
 import xf.xfvrp.base.LoadType;
 import xf.xfvrp.base.Node;
+import xf.xfvrp.base.NormalizeRouteService;
 import xf.xfvrp.base.SiteType;
 import xf.xfvrp.base.Util;
 import xf.xfvrp.base.Vehicle;
@@ -195,7 +196,7 @@ public class XFVRP extends XFVRP_Parameter {
 			}
 
 			// Normilization of last result
-			route = Util.normalizeRoute(route, model);
+			route = NormalizeRouteService.normalizeRoute(route, model);
 		}
 		
 		// Fertige Tour
@@ -283,7 +284,7 @@ public class XFVRP extends XFVRP_Parameter {
 	 */
 	private Solution reconstructGiantRoute(List<RouteReport> routes, XFVRPModel model) {
 		Map<String, Node> nodeMap = new HashMap<>();
-		Arrays.stream(model.getNodeArr()).forEach(n -> nodeMap.put(n.getExternID(), n));
+		Arrays.stream(model.getNodes()).forEach(n -> nodeMap.put(n.getExternID(), n));
 		
 		int depotId = 0;
 		ArrayList<Node> al = new ArrayList<>();

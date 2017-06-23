@@ -11,8 +11,8 @@ import util.collection.GiantRouteIterator;
 import util.collection.NodeNeighborhood;
 import util.collection.Route;
 import xf.xfvrp.base.Node;
+import xf.xfvrp.base.NormalizeRouteService;
 import xf.xfvrp.base.Quality;
-import xf.xfvrp.base.Util;
 import xf.xfvrp.base.monitor.StatusCode;
 import xf.xfvrp.opt.Solution;
 import xf.xfvrp.opt.XFVRPOptBase;
@@ -62,7 +62,7 @@ public class XFVRPRuinRecreate extends XFVRPOptBase {
 					statusManager.fireMessage(StatusCode.RUNNING, this.getClass().getSimpleName()+" loop "+i+"\t last cost : "+bestQuality.getCost()+"\t new cost : "+qNew.getCost());
 
 					bestQuality = qNew;
-					bestRoute = Util.normalizeRoute(recreatedRoute, model);
+					bestRoute = NormalizeRouteService.normalizeRoute(recreatedRoute, model);
 				}
 		}
 		return bestRoute;
@@ -77,7 +77,7 @@ public class XFVRPRuinRecreate extends XFVRPOptBase {
 		metricNeighborhood = new NodeNeighborhood(model);
 
 		for (int i = model.getNbrOfDepots()+model.getNbrOfReplenish(); i < model.getNbrOfNodes(); i++)
-			customers.add(model.getNodeArr()[i]);
+			customers.add(model.getNodes()[i]);
 	}
 
 	/**

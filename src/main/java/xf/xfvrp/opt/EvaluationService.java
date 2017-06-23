@@ -23,7 +23,7 @@ import xf.xfvrp.base.preset.BlockNameConverter;
  * @author hschneid
  *
  */
-public class CheckMethod {
+public class EvaluationService {
 
 	private static final int ROUTE_IDX = 0;
 	private static final int LENGTH = 1;

@@ -15,6 +15,9 @@ public class Solution {
 	 * @return the giantRoute
 	 */
 	public Node[] getGiantRoute() {
+		if(routes.length == 0)
+			return new Node[0];
+		
 		List<Node> giantRoute = new ArrayList<>();
 		for (Node[] route : routes) {
 			for (int i = 0; i < route.length - 1; i++) {
@@ -32,8 +35,10 @@ public class Solution {
 	 * @param giantRoute the giantRoute to set
 	 */
 	public void setGiantRoute(Node[] giantRoute) {
-		if(giantRoute.length == 0)
+		if(giantRoute.length == 0) {
 			routes = new Node[0][0];
+			return;
+		}
 		
 		List<List<Node>> list = new ArrayList<>();
 		List<Node> currentRoute = new ArrayList<>();

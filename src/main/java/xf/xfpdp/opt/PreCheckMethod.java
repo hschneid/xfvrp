@@ -36,7 +36,7 @@ public class PreCheckMethod {
 		this.model = model;
 
 		if(model.getNbrOfNodes() > model.getNbrOfDepots() + model.getNbrOfReplenish()) {
-			Node customer = model.getNodeArr()[model.getNbrOfDepots() + model.getNbrOfReplenish() + 1];
+			Node customer = model.getNodes()[model.getNbrOfDepots() + model.getNbrOfReplenish() + 1];
 			context.amountVal = new float[customer.getDemand().length * 3];
 			workAmountVal = new float[customer.getDemand().length * 3];
 		}

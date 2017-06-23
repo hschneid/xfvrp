@@ -34,7 +34,7 @@ public abstract class XFVRPOptBase extends XFVRPBase<XFVRPModel> {
 	public boolean isSplittable = false;
 	protected Random rand = new Random(1234);
 	protected static final float epsilon = 0.001f;
-	private CheckMethod check = new CheckMethod();
+	private EvaluationService check = new EvaluationService();
 
 	/**
 	 * Inverts the node sequence in the range

@@ -174,7 +174,7 @@ public class XFVRPModel {
 	 * 
 	 * @return
 	 */
-	public Node[] getNodeArr() {
+	public Node[] getNodes() {
 		return nodeArr;
 	}
 

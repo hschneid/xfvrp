@@ -31,7 +31,7 @@ public class StringWriter {
 	public static String write(Report report) {
 		StringBuilder sb = new StringBuilder();
 
-		Node[] nodes = report.getModel().getNodeArr();
+		Node[] nodes = report.getModel().getNodes();
 		Map<String, Integer> blockMap = new HashMap<>();
 		Map<String, Integer> posMap = new HashMap<>();
 		for (Node n : nodes) {

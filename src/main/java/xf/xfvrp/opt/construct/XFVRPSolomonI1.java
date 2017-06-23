@@ -38,7 +38,7 @@ public class XFVRPSolomonI1 extends XFVRPOptBase {
 	 */
 	@Override
 	public Solution execute(Solution solution) {
-		final Node[] nodeArr = model.getNodeArr();
+		final Node[] nodeArr = model.getNodes();
 		if(model.getNbrOfDepots() > 1)
 			throw new UnsupportedOperationException(XFVRPSolomonI1.class.getName()+" supports no multi depot");
 		if(model.getNbrOfReplenish() > 0)

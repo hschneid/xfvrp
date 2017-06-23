@@ -117,7 +117,7 @@ public class XFPDPInit {
 	 * @return
 	 */
 	public Solution buildInitPDP(XFVRPModel model, List<Node> invalidNodes) {
-		Node[] nodeArr = model.getNodeArr();
+		Node[] nodeArr = model.getNodes();
 		if (nodeArr.length == 0) {
 			Solution solution = new Solution();
 			solution.setGiantRoute(new Node[0]);
@@ -163,9 +163,9 @@ public class XFPDPInit {
 	 * @return
 	 */
 	private boolean checkShipment(XFVRPModel model, int[] shipment) {
-		Node depot = model.getNodeArr()[0];
-		Node pick = model.getNodeArr()[shipment[0]];
-		Node deli = model.getNodeArr()[shipment[1]];
+		Node depot = model.getNodes()[0];
+		Node pick = model.getNodes()[shipment[0]];
+		Node deli = model.getNodes()[shipment[1]];
 
 		float travelTime = model.getTime(depot, pick);
 		float travelTime2 = model.getTime(pick, deli);

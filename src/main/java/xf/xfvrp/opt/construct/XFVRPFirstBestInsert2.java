@@ -7,6 +7,7 @@ import java.util.OptionalInt;
 import java.util.stream.IntStream;
 
 import xf.xfvrp.base.Node;
+import xf.xfvrp.base.NormalizeRouteService;
 import xf.xfvrp.base.Quality;
 import xf.xfvrp.base.SiteType;
 import xf.xfvrp.base.Util;
@@ -57,7 +58,7 @@ public class XFVRPFirstBestInsert2 extends XFVRPOptBase {
 		
 		Solution newSolution = new Solution();
 		newSolution.setGiantRoute(giantRoute);
-		return Util.normalizeRoute(newSolution, model);
+		return NormalizeRouteService.normalizeRoute(newSolution, model);
 	}
 
 	/**
@@ -113,7 +114,7 @@ public class XFVRPFirstBestInsert2 extends XFVRPOptBase {
 				solution.setGiantRoute(newGiantRoute);
 				Quality qq = check(solution);
 				if(qq.getPenalty() == 0) {
-					giantRoute = Util.normalizeRoute(solution, model).getGiantRoute();
+					giantRoute = NormalizeRouteService.normalizeRoute(solution, model).getGiantRoute();
 					break;
 				}
 			}
@@ -162,7 +163,7 @@ public class XFVRPFirstBestInsert2 extends XFVRPOptBase {
 				solution.setGiantRoute(newGiantRoute);
 				Quality qq = check(solution);
 				if(qq.getPenalty() == 0) {
-					giantRoute = Util.normalizeRoute(solution, model).getGiantRoute();
+					giantRoute = NormalizeRouteService.normalizeRoute(solution, model).getGiantRoute();
 					reducedGiantRoute = new Node[giantRoute.length - 1];
 					break;
 				}
@@ -274,12 +275,12 @@ public class XFVRPFirstBestInsert2 extends XFVRPOptBase {
 	 */
 	private Node[] initRoute() {
 		Node[] route = new Node[2];
-		route[0] = Util.createIdNode(model.getNodeArr()[0], 0);
-		route[1] = Util.createIdNode(model.getNodeArr()[0], 1);
+		route[0] = Util.createIdNode(model.getNodes()[0], 0);
+		route[1] = Util.createIdNode(model.getNodes()[0], 1);
 
 		Solution solution = new Solution();
 		solution.setGiantRoute(route);
-		return Util.normalizeRoute(solution, model).getGiantRoute();
+		return NormalizeRouteService.normalizeRoute(solution, model).getGiantRoute();
 	}
 
 	/**
@@ -330,7 +331,7 @@ public class XFVRPFirstBestInsert2 extends XFVRPOptBase {
 	private List<Node> getCustomers() {
 		List<Node> customers = new ArrayList<>();
 		for (int i = model.getNbrOfDepots()+model.getNbrOfReplenish(); i < model.getNbrOfNodes(); i++)
-			customers.add(model.getNodeArr()[i]);
+			customers.add(model.getNodes()[i]);
 		return customers;
 	}
 

@@ -47,8 +47,8 @@ public class XFVRPSavings extends XFVRPOptBase {
 		Node[][] routeArr = buildRouteLists(giantRoute, model);
 
 		List<Node> nodeList = new ArrayList<>();
-		int[] routeIdxForStartNode = new int[model.getNodeArr().length];
-		int[] routeIdxForEndNode = new int[model.getNodeArr().length];
+		int[] routeIdxForStartNode = new int[model.getNodes().length];
+		int[] routeIdxForEndNode = new int[model.getNodes().length];
 		{
 			Arrays.fill(routeIdxForStartNode, -1);
 			Arrays.fill(routeIdxForEndNode, -1);

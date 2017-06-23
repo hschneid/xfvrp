@@ -3,9 +3,9 @@ package xf.xfvrp.opt.improve;
 import java.util.Arrays;
 
 import xf.xfvrp.base.Node;
+import xf.xfvrp.base.NormalizeRouteService;
 import xf.xfvrp.base.Quality;
 import xf.xfvrp.base.SiteType;
-import xf.xfvrp.base.Util;
 import xf.xfvrp.base.Vehicle;
 import xf.xfvrp.base.monitor.StatusCode;
 import xf.xfvrp.base.preset.BlockNameConverter;
@@ -74,10 +74,10 @@ public class XFVRPILS extends XFVRPOptBase {
 				bestBestQ = q;
 				bestBestTour = gT;
 			} else
-				bestRoute = Util.normalizeRoute(bestRoute, model);
+				bestRoute = NormalizeRouteService.normalizeRoute(bestRoute, model);
 		}
 
-		return Util.normalizeRoute(bestBestTour, model);
+		return NormalizeRouteService.normalizeRoute(bestBestTour, model);
 	}
 
 	/**

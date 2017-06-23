@@ -145,7 +145,7 @@ public class XFInit extends XFVRPBase<XFVRPModel> {
 		List<Node> validReplenish = new ArrayList<>();
 
 		ListMap<Integer, Node> blockMap = ListMap.create();
-		for (Node node : model.getNodeArr())
+		for (Node node : model.getNodes())
 			blockMap.put(node.getPresetBlockIdx(), node);
 
 		boolean containsValidCustomers = false;
@@ -265,10 +265,10 @@ public class XFInit extends XFVRPBase<XFVRPModel> {
 			Node[] blockGiantRoute = new Node[nodeList.size() + 2];
 
 			// Build a route with all nodes of a block
-			blockGiantRoute[0] = Util.createIdNode(model.getNodeArr()[i], 0);
+			blockGiantRoute[0] = Util.createIdNode(model.getNodes()[i], 0);
 			for (int j = 0; j < nodeList.size(); j++)
 				blockGiantRoute[j+1] = nodeList.get(j); 
-			blockGiantRoute[nodeList.size() + 1] = Util.createIdNode(model.getNodeArr()[i], 1);
+			blockGiantRoute[nodeList.size() + 1] = Util.createIdNode(model.getNodes()[i], 1);
 
 			// Check with Relocate optimization, if there is a sequence of nodes
 			// in the block, which are valid for the constraints.
@@ -343,7 +343,7 @@ public class XFInit extends XFVRPBase<XFVRPModel> {
 
 		// Create additional route with all replenishing nodes on it.
 		for (int i = model.getNbrOfDepots(); i < model.getNbrOfDepots() + model.getNbrOfReplenish(); i++)
-			gL.add(model.getNodeArr()[i].copy());
+			gL.add(model.getNodes()[i].copy());
 		gL.add(Util.createIdNode(nodes.get(depotIdx % depots.size()), maxIdx++));
 
 		Solution solution = new Solution();
@@ -375,7 +375,7 @@ public class XFInit extends XFVRPBase<XFVRPModel> {
 		// with valid constraints
 		boolean canBeValid = false;
 		for (int i = 0; i < model.getNbrOfDepots(); i++) {
-			Node depot = model.getNodeArr()[i];
+			Node depot = model.getNodes()[i];
 
 			float travelTime = model.getTime(depot, cust);
 			float travelTime2 = model.getTime(cust, depot);		

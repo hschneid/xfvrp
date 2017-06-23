@@ -38,7 +38,7 @@ public class NodeNeighborhood {
 		this.customers = new ArrayList<>();
 
 		for (int i = model.getNbrOfDepots() + model.getNbrOfReplenish(); i < model.getNbrOfNodes(); i++)
-			customers.add(model.getNodeArr()[i]);
+			customers.add(model.getNodes()[i]);
 
 		calculateDistancesFromJob2Job();
 	}
