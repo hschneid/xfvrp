@@ -88,9 +88,6 @@ public class EvaluationService {
 		for (int i = 1; i < giantRoute.length; i++) {
 			if(!activeNodes[i])	continue;
 			
-//			if(Debug.debug && i > 900)
-//				System.out.println();
-
 			Node currNode = giantRoute[i];
 			final SiteType currSiteType = currNode.getSiteType();
 
