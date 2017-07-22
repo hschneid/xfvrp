@@ -8,6 +8,7 @@ import xf.xfvrp.base.Node;
 import xf.xfvrp.base.Quality;
 import xf.xfvrp.base.XFVRPBase;
 import xf.xfvrp.base.XFVRPModel;
+import xf.xfvrp.opt.evaluation.EvaluationService;
 
 
 /** 

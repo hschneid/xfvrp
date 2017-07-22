@@ -9,6 +9,7 @@ import xf.xfvrp.base.XFVRPModel
 import xf.xfvrp.base.XFVRPParameter
 import xf.xfvrp.base.metric.EucledianMetric
 import xf.xfvrp.base.metric.internal.AcceleratedMetricTransformator
+import xf.xfvrp.opt.evaluation.EvaluationService
 
 class EvaluationServiceSpec extends Specification {
 
