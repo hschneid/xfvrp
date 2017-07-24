@@ -1,8 +1,8 @@
 package xf.xfvrp.opt.evaluation;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import xf.xfvrp.base.LoadType;
 import xf.xfvrp.base.Node;
@@ -22,7 +22,7 @@ public class ContextBuilder {
 
 		// Variables
 		context.setMaxGlobalNodeIdx(model.getMaxGlobalNodeIdx() + 1);
-		context.setAmountArr(new float[model.getVehicle().capacity.length * 3]);
+		context.setAmountArr(new float[model.getVehicle().capacity.length * 2]);
 
 		context.setBlockPresetArr(new int[model.getNbrOfBlocks()]);
 		Arrays.fill(context.getBlockPresetArr(), -1);
@@ -33,11 +33,11 @@ public class ContextBuilder {
 		context.setPresetRoutingNodeList(new boolean[context.getMaxGlobalNodeIdx()]);
 
 		// Service times at the depot for amount on the route
-		context.setRouteDepotServiceMap(createRouteDepotServiceMap(giantRoute, model));
+		context.setRouteInfos(buildRouteInfos(giantRoute, model));
 
 		return context;
 	}
-	
+
 	/**
 	 * Searches in the giant route for nodes which can be ignored during
 	 * evalution. This can be the case for empty routes or unnecessary
@@ -77,37 +77,40 @@ public class ContextBuilder {
 
 		return activeNodes;
 	}
-	
+
 	/**
 	 * 
 	 * @param giantRoute
 	 * @param model 
 	 * @return
 	 */
-	private static float[][] createRouteDepotServiceMap(Node[] giantRoute, XFVRPModel model) {
-		List<float[]> list = new ArrayList<>();
-
-		if(model.getParameter().isWithLoadingTimeAtDepot() || model.getParameter().isWithUnloadingTimeAtDepot()) {
-			float pickupServiceTime = 0;
-			float deliverySericeTime = 0;
-
-			for (int i = 1; i < giantRoute.length; i++) {
-				if(giantRoute[i].getSiteType() == SiteType.DEPOT) {
-					list.add(new float[]{deliverySericeTime, pickupServiceTime});
-					pickupServiceTime = deliverySericeTime = 0;
-				} else if(giantRoute[i].getSiteType() == SiteType.CUSTOMER) {
-					if(giantRoute[i].getLoadType() == LoadType.PICKUP)
-						pickupServiceTime += giantRoute[i].getServiceTime(); 
-					else if(giantRoute[i].getLoadType() == LoadType.DELIVERY)
-						deliverySericeTime += giantRoute[i].getServiceTime();
-					else
-						throw new IllegalStateException("Found unexpected load type ("+giantRoute[i].getLoadType().toString()+")");
-				} else
-					throw new IllegalStateException("Found unexpected site type ("+giantRoute[i].getSiteType().toString()+")");
-			}
-			return list.toArray(new float[0][]);
+	private static Map<Node, RouteInfo> buildRouteInfos(Node[] giantRoute, XFVRPModel model) {
+		Map<Node, RouteInfo> routeInfos = new HashMap<>();
+		
+		RouteInfo routeInfo = new RouteInfo(giantRoute[0]);
+		for (int i = 1; i < giantRoute.length; i++) {
+			if(giantRoute[i].getSiteType() == SiteType.DEPOT || 
+					giantRoute[i].getSiteType() == SiteType.REPLENISH) {
+				routeInfos.put(routeInfo.getDepot(), routeInfo);
+				routeInfo = new RouteInfo(giantRoute[i]);
+			} else if(giantRoute[i].getSiteType() == SiteType.CUSTOMER) {
+				changeRouteInfo(giantRoute[i], routeInfo);
+			} else
+				throw new IllegalStateException("Found unexpected site type ("+giantRoute[i].getSiteType().toString()+")");
 		}
-
-		return null;
+		return routeInfos;
+	}
+	
+	private static void changeRouteInfo(Node node, RouteInfo routeInfo) {
+		LoadType loadType = node.getLoadType();
+		
+		if(loadType == LoadType.PICKUP) {
+			routeInfo.addUnLoadingServiceTime(node.getServiceTime());
+			routeInfo.addPickUpAmount(node.getDemand());
+		} else if(loadType == LoadType.DELIVERY) {
+			routeInfo.addLoadingServiceTime(node.getServiceTime());
+			routeInfo.addDeliveryAmount(node.getDemand());
+		} else
+			throw new IllegalStateException("Found unexpected load type ("+loadType.toString()+")");
 	}
 }

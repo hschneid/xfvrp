@@ -1,6 +1,8 @@
 package xf.xfvrp.opt.evaluation;
 
 import java.util.Arrays;
+import java.util.Map;
+import java.util.stream.IntStream;
 
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.SiteType;
@@ -32,8 +34,8 @@ public class Context {
 	private boolean[] presetRoutingBlackList;
 	private boolean[] presetRoutingNodeList;
 
-	// Service times at the depot for amount on the route
-	private float[][] routeDepotServiceMap;
+	// Pre-evaluated infos of a route (service times and amounts)
+	private Map<Node, RouteInfo> routeInfos;
 
 	private Node currentDepot;
 	private Node lastReplenishNode;
@@ -51,7 +53,7 @@ public class Context {
 		this.lastNode = this.currentNode;
 		this.currentNode = newCurrentNode;
 
-		// Replace ending depot with starting depot (in multi depot problems its nessecary)
+		// Replace ending depot with starting depot (in multi-depot problems its necessary)
 		if(currentNode.getSiteType() == SiteType.DEPOT)
 			this.currentNode = this.currentDepot; 
 	}
@@ -87,40 +89,47 @@ public class Context {
 		routeVar[DURATION] += vehicle.waitingTimeBetweenShifts;
 	}
 
-	public void createNewRoute(Node currentNode, float earliestDepartureTime, float loadingTimeAtDepot) {
+	public void createNewRoute(Node newDepot) {
 		routeVar[ROUTE_IDX]++;
 
-		routeVar[TIME] = 
-				Math.max(
-						this.currentNode.getTimeWindow(0)[0] + loadingTimeAtDepot, 
-						earliestDepartureTime
-						);
+		setCurrentDepot(newDepot);
 
 		routeVar[DRIVING_TIME] = 0;
 		routeVar[NBR_OF_STOPS] = 0;
 		resetAmountsOfRoute();
 
 		routeVar[LENGTH] = 0;
-		routeVar[DURATION] = loadingTimeAtDepot;
 		routeVar[DELAY] = 0;
-
-		setCurrentDepot(currentNode);
 
 		lastPresetSequenceRankArr[BlockNameConverter.DEFAULT_BLOCK_IDX] = Integer.MIN_VALUE;
 		Arrays.fill(presetRoutingBlackList, false);
 		Arrays.fill(presetRoutingNodeList, false);
 	}
+	
+	public void setDepartureTimeAtDepot(float earliestDepartureTime, float loadingTimeAtDepot) {
+		routeVar[TIME] = 
+				Math.max(
+						this.currentDepot.getTimeWindow(0)[0] + loadingTimeAtDepot, 
+						earliestDepartureTime
+						);
+		routeVar[DURATION] = loadingTimeAtDepot;
+	}
 
 	public void resetAmountsOfRoute() {
+		Amount deliveryOfRoute = routeInfos.get(currentDepot).getDeliveryAmount();
+
 		Arrays.fill(amountsOfRoute, 0);
+
+		IntStream.range(0, amountsOfRoute.length / 3)
+			.forEach(i -> amountsOfRoute[i * 2 + 0] = deliveryOfRoute.getAmounts()[i]);
 	}
 
-	public float getLoadingTimesAtDepotForCurrentRoute() {
-		return routeDepotServiceMap[(int)routeVar[ROUTE_IDX]][0];
+	public float getLoadingServiceTimeAtDepot() {
+		return routeInfos.get(currentDepot).getLoadingServiceTime();
 	}
 
-	public float getUnLoadingTimesAtDepotForCurrentRoute() {
-		return routeDepotServiceMap[(int)routeVar[ROUTE_IDX]][1];
+	public float getUnLoadingServiceTimeAtDepot() {
+		return routeInfos.get(currentDepot).getUnLoadingServiceTime();
 	}
 
 	public void addToTime(float addedTime) {
@@ -211,12 +220,8 @@ public class Context {
 		this.presetRoutingNodeList = presetRoutingNodeList;
 	}
 
-	public float[][] getRouteDepotServiceMap() {
-		return routeDepotServiceMap;
-	}
-
-	public void setRouteDepotServiceMap(float[][] routeDepotServiceMap) {
-		this.routeDepotServiceMap = routeDepotServiceMap;
+	public void setRouteInfos(Map<Node, RouteInfo> routeDepotServiceMap) {
+		this.routeInfos = routeDepotServiceMap;
 	}
 
 	public Node getLastDepot() {
@@ -280,12 +285,12 @@ public class Context {
 	}
 
 	public int checkCapacities(Vehicle v) {
-		int penalty = 0;
-		for (int i = 0; i < amountsOfRoute.length / 3; i++)
-			for (int j = 0; j < 3; j++)
-				penalty += Math.max(0, amountsOfRoute[i * 3 + j] - v.capacity[i]);
-
-		return penalty;
+		return IntStream.range(0, amountsOfRoute.length / 3)
+				.map(i -> 
+					// Common Load of Pickups and Deliveries
+					(int)Math.ceil(Math.max(0, (amountsOfRoute[i * 2 + 0] + amountsOfRoute[i * 2 + 1]) - v.capacity[i]))
+				)
+				.sum();
 	}
 
 	public int setAndCheckPresetSequence(int blockIndex) {

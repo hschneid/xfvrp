@@ -47,9 +47,9 @@ public class EvaluationService {
 		// Feasibility check
 		checkFeasibility(giantRoute);
 
-		// Begin first route (there is always a first route)
-		context.setNextNode(giantRoute[0]);
+		// Initialization
 		beginRoute(giantRoute[0], findNextCustomer(giantRoute, 0), q, model, context);
+		context.setNextNode(giantRoute[0]);
 
 		for (int i = 1; i < giantRoute.length; i++) {
 			if(!context.isNodeActive(i)) continue;
@@ -82,7 +82,6 @@ public class EvaluationService {
 				finishRoute(vehicle, q, model, context);
 
 				beginRoute(giantRoute[i], findNextCustomer(giantRoute, i), q, model, context);
-
 			}
 		}
 
@@ -119,11 +118,9 @@ public class EvaluationService {
 		for (int i = 0; i < amounts.length / 3; i++) {
 			float delivery = (context.getCurrentNode().getLoadType() == LoadType.DELIVERY) ? context.getCurrentNode().getDemand()[i] : 0;
 			float pickup = (context.getCurrentNode().getLoadType() == LoadType.PICKUP) ? context.getCurrentNode().getDemand()[i] : 0;
-			float unloadOnRoute = (pickup < 0) ? pickup : 0; 
 
-			amounts[i*3] = Math.max(amounts[i*3] + pickup, amounts[i*3] + delivery) + unloadOnRoute;
-			amounts[i*3+1] += pickup;
-			amounts[i*3+2] += delivery;
+			amounts[i * 2 + 0] -= delivery;
+			amounts[i * 2 + 1] += pickup;
 		}
 
 		int penalty = context.checkCapacities(vehicle);
@@ -143,7 +140,7 @@ public class EvaluationService {
 
 		// Service time at depot should be considered into time window
 		if(model.getParameter().isWithUnloadingTimeAtDepot() && currentNode.getSiteType() == SiteType.DEPOT) {
-			float depotServiceTime = context.getUnLoadingTimesAtDepotForCurrentRoute();
+			float depotServiceTime = context.getUnLoadingServiceTimeAtDepot();
 			context.addToTime(depotServiceTime);
 			context.addToDuration(depotServiceTime);
 		}
@@ -257,27 +254,29 @@ public class EvaluationService {
 
 	/**
 	 * 
-	 * @param currNode
+	 * @param newDepot
 	 * @param nextNode
 	 * @param q
 	 * @param model
 	 * @param context
 	 */
-	private void beginRoute(Node currNode, Node nextNode, Quality q, XFVRPModel model, Context context) {
-		float earliestDepartureTime = (nextNode != null) ? nextNode.getTimeWindow(0)[0] - model.getTime(currNode, nextNode) : 0;
-
-		// If loading time at depot should be considered, service time of all
-		// deliveries at the route is added to starting time at depot
-		float loadingTime = 0;
-		if(model.getParameter().isWithLoadingTimeAtDepot() && nextNode != null)
-			loadingTime = context.getLoadingTimesAtDepotForCurrentRoute();
-
+	private void beginRoute(Node newDepot, Node nextNode, Quality q, XFVRPModel model, Context context) {
 		// Check for black listed nodes on route
 		// Afterwards reset the arrays for next route
 		int penalty = context.checkPresetBlackList();
 		q.addPenalty(penalty, Quality.PENALTY_REASON_BLACKLIST);
 
-		context.createNewRoute(currNode, earliestDepartureTime, loadingTime);
+		context.createNewRoute(newDepot);
+		
+		float earliestDepartureTime = (nextNode != null) ? nextNode.getTimeWindow(0)[0] - model.getTime(newDepot, nextNode) : 0;
+
+		// If loading time at depot should be considered, service time of all
+		// deliveries at the route is added to starting time at depot
+		float loadingTimeAtDepot = 0;
+		if(model.getParameter().isWithLoadingTimeAtDepot() && nextNode != null)
+			loadingTimeAtDepot = context.getLoadingServiceTimeAtDepot();
+
+		context.setDepartureTimeAtDepot(earliestDepartureTime, loadingTimeAtDepot);
 	}
 
 	/**
