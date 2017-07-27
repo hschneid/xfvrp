@@ -89,14 +89,14 @@ public class Context {
 		routeVar[DURATION] += vehicle.waitingTimeBetweenShifts;
 	}
 
-	public void createNewRoute(Node newDepot) {
+	public int createNewRoute(Node newDepot, Vehicle vehicle) {
 		routeVar[ROUTE_IDX]++;
 
 		setCurrentDepot(newDepot);
 
 		routeVar[DRIVING_TIME] = 0;
 		routeVar[NBR_OF_STOPS] = 0;
-		resetAmountsOfRoute();
+		int penalty = resetAmountsOfRoute(vehicle);
 
 		routeVar[LENGTH] = 0;
 		routeVar[DELAY] = 0;
@@ -104,8 +104,10 @@ public class Context {
 		lastPresetSequenceRankArr[BlockNameConverter.DEFAULT_BLOCK_IDX] = Integer.MIN_VALUE;
 		Arrays.fill(presetRoutingBlackList, false);
 		Arrays.fill(presetRoutingNodeList, false);
+		
+		return penalty;
 	}
-	
+
 	public void setDepartureTimeAtDepot(float earliestDepartureTime, float loadingTimeAtDepot) {
 		routeVar[TIME] = 
 				Math.max(
@@ -115,13 +117,22 @@ public class Context {
 		routeVar[DURATION] = loadingTimeAtDepot;
 	}
 
-	public void resetAmountsOfRoute() {
-		Amount deliveryOfRoute = routeInfos.get(currentDepot).getDeliveryAmount();
-
+	public int resetAmountsOfRoute(Vehicle vehicle) {
 		Arrays.fill(amountsOfRoute, 0);
 
-		IntStream.range(0, amountsOfRoute.length / 3)
+		Amount deliveryOfRoute = routeInfos.get(currentDepot).getDeliveryAmount();
+
+		if(deliveryOfRoute == null)
+			throw new IllegalStateException("Could not find route infos for depot id " + currentDepot.getDepotId());
+
+		if(deliveryOfRoute.hasAmount()) {
+			IntStream.range(0, amountsOfRoute.length / 2)
 			.forEach(i -> amountsOfRoute[i * 2 + 0] = deliveryOfRoute.getAmounts()[i]);
+			
+			return checkCapacities(vehicle);
+		}
+		
+		return 0;
 	}
 
 	public float getLoadingServiceTimeAtDepot() {
@@ -285,11 +296,11 @@ public class Context {
 	}
 
 	public int checkCapacities(Vehicle v) {
-		return IntStream.range(0, amountsOfRoute.length / 3)
+		return IntStream.range(0, amountsOfRoute.length / 2)
 				.map(i -> 
-					// Common Load of Pickups and Deliveries
-					(int)Math.ceil(Math.max(0, (amountsOfRoute[i * 2 + 0] + amountsOfRoute[i * 2 + 1]) - v.capacity[i]))
-				)
+				// Common Load of Pickups and Deliveries
+				(int)Math.ceil(Math.max(0, (amountsOfRoute[i * 2 + 0] + amountsOfRoute[i * 2 + 1]) - v.capacity[i]))
+						)
 				.sum();
 	}
 

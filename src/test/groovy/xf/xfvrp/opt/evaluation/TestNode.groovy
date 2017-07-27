@@ -3,6 +3,7 @@ package xf.xfvrp.opt.evaluation
 import xf.xfvrp.base.LoadType
 import xf.xfvrp.base.Node
 import xf.xfvrp.base.SiteType
+import xf.xfvrp.base.preset.BlockNameConverter
 
 class TestNode {
 
@@ -28,31 +29,34 @@ class TestNode {
 	float loadBearingOfPackage = 1;
 	int stackingGroupOfPackage = 1;
 	int containerTypeOfPackage = 1;
-	
+
 	Node getNode() {
-		return new Node(
-			globalIdx,
-			externID,
-			siteType,
-			xlong,
-			ylat,
-			geoId,
-			demand,
-			timeWindow,
-			serviceTime,
-			serviceTimeForSite,
-			loadType,
-			presetBlockPos,
-			presetBlockRank,
-			shipID,
-			nbrOfPackages,
-			heightOfPackage,
-			widthOfPackage,
-			lengthOfPackage,
-			weightOfPackage,
-			loadBearingOfPackage,
-			stackingGroupOfPackage,
-			containerTypeOfPackage
-			);
+		Node node = new Node(
+				globalIdx,
+				externID,
+				siteType,
+				xlong,
+				ylat,
+				geoId,
+				demand,
+				timeWindow,
+				serviceTime,
+				serviceTimeForSite,
+				loadType,
+				presetBlockPos,
+				presetBlockRank,
+				shipID,
+				nbrOfPackages,
+				heightOfPackage,
+				widthOfPackage,
+				lengthOfPackage,
+				weightOfPackage,
+				loadBearingOfPackage,
+				stackingGroupOfPackage,
+				containerTypeOfPackage
+				);
+		node.setPresetBlockIdx(BlockNameConverter.DEFAULT_BLOCK_IDX)
+		
+		return node;
 	}
 }

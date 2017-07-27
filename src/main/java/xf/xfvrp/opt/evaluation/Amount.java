@@ -27,4 +27,8 @@ public class Amount {
 		if(amounts == null)
 			amounts = new float[otherAmount.length];
 	}
+
+	public boolean hasAmount() {
+		return (amounts != null);
+	}
 }

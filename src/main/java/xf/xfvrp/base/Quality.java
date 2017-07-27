@@ -120,7 +120,8 @@ public class Quality {
 	 */
 	public void addPenalty(float penalty, int reason) {
 		this.penalty += penalty;
-		reasons[reason]++;
+		if(penalty != 0)
+			reasons[reason]++;
 	}
 	
 	/**
