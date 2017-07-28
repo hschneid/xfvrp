@@ -89,10 +89,10 @@ public class Context {
 		routeVar[DURATION] += vehicle.waitingTimeBetweenShifts;
 	}
 
-	public int createNewRoute(Node newDepot, Vehicle vehicle) {
+	public int createNewRoute(Vehicle vehicle) {
 		routeVar[ROUTE_IDX]++;
 
-		setCurrentDepot(newDepot);
+		setCurrentDepot(currentNode);
 
 		routeVar[DRIVING_TIME] = 0;
 		routeVar[NBR_OF_STOPS] = 0;
@@ -120,10 +120,10 @@ public class Context {
 	public int resetAmountsOfRoute(Vehicle vehicle) {
 		Arrays.fill(amountsOfRoute, 0);
 
-		Amount deliveryOfRoute = routeInfos.get(currentDepot).getDeliveryAmount();
+		Amount deliveryOfRoute = routeInfos.get(currentNode).getDeliveryAmount();
 
 		if(deliveryOfRoute == null)
-			throw new IllegalStateException("Could not find route infos for depot id " + currentDepot.getDepotId());
+			throw new IllegalStateException("Could not find route infos for depot id " + currentNode.getDepotId());
 
 		if(deliveryOfRoute.hasAmount()) {
 			IntStream.range(0, amountsOfRoute.length / 2)
@@ -297,10 +297,12 @@ public class Context {
 
 	public int checkCapacities(Vehicle v) {
 		return IntStream.range(0, amountsOfRoute.length / 2)
-				.map(i -> 
+				.map(i -> {
 				// Common Load of Pickups and Deliveries
-				(int)Math.ceil(Math.max(0, (amountsOfRoute[i * 2 + 0] + amountsOfRoute[i * 2 + 1]) - v.capacity[i]))
-						)
+				int overload = (int)Math.ceil(Math.max(0, (amountsOfRoute[i * 2 + 0] + amountsOfRoute[i * 2 + 1]) - v.capacity[i]));
+				
+				return overload;
+				})
 				.sum();
 	}
 
