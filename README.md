@@ -22,4 +22,12 @@ Additional topics are the useage and maintainability of the API like
 ##License
 This software is released under [MIT License] (https://opensource.org/licenses/MIT)
 
-``` new Test().call(); ```
+``` XFVRP xfvrp = new XFVRP();
+xfvrp.addDepot().setXlong();
+xfvrp.addCustomer().setDemand();
+xfvrp.setVehicle().setCapacity();
+xfvrp.setMetric(new EucledianMetric());
+xfvrp.setOptType(XFVRPOptType.RELOCATE);
+
+Report report = xfvrp.executeRoutePlanning();
+report.getSummary().getDistance();```
