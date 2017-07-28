@@ -22,12 +22,14 @@ Additional topics are the useage and maintainability of the API like
 ##License
 This software is released under [MIT License] (https://opensource.org/licenses/MIT)
 
+A simple example for a capacitated vehicle route planning:
 ``` XFVRP xfvrp = new XFVRP();
-xfvrp.addDepot().setXlong();
-xfvrp.addCustomer().setDemand();
-xfvrp.setVehicle().setCapacity();
+xfvrp.addDepot().setXlong(5.667);
+xfvrp.addCustomer().setXlong(1.002).setDemand(new float[]{1.5, 0, 2.3});
+xfvrp.setVehicle().setCapacity(new float[]{3, 2, 5});
 xfvrp.setMetric(new EucledianMetric());
 xfvrp.setOptType(XFVRPOptType.RELOCATE);
 
 Report report = xfvrp.executeRoutePlanning();
-report.getSummary().getDistance();```
+report.getSummary().getDistance();
+```
