@@ -4,7 +4,6 @@ import spock.lang.Specification
 import xf.xfvrp.base.LoadType
 import xf.xfvrp.base.Node
 import xf.xfvrp.base.SiteType
-import xf.xfvrp.base.Vehicle
 import xf.xfvrp.base.XFVRPModel
 import xf.xfvrp.base.XFVRPParameter
 import xf.xfvrp.base.metric.EucledianMetric
@@ -15,11 +14,41 @@ class EvaluationServiceTimeWindowSpec extends Specification {
 
 	def service = new EvaluationService();
 
+	def depot;
+
 	def nd = new TestNode(
 	externID: "DEP",
 	siteType: SiteType.DEPOT,
 	demand: [0, 0],
-	timeWindow: [[0,99],[2,99]]
+	timeWindow: [[2,7]]
+	).getNode()
+
+	def nd2 = new TestNode(
+	externID: "DEP",
+	siteType: SiteType.DEPOT,
+	demand: [0, 0],
+	timeWindow: [[2,8]]
+	).getNode()
+
+	def nd3 = new TestNode(
+	externID: "DEP",
+	siteType: SiteType.DEPOT,
+	demand: [0, 0],
+	timeWindow: [[0.5f,8]]
+	).getNode()
+
+	def nd4 = new TestNode(
+	externID: "DEP",
+	siteType: SiteType.DEPOT,
+	demand: [0, 0],
+	timeWindow: [[2,9]]
+	).getNode()
+
+	def nd5 = new TestNode(
+	externID: "DEP",
+	siteType: SiteType.DEPOT,
+	demand: [0, 0],
+	timeWindow: [[2,8.9]]
 	).getNode()
 
 	def nr = new TestNode(
@@ -35,13 +64,13 @@ class EvaluationServiceTimeWindowSpec extends Specification {
 
 	def metric = new EucledianMetric()
 
-	def "Delivery - 2 capacity, all clear"() {
-		def v = new TestVehicle(name: "V1", capacity: [3, 3]).getVehicle()
-		def model = initScen1(v, LoadType.DELIVERY)
+	def "Basic Time Windows - Okay"() {
+		depot = nd
+		def model = initScenBasic([[[3,4]],[[4,5]],[[5,6]]] as float[][][], 0f, null)
 		def n = model.getNodes()
 
 		sol = new Solution()
-		sol.setGiantRoute([nd, n[1], n[2], n[3], nd] as Node[])
+		sol.setGiantRoute([depot, n[1], n[2], n[3], depot] as Node[])
 
 		when:
 		def result = service.check(sol, model)
@@ -49,16 +78,16 @@ class EvaluationServiceTimeWindowSpec extends Specification {
 		then:
 		result != null
 		result.getPenalty() == 0
-		Math.abs(result.getCost() - 4.828) < 0.001
+		Math.abs(result.getCost() - 4) < 0.001
 	}
 
-	def "Delivery - 2 capacity, first fail"() {
-		def v = new TestVehicle(name: "V1", capacity: [1, 3]).getVehicle()
-		def model = initScen1(v, LoadType.DELIVERY)
+	def "Basic Time Windows - Not Okay"() {
+		depot = nd
+		def model = initScenBasic([[[3,4]],[[3,3.9f]],[[5,6]]] as float[][][], 0f, null)
 		def n = model.getNodes()
 
 		sol = new Solution()
-		sol.setGiantRoute([nd, n[1], n[2], n[3], nd] as Node[])
+		sol.setGiantRoute([depot, n[1], n[2], n[3], depot] as Node[])
 
 		when:
 		def result = service.check(sol, model)
@@ -66,34 +95,16 @@ class EvaluationServiceTimeWindowSpec extends Specification {
 		then:
 		result != null
 		result.getPenalty() > 0
-		Math.abs(result.getCost() - 4.828) < 0.001
+		Math.abs(result.getCost() - 4) < 0.001
 	}
 
-	def "Delivery - 2 capacity, second fail"() {
-		def v = new TestVehicle(name: "V1", capacity: [3, 2]).getVehicle()
-		def model = initScen1(v, LoadType.DELIVERY)
+	def "With Service Time - Okay"() {
+		depot = nd2
+		def model = initScenBasic([[[3,4]],[[4,5.5]],[[6,7]]] as float[][][], 0.5f, null)
 		def n = model.getNodes()
 
 		sol = new Solution()
-		sol.setGiantRoute([nd, n[1], n[2], n[3], nd] as Node[])
-
-		when:
-		def result = service.check(sol, model)
-
-		then:
-		result != null
-		result.getPenalty() > 0
-		Math.abs(result.getCost() - 4.828) < 0.001
-
-	}
-
-	def "Pickup - 2 capacity, all clear"() {
-		def v = new TestVehicle(name: "V1", capacity: [3, 3]).getVehicle()
-		def model = initScen1(v, LoadType.PICKUP)
-		def n = model.getNodes()
-
-		sol = new Solution()
-		sol.setGiantRoute([nd, n[1], n[2], n[3], nd] as Node[])
+		sol.setGiantRoute([depot, n[1], n[2], n[3], depot] as Node[])
 
 		when:
 		def result = service.check(sol, model)
@@ -101,16 +112,16 @@ class EvaluationServiceTimeWindowSpec extends Specification {
 		then:
 		result != null
 		result.getPenalty() == 0
-		Math.abs(result.getCost() - 4.828) < 0.001
+		Math.abs(result.getCost() - 4) < 0.001
 	}
 
-	def "Pickup - 2 capacity, first fail"() {
-		def v = new TestVehicle(name: "V1", capacity: [1, 3]).getVehicle()
-		def model = initScen1(v, LoadType.PICKUP)
+	def "With Service Time - Not Okay"() {
+		depot = nd
+		def model = initScenBasic([[[3,4]],[[4,5.5]],[[6,7]]] as float[][][], 0.5f, null)
 		def n = model.getNodes()
 
 		sol = new Solution()
-		sol.setGiantRoute([nd, n[1], n[2], n[3], nd] as Node[])
+		sol.setGiantRoute([depot, n[1], n[2], n[3], depot] as Node[])
 
 		when:
 		def result = service.check(sol, model)
@@ -118,33 +129,17 @@ class EvaluationServiceTimeWindowSpec extends Specification {
 		then:
 		result != null
 		result.getPenalty() > 0
-		Math.abs(result.getCost() - 4.828) < 0.001
+		Math.abs(result.getCost() - 4) < 0.001
 	}
 
-	def "Pickup - 2 capacity, second fail"() {
-		def v = new TestVehicle(name: "V1", capacity: [3, 2]).getVehicle()
-		def model = initScen1(v, LoadType.PICKUP)
+	def "With Loading at depot - Okay"() {
+		depot = nd3
+		parameter.setLoadingTimeAtDepot(true)
+		def model = initScenBasic([[[3,4]],[[4,5.5]],[[6,7]]] as float[][][], 0.5f, null)
 		def n = model.getNodes()
 
 		sol = new Solution()
-		sol.setGiantRoute([nd, n[1], n[2], n[3], nd] as Node[])
-
-		when:
-		def result = service.check(sol, model)
-
-		then:
-		result != null
-		result.getPenalty() > 0
-		Math.abs(result.getCost() - 4.828) < 0.001
-	}
-
-	def "Pickup/Delivery - all clear"() {
-		def v = new TestVehicle(name: "V1", capacity: [3, 3]).getVehicle()
-		def model = initScen2(v)
-		def n = model.getNodes()
-
-		sol = new Solution()
-		sol.setGiantRoute([nd, n[1], n[3], n[2], nd] as Node[])
+		sol.setGiantRoute([depot, n[1], n[2], n[3], depot] as Node[])
 
 		when:
 		def result = service.check(sol, model)
@@ -152,16 +147,17 @@ class EvaluationServiceTimeWindowSpec extends Specification {
 		then:
 		result != null
 		result.getPenalty() == 0
-		Math.abs(result.getCost() - 4.828) < 0.001
+		Math.abs(result.getCost() - 4) < 0.001
 	}
 
-	def "Pickup/Delivery - wrong route order"() {
-		def v = new TestVehicle(name: "V1", capacity: [3, 3]).getVehicle()
-		def model = initScen2(v)
+	def "With Loading at depot - Not Okay"() {
+		depot = nd2
+		parameter.setLoadingTimeAtDepot(true)
+		def model = initScenBasic([[[3,4]],[[4,5.5]],[[6,7]]] as float[][][], 0.5f, null)
 		def n = model.getNodes()
 
 		sol = new Solution()
-		sol.setGiantRoute([nd, n[1], n[2], n[3], nd] as Node[])
+		sol.setGiantRoute([depot, n[1], n[2], n[3], depot] as Node[])
 
 		when:
 		def result = service.check(sol, model)
@@ -169,16 +165,17 @@ class EvaluationServiceTimeWindowSpec extends Specification {
 		then:
 		result != null
 		result.getPenalty() > 0
-		Math.abs(result.getCost() - 4.828) < 0.001
+		Math.abs(result.getCost() - 4) < 0.001
 	}
 
-	def "Replenish - homogenus - all clear"() {
-		def v = new TestVehicle(name: "V1", capacity: [3, 3]).getVehicle()
-		def model = initScen3(v)
+	def "With UnLoading at depot - Okay"() {
+		depot = nd4
+		parameter.setUnloadingTimeAtDepot(true)
+		def model = initScenBasicPickup([[[3,4]],[[4,5.5]],[[6,7]]] as float[][][], 0.5f, null)
 		def n = model.getNodes()
 
 		sol = new Solution()
-		sol.setGiantRoute([nd, n[2], n[4], nr, n[6], n[3], nd] as Node[])
+		sol.setGiantRoute([depot, n[1], n[2], n[3], depot] as Node[])
 
 		when:
 		def result = service.check(sol, model)
@@ -186,50 +183,34 @@ class EvaluationServiceTimeWindowSpec extends Specification {
 		then:
 		result != null
 		result.getPenalty() == 0
-		Math.abs(result.getCost() - 6.828) < 0.001
-	}
-
-	def "Replenish - homogenus - pickup fail"() {
-		def v = new TestVehicle(name: "V1", capacity: [3, 3]).getVehicle()
-		def model = initScen3(v)
-		def n = model.getNodes()
-
-		sol = new Solution()
-		sol.setGiantRoute([nd, n[2], n[4], nr, n[3], n[5], nd] as Node[])
-
-		when:
-		def result = service.check(sol, model)
-
-		then:
-		result != null
-		result.getPenalty() > 0
-		Math.abs(result.getCost() - 7.414) < 0.001
-	}
-
-	def "Replenish - homogenus - delivery fail"() {
-		def v = new TestVehicle(name: "V1", capacity: [3, 3]).getVehicle()
-		def model = initScen3(v)
-		def n = model.getNodes()
-
-		sol = new Solution()
-		sol.setGiantRoute([nd, n[2], n[4], n[6], nr, n[3], nd] as Node[])
-
-		when:
-		def result = service.check(sol, model)
-
-		then:
-		result != null
-		result.getPenalty() > 0
-		Math.abs(result.getCost() - 7.414) < 0.001
+		Math.abs(result.getCost() - 4) < 0.001
 	}
 	
-	def "Replenish - hetero - all clear"() {
-		def v = new TestVehicle(name: "V1", capacity: [3, 3]).getVehicle()
-		def model = initScen3(v)
+	def "With UnLoading at depot - Not Okay"() {
+		depot = nd5
+		parameter.setUnloadingTimeAtDepot(true)
+		def model = initScenBasicPickup([[[3,4]],[[4,5.5]],[[6,7]]] as float[][][], 0.5f, null)
 		def n = model.getNodes()
 
 		sol = new Solution()
-		sol.setGiantRoute([nd, n[4], n[5], n[2], nr, n[6], n[3], nd] as Node[])
+		sol.setGiantRoute([depot, n[1], n[2], n[3], depot] as Node[])
+
+		when:
+		def result = service.check(sol, model)
+
+		then:
+		result != null
+		result.getPenalty() > 0
+		Math.abs(result.getCost() - 4) < 0.001
+	}
+
+	def "With Max Waiting Time - Okay"() {
+		depot = nd2
+		def model = initScenBasic([[[3,4]],[[5,6]],[[6,7]]] as float[][][], 0f, new TestVehicle(name: "V1", capacity: [3, 3], maxWaitingTime: 1))
+		def n = model.getNodes()
+
+		sol = new Solution()
+		sol.setGiantRoute([depot, n[1], n[2], n[3], depot] as Node[])
 
 		when:
 		def result = service.check(sol, model)
@@ -237,29 +218,94 @@ class EvaluationServiceTimeWindowSpec extends Specification {
 		then:
 		result != null
 		result.getPenalty() == 0
-		Math.abs(result.getCost() - 9.478) < 0.001
+		Math.abs(result.getCost() - 4) < 0.001
 	}
 
+	def "With Max Waiting Time - Not Okay"() {
+		depot = nd2
+		def model = initScenBasic([[[3,4]],[[5.1,6]],[[6,7]]] as float[][][], 0f, new TestVehicle(name: "V1", capacity: [3, 3], maxWaitingTime: 1))
+		def n = model.getNodes()
 
-	XFVRPModel initScen1(Vehicle v, LoadType loadType) {
+		sol = new Solution()
+		sol.setGiantRoute([depot, n[1], n[2], n[3], depot] as Node[])
+
+		when:
+		def result = service.check(sol, model)
+
+		then:
+		result != null
+		result.getPenalty() > 0
+		Math.abs(result.getCost() - 4) < 0.001
+	}
+	
+	def "With Max Driving Time - Okay"() {
+		depot = nd2
+		def model = initScenBasic([[[3,4]],[[4,5]],[[5,6]]] as float[][][], 0f, new TestVehicle(name: "V1", capacity: [3, 3], maxDrivingTimePerShift: 2f, waitingTimeBetweenShifts: 1f))
+		def n = model.getNodes()
+
+		sol = new Solution()
+		sol.setGiantRoute([depot, n[1], n[2], n[3], depot] as Node[])
+
+		when:
+		def result = service.check(sol, model)
+
+		then:
+		result != null
+		result.getPenalty() == 0
+		Math.abs(result.getCost() - 4) < 0.001
+	}
+	
+	def "With Max Driving Time - Not Okay"() {
+		depot = nd2
+		def model = initScenBasic([[[3,4]],[[4,4.9]],[[5,6]]] as float[][][], 0f, new TestVehicle(name: "V1", capacity: [3, 3], maxDrivingTimePerShift: 2f, waitingTimeBetweenShifts: 1f))
+		def n = model.getNodes()
+
+		sol = new Solution()
+		sol.setGiantRoute([depot, n[1], n[2], n[3], depot] as Node[])
+
+		when:
+		def result = service.check(sol, model)
+
+		then:
+		result != null
+		result.getPenalty() > 0
+		Math.abs(result.getCost() - 4) < 0.001
+	}
+	
+	XFVRPModel initScenBasic (float[][][] timeWindows, float serviceTime, TestVehicle paraV) {
+		return initScenBasicAbstract(timeWindows, serviceTime, LoadType.DELIVERY, paraV)
+	}
+	
+	XFVRPModel initScenBasicPickup (float[][][] timeWindows, float serviceTime, TestVehicle paraV) {
+		return initScenBasicAbstract(timeWindows, serviceTime, LoadType.PICKUP, paraV)
+	}
+
+	XFVRPModel initScenBasicAbstract (float[][][] timeWindows, float serviceTime, LoadType loadType, TestVehicle paraV) {
+		if(paraV == null)
+			paraV = new TestVehicle(name: "V1", capacity: [3, 3])
+
+		def v = paraV.getVehicle()
+
 		def n1 = new TestNode(
 				globalIdx: 1,
 				externID: "1",
-				xlong: 1,
+				xlong: 0,
 				ylat: 1,
 				geoId: 1,
 				demand: [1, 1],
-				timeWindow: [[0,2],[2,6]],
+				timeWindow: timeWindows[0],
+				serviceTime: serviceTime,
 				loadType: loadType)
 				.getNode()
 		def n2 = new TestNode(
 				globalIdx: 2,
 				externID: "2",
-				xlong: 0,
+				xlong: 1,
 				ylat: 1,
 				geoId: 2,
 				demand: [1, 1],
-				timeWindow: [[0,2],[2,6]],
+				timeWindow: timeWindows[1],
+				serviceTime: serviceTime,
 				loadType: loadType)
 				.getNode()
 		def n3 = new TestNode(
@@ -269,131 +315,20 @@ class EvaluationServiceTimeWindowSpec extends Specification {
 				ylat: 0,
 				geoId: 3,
 				demand: [1, 1],
-				timeWindow: [[0,2],[2,6]],
+				timeWindow: timeWindows[2],
+				serviceTime: serviceTime,
 				loadType: loadType)
 				.getNode()
 
-		nd.setIdx(0);
+		depot.setIdx(0);
 		n1.setIdx(1);
 		n2.setIdx(2);
 		n3.setIdx(3);
 
-		def nodes = [nd, n1, n2, n3] as Node[];
+		def nodes = [depot, n1, n2, n3] as Node[];
 
 		def iMetric = new AcceleratedMetricTransformator().transform(metric, nodes, v);
 
 		return new XFVRPModel(nodes, iMetric, iMetric, v, parameter)
 	}
-
-	XFVRPModel initScen2(Vehicle v) {
-		def n1 = new TestNode(
-				globalIdx: 1,
-				externID: "1",
-				xlong: 1,
-				ylat: 1,
-				geoId: 1,
-				demand: [1, 1],
-				timeWindow: [[0,2],[2,6]],
-				loadType: LoadType.DELIVERY)
-				.getNode()
-		def n2 = new TestNode(
-				globalIdx: 2,
-				externID: "2",
-				xlong: 0,
-				ylat: 1,
-				geoId: 2,
-				demand: [3, 1],
-				timeWindow: [[0,2],[2,6]],
-				loadType: LoadType.PICKUP)
-				.getNode()
-		def n3 = new TestNode(
-				globalIdx: 3,
-				externID: "3",
-				xlong: 1,
-				ylat: 0,
-				geoId: 3,
-				demand: [2, 1],
-				timeWindow: [[0,2],[2,6]],
-				loadType: LoadType.DELIVERY)
-				.getNode()
-
-		nd.setIdx(0);
-		n1.setIdx(1);
-		n2.setIdx(2);
-		n3.setIdx(3);
-
-		def nodes = [nd, n1, n2, n3] as Node[];
-
-		def iMetric = new AcceleratedMetricTransformator().transform(metric, nodes, v);
-
-		return new XFVRPModel(nodes, iMetric, iMetric, v, parameter)
-	}
-
-	XFVRPModel initScen3(Vehicle v) {
-		def n1 = new TestNode(
-				globalIdx: 1,
-				externID: "1",
-				xlong: 1,
-				ylat: 1,
-				geoId: 1,
-				demand: [1, 1],
-				timeWindow: [[0,9],[2,9]],
-				loadType: LoadType.DELIVERY)
-				.getNode()
-		def n2 = new TestNode(
-				globalIdx: 2,
-				externID: "2",
-				xlong: 0,
-				ylat: 1,
-				geoId: 2,
-				demand: [3, 1],
-				timeWindow: [[0,9],[2,9]],
-				loadType: LoadType.PICKUP)
-				.getNode()
-		def n3 = new TestNode(
-				globalIdx: 3,
-				externID: "3",
-				xlong: 1,
-				ylat: 0,
-				geoId: 3,
-				demand: [2, 1],
-				timeWindow: [[0,9],[2,9]],
-				loadType: LoadType.DELIVERY)
-				.getNode()
-		def n4 = new TestNode(
-				globalIdx: 4,
-				externID: "4",
-				xlong: 0,
-				ylat: -1,
-				geoId: 4,
-				demand: [2, 1],
-				timeWindow: [[0,9],[2,9]],
-				loadType: LoadType.PICKUP)
-				.getNode()
-		def n5 = new TestNode(
-				globalIdx: 5,
-				externID: "5",
-				xlong: -1,
-				ylat: 0,
-				geoId: 5,
-				demand: [1, 1],
-				timeWindow: [[0,9],[2,9]],
-				loadType: LoadType.DELIVERY)
-				.getNode()
-
-		nd.setIdx(0);
-		nr.setIdx(1);
-		n1.setIdx(2);
-		n2.setIdx(3);
-		n3.setIdx(4);
-		n4.setIdx(5);
-		n5.setIdx(6);
-
-		def nodes = [nd, nr, n1, n2, n3, n4, n5] as Node[];
-
-		def iMetric = new AcceleratedMetricTransformator().transform(metric, nodes, v);
-
-		return new XFVRPModel(nodes, iMetric, iMetric, v, parameter)
-	}
-
 }
