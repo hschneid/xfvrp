@@ -1,7 +1,6 @@
 package xf.xfvrp.base.preset;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -20,13 +19,13 @@ import xf.xfvrp.base.fleximport.InternalCustomerData;
  * @author hschneid
  *
  */
-public class BlockNameConverter {
+public class BlockPositionConverter {
 
 	public static final int UNDEF_BLOCK_IDX = -1;
 	public static final int DEFAULT_BLOCK_IDX = 0;
 	
 	/**
-	 * Converts the user block names into indexed numbers.
+	 * Converts the user block positions into an indexed numbers.
 	 * 
 	 * @param node Node without block indexes
 	 * @param cust Contains the input data
@@ -34,21 +33,32 @@ public class BlockNameConverter {
 	 * @return Node with block indexes
 	 */
 	public static void convert(Node[] nodes, List<InternalCustomerData> list) {
-		Map<String, Node> nodeMap = Arrays.stream(nodes).collect(Collectors.toMap(k -> k.getExternID(), v -> v, (v1, v2) -> v1));
+		Map<String, Node> nodeMap = getMapping(nodes);
 
-		// Index block names
-		Map<String, Integer> blockNameMap = new HashMap<>();
-		int idx = DEFAULT_BLOCK_IDX + 1;
-		for (InternalCustomerData c : list)
-			if(c.getPresetBlockName().length() > 0 && !blockNameMap.containsKey(c.getPresetBlockName()))
-				blockNameMap.put(c.getPresetBlockName(), idx++);
-		
-		// Insert block index into nodes
-		list.forEach(cust -> {
-			int blockIdx = DEFAULT_BLOCK_IDX;
-			if(blockNameMap.containsKey(cust.getPresetBlockName()))
-				blockIdx = blockNameMap.get(cust.getPresetBlockName());
-			nodeMap.get(cust.getExternID()).setPresetBlockIdx(blockIdx);
+		normBlockPositions(list, nodeMap);
+	}
+
+	private static Map<String, Node> getMapping(Node[] nodes) {
+		Map<String, Node> nodeMap = Arrays.stream(nodes).collect(Collectors.toMap(k -> k.getExternID(), v -> v, (v1, v2) -> v1));
+		return nodeMap;
+	}
+
+	private static void normBlockPositions(List<InternalCustomerData> list, Map<String, Node> nodeMap) {
+		list.stream()
+		.filter(f -> f.getPresetBlockName() != null && f.getPresetBlockName().length() > 0)
+		.filter(f -> f.getPresetBlockPosition() > 0)
+		.collect(Collectors.groupingBy(k -> k.getPresetBlockName()))
+		.values().stream()
+		.map(m -> {
+			m.sort((c1, c2) -> c1.getPresetBlockPosition() - c2.getPresetBlockPosition());
+			return m;
+		})
+		.forEach(f -> {
+			int posIdx = 1;
+			for (InternalCustomerData cust : list) {
+				Node node = nodeMap.get(cust.getExternID());
+				node.setPresetBlockPos(posIdx++);
+			}
 		});
 	}
 }

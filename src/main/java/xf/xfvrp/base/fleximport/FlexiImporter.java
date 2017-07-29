@@ -10,6 +10,7 @@ import xf.xfvrp.base.Vehicle;
 import xf.xfvrp.base.monitor.StatusManager;
 import xf.xfvrp.base.preset.BlackListIDConverter;
 import xf.xfvrp.base.preset.BlockNameConverter;
+import xf.xfvrp.base.preset.BlockPositionConverter;
 import xf.xfvrp.base.preset.BlockedVehicleListConverter;
 import xf.xfvrp.base.preset.PresetDepotConverter;
 
@@ -91,6 +92,7 @@ public class FlexiImporter implements Serializable{
 		// Indexing, replacing, transforming
 		BlockedVehicleListConverter.convert(nodes, customerList, vehicles, statusManager);
 		BlockNameConverter.convert(nodes, customerList);
+		BlockPositionConverter.convert(nodes, customerList);
 		BlackListIDConverter.convert(nodes, customerList);
 		PresetDepotConverter.convert(nodes, customerList, statusManager);
 		ShipmentConverter.convert(nodes, customerList);

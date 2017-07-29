@@ -179,6 +179,10 @@ public class InternalCustomerData extends CustomerData {
 	public Set<String> getPresetDepotList() {
 		return presetDepotList;
 	}
+	
+	public int getPresetBlockPosition() {
+		return presetBlockPos;
+	}
 
 	/**
 	 * 

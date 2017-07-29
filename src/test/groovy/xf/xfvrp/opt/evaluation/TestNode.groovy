@@ -29,6 +29,7 @@ class TestNode {
 	float loadBearingOfPackage = 1;
 	int stackingGroupOfPackage = 1;
 	int containerTypeOfPackage = 1;
+	int presetBlockIdx = BlockNameConverter.DEFAULT_BLOCK_IDX
 
 	Node getNode() {
 		Node node = new Node(
@@ -55,7 +56,7 @@ class TestNode {
 				stackingGroupOfPackage,
 				containerTypeOfPackage
 				);
-		node.setPresetBlockIdx(BlockNameConverter.DEFAULT_BLOCK_IDX)
+		node.setPresetBlockIdx(presetBlockIdx)
 		
 		return node;
 	}
