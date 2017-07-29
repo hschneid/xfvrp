@@ -80,7 +80,7 @@ public class XFVRPRelocate extends XFVRPOptImpBase {
 	private void searchSingleDepot(Node[] giantTour, List<float[]> improvingStepList) {
 		// Suche alle verbessernden L�sungen
 		for (int src = 1; src < giantTour.length - 1; src++) {
-			for (int dst = 1; dst < giantTour.length - 1; dst++) {
+			for (int dst = 1; dst < giantTour.length; dst++) {
 				// Start darf kein Depot sein
 				if(giantTour[src].getSiteType() == SiteType.DEPOT)
 					continue;

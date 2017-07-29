@@ -15,7 +15,7 @@ public class NormalizeRouteService {
 	 * @param giantRoute node sequence with unknown number of empty routes
 	 * @return node sequence with one empty routes for each depot site.
 	 */
-	public static Node[] normalizeRouteWithoutDepotId(Node[] giantTour, XFVRPModel model) {
+	/*public static Node[] normalizeRouteWithoutDepotId(Node[] giantTour, XFVRPModel model) {
 		Node[] nodeArr = model.getNodes();
 		final int nbrOfDepots = model.getNbrOfDepots();
 
@@ -61,7 +61,7 @@ public class NormalizeRouteService {
 		}
 
 		return list.toArray(new Node[list.size()]);
-	}
+	}*/
 
 	/**
 	 * Normalizes the giant tour by applying the following methods
