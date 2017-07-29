@@ -408,6 +408,10 @@ public class Node implements Cloneable {
 	public Set<Integer> getPresetBlockVehicleList() {
 		return presetBlockVehicleList;
 	}
+	
+	public void addPresetVehicle(int vehicleIdx) {
+		presetBlockVehicleList.add(vehicleIdx);
+	}
 
 	/**
 	 * 

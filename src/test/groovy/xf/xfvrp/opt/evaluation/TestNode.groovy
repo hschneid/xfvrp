@@ -18,6 +18,7 @@ class TestNode {
 	float serviceTime = 0;
 	float serviceTimeForSite = 0;
 	LoadType loadType = LoadType.DELIVERY;
+	int presetBlockIdx = BlockNameConverter.DEFAULT_BLOCK_IDX
 	int presetBlockPos = 0;
 	int presetBlockRank = 0;
 	String shipID = "";
@@ -29,7 +30,8 @@ class TestNode {
 	float loadBearingOfPackage = 1;
 	int stackingGroupOfPackage = 1;
 	int containerTypeOfPackage = 1;
-	int presetBlockIdx = BlockNameConverter.DEFAULT_BLOCK_IDX
+	int presetDepotGlobalIdx = -1;
+	int presetVehicleIdx = -1;
 
 	Node getNode() {
 		Node node = new Node(
@@ -57,7 +59,9 @@ class TestNode {
 				containerTypeOfPackage
 				);
 		node.setPresetBlockIdx(presetBlockIdx)
-		
+		if(presetDepotGlobalIdx > -1) node.addPresetDepot(presetDepotGlobalIdx)
+		if(presetVehicleIdx > -1) node.addPresetVehicle(presetVehicleIdx)
+
 		return node;
 	}
 }

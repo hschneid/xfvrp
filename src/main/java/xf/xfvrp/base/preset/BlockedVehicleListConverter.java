@@ -1,9 +1,10 @@
 package xf.xfvrp.base.preset;
 
-import java.util.HashMap;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.Vehicle;
@@ -36,15 +37,16 @@ public class BlockedVehicleListConverter {
 	 */
 	public static void convert(Node[] nodes, List<InternalCustomerData> customerList, Vehicle[] vehicles, StatusManager mon) {
 		// Build map of vehicle name and vehicle index
-		Map<String, Integer> vehMap = new HashMap<>();
-		for (Vehicle veh : vehicles)
-			vehMap.put(veh.name, veh.idx);
+		Map<String, Integer> vehMap = getVehicleMapping(vehicles);
 
-		Map<String, Node> nodeMap = new HashMap<>();
-		for (Node node : nodes)
-			nodeMap.put(node.getExternID(), node);
+		Map<String, Node> nodeMap = getNodeMapping(nodes);
 
 		// Allocate found tokens in listAsString to vehicle index
+		addPreset(customerList, mon, vehMap, nodeMap);
+	}
+
+	private static void addPreset(List<InternalCustomerData> customerList, StatusManager mon,
+			Map<String, Integer> vehMap, Map<String, Node> nodeMap) {
 		customerList.forEach(cust -> {
 			Node node = nodeMap.get(cust.getExternID());
 
@@ -54,11 +56,19 @@ public class BlockedVehicleListConverter {
 					vehName = vehName.trim();
 
 					if(vehMap.containsKey(vehName)) 
-						node.getPresetBlockVehicleList().add(vehMap.get(vehName));
+						node.addPresetVehicle(vehMap.get(vehName));
 					else 
 						mon.fireMessage(StatusCode.RUNNING, "Found blocked vehicle name "+vehName+" for node "+node.getExternID()+" could not be bound to existing vehicle names. It will be ignored.");
 				}
 			}
 		});
+	}
+
+	private static Map<String, Integer> getVehicleMapping(Vehicle[] vehicles) {
+		return Arrays.stream(vehicles).collect(Collectors.toMap(k -> k.name, v -> v.idx, (v1, v2) -> v1));
+	}
+	
+	private static Map<String, Node> getNodeMapping(Node[] nodes) {
+		return Arrays.stream(nodes).collect(Collectors.toMap(k -> k.getExternID(), v -> v, (v1, v2) -> v1));
 	}
 }

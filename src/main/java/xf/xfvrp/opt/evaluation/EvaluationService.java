@@ -49,7 +49,7 @@ public class EvaluationService {
 
 		// Initialization
 		context.setCurrentNode(giantRoute[0]);
-		beginRoute(findNextCustomer(giantRoute, 0), vehicle, q, model, context);
+		beginRoute(giantRoute[0], findNextCustomer(giantRoute, 0), vehicle, q, model, context);
 		context.setNextNode(giantRoute[0]);
 
 		for (int i = 1; i < giantRoute.length; i++) {
@@ -82,7 +82,7 @@ public class EvaluationService {
 			if(context.getCurrentNode().getSiteType() == SiteType.DEPOT) {
 				finishRoute(vehicle, q, model, context);
 
-				beginRoute(findNextCustomer(giantRoute, i), vehicle, q, model, context);
+				beginRoute(giantRoute[i], findNextCustomer(giantRoute, i), vehicle, q, model, context);
 			}
 		}
 
@@ -221,7 +221,7 @@ public class EvaluationService {
 
 	private void drive(XFVRPModel model, Context context) {
 		float[] dist = model.getDistanceAndTime(context.getLastNode(), context.getCurrentNode());
-
+		
 		context.drive(dist);
 	}
 
@@ -257,16 +257,16 @@ public class EvaluationService {
 	 * @param model
 	 * @param context
 	 */
-	private void beginRoute(Node nextNode, Vehicle vehicle, Quality q, XFVRPModel model, Context context) {
+	private void beginRoute(Node newDepot, Node nextNode, Vehicle vehicle, Quality q, XFVRPModel model, Context context) {
 		// Check for black listed nodes on route
 		// Afterwards reset the arrays for next route
 		int penalty = context.checkPresetBlackList();
 		q.addPenalty(penalty, Quality.PENALTY_REASON_BLACKLIST);
 
-		penalty = context.createNewRoute(vehicle);
+		penalty = context.createNewRoute(newDepot, vehicle);
 		q.addPenalty(penalty, Quality.PENALTY_REASON_CAPACITY);
 		
-		float earliestDepartureTime = (nextNode != null) ? nextNode.getTimeWindow(0)[0] - model.getTime(context.getCurrentNode(), nextNode) : 0;
+		float earliestDepartureTime = (nextNode != null) ? nextNode.getTimeWindow(0)[0] - model.getTime(newDepot, nextNode) : 0;
 
 		// If loading time at depot should be considered, service time of all
 		// deliveries at the route is added to starting time at depot

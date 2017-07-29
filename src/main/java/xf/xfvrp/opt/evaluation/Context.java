@@ -89,10 +89,10 @@ public class Context {
 		routeVar[DURATION] += vehicle.waitingTimeBetweenShifts;
 	}
 
-	public int createNewRoute(Vehicle vehicle) {
+	public int createNewRoute(Node newDepot, Vehicle vehicle) {
 		routeVar[ROUTE_IDX]++;
 
-		setCurrentDepot(currentNode);
+		setCurrentDepot(newDepot);
 
 		routeVar[DRIVING_TIME] = 0;
 		routeVar[NBR_OF_STOPS] = 0;
@@ -104,7 +104,7 @@ public class Context {
 		lastPresetSequenceRankArr[BlockNameConverter.DEFAULT_BLOCK_IDX] = Integer.MIN_VALUE;
 		Arrays.fill(presetRoutingBlackList, false);
 		Arrays.fill(presetRoutingNodeList, false);
-		
+
 		return penalty;
 	}
 
@@ -128,10 +128,10 @@ public class Context {
 		if(deliveryOfRoute.hasAmount()) {
 			IntStream.range(0, amountsOfRoute.length / 2)
 			.forEach(i -> amountsOfRoute[i * 2 + 0] = deliveryOfRoute.getAmounts()[i]);
-			
+
 			return checkCapacities(vehicle);
 		}
-		
+
 		return 0;
 	}
 
@@ -239,8 +239,9 @@ public class Context {
 		return currentDepot;
 	}
 
-	public void setCurrentDepot(Node lastDepot) {
-		this.currentDepot = lastDepot;
+	public void setCurrentDepot(Node newDepot) {
+		this.currentDepot = newDepot;
+		this.currentNode = newDepot;
 	}
 
 	public Node getLastReplenishNode() {
@@ -298,10 +299,10 @@ public class Context {
 	public int checkCapacities(Vehicle v) {
 		return IntStream.range(0, amountsOfRoute.length / 2)
 				.map(i -> {
-				// Common Load of Pickups and Deliveries
-				int overload = (int)Math.ceil(Math.max(0, (amountsOfRoute[i * 2 + 0] + amountsOfRoute[i * 2 + 1]) - v.capacity[i]));
-				
-				return overload;
+					// Common Load of Pickups and Deliveries
+					int overload = (int)Math.ceil(Math.max(0, (amountsOfRoute[i * 2 + 0] + amountsOfRoute[i * 2 + 1]) - v.capacity[i]));
+
+					return overload;
 				})
 				.sum();
 	}
@@ -324,11 +325,13 @@ public class Context {
 	}
 
 	public int checkPresetPosition() {
-		if(currentNode.getPresetBlockIdx() > BlockNameConverter.DEFAULT_BLOCK_IDX)
-			if (lastNode.getPresetBlockIdx() > BlockNameConverter.DEFAULT_BLOCK_IDX)
-				if (currentNode.getPresetBlockIdx() == lastNode.getPresetBlockIdx())
-					if (currentNode.getPresetBlockPos() >= 0 && lastNode.getPresetBlockPos() >= 0 && lastNode.getPresetBlockPos() > currentNode.getPresetBlockPos())
+		if (currentNode.getPresetBlockPos() > 1)
+			if (currentNode.getPresetBlockIdx() > BlockNameConverter.DEFAULT_BLOCK_IDX)
+				if (currentNode.getPresetBlockIdx() == lastNode.getPresetBlockIdx()) {
+					if (lastNode.getPresetBlockPos() != currentNode.getPresetBlockPos() - 1)
 						return 1;
+				} else 
+					return 1;
 
 		return 0;
 	}
