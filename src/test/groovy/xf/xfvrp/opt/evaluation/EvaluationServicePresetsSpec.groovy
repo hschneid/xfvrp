@@ -260,27 +260,65 @@ class EvaluationServicePresetsSpec extends Specification {
 		Math.abs(result.getCost() - 4) < 0.001
 	}
 	
+	def "Blacklist Preset - Okay"() {
+		def v = new TestVehicle(idx: 1, name: "V1", capacity: [3, 3]).getVehicle()
+		def model = initScenWithBlackNodes(v, [-1, 3, 2] as int[])
+		def n = model.getNodes()
+
+		sol = new Solution()
+		sol.setGiantRoute([nd, n[1], n[2], nd, n[3], nd] as Node[])
+
+		when:
+		def result = service.check(sol, model)
+
+		then:
+		result != null
+		result.getPenalty() == 0
+		Math.abs(result.getCost() - 5.414) < 0.001
+	}
+	
+	def "Blacklist Preset - Not Okay"() {
+		def v = new TestVehicle(idx: 1, name: "V1", capacity: [3, 3]).getVehicle()
+		def model = initScenWithBlackNodes(v, [-1, 3, 2] as int[])
+		def n = model.getNodes()
+
+		sol = new Solution()
+		sol.setGiantRoute([nd, n[1], n[2], n[3], nd] as Node[])
+
+		when:
+		def result = service.check(sol, model)
+
+		then:
+		result != null
+		result.getPenalty() > 0
+		Math.abs(result.getCost() - 4) < 0.001
+	}
+	
 	XFVRPModel initScen(Vehicle v, int[] presetBlocks) {
-		return initScenAbstract(v, presetBlocks, [0, 0, 0] as int[], [0, 0, 0] as int[], [0, 0, 0] as int[])
+		return initScenAbstract(v, presetBlocks, [0, 0, 0] as int[], [0, 0, 0] as int[], [0, 0, 0] as int[], [-1, -1, -1] as int[])
 	}
 	
 	XFVRPModel initScenWithRanks(Vehicle v, int[] presetBlocks, int[] presetRanks) {
-		return initScenAbstract(v, presetBlocks, presetRanks, [0, 0, 0] as int[], [0, 0, 0] as int[])
+		return initScenAbstract(v, presetBlocks, presetRanks, [0, 0, 0] as int[], [0, 0, 0] as int[], [-1, -1, -1] as int[])
 	}
 	
 	XFVRPModel initScenWithPos(Vehicle v, int[] presetBlocks, int[] presetPos) {
-		return initScenAbstract(v, presetBlocks, [0, 0, 0] as int[], presetPos, [0, 0, 0] as int[])
+		return initScenAbstract(v, presetBlocks, [0, 0, 0] as int[], presetPos, [0, 0, 0] as int[], [-1, -1, -1] as int[])
 	}
 	
 	XFVRPModel initScenWithVehicles(Vehicle v, int[] presetVehicles) {
-		return initScenAbstract(v, [0, 0, 0] as int[], [0, 0, 0] as int[], [0, 0, 0] as int[], presetVehicles)
+		return initScenAbstract(v, [0, 0, 0] as int[], [0, 0, 0] as int[], [0, 0, 0] as int[], presetVehicles, [-1, -1, -1] as int[])
+	}
+	
+	XFVRPModel initScenWithBlackNodes(Vehicle v, int[] presetBlackNodes) {
+		return initScenAbstract(v, [0, 0, 0] as int[], [0, 0, 0] as int[], [0, 0, 0] as int[], [0, 0, 0] as int[], presetBlackNodes)
 	}
 	
 	XFVRPModel initScenWithDepots(Vehicle v, int[] presetDepots) {
 		return initMultiDepotScenAbstract(v, [0, 0, 0] as int[], [0, 0, 0] as int[], [0, 0, 0] as int[], presetDepots)
 	}
 
-	XFVRPModel initScenAbstract(Vehicle v, int[] presetBlocks, int[] presetRanks, int[] presetPos, int[] presetVehicles) {
+	XFVRPModel initScenAbstract(Vehicle v, int[] presetBlocks, int[] presetRanks, int[] presetPos, int[] presetVehicles, int[] presetBlackNodes) {
 		def n1 = new TestNode(
 				globalIdx: 1,
 				externID: "1",
@@ -293,6 +331,7 @@ class EvaluationServicePresetsSpec extends Specification {
 				presetBlockRank: presetRanks[0],
 				presetBlockPos: presetPos[0],
 				presetVehicleIdx: presetVehicles[0],
+				presetBlackNodeIdx: presetBlackNodes[0],
 				loadType: LoadType.DELIVERY)
 				.getNode()
 		def n2 = new TestNode(
@@ -307,6 +346,7 @@ class EvaluationServicePresetsSpec extends Specification {
 				presetBlockRank: presetRanks[1],
 				presetBlockPos: presetPos[1],
 				presetVehicleIdx: presetVehicles[1],
+				presetBlackNodeIdx: presetBlackNodes[1],
 				loadType: LoadType.DELIVERY)
 				.getNode()
 		def n3 = new TestNode(
@@ -321,6 +361,7 @@ class EvaluationServicePresetsSpec extends Specification {
 				presetBlockRank: presetRanks[2],
 				presetBlockPos: presetPos[2],
 				presetVehicleIdx: presetVehicles[2],
+				presetBlackNodeIdx: presetBlackNodes[2],
 				loadType: LoadType.DELIVERY)
 				.getNode()
 

@@ -67,10 +67,10 @@ public class Node implements Cloneable {
 	private final Set<Integer> presetBlockVehicleList = new HashSet<>();
 	/** A list of depot node ids (global idx), where this customer must be allocated to one these depots. **/
 	private final Set<Integer> presetDepotList = new HashSet<>();
-	/** A list of node ids, which must not be routed with this node. **/
+	/** A list of node ids (global idx), which must not be routed with this node. **/
 	private final Set<Integer> presetRoutingBlackList = new HashSet<>();
-	/** If customer is invalid for whole route plan, the reason is written to invalid states **/
 
+	/** If customer is invalid for whole route plan, the reason is written to invalid states **/
 	private InvalidReason invalidReason = InvalidReason.NONE;
 
 	private String invalidArguments = "";

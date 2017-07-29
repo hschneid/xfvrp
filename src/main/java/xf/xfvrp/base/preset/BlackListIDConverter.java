@@ -1,9 +1,11 @@
 package xf.xfvrp.base.preset;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.SiteType;
@@ -34,12 +36,10 @@ public class BlackListIDConverter {
 	 */
 	public static void convert(Node[] nodes, List<InternalCustomerData> customerList) {
 		Map<String, Set<String>> blackListMap = new HashMap<>();
-		Map<String, Node> nodeMap = new HashMap<>();
+		//Map<String, Node> nodeMap = new HashMap<>();
 
 		// Translate Node name to Node object
-		for (Node n : nodes)
-			if(n.getSiteType() == SiteType.CUSTOMER)
-				nodeMap.put(n.getExternID(), n);
+		Map<String, Integer> nodeMap = Arrays.stream(nodes).filter(f -> f.getSiteType() == SiteType.CUSTOMER).collect(Collectors.toMap(k -> k.getExternID(), v -> v.getGlobalIdx(), (v1, v2) -> v1));
 
 		// Map ExternID with external black list
 		customerList.forEach(cust -> blackListMap.put(cust.getExternID(), cust.getPresetRoutingBlackList()));
@@ -47,13 +47,12 @@ public class BlackListIDConverter {
 		// Allocate for each internal node the internal black list
 		for (Node n : nodes) {
 			if(blackListMap.containsKey(n.getExternID())) {
-				Set<String> blackList = blackListMap.get(n.getExternID());
-
 				// Translate black listed node name to node idx
-				blackList.forEach(blackName -> {
-					if(nodeMap.containsKey(blackName))
-						n.addToBlacklist(nodeMap.get(blackName).getGlobalIdx());
-				});
+				blackListMap.get(n.getExternID())
+					.stream()
+					.filter(blackName -> nodeMap.containsKey(blackName))
+					.map(blackName -> nodeMap.get(blackName))
+					.forEach(f -> n.addToBlacklist(f));
 			}
 		}
 	}
