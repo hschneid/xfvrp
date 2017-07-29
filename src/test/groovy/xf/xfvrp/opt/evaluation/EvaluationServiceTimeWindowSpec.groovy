@@ -272,6 +272,40 @@ class EvaluationServiceTimeWindowSpec extends Specification {
 		Math.abs(result.getCost() - 4) < 0.001
 	}
 	
+	def "Multi Time Windows - Okay"() {
+		depot = nd
+		def model = initScenBasic([[[3,4]],[[2,3], [3,4]],[[5,6]]] as float[][][], 0f, null)
+		def n = model.getNodes()
+
+		sol = new Solution()
+		sol.setGiantRoute([depot, n[1], n[2], n[3], depot] as Node[])
+
+		when:
+		def result = service.check(sol, model)
+
+		then:
+		result != null
+		result.getPenalty() == 0
+		Math.abs(result.getCost() - 4) < 0.001
+	}
+	
+	def "Multi Time Windows - Not Okay"() {
+		depot = nd
+		def model = initScenBasic([[[3,4]],[[2,3], [3,3.9]],[[5,6]]] as float[][][], 0f, null)
+		def n = model.getNodes()
+
+		sol = new Solution()
+		sol.setGiantRoute([depot, n[1], n[2], n[3], depot] as Node[])
+
+		when:
+		def result = service.check(sol, model)
+
+		then:
+		result != null
+		result.getPenalty() > 0
+		Math.abs(result.getCost() - 4) < 0.001
+	}
+	
 	XFVRPModel initScenBasic (float[][][] timeWindows, float serviceTime, TestVehicle paraV) {
 		return initScenBasicAbstract(timeWindows, serviceTime, LoadType.DELIVERY, paraV)
 	}
