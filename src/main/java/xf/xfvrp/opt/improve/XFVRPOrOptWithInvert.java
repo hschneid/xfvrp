@@ -24,11 +24,11 @@ import xf.xfvrp.opt.Solution;
  * any position in the route plan.
  * 
  * To improve the performance of this huge neighborhood search
- * the length of the paths is restricted up to 4. Longer paths
- * than 4 are not relocated.
+ * the length of the paths is restricted up to 3. Longer paths
+ * than 3 are not relocated.
  * 
  * As expansion of standard OrOpt a chosen path can be additionally inverted
- * in the ordering of nodes. 
+ * in the ordering of nodes (like 2-Opt). 
  * 
  * @author hschneid
  *
@@ -37,6 +37,8 @@ public class XFVRPOrOptWithInvert extends XFVRPOptImpBase {
 
 	private static final int NO_INVERT = 0;
 	private static final int INVERT = 1;
+	
+	private boolean isInvertationActive = true;
 
 	/*
 	 * (non-Javadoc)
@@ -179,7 +181,7 @@ public class XFVRPOrOptWithInvert extends XFVRPOptImpBase {
 			if(val > epsilon) impList.add(new float[]{a, b, l, NO_INVERT, val});
 		}
 		// with invert
-		{
+		if(isInvertationActive) {
 			val = 
 					old - 
 					(getDistanceForOptimization(giantTour[predA], giantTour[a + l + 1]) +
@@ -224,7 +226,7 @@ public class XFVRPOrOptWithInvert extends XFVRPOptImpBase {
 			if(val > epsilon) impList.add(new float[]{a, b, l, NO_INVERT, val});
 		}
 		// with invert
-		{
+		if(isInvertationActive) {
 			val = 
 					old - 
 					(getDistance(giantTour[predA], giantTour[a + l + 1], markA) +
@@ -232,5 +234,9 @@ public class XFVRPOrOptWithInvert extends XFVRPOptImpBase {
 							getDistance(giantTour[a], giantTour[b], markB));
 			if(val > epsilon) impList.add(new float[]{a, b, l, INVERT, val});
 		}
+	}
+
+	public void setInvertationMode(boolean isInvertationActive) {
+		this.isInvertationActive = isInvertationActive;
 	}
 }

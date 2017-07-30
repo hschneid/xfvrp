@@ -16,7 +16,6 @@ import xf.xfvrp.opt.improve.XFVRPOrOpt;
 import xf.xfvrp.opt.improve.XFVRPOrOptWithInvert;
 import xf.xfvrp.opt.improve.XFVRPPathExchange;
 import xf.xfvrp.opt.improve.XFVRPRelocate;
-import xf.xfvrp.opt.improve.XFVRPRelocate3;
 import xf.xfvrp.opt.improve.XFVRPRuinRecreate;
 import xf.xfvrp.opt.improve.XFVRPSwap;
 import xf.xfvrp.opt.improve.XFVRPSwapSegment;
@@ -50,7 +49,6 @@ public enum XFVRPOptType {
 	SWAPSEGMENT_WITH_INVERT(XFVRPSwapSegmentWithInvert.class),
 	SWAPSEGMENT_EQ(XFVRPSwapSegmentEqual.class),
 	RELOCATE(XFVRPRelocate.class),
-	RELOCATE_PRECHECK(XFVRPRelocate3.class),
 	OR_OPT(XFVRPOrOpt.class),
 	OR_OPT_WITH_INVERT(XFVRPOrOptWithInvert.class),
 	OPT3(XFVRP3Opt.class),
