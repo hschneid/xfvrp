@@ -115,7 +115,7 @@ public class XFVRP2Opt extends XFVRPOptImpBase {
 			for (int j = i + 1; j < giantTour.length - 1; j++) {
 				int markB = depotMarkArr[j];
 				int markBP = depotMarkArr[j+1];
-
+				
 				float val = 0;
 				// Bestimme die L�nge von i-1 nach i
 				val += getDistance(giantTour[i-1], giantTour[i], markAM, markA);

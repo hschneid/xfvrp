@@ -36,11 +36,35 @@ public class XFVRP2OptIntra extends XFVRPOptImpBase {
 	public Quality improve(final Solution solution, Quality bestResult) {
 		final Set<String> loadingFootprint = getLoadingFootprint(solution);
 
-		Node[] giantTour = solution.getGiantRoute();
+		Node[] giantRoute = solution.getGiantRoute();
 		
 		if(model.getNbrOfDepots() > 1)
 			throw new UnsupportedOperationException(this.getClass().getName()+" supports no multi depot");
-		
+
+		// Suche alle verbessernden L�sungen
+		List<float[]> improvingStepList = search(giantRoute);
+
+		// Sortier absteigend nach Potenzial
+		sort(improvingStepList, 2);
+
+		// Finde die erste valide verbessernde Lösung
+		for (float[] val : improvingStepList) {
+			int i = (int) val[0];
+			int j = (int) val[1];
+
+			swap(solution, i, j);
+
+			Quality result = check(solution, loadingFootprint);
+			if(result != null && result.getFitness() < bestResult.getFitness())
+				return result;
+			
+			swap(solution, i, j);
+		}
+
+		return null;
+	}
+
+	private List<float[]> search(Node[] giantTour) {
 		int[] tourIdMarkArr = new int[giantTour.length];
 		int id = 0;
 		for (int i = 1; i < giantTour.length; i++) {
@@ -48,8 +72,7 @@ public class XFVRP2OptIntra extends XFVRPOptImpBase {
 				id++;
 			tourIdMarkArr[i] = id;
 		}
-
-		// Suche alle verbessernden L�sungen
+		
 		List<float[]> improvingStepList = new ArrayList<>();
 		for (int i = 1; i < giantTour.length - 1; i++) {
 			if(giantTour[i].getSiteType() == SiteType.DEPOT)
@@ -72,24 +95,6 @@ public class XFVRP2OptIntra extends XFVRPOptImpBase {
 					improvingStepList.add(new float[]{i, j, val});
 			}
 		}
-
-		// Sortier absteigend nach Potenzial
-		sort(improvingStepList, 2);
-
-		// Finde die erste valide verbessernde Lösung
-		for (float[] val : improvingStepList) {
-			int i = (int) val[0];
-			int j = (int) val[1];
-
-			swap(solution, i, j);
-
-			Quality result = check(solution, loadingFootprint);
-			if(result != null && result.getFitness() < bestResult.getFitness())
-				return result;
-			
-			swap(solution, i, j);
-		}
-
-		return null;
+		return improvingStepList;
 	}
 }
