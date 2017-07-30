@@ -86,7 +86,6 @@ public class XFVRP3PointMove extends XFVRPOptImpBase {
 					getDistanceForOptimization(giantTour[b - 1], giantTour[b]) +
 					((b == giantTour.length - 1 || a - b == 1) ? 0 : getDistanceForOptimization(giantTour[b], giantTour[b + 1]));
 
-
 				float val = 0;
 				if(a - b == 1) {
 					val = old -  
@@ -178,19 +177,21 @@ public class XFVRP3PointMove extends XFVRPOptImpBase {
 	 * @param b
 	 */
 	private void swap3Point(Solution solution, int a, int b) {
-		Node[] giantTour = solution.getGiantRoute();
+		Node[] giantRoute = solution.getGiantRoute();
 		
-		Node[] arr = new Node[]{giantTour[a], giantTour[a + 1]};
+		Node[] arr = new Node[]{giantRoute[a], giantRoute[a + 1]};
 
 		if(a < b) {
-			giantTour[a] = giantTour[b];
+			giantRoute[a] = giantRoute[b];
 			// Verschiebe den Block zwischen a + 1 und b
-			System.arraycopy(giantTour, a + 2, giantTour, a + 1, b - (a + 1) - 1);
-			System.arraycopy(arr, 0, giantTour, b - 1, 2);
+			System.arraycopy(giantRoute, a + 2, giantRoute, a + 1, b - (a + 1) - 1);
+			System.arraycopy(arr, 0, giantRoute, b - 1, 2);
 		} else {
-			giantTour[a + 1] = giantTour[b];
-			System.arraycopy(giantTour, b + 1, giantTour, b + 2, a - b - 1);
-			System.arraycopy(arr, 0, giantTour, b, 2);
+			giantRoute[a + 1] = giantRoute[b];
+			System.arraycopy(giantRoute, b + 1, giantRoute, b + 2, a - b - 1);
+			System.arraycopy(arr, 0, giantRoute, b, 2);
 		}
+		
+		solution.setGiantRoute(giantRoute);
 	}
 }

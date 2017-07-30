@@ -17,10 +17,10 @@ import xf.xfvrp.opt.Solution;
  *
  *
  * This neighborhood search means the 3-opt-edge exchange
- * NS from literature. A solution is improved by
+ * neighborhood search from literature. A solution is improved by
  * exchanging three edges with three new edges.
  * 
- * The process is comparable by double inverting like the 2-opt.
+ * The process is comparable by inverting two segments (like double the 2-opt).
  * 
  * @author hschneid
  *
@@ -82,7 +82,7 @@ public class XFVRP3Opt extends XFVRPOptImpBase {
 	 * @param c
 	 * @param impList
 	 */
-	public void findImprovements(Node[] giantTour, int a, int b, int c, List<float[]> impList) {
+	private void findImprovements(Node[] giantTour, int a, int b, int c, List<float[]> impList) {
 		final float old = getDistanceForOptimization(giantTour[a], giantTour[a+1]) + 
 		getDistanceForOptimization(giantTour[b], giantTour[b+1]) + 
 		getDistanceForOptimization(giantTour[c], giantTour[c+1]);
@@ -148,8 +148,6 @@ public class XFVRP3Opt extends XFVRPOptImpBase {
 	 * @param m
 	 */
 	private void swap3Opt(Solution solution, int a, int b, int c, int m) {
-		
-		
 		switch(m) {
 		case 0 : {
 			// Invert (b + 1 - c)

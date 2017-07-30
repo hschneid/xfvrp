@@ -20,12 +20,12 @@ import xf.xfvrp.opt.Solution;
  * The OrOpt neighborhood removes from a solution
  * 3 edges, but the 3 inserted edges considers a
  * specific logic (other than 3-opt) so that a certain
- * segment of the route plan (a path) is relocated to
+ * segment of the route plan is moved to
  * any position in the route plan.
  * 
  * To improve the performance of this huge neighborhood search
- * the length of the paths is restricted up to 4. Longer paths
- * than 4 are not relocated.
+ * the length of the segments is restricted up to 4. Longer paths
+ * than 4 are not moved.
  * 
  * @author hschneid
  *
@@ -109,11 +109,11 @@ public class XFVRPOrOpt extends XFVRPOptImpBase {
 		int lastDepotIdx = 0;
 		int id = 0;
 		for (int i = 1; i < tourIdMarkArr.length; i++) {
-			if(giantTour[i].getSiteType() == SiteType.DEPOT)
+			if(giantTour[i].getSiteType() == SiteType.DEPOT) {
 				id++;
-			tourIdMarkArr[i] = id;
-			if(giantTour[i].getSiteType() == SiteType.DEPOT)
 				lastDepotIdx = giantTour[i].getIdx();
+			}
+			tourIdMarkArr[i] = id;
 			depotMarkArr[i] = lastDepotIdx;
 		}
 
@@ -126,7 +126,7 @@ public class XFVRPOrOpt extends XFVRPOptImpBase {
 				// Darf kein Depot sein
 				if(giantTour[a].getSiteType() == SiteType.DEPOT)
 					continue;
-				
+
 				float val;
 				// Segmente m�ssen auf der selben Tour liegen
 				if(tourIdMarkArr[a] == tourIdMarkArr[a + 1]) {
@@ -158,19 +158,19 @@ public class XFVRPOrOpt extends XFVRPOptImpBase {
 			return 0;
 
 		int predA = a - 1;
-		if(a-b == 1)
+		if(a - b == 1)
 			predA = b;
 
 		float old = getDistanceForOptimization(giantTour[predA], giantTour[a]) + 
-		getDistanceForOptimization(giantTour[a + l], giantTour[a + l + 1]) +
-		getDistanceForOptimization(giantTour[b - 1], giantTour[b]);
+				getDistanceForOptimization(giantTour[a + l], giantTour[a + l + 1]) +
+				getDistanceForOptimization(giantTour[b - 1], giantTour[b]);
 
 		return old - 
-		(getDistanceForOptimization(giantTour[predA], giantTour[a + l + 1]) +
-				getDistanceForOptimization(giantTour[b - 1], giantTour[a]) +
-				getDistanceForOptimization(giantTour[a + l], giantTour[b]));
+				(getDistanceForOptimization(giantTour[predA], giantTour[a + l + 1]) +
+						getDistanceForOptimization(giantTour[b - 1], giantTour[a]) +
+						getDistanceForOptimization(giantTour[a + l], giantTour[b]));
 	}
-	
+
 	/**
 	 * 
 	 * @param giantRoute
@@ -190,14 +190,14 @@ public class XFVRPOrOpt extends XFVRPOptImpBase {
 
 		int markA = depotMarkArr[a];
 		int markB = depotMarkArr[b - 1];
-		
+
 		float old = getDistance(giantTour[predA], giantTour[a], markA) + 
-		getDistance(giantTour[a + l], giantTour[a + l + 1], markA) +
-		getDistance(giantTour[b - 1], giantTour[b], markB);
+				getDistance(giantTour[a + l], giantTour[a + l + 1], markA) +
+				getDistance(giantTour[b - 1], giantTour[b], markB);
 
 		return old - 
-		(getDistance(giantTour[predA], giantTour[a + l + 1], markA) +
-				getDistance(giantTour[b - 1], giantTour[a], markB) +
-				getDistance(giantTour[a + l], giantTour[b], markB));
+				(getDistance(giantTour[predA], giantTour[a + l + 1], markA) +
+						getDistance(giantTour[b - 1], giantTour[a], markB) +
+						getDistance(giantTour[a + l], giantTour[b], markB));
 	}
 }
