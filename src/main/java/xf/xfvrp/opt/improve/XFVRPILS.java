@@ -32,7 +32,7 @@ public class XFVRPILS extends XFVRPOptBase {
 	private XFVRPOptBase[] optArr = new XFVRPOptBase[]{
 			new XFVRPRelocate(),
 			new XFVRPSwap(),
-			new XFVRPOrOptWithInvert(),
+			new XFVRPPathMove(),
 			new XFVRPPathExchange()
 	};
 

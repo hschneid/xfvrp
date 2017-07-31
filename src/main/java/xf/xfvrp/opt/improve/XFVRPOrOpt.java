@@ -21,7 +21,7 @@ package xf.xfvrp.opt.improve;
  * @author hschneid
  *
  */
-public class XFVRPOrOpt extends XFVRPOrOptWithInvert {
+public class XFVRPOrOpt extends XFVRPPathMove {
 	
 	public XFVRPOrOpt() {
 		super();

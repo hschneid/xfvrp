@@ -26,7 +26,7 @@ public class XFVRPPathExchange extends XFVRPOptImpBase {
 
 	private final XFVRPRelocate rel = new XFVRPRelocate();
 	private final XFVRPSwap swa = new XFVRPSwap();
-	private final XFVRPOrOptWithInvert or = new XFVRPOrOptWithInvert();
+	private final XFVRPPathMove or = new XFVRPPathMove();
 	private final XFVRPSwapSegmentWithInvert bod = new XFVRPSwapSegmentWithInvert();
 
 	/*
