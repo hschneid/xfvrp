@@ -171,7 +171,7 @@ public class XFVRPPathMove extends XFVRPOptImpBase {
 	 * @param impList
 	 */
 	private void findImprovementsSingleDepot(Node[] giantRoute, int a, int b, int l, List<float[]> impList) {
-		if(a + l + 1 >= giantRoute.length || b >= giantRoute.length)
+		if(a + l + 1 >= giantRoute.length)
 			return;
 
 		// B must not lay in the segment
@@ -224,7 +224,7 @@ public class XFVRPPathMove extends XFVRPOptImpBase {
 	 * @param impList
 	 */
 	private void findImprovementsMultipleDepot(Node[] giantRoute, int[] depotMarkArr, int[] tourIdMarker, int a, int b, int l, List<float[]> impList) {
-		if(a + l + 1 >= giantRoute.length || b >= giantRoute.length)
+		if(a + l + 1 >= giantRoute.length)
 			return;
 
 		// B must not lay in the segment

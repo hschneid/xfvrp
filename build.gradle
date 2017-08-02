@@ -29,7 +29,6 @@ dependencies {
 	//compile('org.springframework.boot:spring-boot-starter-web')
 	compile 'org.codehaus.groovy:groovy-all:2.4.11'
 	
-	// The production code uses the SLF4J logging API at compile time
 	compile 'org.slf4j:slf4j-api:1.7.21'
 	compile 'org.apache.commons:commons-compress:1.5'
 	compile 'colt:colt:1.2.0'
@@ -38,6 +37,4 @@ dependencies {
 	testCompile 'junit:junit:4.12'
 	testCompile "org.spockframework:spock-core:1.1-groovy-2.4"
 	//testCompile('org.springframework.boot:spring-boot-starter-test')
-	
-   
 }
