@@ -1,4 +1,4 @@
-package groovy.xf.xfvrp.opt.improve
+package xf.xfvrp.opt.improve
 
 import spock.lang.Specification
 import xf.xfvrp.base.LoadType
@@ -12,7 +12,6 @@ import xf.xfvrp.opt.Solution
 import xf.xfvrp.opt.evaluation.EvaluationService
 import xf.xfvrp.opt.evaluation.TestNode
 import xf.xfvrp.opt.evaluation.TestVehicle
-import xf.xfvrp.opt.improve.XFVRPPathMove
 
 class XFVRPPathMoveIntSpec extends Specification {
 
