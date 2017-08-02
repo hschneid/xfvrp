@@ -20,10 +20,10 @@ Additional requirements are the useage and maintainability of the API like
 - No parameter tuning (i.e. mutation rate, popultation size, annealing temperature) 
 - No free lunch: Good results with good performance.
 
-##License
+## License
 This software is released under [MIT License] (https://opensource.org/licenses/MIT)
 
-##Getting started
+## Getting started
 Load xfvrp from github, append it to your project and use the API.
 
 A simple example for a capacitated vehicle route planning:
