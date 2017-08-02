@@ -1,9 +1,9 @@
 xfvrp
 ======
 
-There are alot of solvers for the Vehicle Routing Problem (VRP) on github. Some are good at certain features and others are capable but extremly complex.
+There are alot of solvers for the Vehicle Routing Problem (VRP) on github. Some are good at certain features (like CVRP or VRPTW) and some are quite complex.
 
-xfvrp is a free and easy solver for Rich Vehicle Routing Problems like
+xfvrp is a fast and easy solver for Rich Vehicle Routing Problems like
 - Multi capacities
 - Multi time windows
 - Multi depots
@@ -11,16 +11,20 @@ xfvrp is a free and easy solver for Rich Vehicle Routing Problems like
 - Pick and delivery or backhauls
 - Replenishment sites
 - State of the art optimization heuristics
-- and more.
+- Presettings (i.e. packages must be loaded together or not)
+- and many more.
  
-Additional topics are the useage and maintainability of the API like
-- User shall change only the necessary values. The rest is done by default.
-- The API for the user shall be as tight as possible. xfvrp users only need to know one class.
-- Presetting to nodes or vehicles for considering real world constraints.
-- No free lunch: Good performance for good results.
+Additional requirements are the useage and maintainability of the API like
+- User shall change only the necessary values. The rest is done by default values.
+- The user API shall be as easy as possible to understand. Users of xfvrp need only to know one class.
+- No parameter tuning (i.e. mutation rate, popultation size, annealing temperature) 
+- No free lunch: Good results with good performance.
 
 ##License
 This software is released under [MIT License] (https://opensource.org/licenses/MIT)
+
+##Getting started
+Load xfvrp from github, append it to your project and use the API.
 
 A simple example for a capacitated vehicle route planning:
 ``` XFVRP xfvrp = new XFVRP();
