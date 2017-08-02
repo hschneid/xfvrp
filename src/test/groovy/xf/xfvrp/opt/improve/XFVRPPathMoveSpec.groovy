@@ -50,10 +50,8 @@ class XFVRPPathMoveSpec extends Specification {
 		sol = new Solution()
 		sol.setGiantRoute([nd, n[2], n[3], nd, n[4], n[5], nd] as Node[])
 
-		def impList = [] as List<float[]>
-
 		when:
-		service.searchSingleDepot(sol.getGiantRoute(), impList)
+		def impList = service.search(sol.getGiantRoute())
 
 		then:
 		impList.size() > 0
@@ -71,32 +69,11 @@ class XFVRPPathMoveSpec extends Specification {
 		sol = new Solution()
 		sol.setGiantRoute([nd, n[2], n[3], nd, n[4], n[5], n[6], n[7], nd] as Node[])
 
-		def impList = [] as List<float[]>
-
 		when:
-		service.searchSingleDepot(sol.getGiantRoute(), impList)
+		def impList = service.search(sol.getGiantRoute())
 
 		then:
 		impList.size() > 0
-	}
-
-	def "Search single depot - With invert - Find improve"() {
-		def model = initScen()
-		def n = model.getNodes()
-		service.setModel(model)
-
-		sol = new Solution()
-		sol.setGiantRoute([nd, n[2], n[3], nd, n[5], n[4], nd] as Node[])
-
-		def impList = [] as List<float[]>
-
-		when:
-		service.searchSingleDepot(sol.getGiantRoute(), impList)
-
-		then:
-		impList.size() > 0
-		impList.stream().filter({f -> f[0] == 4 && f[1] == 2 && f[2] == 1 && f[3] == 1}).count() == 1
-		Math.abs(impList.stream().filter({f -> f[0] == 4 && f[1] == 2 && f[2] == 1 && f[3] == 1}).collect(Collectors.toList()).get(0)[4] - 4) < 0.001f
 	}
 
 	def "Search single depot - Find No improve"() {
@@ -107,10 +84,8 @@ class XFVRPPathMoveSpec extends Specification {
 		sol = new Solution()
 		sol.setGiantRoute([nd, n[4], n[2], n[3], n[5], nd] as Node[])
 
-		def impList = [] as List<float[]>
-
 		when:
-		service.searchSingleDepot(sol.getGiantRoute(), impList)
+		def impList = service.search(sol.getGiantRoute())
 
 		then:
 		impList.size() == 0
@@ -125,33 +100,12 @@ class XFVRPPathMoveSpec extends Specification {
 		sol = new Solution()
 		sol.setGiantRoute([nd, n[2], n[3], nd, n[5], n[4], nd] as Node[])
 
-		def impList = [] as List<float[]>
-
 		when:
-		service.searchSingleDepot(sol.getGiantRoute(), impList)
+		def impList = service.search(sol.getGiantRoute())
 
 		then:
 		impList.size() > 0
 		impList.stream().filter({f -> f[3] == 1}).count() == 0
-	}
-
-	def "Search multi depot - No invert - Find improve"() {
-		def model = initScen()
-		def n = model.getNodes()
-		service.setModel(model)
-
-		sol = new Solution()
-		sol.setGiantRoute([nd2, n[2], n[3], nd, n[4], n[5], nd] as Node[])
-
-		def impList = [] as List<float[]>
-
-		when:
-		service.searchMultiDepot(sol.getGiantRoute(), impList)
-
-		then:
-		impList.size() > 0
-		impList.stream().filter({f -> f[0] == 4 && f[1] == 1 && f[2] == 1 && f[3] == 1}).count() == 1
-		Math.abs(impList.stream().filter({f -> f[0] == 4 && f[1] == 1 && f[2] == 1 && f[3] == 1}).collect(Collectors.toList()).get(0)[4] - 4.563) < 0.001f
 	}
 
 	def "Search multi depot - With invert - Find improve"() {
@@ -162,17 +116,15 @@ class XFVRPPathMoveSpec extends Specification {
 		sol = new Solution()
 		sol.setGiantRoute([nd2, n[2], n[3], nd, n[5], n[4], nd] as Node[])
 
-		def impList = [] as List<float[]>
-
 		when:
-		service.searchMultiDepot(sol.getGiantRoute(), impList)
+		def impList = service.search(sol.getGiantRoute())
 
 		then:
 		impList.size() > 0
 		impList.stream().filter({f -> f[3] == 1}).count() > 0
 	}
 
-	def "Search multi depot - Deactivated invert - Not the rigth improve"() {
+	def "Search - Deactivated invert - Not the rigth improve"() {
 		def model = initScen()
 		def n = model.getNodes()
 		service.setModel(model)
@@ -181,10 +133,8 @@ class XFVRPPathMoveSpec extends Specification {
 		sol = new Solution()
 		sol.setGiantRoute([nd2, n[2], n[3], nd, n[5], n[4], nd] as Node[])
 
-		def impList = [] as List<float[]>
-
 		when:
-		service.searchMultiDepot(sol.getGiantRoute(), impList)
+		def impList = service.search(sol.getGiantRoute())
 
 		then:
 		impList.size() > 0

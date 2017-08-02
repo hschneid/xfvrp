@@ -49,17 +49,13 @@ public class XFVRPPathMove extends XFVRPOptImpBase {
 		final Set<String> loadingFootprint = getLoadingFootprint(solution);
 
 		Node[] giantTour = solution.getGiantRoute();
-		List<float[]> improvingStepList = new ArrayList<>();
-
-		if(model.getNbrOfDepots() == 1)
-			searchSingleDepot(giantTour, improvingStepList);
-		else
-			searchMultiDepot(giantTour, improvingStepList);
+		
+		List<float[]> improvingStepList = search(giantTour);
 
 		// Sortier absteigend nach Potenzial
 		sort(improvingStepList, 4);
 
-		// Finde die erste valide verbessernde L�sung
+		// Find first valid improving change
 		for (float[] val : improvingStepList) {
 			// Variation
 			change(solution, val);
@@ -100,34 +96,14 @@ public class XFVRPPathMove extends XFVRPOptImpBase {
 
 	/**
 	 * Searches all improving valid steps in search space for
-	 * a VRP with one depot.
-	 * 
-	 * @param giantRoute
-	 * @param improvingStepList
-	 */
-	private void searchSingleDepot(Node[] giantRoute, List<float[]> improvingStepList) {
-		// Suche alle verbessernden L�sungen
-		for (int a = 1; a < giantRoute.length - 1; a++) {
-			for (int b = 1; b < giantRoute.length; b++) {
-				if(a == b)
-					continue;
-
-				findImprovementsSingleDepot(giantRoute, a, b, 0, improvingStepList);
-				findImprovementsSingleDepot(giantRoute, a, b, 1, improvingStepList);
-				findImprovementsSingleDepot(giantRoute, a, b, 2, improvingStepList);
-				findImprovementsSingleDepot(giantRoute, a, b, 3, improvingStepList);
-			}
-		}
-	}
-
-	/**
-	 * Searches all improving valid steps in search space for
 	 * a VRP with multiple depots.
 	 * 
 	 * @param giantRoute
-	 * @param improvingStepList
+	 * @return improvingStepList
 	 */
-	private void searchMultiDepot(Node[] giantTour, List<float[]> improvingStepList) {
+	private List<float[]> search(Node[] giantTour) {
+		List<float[]> improvingStepList = new ArrayList<>();
+		
 		final int length = giantTour.length;
 		int[] tourIdMarkArr = new int[length];
 		int[] depotMarkArr = new int[length];
@@ -153,64 +129,13 @@ public class XFVRPPathMove extends XFVRPOptImpBase {
 					continue;
 
 				// Segmente m�ssen auf der selben Tour liegen
-				findImprovementsMultipleDepot(giantTour, depotMarkArr, tourIdMarkArr, a, b, 0, improvingStepList);
-				findImprovementsMultipleDepot(giantTour, depotMarkArr, tourIdMarkArr, a, b, 1, improvingStepList);
-				findImprovementsMultipleDepot(giantTour, depotMarkArr, tourIdMarkArr, a, b, 2, improvingStepList);
-				findImprovementsMultipleDepot(giantTour, depotMarkArr, tourIdMarkArr, a, b, 3, improvingStepList);
+				for (int l = 0; l < 4; l++) {
+					findImprovements(giantTour, depotMarkArr, tourIdMarkArr, a, b, l, improvingStepList);
+				}
 			}
 		}
 
-	}
-
-	/**
-	 * 
-	 * @param giantRoute
-	 * @param a
-	 * @param b
-	 * @param l
-	 * @param impList
-	 */
-	private void findImprovementsSingleDepot(Node[] giantRoute, int a, int b, int l, List<float[]> impList) {
-		if(a + l + 1 >= giantRoute.length)
-			return;
-
-		// B must not lay in the segment
-		if(b <= a + l && b >= a)
-			return;
-
-		// No useless moves
-		if(a < b && b - (a + l) == 1)
-			return;
-
-		int predA = (a - b == 1) ? b : a - 1;
-
-		float oldDistances = getDistanceForOptimization(giantRoute[predA], giantRoute[a]) + 
-				getDistanceForOptimization(giantRoute[a + l], giantRoute[a + l + 1]) +
-				getDistanceForOptimization(giantRoute[b - 1], giantRoute[b]);
-
-		float potential = 0;
-		// No invert
-		{
-			float newDistances = 
-					(getDistanceForOptimization(giantRoute[predA], giantRoute[a + l + 1]) +
-							getDistanceForOptimization(giantRoute[b - 1], giantRoute[a]) +
-							getDistanceForOptimization(giantRoute[a + l], giantRoute[b]));
-
-			potential = oldDistances - newDistances;
-			if(potential > epsilon) 
-				impList.add(new float[]{a, b, l, NO_INVERT, oldDistances - newDistances});
-		}
-		// with invert
-		if(isInvertationActive) {
-			float newDistances = 
-					(getDistanceForOptimization(giantRoute[predA], giantRoute[a + l + 1]) +
-							getDistanceForOptimization(giantRoute[b - 1], giantRoute[a + l]) +
-							getDistanceForOptimization(giantRoute[a], giantRoute[b]));
-
-			potential = oldDistances - newDistances;
-			if(potential > epsilon) 
-				impList.add(new float[]{a, b, l, INVERT, oldDistances - newDistances});
-		}
+		return improvingStepList;
 	}
 
 	/**
@@ -223,7 +148,7 @@ public class XFVRPPathMove extends XFVRPOptImpBase {
 	 * @param l
 	 * @param impList
 	 */
-	private void findImprovementsMultipleDepot(Node[] giantRoute, int[] depotMarkArr, int[] tourIdMarker, int a, int b, int l, List<float[]> impList) {
+	private void findImprovements(Node[] giantRoute, int[] depotMarkArr, int[] tourIdMarker, int a, int b, int l, List<float[]> impList) {
 		if(a + l + 1 >= giantRoute.length)
 			return;
 
