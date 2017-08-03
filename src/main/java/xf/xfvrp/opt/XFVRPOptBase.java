@@ -151,11 +151,11 @@ public abstract class XFVRPOptBase extends XFVRPBase<XFVRPModel> {
 	 * @param lb number of nodes in second segment
 	 */
 	protected void exchange(Solution solution, int a, int b, int la, int lb) {
-		if(((a < b) && (a + la - 1) >= b) || ((b < a) && (b + lb - 1) >= a))
+		if(((a < b) && (a + la) >= b) || ((b < a) && (b + lb) >= a))
 			throw new IllegalStateException("Segements are overlapping.");
 		
 		if(la == lb) {
-			for (int i = 0; i < la; i++)
+			for (int i = 0; i <= la; i++)
 				exchange(solution, a+i, b+i);
 		} else {
 			Node[] giantTour = solution.getGiantRoute();
@@ -165,16 +165,16 @@ public abstract class XFVRPOptBase extends XFVRPBase<XFVRPModel> {
 				tmp = la; la = lb; lb = tmp;
 			}
 			
-			Node[] aArr = new Node[la];
-			System.arraycopy(giantTour, a , aArr, 0, aArr.length);
-			Node[] bArr = new Node[lb];
-			System.arraycopy(giantTour, b , bArr, 0, bArr.length);
-			Node[] iArr = new Node[b - (a + la)];
-			System.arraycopy(giantTour, a + la , iArr, 0, b - (a + la));
+			Node[] nodesOfA = new Node[la + 1];
+			System.arraycopy(giantTour, a , nodesOfA, 0, nodesOfA.length);
+			Node[] nodesOfB = new Node[lb + 1];
+			System.arraycopy(giantTour, b , nodesOfB, 0, nodesOfB.length);
+			Node[] intermediates = new Node[b - (a + la + 1)];
+			System.arraycopy(giantTour, a + la + 1, intermediates, 0, intermediates.length);
 
-			System.arraycopy(bArr, 0 , giantTour, a, bArr.length);
-			System.arraycopy(iArr, 0 , giantTour, a + bArr.length, iArr.length);
-			System.arraycopy(aArr, 0 , giantTour, a + bArr.length + iArr.length, aArr.length);
+			System.arraycopy(nodesOfB, 0 , giantTour, a, nodesOfB.length);
+			System.arraycopy(intermediates, 0 , giantTour, a + nodesOfB.length, intermediates.length);
+			System.arraycopy(nodesOfA, 0 , giantTour, a + nodesOfB.length + intermediates.length, nodesOfA.length);
 			
 			solution.setGiantRoute(giantTour);
 		}

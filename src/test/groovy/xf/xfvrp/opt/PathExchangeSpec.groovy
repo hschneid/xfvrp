@@ -19,7 +19,7 @@ class PathExchangeSpec extends Specification {
 		sol.setGiantRoute([n1, n2, n3, n4] as Node[])
 		
 		when:
-		service.exchange(sol, 1, 2, 1, 1);
+		service.exchange(sol, 1, 2, 0, 0);
 		
 		def result = sol.getGiantRoute()
 		
@@ -40,7 +40,7 @@ class PathExchangeSpec extends Specification {
 		sol.setGiantRoute([n1, n2, n3, n4] as Node[])
 		
 		when:
-		service.exchange(sol, 1, 1, 1, 1);
+		service.exchange(sol, 1, 1, 0, 0);
 		
 		def result = sol.getGiantRoute()
 		
@@ -62,7 +62,7 @@ class PathExchangeSpec extends Specification {
 		sol.setGiantRoute([n1, n2, n3, n4, n5] as Node[])
 		
 		when:
-		service.exchange(sol, 1, 3, 2, 1);
+		service.exchange(sol, 1, 3, 1, 0);
 		
 		def result = sol.getGiantRoute()
 		
@@ -87,7 +87,7 @@ class PathExchangeSpec extends Specification {
 		sol.setGiantRoute([n1, n2, n3, n4, n5, n6, n7] as Node[])
 		
 		when:
-		service.exchange(sol, 1, 4, 2, 1);
+		service.exchange(sol, 1, 4, 1, 0);
 		
 		def result = sol.getGiantRoute()
 		
@@ -114,7 +114,7 @@ class PathExchangeSpec extends Specification {
 		sol.setGiantRoute([n1, n2, n3, n4, n5, n6, n7] as Node[])
 		
 		when:
-		service.exchange(sol, 4, 1, 1, 2);
+		service.exchange(sol, 4, 1, 0, 1);
 		
 		def result = sol.getGiantRoute()
 		
@@ -139,7 +139,7 @@ class PathExchangeSpec extends Specification {
 		sol.setGiantRoute([n1, n2, n3, n4, n5] as Node[])
 		
 		when:
-		service.exchange(sol, 0, 3, 2, 2);
+		service.exchange(sol, 0, 3, 1, 1);
 		
 		def result = sol.getGiantRoute()
 		
@@ -161,7 +161,7 @@ class PathExchangeSpec extends Specification {
 		sol.setGiantRoute([n1, n2, n3, n4] as Node[])
 		
 		when:
-		service.exchange(sol, 1, 2, 1, 4);
+		service.exchange(sol, 1, 2, 0, 3);
 		
 		def result = sol.getGiantRoute()
 		
@@ -180,7 +180,7 @@ class PathExchangeSpec extends Specification {
 		sol.setGiantRoute([n1, n2, n3, n4, n5] as Node[])
 		
 		when:
-		service.exchange(sol, 1, 2, 2, 2);
+		service.exchange(sol, 1, 2, 1, 1);
 		
 		def result = sol.getGiantRoute()
 		

@@ -33,6 +33,7 @@ public class XFVRPSwapSegmentWithInvert extends XFVRPOptImpBase {
 	private static final int BOTH_INVERT = 3;
 
 	private boolean isInvertationActive = true;
+	private boolean isSegmentLengthEqual = false;
 
 	/*
 	 * (non-Javadoc)
@@ -72,7 +73,8 @@ public class XFVRPSwapSegmentWithInvert extends XFVRPOptImpBase {
 	 */
 	private List<float[]> search(Node[] giantRoute) {
 		List<float[]> improvingStepList = new ArrayList<>();
-	
+
+		// Preparation
 		int[] tourIdMarkArr = new int[giantRoute.length];
 		int[] depotMarkArr = new int[giantRoute.length];
 		int lastDepotIdx = 0;
@@ -85,24 +87,31 @@ public class XFVRPSwapSegmentWithInvert extends XFVRPOptImpBase {
 			tourIdMarkArr[i] = id;
 			depotMarkArr[i] = lastDepotIdx;
 		}
-	
-		// Suche alle verbessernden L�sungen
-		for (int a = 1; a < giantRoute.length - 1; a++) {
-			for (int b = a + 1; b < giantRoute.length - 1; b++) {
+
+		// Search improving steps
+		int length = giantRoute.length - 1;
+		for (int a = 1; a < length; a++) {
+			for (int b = a + 1; b < length; b++) {
 				for (int la = 0; la < 4; la++) {
+					if(a + la >= length)
+						continue;
 					if(tourIdMarkArr[a] != tourIdMarkArr[a+la])
 						continue;
-					
+
 					for (int lb = 0; lb < 4; lb++) {
+						if(b + lb >= length)
+							continue;
 						if(tourIdMarkArr[b] != tourIdMarkArr[b+lb])
 							continue;
-	
+						if(isSegmentLengthEqual && la != lb)
+							continue;
+
 						findImprovements(giantRoute, depotMarkArr, a, b, la, lb, improvingStepList);
 					}
 				}
 			}
 		}
-	
+
 		return improvingStepList;
 	}
 
@@ -118,18 +127,14 @@ public class XFVRPSwapSegmentWithInvert extends XFVRPOptImpBase {
 	 */
 	private void findImprovements(Node[] giantRoute, int[] depotMarkArr, int a, int b, int la, int lb, List<float[]> impList) {
 		int aa = a + la;
+		int bb = b + lb;
+
 		if(aa >= b)
 			return;
-		if(aa >= giantRoute.length - 1)
-			return;
-	
-		int bb = b + lb;
-		if(bb >= giantRoute.length - 1)
-			return;
-	
+
 		int markA = depotMarkArr[a];
 		int markB = depotMarkArr[b - 1];
-	
+
 		float old = 0;
 		if((b - aa) == 1) {
 			old = getDistance(giantRoute[a - 1], giantRoute[a], markA) + 
@@ -141,7 +146,7 @@ public class XFVRPSwapSegmentWithInvert extends XFVRPOptImpBase {
 					getDistance(giantRoute[b - 1], giantRoute[b], markB) +
 					getDistance(giantRoute[bb], giantRoute[bb + 1], markB);
 		}
-	
+
 		float val = 0;
 		// NO INVERT
 		{
@@ -155,10 +160,11 @@ public class XFVRPSwapSegmentWithInvert extends XFVRPOptImpBase {
 						getDistance(giantRoute[b - 1], giantRoute[a], markB) +
 						getDistance(giantRoute[aa], giantRoute[bb + 1], markB));
 			}
-			if(val > epsilon) impList.add(new float[]{a, b, la, lb, NO_INVERT, val});
+			if(val > epsilon) 
+				impList.add(new float[]{a, b, la, lb, NO_INVERT, val});
 		}
 		// BOTH INVERT
-		if(isInvertationActive) {
+		if(isInvertationActive) {	
 			if((b - aa) == 1) {
 				val = old - (getDistance(giantRoute[a - 1], giantRoute[bb], markA) + 
 						getDistance(giantRoute[b], giantRoute[aa], markA) +
@@ -169,7 +175,8 @@ public class XFVRPSwapSegmentWithInvert extends XFVRPOptImpBase {
 						getDistance(giantRoute[b - 1], giantRoute[aa], markB) +
 						getDistance(giantRoute[a], giantRoute[bb + 1], markB));
 			}
-			if(val > epsilon) impList.add(new float[]{a, b, la, lb, BOTH_INVERT, val});
+			if(val > epsilon) 
+				impList.add(new float[]{a, b, la, lb, BOTH_INVERT, val});
 		}
 		// A INVERT
 		if(isInvertationActive) {
@@ -183,7 +190,8 @@ public class XFVRPSwapSegmentWithInvert extends XFVRPOptImpBase {
 						getDistance(giantRoute[b - 1], giantRoute[aa], markB) +
 						getDistance(giantRoute[a], giantRoute[bb + 1], markB));
 			}
-			if(val > epsilon) impList.add(new float[]{a, b, la, lb, A_INVERT, val});
+			if(val > epsilon) 
+				impList.add(new float[]{a, b, la, lb, A_INVERT, val});
 		}
 		// B INVERT
 		if(isInvertationActive) {
@@ -197,7 +205,8 @@ public class XFVRPSwapSegmentWithInvert extends XFVRPOptImpBase {
 						getDistance(giantRoute[b - 1], giantRoute[a], markB) +
 						getDistance(giantRoute[aa], giantRoute[bb + 1], markB));
 			}
-			if(val > epsilon) impList.add(new float[]{a, b, la, lb, B_INVERT, val});
+			if(val > epsilon) 
+				impList.add(new float[]{a, b, la, lb, B_INVERT, val});
 		}
 	}
 
@@ -256,4 +265,9 @@ public class XFVRPSwapSegmentWithInvert extends XFVRPOptImpBase {
 	public void setInvertationMode(boolean isInvertationActive) {
 		this.isInvertationActive = isInvertationActive;
 	}
+	
+	public void setEqualSegmentLength(boolean isSegmentLengthEqual) {
+		this.isSegmentLengthEqual = isSegmentLengthEqual;
+	}
+
 }
