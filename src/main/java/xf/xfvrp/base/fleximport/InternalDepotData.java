@@ -85,26 +85,4 @@ public class InternalDepotData extends DepotData {
 		
 		return n;
 	}
-
-	/**
-	 * 
-	 * @return
-	 */
-	public String exportToString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append("$");
-		for (float[] fs : timeWindowList)
-			sb.append(fs[0]+"#"+fs[1]+"$");
-		sb.append("\t");
-		
-		return
-				"DEPOT\t"+
-				externID+"\t"+
-				geoId+"\t"+
-				xlong+"\t"+
-				ylat+"\t"+
-				sb.toString()+
-				"\n";
-	}
-
 }
