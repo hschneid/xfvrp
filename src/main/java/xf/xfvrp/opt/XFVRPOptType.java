@@ -6,15 +6,14 @@ import xf.xfpdp.opt.XFPDPRelocate2;
 import xf.xfvrp.opt.construct.XFVRPConst;
 import xf.xfvrp.opt.construct.XFVRPFirstBestInsert2;
 import xf.xfvrp.opt.construct.XFVRPSavings;
-import xf.xfvrp.opt.construct.XFVRPSolomonI1;
 import xf.xfvrp.opt.improve.XFVRP2Opt;
 import xf.xfvrp.opt.improve.XFVRP2OptIntra;
 import xf.xfvrp.opt.improve.XFVRP3Opt;
 import xf.xfvrp.opt.improve.XFVRP3PointMove;
 import xf.xfvrp.opt.improve.XFVRPILS;
 import xf.xfvrp.opt.improve.XFVRPOrOpt;
-import xf.xfvrp.opt.improve.XFVRPPathMove;
 import xf.xfvrp.opt.improve.XFVRPPathExchange;
+import xf.xfvrp.opt.improve.XFVRPPathMove;
 import xf.xfvrp.opt.improve.XFVRPRelocate;
 import xf.xfvrp.opt.improve.XFVRPRuinRecreate;
 import xf.xfvrp.opt.improve.XFVRPSwap;
@@ -41,7 +40,6 @@ public enum XFVRPOptType {
 	SAVINGS(XFVRPSavings.class),
 	CONST(XFVRPConst.class),
 	FIRST_BEST(XFVRPFirstBestInsert2.class),
-	I1(XFVRPSolomonI1.class),
 	OPT2(XFVRP2Opt.class),
 	OPT2_INTRA(XFVRP2OptIntra.class),
 	SWAP(XFVRPSwap.class),
