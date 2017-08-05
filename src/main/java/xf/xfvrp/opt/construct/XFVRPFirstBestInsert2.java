@@ -62,7 +62,7 @@ public class XFVRPFirstBestInsert2 extends XFVRPOptBase {
 	}
 
 	/**
-	 * Inserts a number of unplanned customers into an exisiting giant route solution.
+	 * Inserts a number of unplanned customers into an existing giant route solution.
 	 * 
 	 * Assumption: The unplanned customers must not be in the giant route.
 	 * 
@@ -202,7 +202,7 @@ public class XFVRPFirstBestInsert2 extends XFVRPOptBase {
 				solution.setGiantRoute(route);
 				Quality q = check(solution);
 				if(q != null && q.getPenalty() == 0) {
-					// If feasiable, then get inesrtion cost 
+					// If feasible, then get insertion cost 
 					float insertCost = getInsertCost(giantRoute, customer, p);
 
 					insertPoints.add(new float[]{p, insertCost});
@@ -288,7 +288,7 @@ public class XFVRPFirstBestInsert2 extends XFVRPOptBase {
 	 * 
 	 * @param giantRoute Current solution of planned routes
 	 * @param routeStats Info where the route starts and ends
-	 * @return Array of nodes between start and end position
+	 * @return Array of nodes between start and end position (and with an empty slot for new customers)
 	 */
 	private Node[] createEvaluationRoute(Node[] giantRoute, int[] routeStats) {
 		Node[] route = new Node[(routeStats[1] - routeStats[0]) + 1 + 1];

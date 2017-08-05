@@ -230,7 +230,7 @@ public class XFInit extends XFVRPBase<XFVRPModel> {
 
 		// If user has given a predefined solution
 		if(model.getParameter().getPredefinedSolutionString() != null)
-			return buildPredefinedGiantRoute(validNodes, model);
+			return new PresetSolutionBuilder().build(validNodes, model);
 
 		return buildGiantRoute(validNodes, model);
 	}
@@ -424,96 +424,5 @@ public class XFInit extends XFVRPBase<XFVRPModel> {
 		}
 		
 		return true;
-	}
-
-	/**
-	 * 
-	 * @param nodes
-	 * @param model
-	 * @return
-	 */
-	private Solution buildPredefinedGiantRoute(List<Node> nodes, XFVRPModel model) {
-		String predefinedSolutionString = model.getParameter().getPredefinedSolutionString();
-
-		if(!checkPredefinedSolutionString(predefinedSolutionString))
-			throw new IllegalStateException("The predefined solution string "+predefinedSolutionString+" is not valid.");
-
-		// Seperate the solution string into the blocks
-		predefinedSolutionString = predefinedSolutionString.substring(1, predefinedSolutionString.length() - 1);
-		String[] predefinedBlocks = predefinedSolutionString.split("\\),\\(");
-		predefinedBlocks[0] = predefinedBlocks[0].substring(1);
-		predefinedBlocks[predefinedBlocks.length - 1] = predefinedBlocks[predefinedBlocks.length - 1].substring(0, predefinedBlocks[predefinedBlocks.length - 1].length() - 1);
-
-		// Generate a map for each extern id to a node index
-		Map<String, Integer> idMap = new HashMap<>();
-		for (int i = 0; i < nodes.size(); i++)
-			idMap.put(nodes.get(i).getExternID(), i);
-
-		Set<Node> availableCustomers = new HashSet<>(nodes.subList(model.getNbrOfDepots() + model.getNbrOfReplenish(), nodes.size()));
-
-		List<Node> giantRoute = new ArrayList<>();
-		int depotIdx = 0;
-		int depotId = 0;
-		for (String block : predefinedBlocks) {
-			String[] entries = block.split(",");
-
-			// Every block has to start with a depot
-			if(entries.length > 0 && idMap.containsKey(entries[0])) {
-				Node n = nodes.get(idMap.get(entries[0]));
-				if(n.getSiteType() == SiteType.DEPOT) {
-					giantRoute.add(Util.createIdNode(n, depotId++));
-				} else if (availableCustomers.contains(n)) {
-					giantRoute.add(Util.createIdNode(nodes.get(depotIdx++), depotId++));
-					depotIdx = depotIdx % model.getNbrOfDepots();
-					giantRoute.add(n);
-					availableCustomers.remove(n);
-				} else {
-					System.out.println(" Init warning - Node "+entries[0]+" is already in the solution.");
-				}
-			}
-
-			// A block can hold customers and depots
-			for (int i = 1; i < entries.length; i++) {
-				if(idMap.containsKey(entries[i])) {
-					Node n = nodes.get(idMap.get(entries[i]));
-					if(n.getSiteType() == SiteType.DEPOT) {
-						giantRoute.add(Util.createIdNode(n, depotId++));
-						depotIdx = depotIdx % model.getNbrOfDepots();
-					} else if (availableCustomers.contains(n)) {
-						giantRoute.add(n);
-						availableCustomers.remove(n);
-					} else {
-						System.out.println(" Init warning - Node "+entries[i]+" is already in the solution.");
-					}
-				} else {
-					System.out.println(" Init warning - Node "+entries[i]+" is no valid customer (unknown).");
-				}
-			}
-
-			// Every block has to end with a depot
-			giantRoute.add(Util.createIdNode(nodes.get(depotIdx++), depotId++));
-			depotIdx = depotIdx % model.getNbrOfDepots();
-		}
-
-		// Put the unassigned customers with single routes in the giant route
-		for (Node customer : availableCustomers) {
-			giantRoute.add(Util.createIdNode(nodes.get(depotIdx), depotId++));
-			giantRoute.add(customer);
-			depotIdx = ((depotIdx + 1) % model.getNbrOfDepots());
-		}
-		giantRoute.add(Util.createIdNode(nodes.get(depotIdx), depotId++));
-
-		Solution solution = new Solution();
-		solution.setGiantRoute(giantRoute.toArray(new Node[0]));
-		return solution;
-	}
-
-	/**
-	 * 
-	 * @param predefinedSolutionString
-	 * @return
-	 */
-	private boolean checkPredefinedSolutionString(String predefinedSolutionString) {
-		return predefinedSolutionString.matches("\\{(\\([^\\(\\)]+\\),)*(\\([^\\(\\)]+\\))+\\}");
 	}
 }
