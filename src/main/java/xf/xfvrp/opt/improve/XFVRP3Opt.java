@@ -39,115 +39,34 @@ public class XFVRP3Opt extends XFVRPOptImpBase {
 			throw new UnsupportedOperationException(this.getClass().getName()+" supports no multi depot");
 		
 		Node[] giantTour = solution.getGiantRoute();
-		List<float[]> improvingStepList = new ArrayList<>();
 
 		// Suche alle verbessernden L�sungen
-		for (int a = 1; a < giantTour.length - 5; a++) {
-			for (int b = a + 2; b < giantTour.length - 3; b++) {
-				for (int c = b + 2; c < giantTour.length - 1; c++) {
-					findImprovements(giantTour, a, b, c, improvingStepList);
-				}
-			}
-		}
+		List<float[]> improvingStepList = search(giantTour);
 		
 		// Sortier absteigend nach Potenzial
 		sort(improvingStepList, 4);
 
 		// Finde die erste valide verbessernde L�sung
 		for (float[] val : improvingStepList) {
-			int a = (int) val[0];
-			int b = (int) val[1];
-			int c = (int) val[2];
-			int m = (int) val[3];
-
-			swap3Opt(solution, a, b, c, m);
+			change(solution, val);
 			
 			Quality result = check(solution, loadingFootprint);
 			if(result != null && result.getFitness() < bestResult.getFitness()) {
 				return result;
 			}
 
-			m = revertMethod(m);
-			swap3Opt(solution, a, b, c, m);
+			reverseChange(solution, val);
 		}
 
 		return null;
 	}
+	
+	private void change(Solution solution, float[] val) {
+		int a = (int) val[0];
+		int b = (int) val[1];
+		int c = (int) val[2];
+		int m = (int) val[3];
 
-	/**
-	 * 
-	 * @param giantTour
-	 * @param a
-	 * @param b
-	 * @param c
-	 * @param impList
-	 */
-	private void findImprovements(Node[] giantTour, int a, int b, int c, List<float[]> impList) {
-		final float old = getDistanceForOptimization(giantTour[a], giantTour[a+1]) + 
-		getDistanceForOptimization(giantTour[b], giantTour[b+1]) + 
-		getDistanceForOptimization(giantTour[c], giantTour[c+1]);
-
-		float val = 0;
-		// Invert (b + 1 - c)
-		{
-			val = getDistanceForOptimization(giantTour[a], giantTour[a + 1]) +
-			getDistanceForOptimization(giantTour[b], giantTour[c]) +
-			getDistanceForOptimization(giantTour[b + 1], giantTour[c + 1]) - old;
-			if(val < epsilon) impList.add(new float[]{a, b, c, 0, -val});
-		}
-		// Invert (a + 1 - b)
-		{
-			val = getDistanceForOptimization(giantTour[a], giantTour[b]) +
-			getDistanceForOptimization(giantTour[a + 1], giantTour[b + 1]) +
-			getDistanceForOptimization(giantTour[c], giantTour[c + 1]) - old;
-			if(val < epsilon) impList.add(new float[]{a, b, c, 1, -val});
-		}
-		// Invert (a + 1 - b UND b + 1 - c)
-		{
-			val = getDistanceForOptimization(giantTour[a], giantTour[b]) +
-			getDistanceForOptimization(giantTour[a + 1], giantTour[c]) +
-			getDistanceForOptimization(giantTour[b + 1], giantTour[c + 1]) - old;
-			if(val < epsilon) impList.add(new float[]{a, b, c, 2, -val});
-		}
-		// Invert (a + 1 - c UND a + 1 - b UND b + 1 - c)
-		{
-			val = getDistanceForOptimization(giantTour[a], giantTour[b + 1]) +
-			getDistanceForOptimization(giantTour[c], giantTour[a + 1]) +
-			getDistanceForOptimization(giantTour[b], giantTour[c + 1]) - old;
-			if(val < epsilon) impList.add(new float[]{a, b, c, 3, -val});
-		}
-		// Invert (a + 1 - c UND a + 1 - b)
-		{
-			val = getDistanceForOptimization(giantTour[a], giantTour[b + 1]) +
-			getDistanceForOptimization(giantTour[c], giantTour[b]) +
-			getDistanceForOptimization(giantTour[a + 1], giantTour[c + 1]) - old;
-			if(val < epsilon) impList.add(new float[]{a, b, c, 4, -val});
-		}
-		// Invert (a + 1 - c UND b + 1 - c)
-		{
-			val = getDistanceForOptimization(giantTour[a], giantTour[c]) +
-			getDistanceForOptimization(giantTour[b + 1], giantTour[a + 1]) +
-			getDistanceForOptimization(giantTour[b], giantTour[c + 1]) - old;
-			if(val < epsilon) impList.add(new float[]{a, b, c, 5, -val});
-		}
-		// Invert (a + 1 - c)
-		{
-			val = getDistanceForOptimization(giantTour[a], giantTour[c]) +
-			getDistanceForOptimization(giantTour[b], giantTour[b + 1]) +
-			getDistanceForOptimization(giantTour[a + 1], giantTour[c + 1]) - old;
-			if(val < epsilon) impList.add(new float[]{a, b, c, 6, -val});
-		}
-	}
-
-	/**
-	 * 
-	 * @param giantRoute
-	 * @param a
-	 * @param b
-	 * @param c
-	 * @param m
-	 */
-	private void swap3Opt(Solution solution, int a, int b, int c, int m) {
 		switch(m) {
 		case 0 : {
 			// Invert (b + 1 - c)
@@ -173,14 +92,14 @@ public class XFVRP3Opt extends XFVRPOptImpBase {
 			break;
 		}
 		case 4 : {
-			// Invert (a + 1 - c UND a + 1 - b)
-			// There for first exchange b+1 - c AND then whole range
+			// Invert (a + 1 - c UND b + 1 - c)
+			// So, first exchange (b + 1 - c) AND then whole range
 			swap(solution, b + 1, c);
 			swap(solution, a + 1, c);
 			break;
 		}
 		case 5 : {
-			// Invert (a + 1 - c UND b + 1 - c)
+			// Invert (a + 1 - c UND a + 1 - b)
 			swap(solution, a + 1, b);
 			swap(solution, a + 1, c);
 			break;
@@ -215,12 +134,98 @@ public class XFVRP3Opt extends XFVRPOptImpBase {
 		}
 	}
 
+	private void reverseChange(Solution solution, float[] val) {
+		val[3] = modifyForReverseChange((int) val[3]);
+		change(solution, val);
+	}
+
+	private List<float[]> search(Node[] giantRoute) {
+		List<float[]> improvingStepList = new ArrayList<>();
+		
+		for (int a = 1; a < giantRoute.length - 5; a++) {
+			for (int b = a; b < giantRoute.length - 3; b++) {
+				for (int c = b; c < giantRoute.length - 1; c++) {
+					findImprovements(giantRoute, a, b, c, improvingStepList);
+				}
+			}
+		}
+		
+		return improvingStepList;
+	}
+
+	/**
+	 * 
+	 * @param giantTour
+	 * @param a
+	 * @param b
+	 * @param c
+	 * @param impList
+	 */
+	private void findImprovements(Node[] giantTour, int a, int b, int c, List<float[]> impList) {
+		
+		
+		final float old = getDistanceForOptimization(giantTour[a], giantTour[a+1]) + 
+		getDistanceForOptimization(giantTour[b], giantTour[b+1]) + 
+		getDistanceForOptimization(giantTour[c], giantTour[c+1]);
+
+		float val = 0;
+		// Invert (b + 1 - c)
+		if(c - b > 1) {
+			val = old - (getDistanceForOptimization(giantTour[a], giantTour[a + 1]) +
+			getDistanceForOptimization(giantTour[b], giantTour[c]) +
+			getDistanceForOptimization(giantTour[b + 1], giantTour[c + 1]));
+			if(val > epsilon) impList.add(new float[]{a, b, c, 0, val});
+		}
+		// Invert (a + 1 - b)
+		if(b - a > 1) {
+			val = old - (getDistanceForOptimization(giantTour[a], giantTour[b]) +
+			getDistanceForOptimization(giantTour[a + 1], giantTour[b + 1]) +
+			getDistanceForOptimization(giantTour[c], giantTour[c + 1]));
+			if(val > epsilon) impList.add(new float[]{a, b, c, 1, val});
+		}
+		// Invert (a + 1 - b UND b + 1 - c)
+		if(b - a > 1 && c - b > 1) {
+			val = old - (getDistanceForOptimization(giantTour[a], giantTour[b]) +
+			getDistanceForOptimization(giantTour[a + 1], giantTour[c]) +
+			getDistanceForOptimization(giantTour[b + 1], giantTour[c + 1]));
+			if(val > epsilon) impList.add(new float[]{a, b, c, 2, val});
+		}
+		// Invert (a + 1 - c UND a + 1 - b UND b + 1 - c)
+		if(b - a > 1 && c - b > 1) {
+			val = old - (getDistanceForOptimization(giantTour[a], giantTour[b + 1]) +
+			getDistanceForOptimization(giantTour[c], giantTour[a + 1]) +
+			getDistanceForOptimization(giantTour[b], giantTour[c + 1]));
+			if(val > epsilon) impList.add(new float[]{a, b, c, 3, val});
+		}
+		// Invert (a + 1 - c UND a + 1 - b)
+		if(b - a > 1) {
+			val = old - (getDistanceForOptimization(giantTour[a], giantTour[b + 1]) +
+			getDistanceForOptimization(giantTour[c], giantTour[b]) +
+			getDistanceForOptimization(giantTour[a + 1], giantTour[c + 1]));
+			if(val > epsilon) impList.add(new float[]{a, b, c, 4, val});
+		}
+		// Invert (a + 1 - c UND b + 1 - c)
+		if(c - b > 1) {
+			val = old - (getDistanceForOptimization(giantTour[a], giantTour[c]) +
+			getDistanceForOptimization(giantTour[b + 1], giantTour[a + 1]) +
+			getDistanceForOptimization(giantTour[b], giantTour[c + 1]));
+			if(val > epsilon) impList.add(new float[]{a, b, c, 5, val});
+		}
+		// Invert (a + 1 - c)
+		if(c - a > 1) {
+			val = old - (getDistanceForOptimization(giantTour[a], giantTour[c]) +
+			getDistanceForOptimization(giantTour[b + 1], giantTour[b]) +
+			getDistanceForOptimization(giantTour[a + 1], giantTour[c + 1]));
+			if(val > epsilon) impList.add(new float[]{a, b, c, 6, val});
+		}
+	}
+
 	/**
 	 * 
 	 * @param m
 	 * @return
 	 */
-	private int revertMethod(int m) {
+	private int modifyForReverseChange(int m) {
 		switch(m) {
 		case 3 : {return 7;}
 		case 4 : {return 8;}
