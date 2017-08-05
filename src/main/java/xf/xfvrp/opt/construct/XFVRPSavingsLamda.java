@@ -22,7 +22,7 @@ import xf.xfvrp.opt.Solution;
  */
 public class XFVRPSavingsLamda extends XFVRPSavings {
 
-	private final float[] lamdaParameters = new float[]{0.6f, 1.4f, 1.6f, 2, 3};
+	private final float[] lamdaParameters = new float[]{0.6f, 1, 1.4f, 1.6f, 2, 3};
 	
 	/*
 	 * (non-Javadoc)

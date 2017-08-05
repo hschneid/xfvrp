@@ -142,16 +142,16 @@ public class XFVRPFirstBestInsert2 extends XFVRPOptBase {
 			// Remove customer from giant route
 			giantRoute = removeCustomer(giantRoute, reducedGiantRoute, customer);
 
-			// Get all feasable insertion points on current giant route
+			// Get all feasible insertion points on current giant route
 			List<float[]> insertPoints = evaluate(giantRoute, customer);
 
 			// Sort for lowest insertion costs
-			insertPoints.sort( (a,b) -> {return (int) ((a[1] - b[1]) * 1000f);});
+			insertPoints.sort( (a,b) -> (int) ((a[1] - b[1]) * 1000f));
 
 			// Prepare new solution (additional space for new customer)
 			Node[] newGiantRoute = new Node[giantRoute.length + 1];
 
-			// For all found feasable insertion points
+			// For all found feasible insertion points
 			for (int i = 0; i < insertPoints.size(); i++) {
 				float[] val = insertPoints.get(i);
 
