@@ -8,6 +8,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import util.collection.ListMap;
 import xf.xfpdp.XFPDPInit;
 import xf.xfvrp.base.InvalidReason;
@@ -60,6 +63,8 @@ import xf.xfvrp.report.RouteReportSummary;
  */
 public class XFVRP extends XFVRP_Parameter {
 
+	private static Logger logger = LoggerFactory.getLogger(XFVRP.class);
+	
 	/* List of optimization procedures */
 	private List<XFVRPOptBase> optList = new ArrayList<>();
 
@@ -75,6 +80,8 @@ public class XFVRP extends XFVRP_Parameter {
 	 * addVehicle() or the parameters setCapacity() and setMaxRouteDuration()
 	 */
 	public void executeRoutePlanning() {
+		logger.info("XFVRP started");
+
 		statusManager.fireMessage(StatusCode.RUNNING, "XFVRP started");
 		statusManager.setStartTime();
 
