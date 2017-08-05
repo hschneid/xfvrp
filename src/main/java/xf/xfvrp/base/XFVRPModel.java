@@ -70,14 +70,8 @@ public class XFVRPModel {
 			maxGlobalNodeIdx = Math.max(maxGlobalNodeIdx, nodeArr[i].getGlobalIdx());
 		}
 		
-		// Number of blocks is positive and +1 for the default block index.
-		nbrOfBlocks = Math.max(0,nbrOfBlocks) + 1;
-		
 		// Counts for each block idx the number of nodes in it.
-		blockCountArr = new int[nbrOfBlocks];
-		for (int i = 0; i < nodeArr.length; i++)
-			if(nodeArr[i].getPresetBlockIdx() >= 0)
-				blockCountArr[nodeArr[i].getPresetBlockIdx()]++;
+		blockCountArr = new int[Math.max(0, nbrOfBlocks) + 1];
 		
 		this.maxGlobalNodeIdx = maxGlobalNodeIdx;
 		this.nbrOfDepots = nbrOfDepots;

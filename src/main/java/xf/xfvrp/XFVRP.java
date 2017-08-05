@@ -23,9 +23,6 @@ import xf.xfvrp.base.Vehicle;
 import xf.xfvrp.base.XFVRPModel;
 import xf.xfvrp.base.metric.InternalMetric;
 import xf.xfvrp.base.metric.internal.AcceleratedMetricTransformator;
-import xf.xfvrp.base.metric.internal.FixCostMetricTransformator;
-import xf.xfvrp.base.metric.internal.OpenRouteMetricTransformator;
-import xf.xfvrp.base.metric.internal.PresetMetricTransformator;
 import xf.xfvrp.base.monitor.StatusCode;
 import xf.xfvrp.base.preset.BlockNameConverter;
 import xf.xfvrp.base.preset.VehiclePriorityInitialiser;
@@ -35,7 +32,10 @@ import xf.xfvrp.opt.XFVRPOptBase;
 import xf.xfvrp.opt.XFVRPOptSplitter;
 import xf.xfvrp.opt.XFVRPOptType;
 import xf.xfvrp.opt.XFVRPSolution;
+import xf.xfvrp.opt.init.ModelBuilder;
 import xf.xfvrp.opt.init.XFInit;
+import xf.xfvrp.opt.init.precheck.PreCheckException;
+import xf.xfvrp.opt.init.precheck.PreCheckService;
 import xf.xfvrp.report.Event;
 import xf.xfvrp.report.Report;
 import xf.xfvrp.report.RouteReport;
@@ -78,8 +78,9 @@ public class XFVRP extends XFVRP_Parameter {
 	 * Calculates the VRP with the before inserted data
 	 * by addDepot(), addCustomer(), addMetric() and 
 	 * addVehicle() or the parameters setCapacity() and setMaxRouteDuration()
+	 * @throws PreCheckException 
 	 */
-	public void executeRoutePlanning() {
+	public void executeRoutePlanning() throws PreCheckException {
 		logger.info("XFVRP started");
 
 		statusManager.fireMessage(StatusCode.RUNNING, "XFVRP started");
@@ -147,18 +148,19 @@ public class XFVRP extends XFVRP_Parameter {
 	 * @param customerList 
 	 * @param veh Container with parameters for capacity and route duration
 	 * @param plannedCustomers Marker for customers which are planned already in other stages
+	 * @throws PreCheckException 
 	 */
-	private XFVRPSolution executeRoutePlanning(Node[] globalNodes, Vehicle veh, boolean[] plannedCustomers) {
-		Node[] nodes = null;
+	private XFVRPSolution executeRoutePlanning(Node[] globalNodes, Vehicle veh, boolean[] plannedCustomers) throws PreCheckException {
 
 		// Precheck
+		Node[] nodes = null;
 		if(parameter.isWithPDP())
 			nodes = new XFPDPInit().precheck(globalNodes, plannedCustomers);
 		else
-			nodes = new XFInit().precheck(globalNodes, veh, plannedCustomers);
+			nodes = new PreCheckService().precheck(globalNodes, veh, plannedCustomers);
 
 		// Init
-		XFVRPModel model = init(nodes, veh);
+		XFVRPModel model = new ModelBuilder().build(nodes, veh, metric, parameter);
 
 		// Init giant route
 		Solution route = null;
@@ -199,36 +201,7 @@ public class XFVRP extends XFVRP_Parameter {
 		return new XFVRPSolution(route, model);
 	}
 
-	/**
-	 * Transforms the read data into a model, which can be used
-	 * for optimization.
-	 * 
-	 * @param nodes
-	 * @param veh Contains parameters for capacity, max route duration and others.
-	 * @return Returns a model, which can be used for optimization procedures.
-	 * @throws IllegalArgumentException
-	 */
-	private XFVRPModel init(Node[] nodes, Vehicle veh) throws IllegalArgumentException {
-		statusManager.fireMessage(StatusCode.RUNNING, "Initialisation of instance for vehicle "+veh.name);
-
-		// Set local node index
-		for (int i = 0; i < nodes.length; i++)
-			nodes[i].setIdx(i);
-
-		// Metric transformations
-		InternalMetric internalMetric = AcceleratedMetricTransformator.transform(metric, nodes, veh);
-		if(parameter.isOpenRouteAtStart() || parameter.isOpenRouteAtEnd())
-			internalMetric = OpenRouteMetricTransformator.transform(internalMetric, nodes, parameter);
-
-		// Metric transformations for optimization
-		InternalMetric optMetric = internalMetric;
-		optMetric = FixCostMetricTransformator.transform(internalMetric, nodes, veh);
-		optMetric = PresetMetricTransformator.transform(optMetric, nodes);
-
-		statusManager.fireMessage(StatusCode.RUNNING, "Nbr of nodes : "+nodes.length);
-
-		return new XFVRPModel(nodes, internalMetric, optMetric, veh, parameter);
-	}
+	
 
 	/**
 	 * This method searches the best k routes in a given solution
