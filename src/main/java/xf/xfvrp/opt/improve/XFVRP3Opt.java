@@ -2,7 +2,6 @@ package xf.xfvrp.opt.improve;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.Quality;
@@ -33,8 +32,6 @@ public class XFVRP3Opt extends XFVRPOptImpBase {
 	 */
 	@Override
 	public Quality improve(final Solution solution, Quality bestResult) {
-		final Set<String> loadingFootprint = getLoadingFootprint(solution);
-		
 		if(model.getNbrOfDepots() > 1)
 			throw new UnsupportedOperationException(this.getClass().getName()+" supports no multi depot");
 		
@@ -50,7 +47,7 @@ public class XFVRP3Opt extends XFVRPOptImpBase {
 		for (float[] val : improvingStepList) {
 			change(solution, val);
 			
-			Quality result = check(solution, loadingFootprint);
+			Quality result = checkIt(solution);
 			if(result != null && result.getFitness() < bestResult.getFitness()) {
 				return result;
 			}

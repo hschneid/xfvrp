@@ -2,7 +2,6 @@ package xf.xfvrp.opt.improve;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.Quality;
@@ -34,8 +33,6 @@ public class XFVRP2OptIntra extends XFVRPOptImpBase {
 	 */
 	@Override
 	public Quality improve(final Solution solution, Quality bestResult) {
-		final Set<String> loadingFootprint = getLoadingFootprint(solution);
-
 		Node[] giantRoute = solution.getGiantRoute();
 		
 		if(model.getNbrOfDepots() > 1)
@@ -54,7 +51,7 @@ public class XFVRP2OptIntra extends XFVRPOptImpBase {
 
 			swap(solution, i, j);
 
-			Quality result = check(solution, loadingFootprint);
+			Quality result = checkIt(solution);
 			if(result != null && result.getFitness() < bestResult.getFitness())
 				return result;
 			

@@ -2,7 +2,6 @@ package xf.xfpdp.opt;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import xf.xfpdp.XFPDPUtils;
 import xf.xfvrp.base.Node;
@@ -35,7 +34,6 @@ public class XFPDPRelocate extends XFVRPOptImpBase {
 	 */
 	@Override
 	public Quality improve(final Solution solution, Quality bestResult) {
-		final Set<String> loadingFootprint = getLoadingFootprint(solution);
 		Node[] giantTour = solution.getGiantRoute();
 
 		List<float[]> improvingStepList = new ArrayList<>();
@@ -61,7 +59,7 @@ public class XFPDPRelocate extends XFVRPOptImpBase {
 
 			Solution newSolution = new Solution();
 			newSolution.setGiantRoute(giantTour);
-			Quality result = check(newSolution, loadingFootprint);
+			Quality result = checkIt(newSolution);
 			if(result != null && result.getFitness() < bestResult.getFitness()) {
 				return result;
 			}

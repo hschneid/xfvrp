@@ -204,7 +204,7 @@ public abstract class XFVRPOptBase extends XFVRPBase<XFVRPModel> {
 	 * @param giantRoute sequence of nodes
 	 * @return
 	 */
-	public Quality check(Solution solution) {		
+	public Quality check(Solution solution) {	
 		return check.check(solution, model);
 	}
 

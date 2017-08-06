@@ -2,7 +2,6 @@ package xf.xfvrp.opt.improve;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.Quality;
@@ -32,8 +31,6 @@ public class XFVRPSwap extends XFVRPOptImpBase {
 	 */
 	@Override
 	public Quality improve(final Solution solution, Quality bestResult) {
-		final Set<String> loadingFootprint = getLoadingFootprint(solution);
-
 		Node[] giantTour = solution.getGiantRoute();
 		List<float[]> improvingStepList = new ArrayList<>();
 
@@ -52,7 +49,7 @@ public class XFVRPSwap extends XFVRPOptImpBase {
 
 			exchange(solution, i, j);
 
-			Quality result = check(solution, loadingFootprint);
+			Quality result = checkIt(solution);
 			if(result != null && result.getFitness() < bestResult.getFitness())
 				return result;
 			

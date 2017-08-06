@@ -30,8 +30,6 @@ public class XFVRP3CyclicTransfer extends XFVRPOptImpBase {
 	 */
 	@Override
 	protected Quality improve(final Solution solution, Quality bestResult) {
-		final Set<String> loadingFootprint = getLoadingFootprint(solution);
-
 		Node[] giantTour = solution.getGiantRoute();
 		
 		if(model.getNbrOfDepots() > 1)
@@ -67,7 +65,7 @@ public class XFVRP3CyclicTransfer extends XFVRPOptImpBase {
 			exchange(solution, a,b);
 			exchange(solution, a,c);
 
-			Quality result = check(solution, loadingFootprint);
+			Quality result = checkIt(solution);
 			if(result != null && result.getFitness() < bestResult.getFitness())
 				return result;
 

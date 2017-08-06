@@ -10,7 +10,6 @@ import xf.xfvrp.base.SiteType;
 import xf.xfvrp.base.Util;
 import xf.xfvrp.base.XFVRPModel;
 import xf.xfvrp.opt.Solution;
-import xf.xfvrp.opt.XFVRPLPBridge;
 import xf.xfvrp.opt.XFVRPOptBase;
 
 
@@ -41,7 +40,7 @@ public class XFVRPSavings extends XFVRPOptBase {
 	@Override
 	public Solution execute(Solution solution) {
 		Node[] giantRoute = solution.getGiantRoute();
-		
+
 		final Node depot = giantRoute[0];
 
 		Node[][] routeArr = buildRouteLists(giantRoute, model);
@@ -58,7 +57,7 @@ public class XFVRPSavings extends XFVRPOptBase {
 			for (int i = 0; i < routeArr.length; i++) {
 				routeIdxForStartNode[routeArr[i][0].getIdx()] = i;
 				routeIdxForEndNode[routeArr[i][routeArr[i].length - 1].getIdx()] = i;
-				
+
 				nodeList.add(routeArr[i][0]);
 				if(routeArr[i][0] != routeArr[i][routeArr[i].length - 1])
 					nodeList.add(routeArr[i][routeArr[i].length - 1]);
@@ -75,7 +74,7 @@ public class XFVRPSavings extends XFVRPOptBase {
 
 				for (int j = i + 1; j < nodeList.size(); j++) {
 					Node dst = nodeList.get(j);
-					
+
 					float dist = getDistanceForOptimization(src, dst);
 					float distBDepot = getDistanceForOptimization(dst, depot);
 					float saving = (distADepot + distBDepot) - lamda * dist;
@@ -99,7 +98,7 @@ public class XFVRPSavings extends XFVRPOptBase {
 			for (int i = savingsIdx; i >= 0; i--) {
 				savingsIdx--;
 				float[] saving = savingsList.get(i);
-				
+
 				int route1 = routeIdxForEndNode[(int) saving[0]];
 				int route2 = routeIdxForStartNode[(int) saving[1]];
 
@@ -118,37 +117,32 @@ public class XFVRPSavings extends XFVRPOptBase {
 				System.arraycopy(routeArr[route1], 0, newRoute, 1, routeLength1);
 				System.arraycopy(routeArr[route2], 0, newRoute, routeLength1 + 1, routeLength2);
 				newRoute[newRoute.length - 1] = depotEnd;
-				
+
 				// Pr�fe die neue Tour
 				Solution smallSolution = new Solution();
 				smallSolution.setGiantRoute(newRoute);
 				Quality q = check(smallSolution);
 
 				if(q.getPenalty() == 0) {
-					// Efficient Load Pr�fung (Achtung: Kein Footprint, da immer nur zwei Routen verkn�pft und bewertet werden!) 
-					XFVRPLPBridge.check(smallSolution, null, model, q);
+					// Aktualisiere die Datenstrukturen
+					// Der Start von Route1 bleibt
+					// Der Start von Route2 f�llt weg
+					routeIdxForStartNode[routeArr[route2][0].getIdx()] = -1;
+					// Das Ziel von Route1 f�llt weg
+					routeIdxForEndNode[routeArr[route1][routeLength1 - 1].getIdx()] = -1;
+					// Das Ziel von Route2 ist jetzt auf Route1
+					routeIdxForEndNode[routeArr[route2][routeLength2 - 1].getIdx()] = route1;
 
-					if(q.getPenalty() == 0) {
-						// Aktualisiere die Datenstrukturen
-						// Der Start von Route1 bleibt
-						// Der Start von Route2 f�llt weg
-						routeIdxForStartNode[routeArr[route2][0].getIdx()] = -1;
-						// Das Ziel von Route1 f�llt weg
-						routeIdxForEndNode[routeArr[route1][routeLength1 - 1].getIdx()] = -1;
-						// Das Ziel von Route2 ist jetzt auf Route1
-						routeIdxForEndNode[routeArr[route2][routeLength2 - 1].getIdx()] = route1;
+					// Die neue Route1
+					newRoute = new Node[routeLength1 + routeLength2];
+					System.arraycopy(routeArr[route1], 0, newRoute, 0, routeLength1);
+					System.arraycopy(routeArr[route2], 0, newRoute, routeLength1, routeLength2);
+					routeArr[route1] = newRoute;
 
-						// Die neue Route1
-						newRoute = new Node[routeLength1 + routeLength2];
-						System.arraycopy(routeArr[route1], 0, newRoute, 0, routeLength1);
-						System.arraycopy(routeArr[route2], 0, newRoute, routeLength1, routeLength2);
-						routeArr[route1] = newRoute;
+					// Route2 ist obsolet
+					routeArr[route2] = null;
 
-						// Route2 ist obsolet
-						routeArr[route2] = null;
-
-						continue SEARCH;
-					}
+					continue SEARCH;
 				}
 			}
 
@@ -195,19 +189,19 @@ public class XFVRPSavings extends XFVRPOptBase {
 	private Node[][] buildRouteLists(Node[] giantRoute, XFVRPModel model) {
 		int nbrOfCustomers = model.getNbrOfNodes() - model.getNbrOfDepots() - model.getNbrOfReplenish();
 		Node[][] routeArr = new Node[nbrOfCustomers][1];
-		
+
 		int idx = 0;
 		for (int i = 0; i < giantRoute.length; i++) {
 			if(giantRoute[i].getSiteType() == SiteType.DEPOT)
 				continue;
 			if(giantRoute[i].getSiteType() == SiteType.REPLENISH)
 				continue;
-			
+
 			List<Node> list = new ArrayList<>();
 			for (int j = i; j < giantRoute.length; j++) {
 				if(giantRoute[j].getSiteType() == SiteType.DEPOT)
 					break;
-				
+
 				list.add(giantRoute[j]);
 				i++;
 			}

@@ -3,16 +3,12 @@ package xf.xfvrp.opt;
 import java.util.ArrayList;
 import java.util.List;
 
-import xf.xflp.report.ContainerReport;
-import xf.xflp.report.LPPackageEvent;
-import xf.xflp.report.LPReport;
 import xf.xfvrp.base.LoadType;
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.SiteType;
 import xf.xfvrp.base.Vehicle;
 import xf.xfvrp.base.XFVRPModel;
 import xf.xfvrp.report.Event;
-import xf.xfvrp.report.PackageEvent;
 import xf.xfvrp.report.Report;
 import xf.xfvrp.report.RouteReport;
 
@@ -116,9 +112,6 @@ public class XFVRPSolution {
 
 				lastNode = currNode;
 			}
-
-			// Loading plan
-			addLoadingPlan(routeReports);
 		}
 
 		return rep;
@@ -264,56 +257,6 @@ public class XFVRPSolution {
 		}
 
 		return -1;
-	}
-
-	/**
-	 * 
-	 * @param routeReports
-	 */
-	protected void addLoadingPlan(List<RouteReport> routeReports) {
-		if(model.getParameter().isWithLoadPlanning()) {
-			int routeIdx = 0;
-			
-			LPReport[] lpReports = XFVRPLPBridge.getLoadingPlan(solution, model);
-			
-			// Create a loading plan for each route with the package planning
-			// of the LP-Solver
-			for (LPReport lpReport : lpReports) {
-				RouteReport routeReport = routeReports.get(routeIdx);
-
-				// VALIDS
-				for (ContainerReport conRep : lpReport) {
-					for (LPPackageEvent pe : conRep) {
-						PackageEvent e = new PackageEvent();
-
-						e.setId(pe.getId());
-						e.setX(pe.getX());
-						e.setY(pe.getY());
-						e.setZ(pe.getZ());
-						e.setUsedVolumeInContainer(pe.getUsedVolumeInContainer());
-						e.setInvalid(false);
-
-						routeReport.add(e);
-					}
-				}
-
-				// INVALIDS
-				for (LPPackageEvent unplannedPackage : lpReport.getUnplannedPackages()) {
-					PackageEvent e = new PackageEvent();
-
-					e.setId(unplannedPackage.getId());
-					e.setX(unplannedPackage.getX());
-					e.setY(unplannedPackage.getY());
-					e.setZ(unplannedPackage.getZ());
-					e.setUsedVolumeInContainer(0);
-					e.setInvalid(false);
-
-					routeReport.add(e);
-				}
-
-				routeIdx++;
-			}
-		}
 	}
 
 	/**
