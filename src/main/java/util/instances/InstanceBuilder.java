@@ -27,10 +27,10 @@ public class InstanceBuilder {
 	 * @param inputPath
 	 * @throws JAXBException
 	 */
-	public static Instance read(Path inputPath) throws JAXBException {
+	public static Instance read(InputStream inputStream) throws JAXBException {
 		JAXBContext jc = JAXBContext.newInstance(Instance.class);
 		Unmarshaller unmarshaller = jc.createUnmarshaller();
-		return (Instance) unmarshaller.unmarshal(inputPath.toFile());
+		return (Instance) unmarshaller.unmarshal(inputStream);
 	}
 
 	/**

@@ -35,6 +35,44 @@ public class XFVRP3CyclicTransfer extends XFVRPOptImpBase {
 		if(model.getNbrOfDepots() > 1)
 			throw new UnsupportedOperationException(this.getClass().getName()+" supports no multi depot");
 		
+		List<float[]> improvingStepList = search(giantTour);
+
+		// Sortier absteigend nach Potenzial
+		sort(improvingStepList, 3);
+
+		// Finde die erste valide verbessernde L�sung
+		for (float[] val : improvingStepList) {
+			change(solution, val);
+
+			Quality result = checkIt(solution);
+			if(result != null && result.getFitness() < bestResult.getFitness())
+				return result;
+
+			reverseChange(solution, val);
+		}
+
+		return null;
+	}
+	
+	private void change(Solution solution, float[] val) {
+		int a = (int) val[0];
+		int b = (int) val[1];
+		int c = (int) val[2];
+
+		exchange(solution, a,b);
+		exchange(solution, a,c);
+	}
+
+	private void reverseChange(Solution solution, float[] val) {
+		int a = (int) val[0];
+		int b = (int) val[1];
+		int c = (int) val[2];
+
+		exchange(solution, a,c);
+		exchange(solution, a,b);
+	}
+
+	private List<float[]> search(Node[] giantTour) {
 		List<float[]> improvingStepList = new ArrayList<>();
 
 		// Suche alle verbessernden L�sungen
@@ -46,34 +84,13 @@ public class XFVRP3CyclicTransfer extends XFVRPOptImpBase {
 					if(a == c || b == c)
 						continue;
 
-					float val = getDiff(giantTour, a, b, c);
+					float val = getPotential(giantTour, a, b, c);
 					if(val > 0)
 						improvingStepList.add(new float[]{a, b, c, val});
 				}
 			}
 		}
-
-		// Sortier absteigend nach Potenzial
-		sort(improvingStepList, 3);
-
-		// Finde die erste valide verbessernde L�sung
-		for (float[] val : improvingStepList) {
-			int a = (int) val[0];
-			int b = (int) val[1];
-			int c = (int) val[2];
-
-			exchange(solution, a,b);
-			exchange(solution, a,c);
-
-			Quality result = checkIt(solution);
-			if(result != null && result.getFitness() < bestResult.getFitness())
-				return result;
-
-			exchange(solution, a, c);
-			exchange(solution, a, b);
-		}
-
-		return null;
+		return improvingStepList;
 	}
 
 	/**
@@ -84,7 +101,7 @@ public class XFVRP3CyclicTransfer extends XFVRPOptImpBase {
 	 * @param c
 	 * @return
 	 */
-	private float getDiff(Node[] giantTour, int a, int b, int c) {
+	private float getPotential(Node[] giantTour, int a, int b, int c) {
 		int[] aa = new int[]{a-1, a, a+1, c};
 		int[] bb = new int[]{b-1, b, b+1, a};
 		int[] cc = new int[]{c-1, c, c+1, b};

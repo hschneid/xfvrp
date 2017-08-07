@@ -29,76 +29,41 @@ public class XFVRP3PointMove extends XFVRPOptImpBase {
 	@Override
 	public Quality improve(final Solution solution, Quality bestResult) {
 		Node[] giantTour = solution.getGiantRoute();
-		List<float[]> improvingStepList = new ArrayList<>();
-
-		if(model.getNbrOfDepots() == 1)
-			searchSingleDepot(giantTour, improvingStepList);
-		else
-			searchMultiDepot(giantTour, improvingStepList);
+		
+		List<float[]> improvingStepList = search(giantTour);
 
 		// Sortier absteigend nach Potenzial
 		sort(improvingStepList, 2);
 
 		// Finde die erste valide verbessernde L�sung
 		for (float[] val : improvingStepList) {
-			int a = (int) val[0];
-			int b = (int) val[1];
-
-			swap3Point(solution, a, b);
+			change(solution, val);
 
 			Quality result = checkIt(solution);
 			if(result != null && result.getFitness() < bestResult.getFitness())
 				return result;
 
-			if(a < b)
-				swap3Point(solution, b - 1, a);
-			else 
-				swap3Point(solution, b, a + 1);
+			reverseChange(solution, val);
 		}
 
 		return null;
 	}
-	
-	/**
-	 * Searches all improving valid steps in search space for
-	 * a VRP with one depot.
-	 * 
-	 * @param giantRoute
-	 * @param improvingStepList
-	 */
-	private void searchSingleDepot(Node[] giantTour, List<float[]> improvingStepList) {
-		// Suche alle verbessernden L�sungen
-		for (int a = 1; a < giantTour.length - 2; a++) {
-			for (int b = 1; b < giantTour.length - 1; b++) {
-				if(a == b || a + 1 == b || a + 2 == b)
-					continue;
 
-				int predA = a - 1;
-				if(a - b == 1)
-					predA = b;
+	private void change(Solution solution, float[] val) {
+		int a = (int) val[0];
+		int b = (int) val[1];
 
-				float old = 
-					getDistanceForOptimization(giantTour[predA], giantTour[a]) + 
-					getDistanceForOptimization(giantTour[a + 1], giantTour[a + 2]) +
-					getDistanceForOptimization(giantTour[b - 1], giantTour[b]) +
-					((b == giantTour.length - 1 || a - b == 1) ? 0 : getDistanceForOptimization(giantTour[b], giantTour[b + 1]));
+		swap3Point(solution, a, b);
+	}
 
-				float val = 0;
-				if(a - b == 1) {
-					val = old -  
-					(getDistanceForOptimization(giantTour[a + 1], giantTour[b]) + 
-							getDistanceForOptimization(giantTour[b], giantTour[a + 2]) +
-							getDistanceForOptimization(giantTour[b - 1], giantTour[a]));
-				} else
-					val = old -  
-					(getDistanceForOptimization(giantTour[predA], giantTour[b]) + 
-							getDistanceForOptimization(giantTour[b], giantTour[a + 2]) +
-							getDistanceForOptimization(giantTour[b - 1], giantTour[a]) + 
-							((b == giantTour.length - 1) ? 0 : getDistanceForOptimization(giantTour[a + 1], giantTour[b + 1])));
+	private void reverseChange(Solution solution, float[] val) {
+		int a = (int) val[0];
+		int b = (int) val[1];
 
-				if(val > epsilon) improvingStepList.add(new float[]{a, b, val});
-			}
-		}
+		if(a < b)
+			swap3Point(solution, b - 1, a);
+		else 
+			swap3Point(solution, b, a + 1);
 	}
 
 	/**
@@ -106,65 +71,74 @@ public class XFVRP3PointMove extends XFVRPOptImpBase {
 	 * a VRP with multiple depots.
 	 * 
 	 * @param giantRoute
-	 * @param improvingStepList
+	 * @return improvingStepList
 	 */
-	private void searchMultiDepot(Node[] giantTour, List<float[]> improvingStepList) {
+	private List<float[]> search(Node[] giantTour) {
+		List<float[]> improvingStepList = new ArrayList<>();
+		
 		int[] tourIdMarkArr = new int[giantTour.length];
 		int[] depotMarkArr = new int[giantTour.length];
 		int lastDepotIdx = 0;
 		int id = 0;
 		for (int i = 1; i < tourIdMarkArr.length; i++) {
-			if(giantTour[i].getSiteType() == SiteType.DEPOT)
+			if(giantTour[i].getSiteType() == SiteType.DEPOT) {
 				id++;
-			tourIdMarkArr[i] = id;
-			if(giantTour[i].getSiteType() == SiteType.DEPOT)
 				lastDepotIdx = giantTour[i].getIdx();
+			}
+			tourIdMarkArr[i] = id;
 			depotMarkArr[i] = lastDepotIdx;
 		}
 
 		// Suche alle verbessernden L�sungen
 		for (int a = 1; a < giantTour.length - 2; a++) {
-			int markA = depotMarkArr[a];
 			for (int b = 1; b < giantTour.length - 1; b++) {
 				if(a == b || a + 1 == b || a + 2 == b)
 					continue;
 
-				int predA = a - 1;
-				if(a - b == 1)
-					predA = b;
+				findImprovingSteps(giantTour, a, b, depotMarkArr, improvingStepList);
+			}
+		}
+		
+		return improvingStepList;
+	}
+	
+	private void findImprovingSteps(Node[] giantTour, int a, int b, int[] depotMarkArr, List<float[]> improvingStepList) {
+		int predA = a - 1;
+		if(a - b == 1)
+			predA = b;
 
-				// Alle Punkte m�ssen auf Auftr�gen liegen
-				if(giantTour[a].getSiteType() == SiteType.DEPOT ||
-						giantTour[a+1].getSiteType() == SiteType.DEPOT ||
-						giantTour[b].getSiteType() == SiteType.DEPOT
+		int markA = depotMarkArr[a];
+		int markB = depotMarkArr[b - 1];
+
+		// Alle Punkte m�ssen auf Auftr�gen liegen
+		if(giantTour[a].getSiteType() == SiteType.DEPOT ||
+				giantTour[a+1].getSiteType() == SiteType.DEPOT ||
+				giantTour[b].getSiteType() == SiteType.DEPOT
 				)
-					continue;
-
-				int markB = depotMarkArr[b - 1];
-
-				float old = 
-					getDistance(giantTour[predA], giantTour[a], markA) + 
-					getDistance(giantTour[a + 1], giantTour[a + 2], markA) +
-					getDistance(giantTour[b - 1], giantTour[b], markB) +
-					((b == giantTour.length - 1 || a - b == 1) ? 0 : getDistance(giantTour[b], giantTour[b + 1], markB));
+			return;
 
 
-				float val = 0;
-				if(a - b == 1) {
-					val = old -  
+		float old = 
+				getDistance(giantTour[predA], giantTour[a], markA) + 
+				getDistance(giantTour[a + 1], giantTour[a + 2], markA) +
+				getDistance(giantTour[b - 1], giantTour[b], markB) +
+				((b == giantTour.length - 1 || a - b == 1) ? 0 : getDistance(giantTour[b], giantTour[b + 1], markB));
+
+
+		float val = 0;
+		if(a - b == 1) {
+			val = old -  
 					(getDistance(giantTour[a + 1], giantTour[b], markA) + 
 							getDistance(giantTour[b], giantTour[a + 2], markB) +
 							getDistance(giantTour[b - 1], giantTour[a], markB));
-				} else
-					val = old -  
-					(getDistance(giantTour[predA], giantTour[b], markA) + 
-							getDistance(giantTour[b], giantTour[a + 2], markA) +
-							getDistance(giantTour[b - 1], giantTour[a], markB) + 
-							((b == giantTour.length - 1) ? 0 : getDistance(giantTour[a + 1], giantTour[b + 1], markB)));
+		} else
+			val = old -  
+			(getDistance(giantTour[predA], giantTour[b], markA) + 
+					getDistance(giantTour[b], giantTour[a + 2], markA) +
+					getDistance(giantTour[b - 1], giantTour[a], markB) + 
+					((b == giantTour.length - 1) ? 0 : getDistance(giantTour[a + 1], giantTour[b + 1], markB)));
 
-				if(val > epsilon) improvingStepList.add(new float[]{a, b, val});
-			}
-		}
+		if(val > epsilon) improvingStepList.add(new float[]{a, b, val});
 	}
 
 	/**
@@ -175,7 +149,7 @@ public class XFVRP3PointMove extends XFVRPOptImpBase {
 	 */
 	private void swap3Point(Solution solution, int a, int b) {
 		Node[] giantRoute = solution.getGiantRoute();
-		
+
 		Node[] arr = new Node[]{giantRoute[a], giantRoute[a + 1]};
 
 		if(a < b) {
@@ -188,7 +162,7 @@ public class XFVRP3PointMove extends XFVRPOptImpBase {
 			System.arraycopy(giantRoute, b + 1, giantRoute, b + 2, a - b - 1);
 			System.arraycopy(arr, 0, giantRoute, b, 2);
 		}
-		
+
 		solution.setGiantRoute(giantRoute);
 	}
 }

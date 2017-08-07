@@ -10,6 +10,7 @@ import xf.xfvrp.base.XFVRPParameter
 import xf.xfvrp.base.metric.EucledianMetric
 import xf.xfvrp.base.metric.internal.AcceleratedMetricTransformator
 import xf.xfvrp.opt.Solution
+import xf.xfvrp.opt.init.ModelBuilder
 
 class EvaluationServicePresetsSpec extends Specification {
 
@@ -374,7 +375,7 @@ class EvaluationServicePresetsSpec extends Specification {
 
 		def iMetric = new AcceleratedMetricTransformator().transform(metric, nodes, v);
 
-		return new XFVRPModel(nodes, iMetric, iMetric, v, parameter)
+		return new ModelBuilder().build(nodes, v, metric, parameter)
 	}
 	
 	XFVRPModel initMultiDepotScenAbstract(Vehicle v, int[] presetBlocks, int[] presetRanks, int[] presetPos, int[] presetDepots) {
