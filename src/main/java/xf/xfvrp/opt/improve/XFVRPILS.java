@@ -2,15 +2,13 @@ package xf.xfvrp.opt.improve;
 
 import java.util.Arrays;
 
-import xf.xfvrp.base.Node;
 import xf.xfvrp.base.NormalizeSolutionService;
 import xf.xfvrp.base.Quality;
-import xf.xfvrp.base.SiteType;
 import xf.xfvrp.base.Vehicle;
 import xf.xfvrp.base.monitor.StatusCode;
-import xf.xfvrp.base.preset.BlockNameConverter;
 import xf.xfvrp.opt.Solution;
 import xf.xfvrp.opt.XFVRPOptBase;
+import xf.xfvrp.opt.improve.ils.RandomChangeService;
 
 /** 
  * Copyright (c) 2012-present Holger Schneider
@@ -37,11 +35,9 @@ public class XFVRPILS extends XFVRPOptBase {
 	};
 
 	private double[] optPropArr = new double[] {
-//			1
 			0.4, 0.4, 0.15, 0.05
-//			0.7, 0.3
 	};
-
+	
 	/*
 	 * (non-Javadoc)
 	 * @see de.fhg.iml.vlog.xftour.model.XFBase#execute(de.fhg.iml.vlog.xftour.model.XFNode[])
@@ -51,6 +47,8 @@ public class XFVRPILS extends XFVRPOptBase {
 		Solution bestRoute = solution.copy(); 
 		Solution bestBestTour = solution.copy();
 		Quality bestBestQ = check(solution);
+		
+		RandomChangeService randomChange = new RandomChangeService();
 
 		statusManager.fireMessage(StatusCode.RUNNING, this.getClass().getSimpleName()+" is starting with "+model.getParameter().getILSLoops()+" loops.");
 
@@ -58,7 +56,7 @@ public class XFVRPILS extends XFVRPOptBase {
 			Solution gT = bestRoute.copy();
 
 			// Variation
-			perturb2(gT, model.getVehicle());
+			gT = randomChange.change(gT, model);
 			
 			// Intensification
 			gT = localSearch(gT, model.getVehicle());
@@ -80,133 +78,31 @@ public class XFVRPILS extends XFVRPOptBase {
 		return NormalizeSolutionService.normalizeRoute(bestBestTour, model);
 	}
 
+	
+	
 	/**
-	 * This perturb routine relocates single nodes iterativly. The nodes are
-	 * selected randomly.
+	 * Checks if a certain termination criteria is reached.
 	 * 
-	 * @param giantRoute
-	 * @param vehicle
-	 */
-	private void perturb2(Solution solution, Vehicle vehicle) {
-		int nbrOfVariations = 5;
-		int[] param = new int[3];
-		for (int i = 0; i < nbrOfVariations; i++) {
-			// Search source node
-			// Restriction: no depot
-			chooseSrc(param, solution);
-
-			// Search destination
-			// Restriction: 
-			//   Source is not destination
-			//   Solution is not invalid
-			int cnt = 0;
-			boolean changed = false;
-			
-			while(true) {
-				// Choose
-				chooseDst(param, solution);
-
-				// Move
-				pathMove(solution, param[0], param[0] + param[1], param[2]);
-				
-				// Eval
-				Quality q = check(solution);
-				if(q.getPenalty() == 0) {
-					changed = true;
-					break;
-				}
-
-				// Re-Move
-				if(param[2] > param[0])
-					pathMove(solution, param[2] - param[1] - 1, param[2] - 1, param[0]);
-				else
-					pathMove(solution, param[2], param[2] + param[1], param[0] + param[1] + 1);
-				
-				// Terminate for infinity
-				if(cnt > 100)
-					break;
-				
-				cnt++;
-			}
-			
-			if(!changed)
-				i--;
-		}
-	}
-
-	/**
+	 * True - Loop can go on
+	 * False - Terminate loop
 	 * 
-	 * @param param
-	 * @param giantRoute
-	 */
-	private void chooseSrc(int[] param, Solution solution) {
-		Node[] giantRoute = solution.getGiantRoute();
-		
-		// Choose a random source node (customer or replenish)
-		int src = -1;
-		do {
-			src = rand.nextInt(giantRoute.length - 2) + 1;
-		} while(giantRoute[src].getSiteType() == SiteType.DEPOT);
-
-		// Reset source node at the beginning of a block
-		while(src > 1) {
-			Node s = giantRoute[src];
-			Node l = giantRoute[src - 1];
-			if(s.getPresetBlockIdx() == BlockNameConverter.DEFAULT_BLOCK_IDX ||
-					l.getPresetBlockIdx() == BlockNameConverter.DEFAULT_BLOCK_IDX ||
-					s.getPresetBlockIdx() != l.getPresetBlockIdx() ||
-					l.getSiteType() == SiteType.DEPOT)
-				break;
-
-			src--;
-		}
-
-		param[0] = src;
-		param[1] = 0;
-
-		// Extend source node to source path if next nodes belongs to source node block
-		if(giantRoute[src].getPresetBlockPos() >= 0) {
-			int srcBlockIdx = giantRoute[src].getPresetBlockIdx();
-			for (int i = src + 1; i < giantRoute.length; i++) {
-				Node n = giantRoute[i];
-				if(n.getPresetBlockIdx() == srcBlockIdx && n.getPresetBlockIdx() >= BlockNameConverter.DEFAULT_BLOCK_IDX)
-					param[1]++;
-				else
-					break;
-			}
-		}
-	}
-
-	/**
+	 * Criteria are:
+	 *  - Max number of loops
+	 *  - Max running time
 	 * 
-	 * @param param
-	 * @param giantRoute
+	 * @param loopIdx Current loop index
+	 * @return Should continue?
 	 */
-	private void chooseDst(int[] param, Solution solution) {
-		Node[] giantRoute = solution.getGiantRoute();
+	private boolean checkTerminationCriteria(int loopIdx) {
+		if(loopIdx >= model.getParameter().getILSLoops())
+			return false;
 		
-		int dst = -1;
-		do {
-			dst = rand.nextInt(giantRoute.length - 1) + 1;
-		} while(dst >= param[0] && dst <= param[0] + param[1]);
+		if(statusManager.getDurationSinceStartInSec() >= model.getParameter().getMaxRunningTimeInSec())
+			return false;
 		
-		while(dst > 0) {
-			Node d = giantRoute[dst];
-			Node l = giantRoute[dst - 1];
-
-			if(d.getSiteType() == SiteType.DEPOT ||
-					l.getSiteType() == SiteType.DEPOT)
-				break;
-			
-			if(d.getPresetBlockIdx() != l.getPresetBlockIdx())
-				break;
-
-			dst--;
-		}
-
-		param[2] = dst;
+		return true;
 	}
-
+	
 	/**
 	 * 
 	 * @param giantRoute
@@ -240,7 +136,7 @@ public class XFVRPILS extends XFVRPOptBase {
 
 		return solution;
 	}
-
+	
 	/**
 	 * 
 	 * @param processedArr
@@ -261,29 +157,6 @@ public class XFVRPILS extends XFVRPOptBase {
 		} while(processedArr[idx]);
 
 		return idx;
-	}
-	
-	/**
-	 * Checks if a certain termination criteria is reached.
-	 * 
-	 * True - Loop can go on
-	 * False - Terminate loop
-	 * 
-	 * Criteria are:
-	 *  - Max number of loops
-	 *  - Max running time
-	 * 
-	 * @param loopIdx Current loop index
-	 * @return Should continue?
-	 */
-	private boolean checkTerminationCriteria(int loopIdx) {
-		if(loopIdx >= model.getParameter().getILSLoops())
-			return false;
-		
-		if(statusManager.getDurationSinceStartInSec() >= model.getParameter().getMaxRunningTimeInSec())
-			return false;
-		
-		return true;
 	}
 
 	/**
