@@ -8,7 +8,7 @@ import java.util.Map;
 
 import xf.xfpdp.XFPDPUtils;
 import xf.xfvrp.base.Node;
-import xf.xfvrp.base.NormalizeRouteService;
+import xf.xfvrp.base.NormalizeSolutionService;
 import xf.xfvrp.base.Quality;
 import xf.xfvrp.base.SiteType;
 import xf.xfvrp.base.Util;
@@ -116,7 +116,7 @@ public class XFPDPBestBestInsert extends XFVRPOptBase {
 				
 				Solution newSolution = new Solution();
 				newSolution.setGiantRoute(route);
-				route = NormalizeRouteService.normalizeRoute(newSolution, model).getGiantRoute();
+				route = NormalizeSolutionService.normalizeRoute(newSolution, model).getGiantRoute();
 			} else {
 				route = reduceRoute(route);
 				route = buildRoot(depot, route, shipments);
@@ -130,7 +130,7 @@ public class XFPDPBestBestInsert extends XFVRPOptBase {
 
 		Solution newSolution = new Solution();
 		newSolution.setGiantRoute(route);
-		return NormalizeRouteService.normalizeRoute(newSolution, model);
+		return NormalizeSolutionService.normalizeRoute(newSolution, model);
 	}
 
 	private Node[] reduceRoute(Node[] route) {

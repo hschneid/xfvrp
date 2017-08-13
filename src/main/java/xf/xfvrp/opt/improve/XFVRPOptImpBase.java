@@ -1,7 +1,7 @@
 package xf.xfvrp.opt.improve;
 
 import xf.xfvrp.base.Node;
-import xf.xfvrp.base.NormalizeRouteService;
+import xf.xfvrp.base.NormalizeSolutionService;
 import xf.xfvrp.base.Quality;
 import xf.xfvrp.base.SiteType;
 import xf.xfvrp.base.XFVRPModel;
@@ -95,7 +95,7 @@ public abstract class XFVRPOptImpBase extends XFVRPOptBase {
 		}
 
 		// Normalize resulting solution - Remove empty routes
-		return NormalizeRouteService.normalizeRoute(giantRoute, model);
+		return NormalizeSolutionService.normalizeRoute(giantRoute, model);
 	}
 
 	/**

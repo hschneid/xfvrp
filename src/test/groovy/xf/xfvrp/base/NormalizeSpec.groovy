@@ -5,7 +5,7 @@ import xf.xfvrp.opt.Solution
 
 class NormalizeSpec extends Specification {
 
-	def service = new NormalizeRouteService();
+	def service = new NormalizeSolutionService();
 	def sol = new Solution()
 	
 	def "Regular normalize - no empty routes"() {

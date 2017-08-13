@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 import xf.xfpdp.XFPDPUtils;
 import xf.xfvrp.base.Node;
-import xf.xfvrp.base.NormalizeRouteService;
+import xf.xfvrp.base.NormalizeSolutionService;
 import xf.xfvrp.base.Quality;
 import xf.xfvrp.base.SiteType;
 import xf.xfvrp.base.Vehicle;
@@ -69,10 +69,10 @@ public class XFPDPILS extends XFVRPOptBase {
 				bestBestQ = q;
 				bestBestTour = gT;
 			} else
-				bestRoute = NormalizeRouteService.normalizeRoute(bestRoute, model);
+				bestRoute = NormalizeSolutionService.normalizeRoute(bestRoute, model);
 		}
 
-		return NormalizeRouteService.normalizeRoute(bestBestTour, model);
+		return NormalizeSolutionService.normalizeRoute(bestBestTour, model);
 	}
 
 	/**

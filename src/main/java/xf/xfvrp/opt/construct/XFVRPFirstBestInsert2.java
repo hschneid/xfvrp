@@ -7,7 +7,7 @@ import java.util.OptionalInt;
 import java.util.stream.IntStream;
 
 import xf.xfvrp.base.Node;
-import xf.xfvrp.base.NormalizeRouteService;
+import xf.xfvrp.base.NormalizeSolutionService;
 import xf.xfvrp.base.Quality;
 import xf.xfvrp.base.SiteType;
 import xf.xfvrp.base.Util;
@@ -58,7 +58,7 @@ public class XFVRPFirstBestInsert2 extends XFVRPOptBase {
 		
 		Solution newSolution = new Solution();
 		newSolution.setGiantRoute(giantRoute);
-		return NormalizeRouteService.normalizeRoute(newSolution, model);
+		return NormalizeSolutionService.normalizeRoute(newSolution, model);
 	}
 
 	/**
@@ -114,7 +114,7 @@ public class XFVRPFirstBestInsert2 extends XFVRPOptBase {
 				solution.setGiantRoute(newGiantRoute);
 				Quality qq = check(solution);
 				if(qq.getPenalty() == 0) {
-					giantRoute = NormalizeRouteService.normalizeRoute(solution, model).getGiantRoute();
+					giantRoute = NormalizeSolutionService.normalizeRoute(solution, model).getGiantRoute();
 					break;
 				}
 			}
@@ -163,7 +163,7 @@ public class XFVRPFirstBestInsert2 extends XFVRPOptBase {
 				solution.setGiantRoute(newGiantRoute);
 				Quality qq = check(solution);
 				if(qq.getPenalty() == 0) {
-					giantRoute = NormalizeRouteService.normalizeRoute(solution, model).getGiantRoute();
+					giantRoute = NormalizeSolutionService.normalizeRoute(solution, model).getGiantRoute();
 					reducedGiantRoute = new Node[giantRoute.length - 1];
 					break;
 				}
@@ -280,7 +280,7 @@ public class XFVRPFirstBestInsert2 extends XFVRPOptBase {
 
 		Solution solution = new Solution();
 		solution.setGiantRoute(route);
-		return NormalizeRouteService.normalizeRoute(solution, model).getGiantRoute();
+		return NormalizeSolutionService.normalizeRoute(solution, model).getGiantRoute();
 	}
 
 	/**

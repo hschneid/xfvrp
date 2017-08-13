@@ -16,7 +16,7 @@ import xf.xfpdp.XFPDPInit;
 import xf.xfvrp.base.InvalidReason;
 import xf.xfvrp.base.LoadType;
 import xf.xfvrp.base.Node;
-import xf.xfvrp.base.NormalizeRouteService;
+import xf.xfvrp.base.NormalizeSolutionService;
 import xf.xfvrp.base.SiteType;
 import xf.xfvrp.base.Util;
 import xf.xfvrp.base.Vehicle;
@@ -33,9 +33,9 @@ import xf.xfvrp.opt.XFVRPOptSplitter;
 import xf.xfvrp.opt.XFVRPOptType;
 import xf.xfvrp.opt.XFVRPSolution;
 import xf.xfvrp.opt.init.ModelBuilder;
-import xf.xfvrp.opt.init.XFInit;
 import xf.xfvrp.opt.init.precheck.PreCheckException;
 import xf.xfvrp.opt.init.precheck.PreCheckService;
+import xf.xfvrp.opt.init.solution.InitialSolutionBuilder;
 import xf.xfvrp.report.Event;
 import xf.xfvrp.report.Report;
 import xf.xfvrp.report.RouteReport;
@@ -168,7 +168,7 @@ public class XFVRP extends XFVRP_Parameter {
 		if(parameter.isWithPDP())
 			route = new XFPDPInit().buildInitPDP(model, new ArrayList<Node>());
 		else
-			route = new XFInit().initGiantRoute(model, statusManager, new ArrayList<Node>());
+			route = new InitialSolutionBuilder().build(model, new ArrayList<Node>());
 
 		// VRP optimizations, if initiated route has appropriate length
 		if(route.getGiantRoute().length > 0) {
@@ -193,7 +193,7 @@ public class XFVRP extends XFVRP_Parameter {
 			}
 
 			// Normilization of last result
-			route = NormalizeRouteService.normalizeRoute(route, model);
+			route = NormalizeSolutionService.normalizeRoute(route, model);
 		}
 		
 		// Fertige Tour

@@ -6,7 +6,7 @@ import java.util.List;
 
 import util.collection.ListMap;
 import xf.xfvrp.base.Node;
-import xf.xfvrp.base.NormalizeRouteService;
+import xf.xfvrp.base.NormalizeSolutionService;
 import xf.xfvrp.base.SiteType;
 import xf.xfvrp.base.Util;
 import xf.xfvrp.base.preset.BlockNameConverter;
@@ -76,7 +76,7 @@ public class XFVRPConst extends XFVRPOptBase {
 
 		Solution newSolution = new Solution();
 		newSolution.setGiantRoute(giantList.toArray(new Node[giantList.size()]));
-		return NormalizeRouteService.normalizeRoute(newSolution, model);
+		return NormalizeSolutionService.normalizeRoute(newSolution, model);
 	}
 
 	/**

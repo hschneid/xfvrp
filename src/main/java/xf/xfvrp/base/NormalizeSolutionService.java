@@ -5,7 +5,7 @@ import java.util.List;
 
 import xf.xfvrp.opt.Solution;
 
-public class NormalizeRouteService {
+public class NormalizeSolutionService {
 
 	/**
 	 * Normalizes the giant tour by applying the following methods
