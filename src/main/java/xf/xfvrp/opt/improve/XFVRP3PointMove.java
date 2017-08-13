@@ -92,7 +92,7 @@ public class XFVRP3PointMove extends XFVRPOptImpBase {
 		// Suche alle verbessernden L�sungen
 		for (int a = 1; a < giantTour.length - 2; a++) {
 			for (int b = 1; b < giantTour.length - 1; b++) {
-				if(a == b || a + 1 == b || a + 2 == b)
+				if(a == b || a + 1 == b)
 					continue;
 
 				findImprovingSteps(giantTour, a, b, depotMarkArr, improvingStepList);
@@ -122,7 +122,7 @@ public class XFVRP3PointMove extends XFVRPOptImpBase {
 				getDistance(giantTour[predA], giantTour[a], markA) + 
 				getDistance(giantTour[a + 1], giantTour[a + 2], markA) +
 				getDistance(giantTour[b - 1], giantTour[b], markB) +
-				((b == giantTour.length - 1 || a - b == 1) ? 0 : getDistance(giantTour[b], giantTour[b + 1], markB));
+				((b == giantTour.length - 1) ? 0 : getDistance(giantTour[b], giantTour[b + 1], markB));
 
 
 		float val = 0;
