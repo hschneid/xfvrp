@@ -24,8 +24,9 @@ public enum InvalidReason {
 	WRONG_VEHICLE_TYPE, // The vehicle type preset for this customer is not applicable 
 	TIME_WINDOW, // Any customer time window can not be reached by any depot or vehicle type.
 	UNPLANNED, // The customer is not placed on a valid route due to restrictions for vehicle count
-	PDP_INCOMPLETE,  // Wether pickup or delivery node of a pdp-shipment is missing
-	PDP_IMPROPER_AMOUNTS, 
+	PDP_INCOMPLETE,  // Whether pickup or delivery node of a pdp-shipment is missing
+	PDP_IMPROPER_AMOUNTS,
+	PDP_ILLEGAL_NUMBER_OF_CUSTOMERS_PER_SHIPMENT, 
 	PDP_SOURCE_DEST_EQUAL, 
 	PDP_NODE_MULTIPLE_MENTIONS
 }

@@ -1,9 +1,9 @@
-package xf.xfvrp.opt.init.check;
+package xf.xfvrp.opt.init.check.vrp;
 
 import xf.xfvrp.base.InvalidReason;
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.XFVRPModel;
-import xf.xfvrp.opt.init.solution.SolutionBuilderDataBag;
+import xf.xfvrp.opt.init.solution.vrp.SolutionBuilderDataBag;
 
 public class CheckCustomerService {
 

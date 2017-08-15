@@ -12,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import util.collection.ListMap;
-import xf.xfpdp.XFPDPInit;
 import xf.xfvrp.base.InvalidReason;
 import xf.xfvrp.base.LoadType;
 import xf.xfvrp.base.Node;
@@ -151,24 +150,14 @@ public class XFVRP extends XFVRP_Parameter {
 	 * @throws PreCheckException 
 	 */
 	private XFVRPSolution executeRoutePlanning(Node[] globalNodes, Vehicle veh, boolean[] plannedCustomers) throws PreCheckException {
-
 		// Precheck
-		Node[] nodes = null;
-		if(parameter.isWithPDP())
-			nodes = new XFPDPInit().precheck(globalNodes, plannedCustomers);
-		else
-			nodes = new PreCheckService().precheck(globalNodes, veh, plannedCustomers);
+		Node[] nodes = new PreCheckService().precheck(globalNodes, veh, plannedCustomers, parameter);
 
 		// Init
 		XFVRPModel model = new ModelBuilder().build(nodes, veh, metric, parameter);
 
 		// Init giant route
-		Solution route = null;
-
-		if(parameter.isWithPDP())
-			route = new XFPDPInit().buildInitPDP(model, new ArrayList<Node>());
-		else
-			route = new InitialSolutionBuilder().build(model, new ArrayList<Node>());
+		Solution route = new InitialSolutionBuilder().build(model, parameter);
 
 		// VRP optimizations, if initiated route has appropriate length
 		if(route.getGiantRoute().length > 0) {
@@ -196,7 +185,6 @@ public class XFVRP extends XFVRP_Parameter {
 			route = NormalizeSolutionService.normalizeRoute(route, model);
 		}
 		
-		// Fertige Tour
 		lastModel = model;
 		return new XFVRPSolution(route, model);
 	}

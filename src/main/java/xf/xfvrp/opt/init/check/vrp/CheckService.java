@@ -1,4 +1,4 @@
-package xf.xfvrp.opt.init.check;
+package xf.xfvrp.opt.init.check.vrp;
 
 import java.util.Arrays;
 import java.util.List;
@@ -14,7 +14,7 @@ import xf.xfvrp.base.preset.BlockNameConverter;
 import xf.xfvrp.opt.Solution;
 import xf.xfvrp.opt.XFVRPOptBase;
 import xf.xfvrp.opt.XFVRPOptType;
-import xf.xfvrp.opt.init.solution.SolutionBuilderDataBag;
+import xf.xfvrp.opt.init.solution.vrp.SolutionBuilderDataBag;
 
 /** 
  * Copyright (c) 2012-present Holger Schneider

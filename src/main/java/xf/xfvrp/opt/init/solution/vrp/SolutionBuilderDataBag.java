@@ -1,4 +1,4 @@
-package xf.xfvrp.opt.init.solution;
+package xf.xfvrp.opt.init.solution.vrp;
 
 import java.util.ArrayList;
 import java.util.HashSet;
