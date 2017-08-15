@@ -188,7 +188,7 @@ public abstract class XFVRPOptBase extends XFVRPBase<XFVRPModel> {
 	 * @param position The position of the improving amount of a step in the improving step list.
 	 */
 	protected void sort(List<float[]> list, final int position) {
-		// Sortier absteigend nach Potenzial
+		// Sort descending for potential
 		Collections.sort(list, 
 				(o1, o2) -> {
 					if(o1[position] > o2[position]) return -1;
