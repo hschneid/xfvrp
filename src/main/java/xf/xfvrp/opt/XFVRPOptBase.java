@@ -48,15 +48,19 @@ public abstract class XFVRPOptBase extends XFVRPBase<XFVRPModel> {
 	protected void swap(Solution solution, int start, int end) {
 		Node[] giantTour = solution.getGiantRoute();
 		
-		int offset = 0;
-		while (end - offset > start + offset) {
-			Node tmp = giantTour[end - offset];
-			giantTour[end - offset] = giantTour[start + offset];
-			giantTour[start + offset] = tmp;
-			offset++;
-		}
+		swap(giantTour, start, end);
 		
 		solution.setGiantRoute(giantTour);
+	}
+	
+	protected void swap(Node[] nodes, int start, int end) {
+		int offset = 0;
+		while (end - offset > start + offset) {
+			Node tmp = nodes[end - offset];
+			nodes[end - offset] = nodes[start + offset];
+			nodes[start + offset] = tmp;
+			offset++;
+		}
 	}
 
 	/**

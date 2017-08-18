@@ -34,6 +34,16 @@ class XFVRPSavingsSpec extends Specification {
 	demand: [0, 0],
 	timeWindow: [[0,99],[2,99]]
 	).getNode()
+	
+	def nr = new TestNode(
+		externID: "REP",
+		globalIdx: 1,
+		xlong: 1,
+		ylat: 0,
+		siteType: SiteType.REPLENISH,
+		demand: [0, 0],
+		timeWindow: [[0,99],[2,99]]
+		).getNode()
 
 	def sol;
 
@@ -46,47 +56,48 @@ class XFVRPSavingsSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		def routes = [
-			[n[2], n[7], n[3]],
-			[n[4], n[5]]
-		] as Node[][]
+		def dataBag = new SavingsDataBag(
+				routes : [
+					[n[2], n[7], n[3]],
+					[n[4], n[5]]
+				] as Node[][]
+				)
 
 		when:
-		def result = service.prepare(routes)
-		def nodeList = result.getNodeList()
-		
+		service.prepare(dataBag)
+		def nodeList = dataBag.getNodeList()
+
 		then:
-		result != null
-		result.getRouteIdxForStartNode()[2] == 0
-		result.getRouteIdxForStartNode()[3] == -1
-		result.getRouteIdxForEndNode()[3] == 0
-		result.getRouteIdxForStartNode()[4] == 1
-		result.getRouteIdxForEndNode()[5] == 1
-		result.getRouteIdxForStartNode()[7] == -1
-		result.getRouteIdxForEndNode()[7] == -1
+		dataBag.getRouteIdxForStartNode()[2] == 0
+		dataBag.getRouteIdxForStartNode()[3] == -1
+		dataBag.getRouteIdxForEndNode()[3] == 0
+		dataBag.getRouteIdxForStartNode()[4] == 1
+		dataBag.getRouteIdxForEndNode()[5] == 1
+		dataBag.getRouteIdxForStartNode()[7] == -1
+		dataBag.getRouteIdxForEndNode()[7] == -1
 		nodeList.get(0) == n[2]
 		nodeList.get(1) == n[3]
 		nodeList.get(2) == n[4]
 		nodeList.get(3) == n[5]
 	}
-	
+
 	def "Create savings"() {
 		def model = initScen()
 		def n = model.getNodes()
 		service.setModel(model)
 
 		def depot = nd
-		
+
 		def dataBag = new SavingsDataBag(
-			nodeList: [n[2], n[3], n[4], n[5]],
-			routeIdxForStartNode: [-1, -1, 0, -1, 1, -1, -1, -1, -1, -1],
-			routeIdxForEndNode: [-1, -1, -1, 0, -1, 1, -1, -1, -1, -1]
-		)
+				nodeList: [n[2], n[3], n[4], n[5]],
+				routeIdxForStartNode: [-1, -1, 0, -1, 1, -1, -1, -1, -1, -1],
+				routeIdxForEndNode: [-1, -1, -1, 0, -1, 1, -1, -1, -1, -1]
+				)
 
 		when:
 		service.createSavingsMatrix(depot, dataBag)
 		def savings = dataBag.getSavingsMatrix()
-		
+
 		then:
 		savings.size() == 6
 		savings.stream().filter({f -> f[0] == 2 && f[1] == 4 && Math.abs(f[2] - 1537) < 1}).count() == 1
@@ -96,9 +107,346 @@ class XFVRPSavingsSpec extends Specification {
 		savings.stream().filter({f -> f[0] == 5 && f[1] == 2 && Math.abs(f[2] - 2118) < 1}).count() == 1
 		savings.stream().filter({f -> f[0] == 5 && f[1] == 3 && Math.abs(f[2] - 1537) < 1}).count() == 1
 	}
+	
+	def "Merge routes without invertation"() {
+		def model = initScen()
+		def n = model.getNodes()
+		service.setModel(model)
 
+		def depot = nd
+
+		def dataBag = new SavingsDataBag(
+			nodeList: [n[2], n[3], n[4], n[5]],
+			routeIdxForStartNode: [-1, -1, 0, -1, 1, -1, 2, -1, -1, -1],
+			routeIdxForEndNode: [-1, -1, -1, 0, -1, 1, 2, -1, -1, -1],
+			routes: [
+				[n[2], n[7], n[3]],
+				[n[4], n[5]],
+				[n[6]]
+			] as Node[][]
+		)
+
+		when:
+		def result = service.mergeRoutes(n[3].getIdx(), n[4].getIdx(), dataBag)
+
+		then:
+		result.length == 5
+		result[0] == n[2]
+		result[1] == n[7]
+		result[2] == n[3]
+		result[3] == n[4]
+		result[4] == n[5]
+	}
+
+	def "Merge routes with invertation"() {
+		def model = initScen()
+		def n = model.getNodes()
+		service.setModel(model)
+
+		def dataBag = new SavingsDataBag(
+			nodeList: [n[2], n[3], n[4], n[5]],
+			routeIdxForStartNode: [-1, -1, 0, -1, 1, -1, 2, -1, -1, -1],
+			routeIdxForEndNode: [-1, -1, -1, 0, -1, 1, 2, -1, -1, -1],
+			routes: [
+				[n[2], n[7], n[3]],
+				[n[4], n[5]],
+				[n[6]]
+			] as Node[][]
+		)
+
+		when:
+		def result = service.mergeRoutes(n[6].getIdx(), n[5].getIdx(), dataBag)
+
+		then:
+		result.length == 3
+		result[0] == n[6]
+		result[1] == n[5]
+		result[2] == n[4]
+	}
+
+	def "Add depots"() {
+		def model = initScen()
+		def n = model.getNodes()
+		service.setModel(model)
+
+		def depot = nd
+
+		def routeWithoutDepots = [n[4], n[7], n[2]] as Node[]
+
+		when:
+		def result = service.addDepots(routeWithoutDepots, nd, nd2)
+
+		then:
+		result.length == 5
+		result[0] == nd
+		result[1] == n[4]
+		result[2] == n[7]
+		result[3] == n[2]
+		result[4] == nd2
+	}
+	
+	def "Is Saving available - Yes"() {
+		def model = initScen()
+		def n = model.getNodes()
+		service.setModel(model)
+
+		def dataBag = new SavingsDataBag(
+			nodeList: [n[2], n[3], n[4], n[5]],
+			routeIdxForStartNode: [-1, -1, 0, -1, 1, -1, 2, -1, -1, -1],
+			routeIdxForEndNode: [-1, -1, -1, 0, -1, 1, 2, -1, -1, -1],
+			routes: [
+				[n[2], n[7], n[3]],
+				[n[4], n[5]],
+				[n[6]]
+			] as Node[][]
+		)
+
+		when:
+		def result = service.isSavingAvailable(2, 5, dataBag)
+		def result2 = service.isSavingAvailable(5, 2, dataBag)
+
+		then:
+		result == true
+		result2 == true
+	}
+	
+	def "Is Saving available - No"() {
+		def model = initScen()
+		def n = model.getNodes()
+		service.setModel(model)
+
+		def dataBag = new SavingsDataBag(
+			nodeList: [n[2], n[3], n[4], n[5]],
+			routeIdxForStartNode: [-1, -1, 0, -1, 1, -1, 2, -1, -1, -1],
+			routeIdxForEndNode: [-1, -1, -1, 0, -1, 1, 2, -1, -1, -1],
+			routes: [
+				[n[2], n[7], n[3]],
+				[n[4], n[5]],
+				[n[6]]
+			] as Node[][]
+		)
+
+		when:
+		def result = service.isSavingAvailable(2, 7, dataBag)
+		def result2 = service.isSavingAvailable(7, 2, dataBag)
+		def result3 = service.isSavingAvailable(2, 3, dataBag)
+
+		then:
+		result == false
+		result2 == false
+		result3 == false
+	}
+	
+	def "Build routes"() {
+		def model = initScen()
+		def n = model.getNodes()
+		service.setModel(model)
+
+		def giantRoute = [nd, nd, n[2], n[7], n[3], nd, n[5], n[4], nd, n[6], nd, nr, nd] as Node[]
+
+		when:
+		def result = service.buildRoutes(giantRoute)
+		def routes = result.getRoutes()
+
+		then:
+		routes.length == 3
+		routes[0][0] == n[2]
+		routes[0][1] == n[7]
+		routes[0][2] == n[3]
+		routes[1][0] == n[5]
+		routes[1][1] == n[4]
+		routes[2][0] == n[6]
+	}
+	
+	def "Update routes - Invert B"() {
+		def model = initScen()
+		def n = model.getNodes()
+		service.setModel(model)
+
+		def dataBag = new SavingsDataBag(
+			nodeList: [n[2], n[3], n[4], n[5]],
+			routeIdxForStartNode: [-1, -1, 0, -1, 1, -1, 2, -1, -1, -1],
+			routeIdxForEndNode: [-1, -1, -1, 0, -1, 1, 2, -1, -1, -1],
+			routes: [
+				[n[2], n[7], n[3]],
+				[n[4], n[5]],
+				[n[6]]
+			] as Node[][]
+		)
+		
+		def newRoute = [n[2], n[7], n[3], n[5], n[4]] as Node[]
+
+		when:
+		service.updateRoutes(newRoute, 3, 5, dataBag)
+		def routes = dataBag.getRoutes()
+
+		then:
+		routes[0][0] == n[2]
+		routes[0][1] == n[7]
+		routes[0][2] == n[3]
+		routes[0][3] == n[5]
+		routes[0][4] == n[4]
+		routes[1] == null
+		routes[2][0] == n[6]
+		dataBag.getRouteIdxForStartNode()[2] == 0
+		dataBag.getRouteIdxForStartNode()[3] == -1
+		dataBag.getRouteIdxForEndNode()[3] == -1
+		dataBag.getRouteIdxForStartNode()[5] == -1
+		dataBag.getRouteIdxForEndNode()[5] == -1
+		dataBag.getRouteIdxForStartNode()[4] == -1
+		dataBag.getRouteIdxForEndNode()[4] == 0
+	}
+	
+	def "Update routes - Invert A"() {
+		def model = initScen()
+		def n = model.getNodes()
+		service.setModel(model)
+
+		def dataBag = new SavingsDataBag(
+			nodeList: [n[2], n[3], n[4], n[5]],
+			routeIdxForStartNode: [-1, -1, 0, -1, 1, -1, 2, -1, -1, -1],
+			routeIdxForEndNode: [-1, -1, -1, 0, -1, 1, 2, -1, -1, -1],
+			routes: [
+				[n[2], n[7], n[3]],
+				[n[4], n[5]],
+				[n[6]]
+			] as Node[][]
+		)
+		
+		def newRoute = [n[3], n[7], n[2], n[4], n[5]] as Node[]
+
+		when:
+		service.updateRoutes(newRoute, 2, 4, dataBag)
+		def routes = dataBag.getRoutes()
+
+		then:
+		routes[0][0] == n[3]
+		routes[0][1] == n[7]
+		routes[0][2] == n[2]
+		routes[0][3] == n[4]
+		routes[0][4] == n[5]
+		routes[1] == null
+		routes[2][0] == n[6]
+		dataBag.getRouteIdxForStartNode()[3] == 0
+		dataBag.getRouteIdxForStartNode()[2] == -1
+		dataBag.getRouteIdxForEndNode()[2] == -1
+		dataBag.getRouteIdxForStartNode()[4] == -1
+		dataBag.getRouteIdxForEndNode()[4] == -1
+		dataBag.getRouteIdxForStartNode()[5] == -1
+		dataBag.getRouteIdxForEndNode()[5] == 0
+	}
+	
+	def "Update routes - None"() {
+		def model = initScen()
+		def n = model.getNodes()
+		service.setModel(model)
+
+		def dataBag = new SavingsDataBag(
+			nodeList: [n[2], n[3], n[4], n[5]],
+			routeIdxForStartNode: [-1, -1, 0, -1, 1, -1, 2, -1, -1, -1],
+			routeIdxForEndNode: [-1, -1, -1, 0, -1, 1, 2, -1, -1, -1],
+			routes: [
+				[n[2], n[7], n[3]],
+				[n[4], n[5]],
+				[n[6]]
+			] as Node[][]
+		)
+		
+		def newRoute = [n[2], n[7], n[3], n[4], n[5]] as Node[]
+
+		when:
+		service.updateRoutes(newRoute, 3, 4, dataBag)
+		def routes = dataBag.getRoutes()
+
+		then:
+		routes[0][0] == n[2]
+		routes[0][1] == n[7]
+		routes[0][2] == n[3]
+		routes[0][3] == n[4]
+		routes[0][4] == n[5]
+		routes[1] == null
+		routes[2][0] == n[6]
+		dataBag.getRouteIdxForStartNode()[2] == 0
+		dataBag.getRouteIdxForStartNode()[3] == -1
+		dataBag.getRouteIdxForEndNode()[3] == -1
+		dataBag.getRouteIdxForStartNode()[4] == -1
+		dataBag.getRouteIdxForEndNode()[4] == -1
+		dataBag.getRouteIdxForStartNode()[5] == -1
+		dataBag.getRouteIdxForEndNode()[5] == 0
+	}
+	
+	def "Update routes - Both"() {
+		def model = initScen()
+		def n = model.getNodes()
+		service.setModel(model)
+
+		def dataBag = new SavingsDataBag(
+			nodeList: [n[2], n[3], n[4], n[5]],
+			routeIdxForStartNode: [-1, -1, 0, -1, 1, -1, 2, -1, -1, -1],
+			routeIdxForEndNode: [-1, -1, -1, 0, -1, 1, 2, -1, -1, -1],
+			routes: [
+				[n[2], n[7], n[3]],
+				[n[4], n[5]],
+				[n[6]]
+			] as Node[][]
+		)
+		
+		def newRoute = [n[3], n[7], n[2], n[5], n[4]] as Node[]
+
+		when:
+		service.updateRoutes(newRoute, 2, 5, dataBag)
+		def routes = dataBag.getRoutes()
+
+		then:
+		routes[0][0] == n[3]
+		routes[0][1] == n[7]
+		routes[0][2] == n[2]
+		routes[0][3] == n[5]
+		routes[0][4] == n[4]
+		routes[1] == null
+		routes[2][0] == n[6]
+		dataBag.getRouteIdxForStartNode()[3] == 0
+		dataBag.getRouteIdxForStartNode()[2] == -1
+		dataBag.getRouteIdxForEndNode()[2] == -1
+		dataBag.getRouteIdxForStartNode()[5] == -1
+		dataBag.getRouteIdxForEndNode()[5] == -1
+		dataBag.getRouteIdxForStartNode()[4] == -1
+		dataBag.getRouteIdxForEndNode()[4] == 0
+	}
+	
+	def "Apply Saving"() {
+		def model = initScen()
+		def n = model.getNodes()
+		service.setModel(model)
+
+		def dataBag = new SavingsDataBag(
+			nodeList: [n[2], n[3], n[4], n[5]],
+			routeIdxForStartNode: [-1, -1, 0, -1, 1, -1, 2, -1, -1, -1],
+			routeIdxForEndNode: [-1, -1, -1, 0, -1, 1, 2, -1, -1, -1],
+			routes: [
+				[n[2], n[3]],
+				[n[4], n[5]],
+				[n[6]]
+			] as Node[][],
+			savingsMatrix: [[2, 4, 10.2] as float[], [3, 4, 12.2] as float[]] as ArrayList<float[]>
+		)
+		
+		when:
+		def result = service.applyNextSaving(nd, dataBag)
+		def routes = dataBag.getRoutes()
+
+		then:
+		result == true
+		routes[0][0] == n[2]
+		routes[0][1] == n[3]
+		routes[0][2] == n[4]
+		routes[0][3] == n[5]
+		routes[1] == null
+		routes[2][0] == n[6]
+	}
+	
 	XFVRPModel initScen() {
-		def v = new TestVehicle(name: "V1", capacity: [3, 3]).getVehicle()
+		def v = new TestVehicle(name: "V1", capacity: [30, 30]).getVehicle()
 
 		def n1 = new TestNode(
 				globalIdx: 2,
@@ -190,8 +538,9 @@ class XFVRPSavingsSpec extends Specification {
 		n6.setIdx(7);
 		n7.setIdx(8);
 		n8.setIdx(9);
+		nr.setIdx(10)
 
-		def nodes = [nd, nd2, n1, n2, n3, n4, n5, n6, n7, n8] as Node[];
+		def nodes = [nd, nd2, n1, n2, n3, n4, n5, n6, n7, n8, nr] as Node[];
 
 		def iMetric = new AcceleratedMetricTransformator().transform(metric, nodes, v);
 

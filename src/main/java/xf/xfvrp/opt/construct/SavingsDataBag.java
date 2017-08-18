@@ -11,6 +11,7 @@ public class SavingsDataBag {
 	private int[] routeIdxForStartNode;
 	private int[] routeIdxForEndNode;
 	private List<float[]> savingsMatrix = new ArrayList<>();
+	private Node[][] routes;
 	
 	public void addSaving(int srcIdx, int dstIdx, float potential) {
 		savingsMatrix.add(new float[] {srcIdx, dstIdx, 1000f / potential});
@@ -37,4 +38,14 @@ public class SavingsDataBag {
 	public List<float[]> getSavingsMatrix() {
 		return savingsMatrix;
 	}
+
+	public Node[][] getRoutes() {
+		return routes;
+	}
+
+	public void setRoutes(Node[][] routes) {
+		this.routes = routes;
+	}
+	
+	
 }

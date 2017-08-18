@@ -3,12 +3,12 @@ package xf.xfvrp.opt.construct;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.Quality;
 import xf.xfvrp.base.SiteType;
 import xf.xfvrp.base.Util;
-import xf.xfvrp.base.XFVRPModel;
 import xf.xfvrp.opt.Solution;
 import xf.xfvrp.opt.XFVRPOptBase;
 
@@ -43,21 +43,21 @@ public class XFVRPSavings extends XFVRPOptBase {
 
 		final Node depot = giantRoute[0];
 
-		Node[][] routes = buildRoutes(giantRoute, model);
+		SavingsDataBag dataBag = buildRoutes(giantRoute);
 
-		SavingsDataBag dataBag = prepare(routes);
+		prepare(dataBag);
 
 		createSavingsMatrix(depot, dataBag);
 
-		improve(depot, routes, dataBag);
+		improve(depot, dataBag);
 
 		Solution newSolution = new Solution();
-		newSolution.setGiantRoute(buildGiantRoute(routes, depot));
+		newSolution.setGiantRoute(buildGiantRoute(dataBag, depot));
 		return newSolution;
 	}
 
-	private SavingsDataBag prepare(Node[][] routes) {
-		SavingsDataBag dataBag = new SavingsDataBag();
+	private void prepare(SavingsDataBag dataBag) {
+		Node[][] routes = dataBag.getRoutes();
 
 		List<Node> nodeList = new ArrayList<>();
 		int[] routeIdxForStartNode = new int[model.getNodes().length];
@@ -71,7 +71,7 @@ public class XFVRPSavings extends XFVRPOptBase {
 		for (int i = 0; i < routes.length; i++) {
 			Node firstCustomer = routes[i][0];
 			Node lastCustomer = routes[i][routes[i].length - 1];
-			
+
 			routeIdxForStartNode[firstCustomer.getIdx()] = i;
 			routeIdxForEndNode[lastCustomer.getIdx()] = i;
 
@@ -83,23 +83,19 @@ public class XFVRPSavings extends XFVRPOptBase {
 		dataBag.setRouteIdxForStartNode(routeIdxForStartNode);
 		dataBag.setRouteIdxForEndNode(routeIdxForEndNode);
 		dataBag.setNodeList(nodeList);
-
-		return dataBag;
 	}
 
-	private void improve(Node depot, Node[][] routeArr, SavingsDataBag dataBag) {
+	private void improve(Node depot, SavingsDataBag dataBag) {
 		boolean isImproved = true;
 		while(isImproved) {
-			isImproved = applyNextSaving(depot, routeArr, dataBag);
+			isImproved = applyNextSaving(depot, dataBag);
 		}
 	}
 
-	private boolean applyNextSaving(Node depot, Node[][] routes, SavingsDataBag dataBag) {
+	private boolean applyNextSaving(Node depot, SavingsDataBag dataBag) {
 		Node depotStart = Util.createIdNode(depot, 0);
 		Node depotEnd = Util.createIdNode(depot, 1);
 
-		int[] routeIdxForStartNode = dataBag.getRouteIdxForStartNode();
-		int[] routeIdxForEndNode = dataBag.getRouteIdxForEndNode();
 		List<float[]> savingsMatrix = dataBag.getSavingsMatrix();
 
 		int savingsIdx = savingsMatrix.size() - 1;
@@ -109,20 +105,14 @@ public class XFVRPSavings extends XFVRPOptBase {
 			savingsIdx--;
 			float[] saving = savingsMatrix.get(i);
 
-			int route1 = routeIdxForEndNode[(int) saving[0]];
-			int route2 = routeIdxForStartNode[(int) saving[1]];
+			int srcNodeIdx = (int)saving[0];
+			int dstNodeIdx = (int)saving[1];
 
-			// Beide Routen m�ssen noch zur Verf�gung stehen
-			// ODER Wenn beide Knoten auf der selben Tour liegen,
-			// ist eine Verkn�pfung nicht mehr m�glich
-			if(route1 == -1 || route2 == -1 || route1 == route2)
+			if(!isSavingAvailable(srcNodeIdx, dstNodeIdx, dataBag))
 				continue;
 
 			// Merge
-			int routeLength1 = routes[route1].length;
-			int routeLength2 = routes[route2].length;
-
-			Node[] coreRoute = mergeRoutes(routes, route1, route2);
+			Node[] coreRoute = mergeRoutes(srcNodeIdx, dstNodeIdx, dataBag);
 			Node[] newRoute = addDepots(coreRoute, depotStart, depotEnd);
 
 			// Check
@@ -131,26 +121,66 @@ public class XFVRPSavings extends XFVRPOptBase {
 			Quality q = check(smallSolution);
 
 			if(q.getPenalty() == 0) {
-				// Aktualisiere die Datenstrukturen
-				// Der Start von Route1 bleibt
-				// Der Start von Route2 f�llt weg
-				routeIdxForStartNode[routes[route2][0].getIdx()] = -1;
-				// Das Ziel von Route1 f�llt weg
-				routeIdxForEndNode[routes[route1][routeLength1 - 1].getIdx()] = -1;
-				// Das Ziel von Route2 ist jetzt auf Route1
-				routeIdxForEndNode[routes[route2][routeLength2 - 1].getIdx()] = route1;
-
-				// Die neue Route1
-				newRoute = coreRoute;
-
-				// Route2 ist obsolet
-				routes[route2] = null;
+				updateRoutes(coreRoute, srcNodeIdx, dstNodeIdx, dataBag);
 
 				return true;
 			}
 		}
 
 		return false;
+	}
+
+	private boolean isSavingAvailable(int srcNodeIdx, int dstNodeIdx, SavingsDataBag dataBag) {
+		int[] routeIdxForStartNode = dataBag.getRouteIdxForStartNode();
+		int[] routeIdxForEndNode = dataBag.getRouteIdxForEndNode();
+
+		int routeIdxSrc = Math.max(routeIdxForStartNode[srcNodeIdx], routeIdxForEndNode[srcNodeIdx]);
+		int routeIdxDst = Math.max(routeIdxForStartNode[dstNodeIdx], routeIdxForEndNode[dstNodeIdx]);
+
+		// Beide Routen m�ssen noch zur Verf�gung stehen
+		// ODER Wenn beide Knoten auf der selben Tour liegen,
+		// ist eine Verkn�pfung nicht mehr m�glich
+		if(routeIdxSrc == -1 || routeIdxDst == -1 || routeIdxSrc == routeIdxDst)
+			return false;
+
+		return true;
+	}
+
+	private void updateRoutes(Node[] mergedRoute, int srcNodeIdx, int dstNodeIdx, SavingsDataBag dataBag) {
+		Node[][] routes = dataBag.getRoutes();
+
+		int[] routeIdxForStartNode = dataBag.getRouteIdxForStartNode();
+		int[] routeIdxForEndNode = dataBag.getRouteIdxForEndNode();
+
+		int routeIdxSrc = Math.max(routeIdxForStartNode[srcNodeIdx], routeIdxForEndNode[srcNodeIdx]);
+		int routeIdxDst = Math.max(routeIdxForStartNode[dstNodeIdx], routeIdxForEndNode[dstNodeIdx]);
+
+		int routeLengthSrc = routes[routeIdxSrc].length;
+		int routeLengthDst = routes[routeIdxDst].length;
+
+		// Aktualisiere die Datenstrukturen
+		if(routeIdxForStartNode[srcNodeIdx] != -1) { 
+			routeIdxForStartNode[srcNodeIdx] = -1;
+			routeIdxForStartNode[routes[routeIdxSrc][routeLengthSrc - 1].getIdx()] = routeIdxSrc;
+			routeIdxForEndNode[routes[routeIdxSrc][routeLengthSrc - 1].getIdx()] = -1;
+		} else {
+			routeIdxForEndNode[srcNodeIdx] = -1;
+		}
+
+		if(routeIdxForStartNode[dstNodeIdx] != -1) {
+			routeIdxForStartNode[dstNodeIdx] = -1;
+			routeIdxForEndNode[routes[routeIdxDst][routeLengthDst - 1].getIdx()] = routeIdxSrc;
+		} else {
+			routeIdxForEndNode[dstNodeIdx] = -1;
+			routeIdxForStartNode[routes[routeIdxDst][0].getIdx()] = -1;
+			routeIdxForEndNode[routes[routeIdxDst][0].getIdx()] = routeIdxSrc;
+		}
+
+		// Die neue Route1
+		routes[routeIdxSrc] = mergedRoute;
+
+		// Route2 ist obsolet
+		routes[routeIdxDst] = null;
 	}
 
 	private Node[] addDepots(Node[] routeWithoutDepots, Node depotStart, Node depotEnd) {
@@ -163,16 +193,29 @@ public class XFVRPSavings extends XFVRPOptBase {
 		return route;
 	}
 
-	private Node[] mergeRoutes(Node[][] routeArr, int route1, int route2) {
-		int routeLength1 = routeArr[route1].length;
-		int routeLength2 = routeArr[route2].length;
+	private Node[] mergeRoutes(int srcNodeIdx, int dstNodeIdx, SavingsDataBag dataBag) {
+		Node[][] routes = dataBag.getRoutes();
 
-		Node[] newRoute = new Node[routeLength1 + routeLength2];
-		System.arraycopy(routeArr[route1], 0, newRoute, 0, routeLength1);
-		System.arraycopy(routeArr[route2], 0, newRoute, routeLength1, routeLength2);
-		routeArr[route1] = newRoute;
+		int[] routeIdxForStartNode = dataBag.getRouteIdxForStartNode();
+		int[] routeIdxForEndNode = dataBag.getRouteIdxForEndNode();
 
-		return newRoute;		
+		int routeIdxSrc = Math.max(routeIdxForStartNode[srcNodeIdx], routeIdxForEndNode[srcNodeIdx]);
+		int routeIdxDst = Math.max(routeIdxForStartNode[dstNodeIdx], routeIdxForEndNode[dstNodeIdx]);
+
+		int routeLengthSrc = routes[routeIdxSrc].length;
+		int routeLengthDst = routes[routeIdxDst].length;
+
+		Node[] r1 = Arrays.copyOf(routes[routeIdxSrc], routeLengthSrc);
+		if(routeIdxForStartNode[srcNodeIdx] != -1)
+			this.swap(r1, 0, r1.length - 1);
+
+		Node[] r2 = Arrays.copyOf(routes[routeIdxDst], routeLengthDst);
+		if(routeIdxForEndNode[dstNodeIdx] != -1)
+			this.swap(r2, 0, r2.length - 1);
+
+		return Stream
+				.concat(Arrays.stream(r1), Arrays.stream(r2))
+				.toArray(Node[]::new);
 	}
 
 	private void createSavingsMatrix(Node depot, SavingsDataBag dataBag) {
@@ -190,14 +233,14 @@ public class XFVRPSavings extends XFVRPOptBase {
 				Node dst = nodeList.get(j);
 				int dstIdx = dst.getIdx();
 				int dstRouteIdx = routeIdxForEndNode[dstIdx];
-				
+
 				if(srcRouteIdx == dstRouteIdx)
 					continue;
 
 				float dist = getDistanceForOptimization(src, dst);
 				float distBDepot = getDistanceForOptimization(dst, depot);
 				float saving = (distADepot + distBDepot) - lamda * dist;
-				
+
 				if(saving > 0) {
 					dataBag.addSaving(srcIdx, dst.getIdx(), saving);
 					dataBag.addSaving(dst.getIdx(), srcIdx, saving);
@@ -215,7 +258,9 @@ public class XFVRPSavings extends XFVRPOptBase {
 	 * @param depot
 	 * @return giant route
 	 */
-	private Node[] buildGiantRoute(Node[][] routeArr, Node depot) {
+	private Node[] buildGiantRoute(SavingsDataBag dataBag, Node depot) {
+		Node[][] routeArr = dataBag.getRoutes();
+
 		int maxId = 0;
 		List<Node> giantList = new ArrayList<>();
 		for (int i = 0; i < routeArr.length; i++) {
@@ -237,12 +282,12 @@ public class XFVRPSavings extends XFVRPOptBase {
 	 * sub list is a route.
 	 * 
 	 * @param giantRoute
-	 * @param model
 	 * @return
 	 */
-	private Node[][] buildRoutes(Node[] giantRoute, XFVRPModel model) {
-		int nbrOfCustomers = model.getNbrOfNodes() - model.getNbrOfDepots() - model.getNbrOfReplenish();
-		Node[][] routeArr = new Node[nbrOfCustomers][1];
+	private SavingsDataBag buildRoutes(Node[] giantRoute) {
+		SavingsDataBag dataBag = new SavingsDataBag();
+
+		Node[][] routeArr = new Node[giantRoute.length][];
 
 		int idx = 0;
 		for (int i = 0; i < giantRoute.length; i++) {
@@ -262,6 +307,8 @@ public class XFVRPSavings extends XFVRPOptBase {
 			routeArr[idx++] = list.toArray(new Node[0]);
 		}
 
-		return Arrays.copyOf(routeArr, idx);
+		dataBag.setRoutes(Arrays.copyOf(routeArr, idx));
+
+		return dataBag;
 	}
 }
