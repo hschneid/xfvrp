@@ -1,4 +1,4 @@
-package xf.xfvrp.opt.construct;
+package xf.xfvrp.opt.construct.insert;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -33,7 +33,7 @@ import xf.xfvrp.opt.XFVRPOptBase;
  * @author hschneid
  *
  */
-public class XFVRPFirstBestInsert2 extends XFVRPOptBase {
+public class XFVRPFirstBestInsert extends XFVRPOptBase {
 
 	/*
 	 * (non-Javadoc)
@@ -191,6 +191,12 @@ public class XFVRPFirstBestInsert2 extends XFVRPOptBase {
 			// Create partial route with one additional empty slot
 			Node[] route = createEvaluationRoute(giantRoute, routeStats);
 
+			// Check for feasibility
+			route[1] = route[0];
+			Solution ss = new Solution();
+			ss.setGiantRoute(route);
+			Quality currentRouteQuality = check(ss);
+			
 			// For all insert positions
 			int cnt = 1;
 			for(int p = routeStats[0] + 1; p <= routeStats[1]; p++) {
@@ -200,12 +206,9 @@ public class XFVRPFirstBestInsert2 extends XFVRPOptBase {
 				// Check for feasibility
 				Solution solution = new Solution();
 				solution.setGiantRoute(route);
-				Quality q = check(solution);
-				if(q != null && q.getPenalty() == 0) {
-					// If feasible, then get insertion cost 
-					float insertCost = getInsertCost(giantRoute, customer, p);
-
-					insertPoints.add(new float[]{p, insertCost});
+				Quality newRouteQuality = check(solution);
+				if(newRouteQuality != null && newRouteQuality.getPenalty() == 0) {
+					insertPoints.add(new float[]{p, newRouteQuality.getCost() - currentRouteQuality.getCost()});
 				}
 
 				// Move empty slot one position further
@@ -215,25 +218,6 @@ public class XFVRPFirstBestInsert2 extends XFVRPOptBase {
 		});
 
 		return insertPoints;
-	}
-
-	/**
-	 * The insertion costs are the difference in distance between the current state
-	 * of the solution at a certain position and the state after the insertion of the
-	 * customer node at a certain position. 
-	 * 
-	 * @param giantRoute Current solution of planned routes
-	 * @param customer The customer node which shall be inserted
-	 * @param p The position (index in giant route) where the customer node is placed BEFORE.
-	 * @return The difference in distance without and with the customer at this position.
-	 */
-	private float getInsertCost(Node[] giantRoute, Node customer, int p) {
-		float insertionCost = 0;
-		insertionCost += model.getDistanceForOptimization(giantRoute[p - 1], customer);
-		insertionCost += model.getDistanceForOptimization(customer, giantRoute[p]);
-		insertionCost -= model.getDistanceForOptimization(giantRoute[p - 1], giantRoute[p]);
-
-		return insertionCost;
 	}
 
 	/**
@@ -298,6 +282,9 @@ public class XFVRPFirstBestInsert2 extends XFVRPOptBase {
 				cnt++;
 			route[cnt++] = giantRoute[p];
 		}
+		
+		route[route.length - 1] = route[0];
+		
 		return route;
 	}
 

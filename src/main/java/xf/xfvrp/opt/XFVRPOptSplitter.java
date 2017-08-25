@@ -10,6 +10,7 @@ import xf.xfvrp.base.Node;
 import xf.xfvrp.base.SiteType;
 import xf.xfvrp.base.XFVRPModel;
 import xf.xfvrp.base.monitor.StatusManager;
+import xf.xfvrp.report.build.ReportBuilder;
 
 /** 
  * Copyright (c) 2012-present Holger Schneider
@@ -142,8 +143,8 @@ public class XFVRPOptSplitter {
 	 * @param model Current model with nodes, distances and parameters
 	 * @return Fitness of current solution
 	 */
-	private float getCost(Solution giantTour, XFVRPModel model) {
-		XFVRPSolution sol = new XFVRPSolution(giantTour, model);
-		return sol.getReport().getSummary().getCost();
+	private float getCost(Solution solution, XFVRPModel model) {
+		XFVRPSolution sol = new XFVRPSolution(solution, model);
+		return new ReportBuilder().getReport(sol).getSummary().getCost();
 	}
 }

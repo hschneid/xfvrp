@@ -1,11 +1,11 @@
 package xf.xfvrp.opt;
 
-import xf.xfpdp.opt.XFPDPFirstBestInsert;
 import xf.xfpdp.opt.XFPDPILS;
 import xf.xfpdp.opt.XFPDPRelocate2;
 import xf.xfvrp.opt.construct.XFVRPConst;
-import xf.xfvrp.opt.construct.XFVRPFirstBestInsert2;
 import xf.xfvrp.opt.construct.XFVRPSavings;
+import xf.xfvrp.opt.construct.insert.XFPDPFirstBestInsert;
+import xf.xfvrp.opt.construct.insert.XFVRPFirstBestInsert;
 import xf.xfvrp.opt.improve.XFVRP2Opt;
 import xf.xfvrp.opt.improve.XFVRP2OptIntra;
 import xf.xfvrp.opt.improve.XFVRP3Opt;
@@ -38,7 +38,7 @@ public enum XFVRPOptType {
 	
 	SAVINGS(XFVRPSavings.class),
 	CONST(XFVRPConst.class),
-	FIRST_BEST(XFVRPFirstBestInsert2.class),
+	FIRST_BEST(XFVRPFirstBestInsert.class),
 	OPT2(XFVRP2Opt.class),
 	OPT2_INTRA(XFVRP2OptIntra.class),
 	SWAP(XFVRPSwap.class),

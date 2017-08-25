@@ -45,7 +45,7 @@ public class EvaluationService {
 		Context context = ContextBuilder.build(solution, model);
 
 		// Feasibility check
-		checkFeasibility(giantRoute);
+		FeasibilityAnalzer.checkFeasibility(giantRoute);
 
 		// Initialization
 		context.setCurrentNode(giantRoute[0]);
@@ -91,13 +91,6 @@ public class EvaluationService {
 		q.addPenalty(penalty, Quality.PENALTY_REASON_PRESETTING);
 
 		return q;
-	}
-
-	private void checkFeasibility(Node[] giantRoute) {
-		if(giantRoute[0].getSiteType() != SiteType.DEPOT)
-			throw new IllegalStateException("First node in giant route is not a depot.");
-		if(giantRoute[giantRoute.length - 1].getSiteType() != SiteType.DEPOT)
-			throw new IllegalStateException("Last node in giant route is not a depot.");
 	}
 
 	private void checkStop(Context context) {

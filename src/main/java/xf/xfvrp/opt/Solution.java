@@ -35,7 +35,7 @@ public class Solution {
 	 * @param giantRoute the giantRoute to set
 	 */
 	public void setGiantRoute(Node[] giantRoute) {
-		if(giantRoute.length == 0) {
+		if(giantRoute == null || giantRoute.length == 0) {
 			routes = new Node[0][0];
 			return;
 		}
@@ -46,7 +46,7 @@ public class Solution {
 		Node lastDepot = giantRoute[0];
 		for (int i = 1; i < giantRoute.length; i++) {
 			Node currentNode = giantRoute[i];
-			if(currentNode.getSiteType() == SiteType.DEPOT) {
+			if(currentNode != null && currentNode.getSiteType() == SiteType.DEPOT) {
 				currentRoute.add(lastDepot);
 				list.add(currentRoute);
 				currentRoute = new ArrayList<>();

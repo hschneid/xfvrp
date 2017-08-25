@@ -1,4 +1,4 @@
-package xf.xfvrp.opt.construct
+package xf.xfvrp.opt.construct.insert
 
 import spock.lang.Specification
 import xf.xfvrp.base.LoadType
@@ -13,7 +13,7 @@ import xf.xfvrp.opt.evaluation.TestVehicle
 
 class XFVRPFirstBestInsertSpec extends Specification {
 
-	def service = new XFVRPFirstBestInsert2();
+	def service = new XFVRPFirstBestInsert();
 
 	def nd = new TestNode(
 	externID: "DEP",
@@ -40,40 +40,6 @@ class XFVRPFirstBestInsertSpec extends Specification {
 	def parameter = new XFVRPParameter()
 
 	def metric = new EucledianMetric()
-
-	def "Insert Cost at the end"() {
-		def model = initScen()
-		def n = model.getNodes()
-		service.setModel(model)
-
-		def giantRoute = [nd, n[2], n[3], nd] as Node[]
-
-		def insertCustomer = n[4]
-		def pos = 3
-
-		when:
-		def cost = service.getInsertCost(giantRoute, insertCustomer, pos)
-
-		then:
-		cost == 2
-	}
-
-	def "Insert Cost with no cost"() {
-		def model = initScen()
-		def n = model.getNodes()
-		service.setModel(model)
-
-		def giantRoute = [nd, n[2], n[4], nd] as Node[]
-
-		def insertCustomer = n[3]
-		def pos = 2
-
-		when:
-		def cost = service.getInsertCost(giantRoute, insertCustomer, pos)
-
-		then:
-		cost == 0
-	}
 
 	def "Insert Customer"() {
 		def model = initScen()
@@ -194,7 +160,7 @@ class XFVRPFirstBestInsertSpec extends Specification {
 		route[1] == null
 		route[2] == giantRoute[4]
 		route[3] == giantRoute[5]
-		route[4] == giantRoute[6]
+		route[4] == giantRoute[3]
 	}
 
 	def "Evaluate"() {

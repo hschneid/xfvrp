@@ -1,4 +1,4 @@
-package xf.xfpdp.opt;
+package xf.xfvrp.opt.construct.insert;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -59,7 +59,7 @@ public class XFPDPFirstBestInsert extends XFVRPOptBase {
 		giantRoute = insertShipments(giantRoute, shipments);
 
 		// Reinsert all shipments (loop-able)
-		for (int i = 0; i < 2/*model.getParameter().getILSLoops()*/; i++)
+		for (int i = 0; i < model.getParameter().getILSLoops(); i++)
 			giantRoute = reinsertShipments(giantRoute, shipments);
 
 		Solution newSolution = new Solution();
@@ -185,6 +185,13 @@ public class XFPDPFirstBestInsert extends XFVRPOptBase {
 		routes.forEach(routeStats -> {
 			// Create partial route with two additional empty slot
 			Node[] route = createEvaluationRoute(giantRoute, routeStats);
+			
+			// Get current solution
+			route[1] = route[0];
+			route[2] = route[0];
+			Solution ss = new Solution();
+			ss.setGiantRoute(route);
+			Quality currentRouteQuality = check(ss);
 
 			// For all insert positions for pickup
 			int pickCnt = 1;
@@ -200,12 +207,9 @@ public class XFPDPFirstBestInsert extends XFVRPOptBase {
 					// Check for feasibility
 					Solution newSolution = new Solution();
 					newSolution.setGiantRoute(route);
-					Quality q = check(newSolution);
-					if(q != null && q.getPenalty() == 0) {
-						// If feasible, then get insertion cost 
-						float insertCost = getInsertCost(giantRoute, pickup, delivery, p, k);
-
-						insertPoints.add(new float[]{p, k, insertCost});
+					Quality newRouteQuality = check(newSolution);
+					if(newRouteQuality != null && newRouteQuality.getPenalty() == 0) {
+						insertPoints.add(new float[]{p, k, newRouteQuality.getCost() - currentRouteQuality.getCost()});
 					}
 					
 					// Move second empty slot one position further
@@ -223,36 +227,6 @@ public class XFPDPFirstBestInsert extends XFVRPOptBase {
 		});
 
 		return insertPoints;
-	}
-
-	/**
-	 * The insertion costs are the difference in distance between the current state
-	 * of the solution at certain positions and the state after the insertion of the
-	 * shipment nodes at certain positions. 
-	 * 
-	 * @param giantRoute Current solution of planned routes
-	 * @param pickup The pickup node of shipment which shall be inserted
-	 * @param delivery The delivery node of shipment which shall be inserted
-	 * @param pickupPos The position (index in giant route) where the pickup node is placed BEFORE.
-	 * @param deliveryPos The position (index in giant route) where the delivery node is placed BEFORE.
-	 * @return The difference in distance without and with the shipment at this position.
-	 */
-	private float getInsertCost(Node[] giantRoute, Node pickup, Node delivery, int pickupPos, int deliveryPos) {
-		float insertionCost = 0;
-		insertionCost -= model.getDistanceForOptimization(giantRoute[pickupPos - 1], giantRoute[pickupPos]);
-		insertionCost += model.getDistanceForOptimization(giantRoute[pickupPos - 1], pickup);
-		insertionCost += model.getDistanceForOptimization(delivery, giantRoute[deliveryPos]);
-
-		if(pickupPos != deliveryPos) {
-			insertionCost -= model.getDistanceForOptimization(giantRoute[deliveryPos - 1], giantRoute[deliveryPos]);
-			insertionCost += model.getDistanceForOptimization(giantRoute[deliveryPos - 1], delivery);
-
-			insertionCost += model.getDistanceForOptimization(pickup, giantRoute[pickupPos]);
-		} else {
-			insertionCost += model.getDistanceForOptimization(pickup, delivery);
-		}
-
-		return insertionCost;
 	}
 
 	/**
@@ -367,9 +341,9 @@ public class XFPDPFirstBestInsert extends XFVRPOptBase {
 
 			Node[] nodes = shipmentMap.get(node.getShipID());
 			if(node.getDemand()[0] > 0)
-				nodes[0] = node;
+				nodes[PICKUP_POS] = node;
 			else
-				nodes[1] = node;
+				nodes[DELIVERY_POS] = node;
 		}
 
 		return new ArrayList<>(shipmentMap.values());

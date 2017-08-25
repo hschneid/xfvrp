@@ -39,6 +39,7 @@ import xf.xfvrp.report.Event;
 import xf.xfvrp.report.Report;
 import xf.xfvrp.report.RouteReport;
 import xf.xfvrp.report.RouteReportSummary;
+import xf.xfvrp.report.build.ReportBuilder;
 
 /** 
  * Copyright (c) 2012-present Holger Schneider
@@ -121,7 +122,7 @@ public class XFVRP extends XFVRP_Parameter {
 			XFVRPSolution solution = executeRoutePlanning(nodes, veh, plannedCustomers);
 
 			// Point out best routes for this vehicle type
-			List<RouteReport> bestRoutes = getBestRoutes(veh, solution.getReport());
+			List<RouteReport> bestRoutes = getBestRoutes(veh, new ReportBuilder().getReport(solution));
 
 			if(bestRoutes.size() > 0) {
 				// Add selected routes to overall best solution
@@ -150,13 +151,8 @@ public class XFVRP extends XFVRP_Parameter {
 	 * @throws PreCheckException 
 	 */
 	private XFVRPSolution executeRoutePlanning(Node[] globalNodes, Vehicle veh, boolean[] plannedCustomers) throws PreCheckException {
-		// Precheck
 		Node[] nodes = new PreCheckService().precheck(globalNodes, veh, plannedCustomers, parameter);
-
-		// Init
 		XFVRPModel model = new ModelBuilder().build(nodes, veh, metric, parameter);
-
-		// Init giant route
 		Solution route = new InitialSolutionBuilder().build(model, parameter);
 
 		// VRP optimizations, if initiated route has appropriate length
@@ -181,7 +177,7 @@ public class XFVRP extends XFVRP_Parameter {
 				}
 			}
 
-			// Normilization of last result
+			// Normalization of last result
 			route = NormalizeSolutionService.normalizeRoute(route, model);
 		}
 		
@@ -422,7 +418,7 @@ public class XFVRP extends XFVRP_Parameter {
 
 			Report rep = new Report(lastModel);
 			for (XFVRPSolution sol : vehicleSolutionList)
-				rep.importReport(sol.getReport());
+				rep.importReport(new ReportBuilder().getReport(sol));
 
 			return rep;
 		}

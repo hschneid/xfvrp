@@ -42,7 +42,7 @@ public class ErrorSummary {
 	public void add(Solution solution) {
 		Node[] route = solution.getGiantRoute();
 		for (Node node : route) {
-			if(node.getInvalidReason() != InvalidReason.NONE) {
+			if(node != null && node.getInvalidReason() != InvalidReason.NONE) {
 				// Description
 				if(node.getInvalidArguments().length() > 0)
 					errorDescriptions.add(node.getInvalidArguments());
