@@ -18,6 +18,13 @@ import xf.xfvrp.base.Vehicle;
  */
 public class ReportSummary {
 
+	private static final int DISTANCE = 0;
+	private static final int NBR_VEHICLES = 1;
+	private static final int DELAY = 2;
+	private static final int OVERLOAD = 3;
+	private static final int COST = 4;
+	private static final int DURATION = 5;
+	private static final int WAITING = 6;
 	private static final int LENGTH = 7;
 	
 	private float distance = 0;
@@ -25,7 +32,9 @@ public class ReportSummary {
 	private float nbrOfUsedVehicles = 0;
 	private float delay = 0;
 	private float waitingTime = 0;
-	private float overload = 0;
+	private float overload1 = 0;
+	private float overload2 = 0;
+	private float overload3 = 0;
 	private float cost = 0;
 	
 	private Map<Vehicle, float[]> dataMap = new HashMap<>();
@@ -41,13 +50,13 @@ public class ReportSummary {
 		
 		RouteReportSummary routeSummary = t.getSummary();
 		
-		data[0] += routeSummary.getDistance();
-		data[1]++;
-		data[2] += routeSummary.getDelay();
-		data[3] += 0;
-		data[4] += routeSummary.getCost();
-		data[5] += routeSummary.getDuration();
-		data[6] += routeSummary.getWaitingTime();
+		data[DISTANCE] += routeSummary.getDistance();
+		data[NBR_VEHICLES]++;
+		data[DELAY] += routeSummary.getDelay();
+		data[OVERLOAD] += 0;
+		data[COST] += routeSummary.getCost();
+		data[DURATION] += routeSummary.getDuration();
+		data[WAITING] += routeSummary.getWaitingTime();
 		
 		distance += routeSummary.getDistance();
 		nbrOfUsedVehicles++;
@@ -55,6 +64,9 @@ public class ReportSummary {
 		waitingTime += routeSummary.getWaitingTime();
 		cost += routeSummary.getCost();
 		duration += routeSummary.getDuration();
+		overload1 += routeSummary.getOverload1();
+		overload2 += routeSummary.getOverload2();
+		overload3 += routeSummary.getOverload3();
 	}
 
 	/**
@@ -63,7 +75,7 @@ public class ReportSummary {
 	 * @return the distance
 	 */
 	public float getDistance(Vehicle veh) {
-		return dataMap.get(veh)[0];
+		return dataMap.get(veh)[DISTANCE];
 	}
 	
 	/**
@@ -79,7 +91,7 @@ public class ReportSummary {
 	 * @return the tour
 	 */
 	public float getNbrOfUsedVehicles(Vehicle veh) {
-		return dataMap.get(veh)[1];
+		return dataMap.get(veh)[NBR_VEHICLES];
 	}
 
 	/**
@@ -95,7 +107,7 @@ public class ReportSummary {
 	 * @return the delay
 	 */
 	public float getDelay(Vehicle veh) {
-		return dataMap.get(veh)[2];
+		return dataMap.get(veh)[DELAY];
 	}
 
 	/**
@@ -110,22 +122,30 @@ public class ReportSummary {
 	 * @return the overload
 	 */
 	public float getOverload(Vehicle veh) {
-		return dataMap.get(veh)[3];
+		return dataMap.get(veh)[OVERLOAD];
 	}
 
 	/**
 	 * @return the overload
 	 */
-	public float getOverload() {
-		return overload;
+	public float getOverload1() {
+		return overload1;
 	}
 	
+	public float getOverload2() {
+		return overload2;
+	}
+
+	public float getOverload3() {
+		return overload3;
+	}
+
 	/**
 	 * @param veh
 	 * @return the cost
 	 */
 	public float getCost(Vehicle veh) {
-		return dataMap.get(veh)[4];
+		return dataMap.get(veh)[COST];
 	}
 
 	/**
@@ -149,7 +169,7 @@ public class ReportSummary {
 	 * @return
 	 */
 	public float getDuration(Vehicle veh) {
-		return dataMap.get(veh)[5];
+		return dataMap.get(veh)[DURATION];
 	}
 	
 	/**
@@ -165,6 +185,6 @@ public class ReportSummary {
 	 * @return
 	 */
 	public float getWaitingTime(Vehicle veh) {
-		return dataMap.get(veh)[6];
+		return dataMap.get(veh)[WAITING];
 	}
 }

@@ -41,7 +41,7 @@ public class StringWriter {
 		
 		ReportSummary sum = report.getSummary();
 		sb.append("#; DISTANCE; TOUR_COUNT; DELAY; OVERLOAD\n");
-		sb.append("-; "+sum.getDistance()+"; "+sum.getNbrOfUsedVehicles()+"; "+sum.getDelay()+"; "+sum.getOverload()+"\n");
+		sb.append("-; "+sum.getDistance()+"; "+sum.getNbrOfUsedVehicles()+"; "+sum.getDelay()+"; "+sum.getOverload1()+"\n");
 		for (int i = 0; i < report.getRoutes().size(); i++) {
 			RouteReport tRep = report.getRoutes().get(i);
 			RouteReportSummary tSum = tRep.getSummary();

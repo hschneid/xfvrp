@@ -25,7 +25,8 @@ public enum LoadType {
 	PICKUP(0),
 	DELIVERY(1),
 	REPLENISH(2), 
-	PAUSE(3);
+	PAUSE(3),
+	UNDEF(4);
 	
 	public final int idx;
 	

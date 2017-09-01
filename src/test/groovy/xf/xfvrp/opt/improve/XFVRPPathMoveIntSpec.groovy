@@ -3,6 +3,7 @@ package xf.xfvrp.opt.improve
 import spock.lang.Specification
 import xf.xfvrp.base.LoadType
 import xf.xfvrp.base.Node
+import xf.xfvrp.base.NormalizeSolutionService
 import xf.xfvrp.base.SiteType
 import xf.xfvrp.base.XFVRPModel
 import xf.xfvrp.base.XFVRPParameter
@@ -51,9 +52,10 @@ class XFVRPPathMoveIntSpec extends Specification {
 		sol.setGiantRoute([nd, n[2], n[1], nd, n[3], n[4], nd] as Node[])
 
 		def currentQuality = evalService.check(sol, model)
-
+		
 		when:
 		def newQuality = service.improve(sol, currentQuality)
+		sol = NormalizeSolutionService.normalizeRoute(sol, model)
 		def checkedQuality = evalService.check(sol, model)
 		def newGiantRoute = sol.getGiantRoute()
 		
@@ -62,14 +64,14 @@ class XFVRPPathMoveIntSpec extends Specification {
 		checkedQuality != null
 		Math.abs(newQuality.getFitness() - checkedQuality.getFitness()) < 0.001
 		newQuality.getPenalty() == 0
-		Math.abs(newQuality.getCost() - 10.485) < 0.001
-		newGiantRoute[0] == nd
-		newGiantRoute[1] == n[2]
-		newGiantRoute[2] == n[4]
-		newGiantRoute[3] == n[3]
-		newGiantRoute[4] == n[1]
-		newGiantRoute[5] == nd
-		newGiantRoute[6] == nd
+		Math.abs(newQuality.getCost() - 9.656) < 0.001
+		newGiantRoute[0].getGlobalIdx() == nd.getGlobalIdx()
+		newGiantRoute[1] == n[3]
+		newGiantRoute[2] == n[1]
+		newGiantRoute[3] == n[2]
+		newGiantRoute[4] == n[4]
+		newGiantRoute[5].getGlobalIdx() == nd.getGlobalIdx()
+		newGiantRoute[6].getGlobalIdx() == nd.getGlobalIdx()
 	}
 	
 	def "Find improvement for multi depot"() {
@@ -84,6 +86,7 @@ class XFVRPPathMoveIntSpec extends Specification {
 
 		when:
 		def newQuality = service.improve(sol, currentQuality)
+		sol = NormalizeSolutionService.normalizeRoute(sol, model)
 		def checkedQuality = evalService.check(sol, model)
 		def newGiantRoute = sol.getGiantRoute()
 		
@@ -92,14 +95,15 @@ class XFVRPPathMoveIntSpec extends Specification {
 		checkedQuality != null
 		Math.abs(newQuality.getFitness() - checkedQuality.getFitness()) < 0.001
 		newQuality.getPenalty() == 0
-		Math.abs(newQuality.getCost() - 10.485) < 0.001
-		newGiantRoute[0] == nd
-		newGiantRoute[1] == n[3]
-		newGiantRoute[2] == n[5]
-		newGiantRoute[3] == n[4]
-		newGiantRoute[4] == n[2]
-		newGiantRoute[5] == nd
-		newGiantRoute[6] == nd
+		Math.abs(newQuality.getCost() - 9.656) < 0.001
+		newGiantRoute[0].getGlobalIdx() == nd.getGlobalIdx()
+		newGiantRoute[1] == n[4]
+		newGiantRoute[2] == n[2]
+		newGiantRoute[3] == n[3]
+		newGiantRoute[4] == n[5]
+		newGiantRoute[5].getGlobalIdx() == nd.getGlobalIdx()
+		newGiantRoute[6].getGlobalIdx() == nd2.getGlobalIdx()
+		newGiantRoute[7].getGlobalIdx() == nd2.getGlobalIdx()
 	}
 	
 	def "Find no improvement"() {
@@ -128,7 +132,7 @@ class XFVRPPathMoveIntSpec extends Specification {
 	}
 
 	XFVRPModel initMDScen() {
-		def v = new TestVehicle(name: "V1", capacity: [3, 3]).getVehicle()
+		def v = new TestVehicle(name: "V1", capacity: [4, 4]).getVehicle()
 
 		def n1 = new TestNode(
 				globalIdx: 1,
@@ -208,7 +212,7 @@ class XFVRPPathMoveIntSpec extends Specification {
 	}
 	
 	XFVRPModel initSDScen() {
-		def v = new TestVehicle(name: "V1", capacity: [3, 3]).getVehicle()
+		def v = new TestVehicle(name: "V1", capacity: [4, 4]).getVehicle()
 
 		def n1 = new TestNode(
 				globalIdx: 1,

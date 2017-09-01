@@ -14,6 +14,10 @@ public class Amount {
 		
 		IntStream.range(0, amounts.length).forEach(i -> amounts[i] += otherAmount[i]);
 	}
+	
+	public float getAmount(int idx) {
+		return (amounts != null && idx < amounts.length) ? amounts[idx] : 0;
+	}
 
 	public float[] getAmounts() {
 		return amounts;

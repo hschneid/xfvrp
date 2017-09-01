@@ -35,7 +35,7 @@ public class Event {
 	private float amount2 = 0;
 	private float amount3 = 0;
 	
-	private LoadType loadType;
+	private LoadType loadType = LoadType.UNDEF;
 	private SiteType siteType;
 	
 	private float arrival = 0;
@@ -50,7 +50,6 @@ public class Event {
 		this.id = node.getExternID();
 		this.shipId = node.getShipID();
 		
-		this.loadType = node.getLoadType();
 		this.siteType = node.getSiteType();
 	}
 	

@@ -21,6 +21,7 @@ public class ActiveNodeAnalyzer {
 
 		int lastNodeIdx = 0;
 		Node lastNode = giantRoute[lastNodeIdx];
+		activeNodes[0] = true;
 		for (int i = 1; i < activeNodes.length; i++) {
 			activeNodes[i] = true;
 
