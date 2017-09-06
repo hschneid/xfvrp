@@ -1,6 +1,7 @@
 package xf.xfvrp.opt.evaluation;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
 
@@ -20,7 +21,7 @@ public class Context {
 	private static final int DRIVING_TIME = 6; // only driving time
 
 	// Active nodes for evalution are true, duplicates or empty routes are false
-	private boolean[] activeNodes;
+	private List<Node> activeNodes;
 
 	// Variables
 	private int maxGlobalNodeIdx;
@@ -60,10 +61,6 @@ public class Context {
 
 	public float[] getFittingTimeWindow() {
 		return this.currentNode.getTimeWindow(routeVar[TIME]);
-	}
-
-	public boolean isNodeActive(int nodeIdx) {
-		return activeNodes[nodeIdx];
 	}
 
 	public void drive(float[] distance) {
@@ -151,11 +148,11 @@ public class Context {
 		routeVar[DURATION] += addedDuration;
 	}
 
-	public boolean[] getActiveNodes() {
+	public List<Node> getActiveNodes() {
 		return activeNodes;
 	}
 
-	public void setActiveNodes(boolean[] activeNodes) {
+	public void setActiveNodes(List<Node> activeNodes) {
 		this.activeNodes = activeNodes;
 	}
 
@@ -297,14 +294,13 @@ public class Context {
 	}
 
 	public int checkCapacities(Vehicle v) {
-		return IntStream.range(0, amountsOfRoute.length / 2)
-				.map(i -> {
-					// Common Load of Pickups and Deliveries
-					int overload = (int)Math.ceil(Math.max(0, (amountsOfRoute[i * 2 + 0] + amountsOfRoute[i * 2 + 1]) - v.capacity[i]));
-
-					return overload;
-				})
-				.sum();
+		int sum = 0;
+		for (int i = 0; i < amountsOfRoute.length / 2; i++) {
+			// Common Load of Pickups and Deliveries
+			sum += (int)Math.ceil(Math.max(0, (amountsOfRoute[i * 2 + 0] + amountsOfRoute[i * 2 + 1]) - v.capacity[i]));
+		}
+		
+		return sum;
 	}
 
 	public int setAndCheckPresetSequence(int blockIndex) {

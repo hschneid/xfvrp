@@ -1,5 +1,8 @@
 package xf.xfvrp.opt.evaluation;
 
+import java.util.Arrays;
+import java.util.List;
+
 import xf.xfvrp.base.LoadType;
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.Quality;
@@ -40,22 +43,31 @@ public class EvaluationService {
 		Node[] giantRoute = solution.getGiantRoute();
 
 		Quality q = new Quality(null);
-		Vehicle vehicle = model.getVehicle();
 
 		Context context = ContextBuilder.build(solution, model);
 
 		// Feasibility check
 		FeasibilityAnalzer.checkFeasibility(giantRoute);
 
+		if(checkForEmpty(giantRoute))
+			return q;
+
+		checkRoutes(model, q, context);
+
+		return q;
+	}
+
+	private void checkRoutes(XFVRPModel model, Quality q, Context context) {
+		Vehicle vehicle = model.getVehicle();
+		
 		// Initialization
-		context.setCurrentNode(giantRoute[0]);
-		beginRoute(giantRoute[0], findNextCustomer(giantRoute, 0), vehicle, q, model, context);
-		context.setNextNode(giantRoute[0]);
+		List<Node> nodes = context.getActiveNodes();
+		context.setCurrentNode(nodes.get(0));
+		beginRoute(nodes.get(0), findNextCustomer(nodes, 0), vehicle, q, model, context);
+		context.setNextNode(nodes.get(0));
 
-		for (int i = 1; i < giantRoute.length; i++) {
-			if(!context.isNodeActive(i)) continue;
-
-			context.setNextNode(giantRoute[i]);
+		for (int i = 1; i < nodes.size(); i++) {
+			context.setNextNode(nodes.get(i));
 
 			// Times and Distances
 			drive(model, context);
@@ -82,15 +94,22 @@ public class EvaluationService {
 			if(context.getCurrentNode().getSiteType() == SiteType.DEPOT) {
 				finishRoute(vehicle, q, model, context);
 
-				beginRoute(giantRoute[i], findNextCustomer(giantRoute, i), vehicle, q, model, context);
+				beginRoute(nodes.get(i), findNextCustomer(nodes, i), vehicle, q, model, context);
 			}
 		}
 
 		// Check of block preset penalty after last node
 		int penalty = context.checkPresetBlockCount();
 		q.addPenalty(penalty, Quality.PENALTY_REASON_PRESETTING);
+	}
 
-		return q;
+	private boolean checkForEmpty(Node[] giantRoute) {
+		if(giantRoute.length == 2)
+			return true;
+		if(!Arrays.stream(giantRoute).anyMatch(n -> n.getSiteType() == SiteType.CUSTOMER))
+			return true;
+
+		return false;
 	}
 
 	private void checkStop(Context context) {
@@ -184,15 +203,17 @@ public class EvaluationService {
 		}
 
 		// Sequence rank of current node must be greater or equal than last node
-		int penalty = context.setAndCheckPresetSequence(blockIndex);
-		q.addPenalty(penalty, Quality.PENALTY_REASON_PRESETTING);
+		if(blockIndex >= BlockNameConverter.DEFAULT_BLOCK_IDX) {
+			int penalty = context.setAndCheckPresetSequence(blockIndex);
+			q.addPenalty(penalty, Quality.PENALTY_REASON_PRESETTING);
+		}
 
 		// Set information for black listed nodes restriction (currenty only for customer)
 		context.setPresetRouting();
 
 		// Check PresetPosition restriction
 		// If last and current node have blocks and blocks are same then a non-default position must be in right order
-		penalty = context.checkPresetPosition();
+		int penalty = context.checkPresetPosition();
 		q.addPenalty(penalty, Quality.PENALTY_REASON_PRESETTING);
 
 		// Check Preset Depot
@@ -214,7 +235,7 @@ public class EvaluationService {
 
 	private void drive(XFVRPModel model, Context context) {
 		float[] dist = model.getDistanceAndTime(context.getLastNode(), context.getCurrentNode());
-		
+
 		context.drive(dist);
 	}
 
@@ -258,7 +279,7 @@ public class EvaluationService {
 
 		penalty = context.createNewRoute(newDepot, vehicle);
 		q.addPenalty(penalty, Quality.PENALTY_REASON_CAPACITY);
-		
+
 		float earliestDepartureTime = (nextNode != null) ? nextNode.getTimeWindow(0)[0] - model.getTime(newDepot, nextNode) : 0;
 
 		// If loading time at depot should be considered, service time of all
@@ -272,14 +293,14 @@ public class EvaluationService {
 
 	/**
 	 * 
-	 * @param giantRoute
+	 * @param nodes
 	 * @param pos
 	 * @return
 	 */
-	private Node findNextCustomer(Node[] giantRoute, int pos) {
-		for (int i = pos + 1; i < giantRoute.length; i++) {
-			if(giantRoute[i].getSiteType() == SiteType.CUSTOMER)
-				return giantRoute[i];
+	private Node findNextCustomer(List<Node> nodes, int pos) {
+		for (int i = pos + 1; i < nodes.size(); i++) {
+			if(nodes.get(i).getSiteType() == SiteType.CUSTOMER)
+				return nodes.get(i);
 		}
 		return null;
 	}

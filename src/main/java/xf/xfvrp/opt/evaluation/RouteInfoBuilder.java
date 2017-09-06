@@ -1,6 +1,7 @@
 package xf.xfvrp.opt.evaluation;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import xf.xfvrp.base.LoadType;
@@ -12,18 +13,16 @@ public class RouteInfoBuilder {
 
 	/**
 	 * 
-	 * @param giantRoute
+	 * @param nodes
 	 * @param model 
 	 * @return
 	 */
-	public static Map<Node, RouteInfo> build(Node[] giantRoute, boolean[] activeNodes, XFVRPModel model) {
+	public static Map<Node, RouteInfo> build(List<Node> nodes, XFVRPModel model) {
 		Map<Node, RouteInfo> routeInfos = new HashMap<>();
 		RouteInfo routeInfo = new RouteInfo(null);
 		
-		int idx = -1;
-		while(idx < giantRoute.length - 1) {
-			idx = getNextActiveIdx(idx, giantRoute, activeNodes);
-			Node node = giantRoute[idx];
+		for (int idx = 0; idx < nodes.size(); idx++) {
+			Node node = nodes.get(idx);
 			
 			routeInfo = createRouteInfo(routeInfos, routeInfo, node);
 		}
@@ -43,15 +42,6 @@ public class RouteInfoBuilder {
 			return routeInfo;
 		} else
 			throw new IllegalStateException("Found unexpected site type ("+node.getSiteType().toString()+")");
-	}
-	
-	private static int getNextActiveIdx(int idx, Node[] giantRoute, boolean[] activeNodes) {
-		for (int i = idx + 1; i < giantRoute.length; i++) {
-			if(activeNodes[i]) {
-				return i;
-			}
-		}
-		return idx;
 	}
 
 	private static void changeRouteInfo(Node node, RouteInfo routeInfo) {

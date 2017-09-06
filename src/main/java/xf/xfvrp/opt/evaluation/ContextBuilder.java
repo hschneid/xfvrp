@@ -29,7 +29,7 @@ public class ContextBuilder {
 		context.setPresetRoutingNodeList(new boolean[context.getMaxGlobalNodeIdx()]);
 
 		// Service times at the depot for amount on the route
-		context.setRouteInfos(RouteInfoBuilder.build(giantRoute, context.getActiveNodes(), model));
+		context.setRouteInfos(RouteInfoBuilder.build(context.getActiveNodes(), model));
 
 		return context;
 	}

@@ -1,11 +1,16 @@
 package xf.xfvrp.opt.evaluation;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.SiteType;
 
 public class ActiveNodeAnalyzer {
 
-	
+
 	/**
 	 * Searches in the giant route for nodes which can be ignored during
 	 * evalution. This can be the case for empty routes or unnecessary
@@ -14,10 +19,10 @@ public class ActiveNodeAnalyzer {
 	 * @param giantRoute
 	 * @return list of active (true) or disabled (false) nodes in giant route
 	 */
-	public static boolean[] getActiveNodes(Node[] giantRoute) {
+	public static List<Node> getActiveNodes(Node[] giantRoute) {
 		boolean[] activeNodes = new boolean[giantRoute.length];
 		if(giantRoute.length == 0)
-			return activeNodes;
+			return new ArrayList<>();
 
 		int lastNodeIdx = 0;
 		Node lastNode = giantRoute[lastNodeIdx];
@@ -46,6 +51,10 @@ public class ActiveNodeAnalyzer {
 			}
 		}
 
-		return activeNodes;
+		return IntStream
+				.range(0, giantRoute.length)
+				.filter(idx -> activeNodes[idx])
+				.mapToObj(idx -> giantRoute[idx])
+				.collect(Collectors.toList());
 	}
 }

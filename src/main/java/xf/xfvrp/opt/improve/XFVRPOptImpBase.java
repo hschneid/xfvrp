@@ -83,7 +83,8 @@ public abstract class XFVRPOptImpBase extends XFVRPOptBase {
 		Quality bestResult = check(giantRoute);
 
 		// Search for improvements and apply them as long as there are improvements or enough time left
-		while(statusManager.getDurationSinceStartInSec() < model.getParameter().getMaxRunningTimeInSec()) {
+		long startTime = System.currentTimeMillis();
+		while((System.currentTimeMillis() - startTime)/1000.0 < model.getParameter().getMaxRunningTimeInSec()) {
 			Quality result = improve(giantRoute, bestResult);
 
 			if (result == null)

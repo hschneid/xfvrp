@@ -52,7 +52,7 @@ class ReportBuilderTimeWindowSpec extends Specification {
 	externID: "DEP",
 	siteType: SiteType.DEPOT,
 	demand: [0, 0],
-	timeWindow: [[2,8.9]]
+	timeWindow: [[2,8.5]]
 	).getNode()
 
 	def nr = new TestNode(
@@ -109,7 +109,7 @@ class ReportBuilderTimeWindowSpec extends Specification {
 		Math.abs(result.getRoutes().get(0).getEvents().get(2).getTravelTime() - 1) < 0.001
 		Math.abs(result.getRoutes().get(0).getEvents().get(3).getTravelTime() - 1) < 0.001
 		Math.abs(result.getRoutes().get(0).getEvents().get(4).getTravelTime() - 1) < 0.001
-		
+
 		Math.abs(result.getRoutes().get(0).getEvents().get(0).getWaiting() - 0) < 0.001
 		Math.abs(result.getRoutes().get(0).getEvents().get(1).getWaiting() - 0) < 0.001
 		Math.abs(result.getRoutes().get(0).getEvents().get(2).getWaiting() - 0) < 0.001
@@ -178,7 +178,7 @@ class ReportBuilderTimeWindowSpec extends Specification {
 		Math.abs(result.getRoutes().get(0).getEvents().get(3).getDeparture() - 6.5) < 0.001
 		Math.abs(result.getRoutes().get(0).getEvents().get(4).getArrival() - 7.5) < 0.001
 		Math.abs(result.getRoutes().get(0).getEvents().get(4).getDeparture() - 7.5) < 0.001
-		
+
 		Math.abs(result.getRoutes().get(0).getEvents().get(0).getDuration() - 0) < 0.001
 		Math.abs(result.getRoutes().get(0).getEvents().get(1).getDuration() - 1.5) < 0.001
 		Math.abs(result.getRoutes().get(0).getEvents().get(2).getDuration() - 1.5) < 0.001
@@ -307,15 +307,36 @@ class ReportBuilderTimeWindowSpec extends Specification {
 		sol = new Solution()
 		sol.setGiantRoute([depot, n[1], n[2], n[3], depot] as Node[])
 
+		def solution = new XFVRPSolution(sol, model)
+
 		when:
-		def result = service.check(sol, model)
+		def result = service.getReport(solution)
 
 		then:
 		result != null
-		result.getPenalty() == 0
-		Math.abs(result.getCost() - 4) < 0.001
+		result.getRoutes().size() == 1
+		Math.abs(result.getSummary().getDelay() - 0) < 0.001
+		Math.abs(result.getSummary().getDelay(model.getVehicle()) - 0) < 0.001
+		Math.abs(result.getRoutes().get(0).getSummary().getDelay() - 0) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(0).getArrival() - 2) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(0).getDeparture() - 2) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(0).getService() - 0) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(1).getArrival() - 3) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(1).getDeparture() - 3.5) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(1).getService() - 0.5) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(2).getArrival() - 4.5) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(2).getDeparture() - 5) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(2).getService() - 0.5) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(3).getArrival() - 6) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(3).getDeparture() - 6.5) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(3).getService() - 0.5) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(3).getDelay() - 0) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(4).getArrival() - 7.5) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(4).getDeparture() - 9) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(4).getDelay() - 0) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(4).getService() - 1.5) < 0.001
 	}
-	
+
 	def "With UnLoading at depot - Not Okay"() {
 		depot = nd5
 		parameter.setUnloadingTimeAtDepot(true)
@@ -325,13 +346,34 @@ class ReportBuilderTimeWindowSpec extends Specification {
 		sol = new Solution()
 		sol.setGiantRoute([depot, n[1], n[2], n[3], depot] as Node[])
 
+		def solution = new XFVRPSolution(sol, model)
+
 		when:
-		def result = service.check(sol, model)
+		def result = service.getReport(solution)
 
 		then:
 		result != null
-		result.getPenalty() > 0
-		Math.abs(result.getCost() - 4) < 0.001
+		result.getRoutes().size() == 1
+		Math.abs(result.getSummary().getDelay() - 0.5) < 0.001
+		Math.abs(result.getSummary().getDelay(model.getVehicle()) - 0.5) < 0.001
+		Math.abs(result.getRoutes().get(0).getSummary().getDelay() - 0.5) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(0).getArrival() - 2) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(0).getDeparture() - 2) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(0).getService() - 0) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(1).getArrival() - 3) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(1).getDeparture() - 3.5) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(1).getService() - 0.5) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(2).getArrival() - 4.5) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(2).getDeparture() - 5) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(2).getService() - 0.5) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(3).getArrival() - 6) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(3).getDeparture() - 6.5) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(3).getService() - 0.5) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(3).getDelay() - 0) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(4).getArrival() - 7.5) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(4).getDeparture() - 9) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(4).getDelay() - 0.5) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(4).getService() - 1.5) < 0.001
 	}
 
 	def "With Max Waiting Time - Okay"() {
@@ -342,32 +384,30 @@ class ReportBuilderTimeWindowSpec extends Specification {
 		sol = new Solution()
 		sol.setGiantRoute([depot, n[1], n[2], n[3], depot] as Node[])
 
+		def solution = new XFVRPSolution(sol, model)
+
 		when:
-		def result = service.check(sol, model)
+		def result = service.getReport(solution)
 
 		then:
 		result != null
-		result.getPenalty() == 0
-		Math.abs(result.getCost() - 4) < 0.001
+		result.getRoutes().size() == 1
+		Math.abs(result.getSummary().getWaitingTime() - 1) < 0.001
+		Math.abs(result.getSummary().getWaitingTime(model.getVehicle()) - 1) < 0.001
+		Math.abs(result.getRoutes().get(0).getSummary().getWaitingTime() - 1) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(0).getArrival() - 2) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(0).getDeparture() - 2) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(1).getArrival() - 3) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(1).getDeparture() - 3) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(2).getArrival() - 4) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(2).getDeparture() - 5) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(2).getWaiting() - 1) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(3).getArrival() - 6) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(3).getDeparture() - 6) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(4).getArrival() - 7) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(4).getDeparture() - 7) < 0.001
 	}
 
-	def "With Max Waiting Time - Not Okay"() {
-		depot = nd2
-		def model = initScenBasic([[[3,4]],[[5.1,6]],[[6,7]]] as float[][][], 0f, new TestVehicle(name: "V1", capacity: [3, 3], maxWaitingTime: 1))
-		def n = model.getNodes()
-
-		sol = new Solution()
-		sol.setGiantRoute([depot, n[1], n[2], n[3], depot] as Node[])
-
-		when:
-		def result = service.check(sol, model)
-
-		then:
-		result != null
-		result.getPenalty() > 0
-		Math.abs(result.getCost() - 4) < 0.001
-	}
-	
 	def "With Max Driving Time - Okay"() {
 		depot = nd2
 		def model = initScenBasic([[[3,4]],[[4,5]],[[5,6]]] as float[][][], 0f, new TestVehicle(name: "V1", capacity: [3, 3], maxDrivingTimePerShift: 2f, waitingTimeBetweenShifts: 1f))
@@ -376,70 +416,116 @@ class ReportBuilderTimeWindowSpec extends Specification {
 		sol = new Solution()
 		sol.setGiantRoute([depot, n[1], n[2], n[3], depot] as Node[])
 
+		def solution = new XFVRPSolution(sol, model)
+
 		when:
-		def result = service.check(sol, model)
+		def result = service.getReport(solution)
 
 		then:
 		result != null
-		result.getPenalty() == 0
-		Math.abs(result.getCost() - 4) < 0.001
+		result.getRoutes().size() == 1
+		Math.abs(result.getSummary().getDuration() - 5) < 0.001
+		Math.abs(result.getSummary().getDuration(model.getVehicle()) - 5) < 0.001
+		Math.abs(result.getRoutes().get(0).getSummary().getDuration() - 5) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(0).getArrival() - 2) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(0).getDeparture() - 2) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(1).getArrival() - 3) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(1).getDeparture() - 3) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(2).getArrival() - 4) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(2).getDeparture() - 4) < 0.001
+
+		result.getRoutes().get(0).getEvents().get(3).getSiteType() == SiteType.PAUSE;
+		result.getRoutes().get(0).getEvents().get(3).getID() == n[3].getExternID();
+		Math.abs(result.getRoutes().get(0).getEvents().get(3).getArrival() - 0) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(3).getDeparture() - 0) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(3).getDuration() - 1) < 0.001
+
+		Math.abs(result.getRoutes().get(0).getEvents().get(4).getArrival() - 6) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(4).getDeparture() - 6) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(5).getArrival() - 7) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(5).getDeparture() - 7) < 0.001
+		
+		Math.abs(result.getRoutes().get(0).getEvents().get(0).getDuration() - 0) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(1).getDuration() - 1) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(2).getDuration() - 1) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(3).getDuration() - 1) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(4).getDuration() - 1) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(5).getDuration() - 1) < 0.001
+		
+		Math.abs(result.getRoutes().get(0).getEvents().get(0).getTravelTime() - 0) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(1).getTravelTime() - 1) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(2).getTravelTime() - 1) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(3).getTravelTime() - 0) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(4).getTravelTime() - 1) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(5).getTravelTime() - 1) < 0.001
 	}
-	
-	def "With Max Driving Time - Not Okay"() {
-		depot = nd2
-		def model = initScenBasic([[[3,4]],[[4,4.9]],[[5,6]]] as float[][][], 0f, new TestVehicle(name: "V1", capacity: [3, 3], maxDrivingTimePerShift: 2f, waitingTimeBetweenShifts: 1f))
-		def n = model.getNodes()
 
-		sol = new Solution()
-		sol.setGiantRoute([depot, n[1], n[2], n[3], depot] as Node[])
-
-		when:
-		def result = service.check(sol, model)
-
-		then:
-		result != null
-		result.getPenalty() > 0
-		Math.abs(result.getCost() - 4) < 0.001
-	}
-	
 	def "Multi Time Windows - Okay"() {
 		depot = nd
-		def model = initScenBasic([[[3,4]],[[2,3], [3,4]],[[5,6]]] as float[][][], 0f, null)
+		def model = initScenBasic([[[3,4]],[[2,3], [5,6]],[[5,6]]] as float[][][], 0f, null)
 		def n = model.getNodes()
 
 		sol = new Solution()
 		sol.setGiantRoute([depot, n[1], n[2], n[3], depot] as Node[])
 
+		def solution = new XFVRPSolution(sol, model)
+
 		when:
-		def result = service.check(sol, model)
+		def result = service.getReport(solution)
 
 		then:
 		result != null
-		result.getPenalty() == 0
-		Math.abs(result.getCost() - 4) < 0.001
+		result.getRoutes().size() == 1
+		result.getSummary().getDelay() == 0
+		result.getSummary().getDelay(model.getVehicle()) == 0
+		result.getRoutes().get(0).getSummary().getDelay() == 0
+		Math.abs(result.getRoutes().get(0).getEvents().get(0).getArrival() - 2) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(0).getDeparture() - 2) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(1).getArrival() - 3) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(1).getDeparture() - 3) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(2).getArrival() - 4) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(2).getDeparture() - 5) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(3).getArrival() - 6) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(3).getDeparture() - 6) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(4).getArrival() - 7) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(4).getDeparture() - 7) < 0.001
 	}
-	
+
 	def "Multi Time Windows - Not Okay"() {
 		depot = nd
-		def model = initScenBasic([[[3,4]],[[2,3], [3,3.9]],[[5,6]]] as float[][][], 0f, null)
+		def model = initScenBasic([[[3,4]],[[1,2], [2,2.5]],[[5,6]]] as float[][][], 0f, null)
 		def n = model.getNodes()
 
 		sol = new Solution()
 		sol.setGiantRoute([depot, n[1], n[2], n[3], depot] as Node[])
 
+		def solution = new XFVRPSolution(sol, model)
+
 		when:
-		def result = service.check(sol, model)
+		def result = service.getReport(solution)
 
 		then:
 		result != null
-		result.getPenalty() > 0
-		Math.abs(result.getCost() - 4) < 0.001
+		result.getRoutes().size() == 1
+		Math.abs(result.getSummary().getDelay() - 1.5) < 0.001
+		Math.abs(result.getSummary().getDelay(model.getVehicle()) - 1.5) < 0.001
+		Math.abs(result.getRoutes().get(0).getSummary().getDelay() - 1.5) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(0).getArrival() - 2) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(0).getDeparture() - 2) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(1).getArrival() - 3) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(1).getDeparture() - 3) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(2).getArrival() - 4) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(2).getDeparture() - 4) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(3).getArrival() - 5) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(3).getDeparture() - 5) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(4).getArrival() - 6) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(4).getDeparture() - 6) < 0.001
 	}
-	
+
 	XFVRPModel initScenBasic (float[][][] timeWindows, float serviceTime, TestVehicle paraV) {
 		return initScenBasicAbstract(timeWindows, serviceTime, LoadType.DELIVERY, paraV)
 	}
-	
+
 	XFVRPModel initScenBasicPickup (float[][][] timeWindows, float serviceTime, TestVehicle paraV) {
 		return initScenBasicAbstract(timeWindows, serviceTime, LoadType.PICKUP, paraV)
 	}

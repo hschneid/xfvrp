@@ -100,7 +100,7 @@ public class XFVRPSavings extends XFVRPOptBase {
 
 		int savingsIdx = savingsMatrix.size() - 1;
 
-		// Bestimme das beste g�ltige Saving
+		// Bestimme das beste gültige Saving
 		for (int i = savingsIdx; i >= 0; i--) {
 			savingsIdx--;
 			float[] saving = savingsMatrix.get(i);

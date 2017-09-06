@@ -1,7 +1,5 @@
 package xf.xfvrp.opt.evaluation;
 
-import java.util.stream.IntStream;
-
 public class Amount {
 
 	private float[] amounts;
@@ -12,7 +10,9 @@ public class Amount {
 	public void add(float[] otherAmount) {
 		init(otherAmount);
 		
-		IntStream.range(0, amounts.length).forEach(i -> amounts[i] += otherAmount[i]);
+		for (int i = 0; i < amounts.length; i++) {
+			amounts[i] += otherAmount[i];
+		}
 	}
 	
 	public float getAmount(int idx) {

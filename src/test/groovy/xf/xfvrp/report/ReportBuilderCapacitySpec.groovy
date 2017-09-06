@@ -114,6 +114,7 @@ class ReportBuilderCapacitySpec extends Specification {
 
 		then:
 		result != null
+		result.getSummary().getOverload(v) == 2
 		result.getSummary().getOverload1() == 2
 		result.getSummary().getOverload2() == 0
 		result.getSummary().getOverload3() == 0
@@ -149,6 +150,7 @@ class ReportBuilderCapacitySpec extends Specification {
 
 		then:
 		result != null
+		result.getSummary().getOverload(v) == 0
 		result.getSummary().getOverload1() == 0
 		result.getSummary().getOverload2() == 1
 		result.getSummary().getOverload3() == 0

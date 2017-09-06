@@ -53,7 +53,7 @@ public class ReportSummary {
 		data[DISTANCE] += routeSummary.getDistance();
 		data[NBR_VEHICLES]++;
 		data[DELAY] += routeSummary.getDelay();
-		data[OVERLOAD] += 0;
+		data[OVERLOAD] += routeSummary.getOverload1();
 		data[COST] += routeSummary.getCost();
 		data[DURATION] += routeSummary.getDuration();
 		data[WAITING] += routeSummary.getWaitingTime();

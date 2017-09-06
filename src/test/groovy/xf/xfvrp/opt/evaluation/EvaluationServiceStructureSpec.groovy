@@ -4,6 +4,7 @@ import spock.lang.Specification
 import xf.xfvrp.base.LoadType
 import xf.xfvrp.base.Node
 import xf.xfvrp.base.SiteType
+import xf.xfvrp.base.Util
 import xf.xfvrp.base.Vehicle
 import xf.xfvrp.base.XFVRPModel
 import xf.xfvrp.base.XFVRPParameter
@@ -87,6 +88,21 @@ class EvaluationServiceStructureSpec extends Specification {
 		result2.getPenalty() == 0
 		Math.abs(result.getCost() - result2.getCost()) < 0.001
 
+	}
+	
+	def "Eval with two depots at start"() {
+		def v = new TestVehicle(name: "V1", capacity: [3, 3]).getVehicle()
+		def model = initScen1(v, LoadType.DELIVERY)
+		def n = model.getNodes()
+
+		sol = new Solution()
+		sol.setGiantRoute([Util.createIdNode(nd, 0), Util.createIdNode(nd, 1), n[2], n[3], n[4], Util.createIdNode(nd, 2)] as Node[])
+
+		when:
+		def result = service.check(sol, model)
+
+		then:
+		result != null
 	}
 
 	XFVRPModel initScen1(Vehicle v, LoadType loadType) {

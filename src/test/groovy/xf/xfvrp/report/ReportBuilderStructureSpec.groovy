@@ -157,13 +157,10 @@ class ReportBuilderStructureSpec extends Specification {
 		def solution2 = new XFVRPSolution(sol2, model);
 		
 		when:
-		//def result1 = service.getReport(solution1)
 		def result2 = service.getReport(solution2)
 
 		then:
-		//result1 != null
 		result2 != null
-		//result1.getSummary().getNbrOfUsedVehicles() == 1
 		result2.getSummary().getNbrOfUsedVehicles() == 1
 	}
 

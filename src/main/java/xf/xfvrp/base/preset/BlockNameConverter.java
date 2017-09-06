@@ -45,9 +45,7 @@ public class BlockNameConverter {
 		
 		// Insert block index into nodes
 		list.forEach(cust -> {
-			int blockIdx = DEFAULT_BLOCK_IDX;
-			if(blockNameMap.containsKey(cust.getPresetBlockName()))
-				blockIdx = blockNameMap.get(cust.getPresetBlockName());
+			int blockIdx = (blockNameMap.containsKey(cust.getPresetBlockName())) ? blockNameMap.get(cust.getPresetBlockName()) : DEFAULT_BLOCK_IDX;
 			nodeMap.get(cust.getExternID()).setPresetBlockIdx(blockIdx);
 		});
 	}
