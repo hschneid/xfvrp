@@ -3,7 +3,6 @@ package xf.xfvrp.opt.evaluation;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.IntStream;
 
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.SiteType;
@@ -123,8 +122,8 @@ public class Context {
 			throw new IllegalStateException("Could not find route infos for depot id " + currentNode.getDepotId());
 
 		if(deliveryOfRoute.hasAmount()) {
-			IntStream.range(0, amountsOfRoute.length / 2)
-			.forEach(i -> amountsOfRoute[i * 2 + 0] = deliveryOfRoute.getAmounts()[i]);
+			for (int i = 0; i < amountsOfRoute.length / 2; i++)
+				amountsOfRoute[i * 2 + 0] = deliveryOfRoute.getAmounts()[i];
 
 			return checkCapacities(vehicle);
 		}

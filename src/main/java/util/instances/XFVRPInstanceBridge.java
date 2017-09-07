@@ -64,12 +64,12 @@ public class XFVRPInstanceBridge {
 	}
 	
 	private void opt(XFVRP vrp) throws PreCheckException {
-		vrp.addOptType(XFVRPOptType.CONST);
+		/*vrp.addOptType(XFVRPOptType.CONST);
 		vrp.addOptType(XFVRPOptType.RELOCATE);
 		vrp.addOptType(XFVRPOptType.SWAP);
-		vrp.addOptType(XFVRPOptType.PATH_RELOCATE);
+		vrp.addOptType(XFVRPOptType.PATH_RELOCATE);*/
 		vrp.addOptType(XFVRPOptType.ILS);
-		vrp.setNbrOfLoopsForILS(5);
+		vrp.setNbrOfLoopsForILS(2000);
 		
 		vrp.setMetric(new EucledianMetric());
 		vrp.executeRoutePlanning();

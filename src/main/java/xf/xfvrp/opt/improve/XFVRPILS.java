@@ -2,10 +2,12 @@ package xf.xfvrp.opt.improve;
 
 import java.util.Arrays;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import xf.xfvrp.base.NormalizeSolutionService;
 import xf.xfvrp.base.Quality;
 import xf.xfvrp.base.Vehicle;
-import xf.xfvrp.base.monitor.StatusCode;
 import xf.xfvrp.opt.Solution;
 import xf.xfvrp.opt.XFVRPOptBase;
 import xf.xfvrp.opt.improve.ils.RandomChangeService;
@@ -26,16 +28,17 @@ import xf.xfvrp.opt.improve.ils.RandomChangeService;
  *
  */
 public class XFVRPILS extends XFVRPOptBase {
+	
+	private static Logger LOG = LoggerFactory.getLogger(XFVRPILS.class);
 
 	private XFVRPOptBase[] optArr = new XFVRPOptBase[]{
 			new XFVRPRelocate(),
 			new XFVRPSwap(),
-			new XFVRPPathMove(),
-			new XFVRPPathExchange()
+			new XFVRPPathMove()
 	};
 
 	private double[] optPropArr = new double[] {
-			0.4, 0.4, 0.15, 0.05
+			0.4, 0.4, 0.2
 	};
 	
 	/*
@@ -50,7 +53,7 @@ public class XFVRPILS extends XFVRPOptBase {
 		
 		RandomChangeService randomChange = new RandomChangeService();
 
-		statusManager.fireMessage(StatusCode.RUNNING, this.getClass().getSimpleName()+" is starting with "+model.getParameter().getILSLoops()+" loops.");
+		LOG.debug("Starting with "+model.getParameter().getILSLoops()+" loops.");
 
 		for (int i = 0; checkTerminationCriteria(i); i++) {
 			Solution gT = bestRoute.copy();
@@ -66,13 +69,15 @@ public class XFVRPILS extends XFVRPOptBase {
 
 			// Selection
 			if(q.getFitness() < bestBestQ.getFitness()) {
-				statusManager.fireMessage(StatusCode.RUNNING, this.getClass().getSimpleName()+" loop "+i+"\t last cost : "+bestBestQ.getCost()+"\t new cost : "+q.getCost());
+				LOG.debug("loop "+i+"\t last cost : "+bestBestQ.getCost()+"\t new cost : "+q.getCost());
 
 				bestRoute = gT;
 				bestBestQ = q;
 				bestBestTour = gT;
-			} else
+			} else {
+				LOG.debug("loop "+i+"\t with cost : "+q.getCost());
 				bestRoute = NormalizeSolutionService.normalizeRoute(bestRoute, model);
+			}
 		}
 
 		return NormalizeSolutionService.normalizeRoute(bestBestTour, model);

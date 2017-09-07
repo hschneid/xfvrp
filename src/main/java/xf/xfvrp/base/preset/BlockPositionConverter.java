@@ -21,9 +21,6 @@ import xf.xfvrp.base.fleximport.InternalCustomerData;
  */
 public class BlockPositionConverter {
 
-	public static final int UNDEF_BLOCK_IDX = -1;
-	public static final int DEFAULT_BLOCK_IDX = 0;
-	
 	/**
 	 * Converts the user block positions into an indexed numbers.
 	 * 

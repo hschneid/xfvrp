@@ -10,14 +10,15 @@ import xf.xfvrp.opt.XFVRPOptBase;
 
 public class RandomChangeService extends XFVRPOptBase {
 
+	private int NBR_ACCEPTED_INVALIDS = 100;
 	private int NBR_OF_VARIATIONS = 5;
 
 	public Solution change(Solution solution, XFVRPModel model) {
 		this.setModel(model);
-		
+
 		return this.execute(solution);
 	}
-	
+
 	/**
 	 * This perturb routine relocates single nodes iterativly. The nodes are
 	 * selected randomly.
@@ -28,7 +29,7 @@ public class RandomChangeService extends XFVRPOptBase {
 	@Override
 	protected Solution execute(Solution solution) {
 		Choice choice = new Choice();
-		
+
 		for (int i = 0; i < NBR_OF_VARIATIONS; i++) {
 			// Search source node
 			// Restriction: no depot
@@ -39,31 +40,26 @@ public class RandomChangeService extends XFVRPOptBase {
 			//   Source is not destination
 			//   Solution is not invalid
 			int cnt = 0;
-			boolean changed = false;
-			while(cnt < 100) {
+			while(cnt < NBR_ACCEPTED_INVALIDS) {
 				// Choose
 				chooseDst(choice, solution);
 
 				boolean isValid = checkMove(choice, solution);
 				if(isValid) {
-					changed = true;
 					break;
 				}
-							
+
 				cnt++;
 			}
-			
-			if(!changed)
-				i--;
 		}
-		
+
 		return solution;
 	}
 
 	private boolean checkMove(Choice choice, Solution solution) {
 		// Move
 		pathMove(solution, choice.srcIdx, choice.srcIdx + choice.srcPathLength, choice.dstIdx);
-		
+
 		// Eval
 		Quality q = check(solution);
 		if(q.getPenalty() == 0) {
@@ -75,7 +71,7 @@ public class RandomChangeService extends XFVRPOptBase {
 			pathMove(solution, choice.dstIdx - choice.srcPathLength - 1, choice.dstIdx - 1, choice.srcIdx);
 		else
 			pathMove(solution, choice.dstIdx, choice.dstIdx + choice.srcPathLength, choice.srcIdx + choice.srcPathLength + 1);
-		
+
 		return false;
 	}
 
@@ -86,7 +82,7 @@ public class RandomChangeService extends XFVRPOptBase {
 	 */
 	private void chooseSrc(Choice choice, Solution solution) {
 		Node[] giantRoute = solution.getGiantRoute();
-		
+
 		// Choose a random source node (customer or replenish)
 		int src = -1;
 		do {
@@ -105,15 +101,17 @@ public class RandomChangeService extends XFVRPOptBase {
 
 	private void expandToBlock(Choice choice, Node[] giantRoute) {
 		int src = choice.srcIdx;
-		
-		if(giantRoute[src].getPresetBlockPos() >= 0) {
-			int srcBlockIdx = giantRoute[src].getPresetBlockIdx();
-			
+		int srcBlockIdx = giantRoute[src].getPresetBlockIdx();
+		int srcPosValue = giantRoute[src].getPresetBlockPos();
+
+		if(srcBlockIdx > BlockNameConverter.UNDEF_BLOCK_IDX && srcPosValue > 0) {
+
 			for (int i = src + 1; i < giantRoute.length; i++) {
 				Node n = giantRoute[i];
-				if(n.getPresetBlockIdx() == srcBlockIdx && n.getPresetBlockIdx() >= BlockNameConverter.DEFAULT_BLOCK_IDX)
+				if(n.getPresetBlockIdx() == srcBlockIdx && n.getPresetBlockPos() > srcPosValue) {
 					choice.srcPathLength++;
-				else
+					srcPosValue = n.getPresetBlockPos();
+				} else
 					break;
 			}
 		}
@@ -126,34 +124,39 @@ public class RandomChangeService extends XFVRPOptBase {
 	 */
 	private void chooseDst(Choice choice, Solution solution) {
 		Node[] giantRoute = solution.getGiantRoute();
-		
+
 		int dst = -1;
 		do {
 			dst = rand.nextInt(giantRoute.length - 1) + 1;
 		} while(dst >= choice.srcIdx && dst <= choice.srcIdx + choice.srcPathLength);
-		
+
 		choice.dstIdx = adjustForBlockCriteria(giantRoute, dst, 0);
 	}
 
 	private int adjustForBlockCriteria(Node[] giantRoute, int pos, int untilPos) {
-		while(pos > untilPos) {
-			Node thisNode = giantRoute[pos];
-			Node beforeNode = giantRoute[pos - 1];
+		if(giantRoute[pos].getPresetBlockIdx() > BlockNameConverter.DEFAULT_BLOCK_IDX) {
+			while(pos > untilPos) {
+				Node thisNode = giantRoute[pos];
+				Node beforeNode = giantRoute[pos - 1];
 
-			if(thisNode.getSiteType() == SiteType.DEPOT || beforeNode.getSiteType() == SiteType.DEPOT)
-				break;
-			
-			if(thisNode.getPresetBlockIdx() != beforeNode.getPresetBlockIdx())
-				break;
+				if(thisNode.getSiteType() == SiteType.DEPOT || beforeNode.getSiteType() == SiteType.DEPOT)
+					break;
 
-			pos--;
+				if(thisNode.getPresetBlockIdx() != beforeNode.getPresetBlockIdx())
+					break;
+
+				pos--;
+			}
 		}
 		return pos;
 	}
-	
+
 	private class Choice {
 		int srcIdx;
 		int srcPathLength;
 		int dstIdx;
+
+		public Choice() {
+		}
 	}
 }
