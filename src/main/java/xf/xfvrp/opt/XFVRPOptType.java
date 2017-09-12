@@ -1,6 +1,5 @@
 package xf.xfvrp.opt;
 
-import xf.xfpdp.opt.XFPDPILS;
 import xf.xfpdp.opt.XFPDPRelocate2;
 import xf.xfvrp.opt.construct.XFVRPConst;
 import xf.xfvrp.opt.construct.XFVRPSavings;
@@ -10,7 +9,6 @@ import xf.xfvrp.opt.improve.XFVRP2Opt;
 import xf.xfvrp.opt.improve.XFVRP2OptIntra;
 import xf.xfvrp.opt.improve.XFVRP3Opt;
 import xf.xfvrp.opt.improve.XFVRP3PointMove;
-import xf.xfvrp.opt.improve.XFVRPILS;
 import xf.xfvrp.opt.improve.XFVRPOrOpt;
 import xf.xfvrp.opt.improve.XFVRPPathExchange;
 import xf.xfvrp.opt.improve.XFVRPPathMove;
@@ -19,6 +17,8 @@ import xf.xfvrp.opt.improve.XFVRPSwap;
 import xf.xfvrp.opt.improve.XFVRPSwapSegment;
 import xf.xfvrp.opt.improve.XFVRPSwapSegmentEqual;
 import xf.xfvrp.opt.improve.XFVRPSwapSegmentWithInvert;
+import xf.xfvrp.opt.improve.ils.XFPDPILS;
+import xf.xfvrp.opt.improve.ils.XFVRPILS;
 
 /** 
  * Copyright (c) 2012-present Holger Schneider

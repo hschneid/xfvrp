@@ -11,7 +11,6 @@ import xf.xfvrp.base.metric.internal.AcceleratedMetricTransformator
 import xf.xfvrp.base.monitor.StatusManager
 import xf.xfvrp.opt.evaluation.TestNode
 import xf.xfvrp.opt.evaluation.TestVehicle
-import xf.xfvrp.opt.improve.XFVRPILS
 
 class XFVRPILSSpec extends Specification {
 

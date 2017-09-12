@@ -1,4 +1,4 @@
-package xf.xfvrp.opt.improve;
+package xf.xfvrp.opt.improve.ils;
 
 import java.util.Arrays;
 
@@ -8,7 +8,9 @@ import xf.xfvrp.base.Vehicle;
 import xf.xfvrp.base.monitor.StatusCode;
 import xf.xfvrp.opt.Solution;
 import xf.xfvrp.opt.XFVRPOptBase;
-import xf.xfvrp.opt.improve.ils.RandomChangeService;
+import xf.xfvrp.opt.improve.XFVRPPathMove;
+import xf.xfvrp.opt.improve.XFVRPRelocate;
+import xf.xfvrp.opt.improve.XFVRPSwap;
 
 /** 
  * Copyright (c) 2012-present Holger Schneider
