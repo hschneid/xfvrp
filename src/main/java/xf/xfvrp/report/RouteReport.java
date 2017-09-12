@@ -25,9 +25,7 @@ public class RouteReport {
 
 	private final RouteReportSummary summary;
 	private final Vehicle vehicle;
-	private boolean hasPackageEvents = false;
 	private List<Event> eventList = new ArrayList<>();
-	private List<PackageEvent> packageEventList = new ArrayList<>();
 
 	
 	/**
@@ -47,15 +45,6 @@ public class RouteReport {
 		summary.add(e);
 		eventList.add(e);
 	}
-	
-	/**
-	 * 
-	 * @param e
-	 */
-	public void add(PackageEvent e) {
-		packageEventList.add(e);
-		hasPackageEvents  = true;
-	}
 		
 	/**
 	 * 
@@ -71,22 +60,6 @@ public class RouteReport {
 	 */
 	public Vehicle getVehicle() {
 		return vehicle;
-	}
-	
-	/**
-	 * 
-	 * @return
-	 */
-	public List<PackageEvent> getPackageEvents() {
-		return packageEventList;
-	}
-	
-	/**
-	 * 
-	 * @return
-	 */
-	public boolean hasPackageEvents() {
-		return hasPackageEvents;
 	}
 	
 	/**

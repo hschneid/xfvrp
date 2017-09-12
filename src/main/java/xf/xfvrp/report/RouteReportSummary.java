@@ -20,6 +20,7 @@ import xf.xfvrp.base.Vehicle;
  *
  */
 public class RouteReportSummary {
+	
 	private Vehicle vehicle;
 
 	private int nbrOfEvents = 0;

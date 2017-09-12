@@ -30,9 +30,6 @@ public class Report {
 
 	private final Set<Vehicle> vehicleSet = new HashSet<>();
 	
-	/* If XFLP uses isLoading constraints, the solution contains package events */
-	private boolean hasPackageEvents = false;
-	
 	/**
 	 * A Report is the structral representation of a route planning solution.
 	 * 
@@ -71,7 +68,6 @@ public class Report {
 			reportList.add(route);
 			vehicleSet.add(route.getVehicle());
 		}
-		hasPackageEvents |= route.hasPackageEvents();
 	}
 
 	/* GetFunctions-Functions */
@@ -109,16 +105,6 @@ public class Report {
 			add(tRep);
 		
 		errors.importErrors(rep.getErrors());
-	}
-	
-	/**
-	 * If the report contains package events, because XFLP used isLoading constrains
-	 * in the planning, then return value is true, otherwise false;
-	 * 
-	 * @return true if isLoading constraint was used by XFLP.
-	 */
-	public boolean hasPackageEvents() {
-		return hasPackageEvents;
 	}
 	
 	/**
