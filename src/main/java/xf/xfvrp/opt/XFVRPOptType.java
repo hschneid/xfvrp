@@ -1,6 +1,6 @@
 package xf.xfvrp.opt;
 
-import xf.xfpdp.opt.XFPDPRelocate2;
+import xf.xfpdp.opt.XFPDPRelocate;
 import xf.xfvrp.opt.construct.XFVRPConst;
 import xf.xfvrp.opt.construct.XFVRPSavings;
 import xf.xfvrp.opt.construct.insert.XFPDPFirstBestInsert;
@@ -54,7 +54,7 @@ public enum XFVRPOptType {
 	PATH_EXCHANGE(XFVRPPathExchange.class),
 	
 	PDP_CHEAPEST_INSERT(XFPDPFirstBestInsert.class),
-	PDP_RELOCATE(XFPDPRelocate2.class),
+	PDP_RELOCATE(XFPDPRelocate.class),
 	PDP_ILS(XFPDPILS.class);
 	
 	private Class<? extends XFVRPOptBase> clazz; 
