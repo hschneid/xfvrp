@@ -3,7 +3,7 @@ package xf.xfvrp.opt.improve.ils;
 import java.util.Arrays;
 
 import xf.xfpdp.XFPDPUtils;
-import xf.xfpdp.opt.XFPDPRelocate2;
+import xf.xfpdp.opt.XFPDPRelocate;
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.NormalizeSolutionService;
 import xf.xfvrp.base.Quality;
@@ -31,7 +31,7 @@ import xf.xfvrp.opt.XFVRPOptBase;
 public class XFPDPILS extends XFVRPOptBase {
 
 	private XFVRPOptBase[] optArr = new XFVRPOptBase[]{
-			new XFPDPRelocate2()
+			new XFPDPRelocate()
 	};
 
 	private double[] optPropArr = new double[]{
