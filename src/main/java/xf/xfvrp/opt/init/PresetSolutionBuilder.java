@@ -5,17 +5,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.stream.IntStream;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.SiteType;
 import xf.xfvrp.base.XFVRPModel;
+import xf.xfvrp.base.monitor.StatusCode;
+import xf.xfvrp.base.monitor.StatusManager;
 import xf.xfvrp.opt.Solution;
 
 public class PresetSolutionBuilder {
-
-	private static Logger LOG = LoggerFactory.getLogger(PresetSolutionBuilder.class);
 	
 	/**
 	 * 
@@ -23,7 +20,7 @@ public class PresetSolutionBuilder {
 	 * @param model
 	 * @return
 	 */
-	public Solution build(List<Node> nodes, XFVRPModel model) {
+	public Solution build(List<Node> nodes, XFVRPModel model, StatusManager statusManager) {
 		String predefinedSolutionString = model.getParameter().getPredefinedSolutionString();
 
 		if(!checkPredefinedSolutionString(predefinedSolutionString))
@@ -34,7 +31,7 @@ public class PresetSolutionBuilder {
 		// Separate the solution string into the blocks
 		List<Node> giantRoute = new ArrayList<>();
 		for (String block : split(predefinedSolutionString)) {
-			readBlock(block, giantRoute, dataBag);
+			readBlock(block, giantRoute, dataBag, statusManager);
 		}
 
 		// Put the unassigned customers with single routes in the giant route
@@ -74,7 +71,7 @@ public class PresetSolutionBuilder {
 		return predefinedBlocks;
 	}
 
-	private void readBlock(String block, List<Node> giantRoute, PresetSolutionBuilderDataBag dataBag) {
+	private void readBlock(String block, List<Node> giantRoute, PresetSolutionBuilderDataBag dataBag, StatusManager statusManager) {
 		String[] entries = block.split(",");
 
 		if(entries.length == 0)
@@ -86,9 +83,9 @@ public class PresetSolutionBuilder {
 		// A block can hold customers and depots
 		for (int i = 0; i < entries.length; i++) {
 			if(dataBag.containsNode(entries[i])) {
-				addEntry(giantRoute, dataBag, entries, i);
+				addEntry(giantRoute, dataBag, entries, i, statusManager);
 			} else {
-				LOG.warn(" Init warning - Node "+entries[i]+" is no valid customer (unknown).");
+				statusManager.fireMessage(StatusCode.RUNNING, " Init warning - Node "+entries[i]+" is no valid customer (unknown).");
 			}
 		}
 
@@ -96,7 +93,7 @@ public class PresetSolutionBuilder {
 		giantRoute.add(dataBag.getNextDepot());
 	}
 
-	private void addEntry(List<Node> giantRoute, PresetSolutionBuilderDataBag dataBag, String[] entries, int i) {
+	private void addEntry(List<Node> giantRoute, PresetSolutionBuilderDataBag dataBag, String[] entries, int i, StatusManager statusManager) {
 		Node n = dataBag.getNode(entries[i]);
 		
 		if(n.getSiteType() == SiteType.DEPOT) {
@@ -105,7 +102,7 @@ public class PresetSolutionBuilder {
 			giantRoute.add(n);
 			dataBag.getAvailableCustomers().remove(n);
 		} else {
-			LOG.warn(" Init warning - Node "+entries[i]+" is already in the solution.");
+			statusManager.fireMessage(StatusCode.RUNNING, " Init warning - Node "+entries[i]+" is already in the solution.");
 		}
 	}
 

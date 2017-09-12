@@ -11,6 +11,7 @@ import xf.xfvrp.base.Node;
 import xf.xfvrp.base.NormalizeSolutionService;
 import xf.xfvrp.base.Util;
 import xf.xfvrp.base.XFVRPModel;
+import xf.xfvrp.base.monitor.StatusManager;
 import xf.xfvrp.base.preset.BlockNameConverter;
 import xf.xfvrp.opt.Solution;
 import xf.xfvrp.opt.init.PresetSolutionBuilder;
@@ -25,10 +26,10 @@ import xf.xfvrp.opt.init.check.vrp.CheckService;
  */
 public class VRPInitialSolutionBuilder {
 
-	public Solution build(XFVRPModel model, List<Node> invalidNodes) {
+	public Solution build(XFVRPModel model, List<Node> invalidNodes, StatusManager statusManager) {
 		List<Node> validNodes = getValidNodes(model, invalidNodes); 
 
-		Solution solution = buildSolution(validNodes, model);
+		Solution solution = buildSolution(validNodes, model, statusManager);
 
 		solution = NormalizeSolutionService.normalizeRoute(solution, model);
 
@@ -42,7 +43,7 @@ public class VRPInitialSolutionBuilder {
 	 * @param model Current model of nodes, distances and parameters
 	 * @return Current route plan of single trips per customer
 	 */
-	private Solution buildSolution(List<Node> nodes, XFVRPModel model) {
+	private Solution buildSolution(List<Node> nodes, XFVRPModel model, StatusManager statusManager) {
 		if(nodes == null) {
 			Solution solution = new Solution();
 			solution.setGiantRoute(new Node[0]);
@@ -52,7 +53,7 @@ public class VRPInitialSolutionBuilder {
 		
 		// If user has given a predefined solution
 		if(model.getParameter().getPredefinedSolutionString() != null)
-			return new PresetSolutionBuilder().build(nodes, model);
+			return new PresetSolutionBuilder().build(nodes, model, statusManager);
 	
 		return generateSolution(nodes, model);
 	}

@@ -2,12 +2,10 @@ package xf.xfvrp.opt.improve;
 
 import java.util.Arrays;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import xf.xfvrp.base.NormalizeSolutionService;
 import xf.xfvrp.base.Quality;
 import xf.xfvrp.base.Vehicle;
+import xf.xfvrp.base.monitor.StatusCode;
 import xf.xfvrp.opt.Solution;
 import xf.xfvrp.opt.XFVRPOptBase;
 import xf.xfvrp.opt.improve.ils.RandomChangeService;
@@ -28,8 +26,6 @@ import xf.xfvrp.opt.improve.ils.RandomChangeService;
  *
  */
 public class XFVRPILS extends XFVRPOptBase {
-	
-	private static Logger LOG = LoggerFactory.getLogger(XFVRPILS.class);
 
 	private XFVRPOptBase[] optArr = new XFVRPOptBase[]{
 			new XFVRPRelocate(),
@@ -53,7 +49,7 @@ public class XFVRPILS extends XFVRPOptBase {
 		
 		RandomChangeService randomChange = new RandomChangeService();
 
-		LOG.debug("Starting with "+model.getParameter().getILSLoops()+" loops.");
+		statusManager.fireMessage(StatusCode.RUNNING, this.getClass().getSimpleName()+" is starting with "+model.getParameter().getILSLoops()+" loops.");
 
 		for (int i = 0; checkTerminationCriteria(i); i++) {
 			Solution gT = bestRoute.copy();
@@ -69,13 +65,13 @@ public class XFVRPILS extends XFVRPOptBase {
 
 			// Selection
 			if(q.getFitness() < bestBestQ.getFitness()) {
-				LOG.debug("loop "+i+"\t last cost : "+bestBestQ.getCost()+"\t new cost : "+q.getCost());
+				statusManager.fireMessage(StatusCode.RUNNING, this.getClass().getSimpleName()+" loop "+i+"\t last cost : "+bestBestQ.getCost()+"\t new cost : "+q.getCost());
 
 				bestRoute = gT;
 				bestBestQ = q;
 				bestBestTour = gT;
 			} else {
-				LOG.debug("loop "+i+"\t with cost : "+q.getCost());
+				statusManager.fireMessage(StatusCode.RUNNING, this.getClass().getSimpleName()+"loop "+i+"\t with cost : "+q.getCost());
 				bestRoute = NormalizeSolutionService.normalizeRoute(bestRoute, model);
 			}
 		}

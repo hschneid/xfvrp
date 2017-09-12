@@ -6,15 +6,11 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import xf.xfvrp.base.InvalidReason;
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.SiteType;
 import xf.xfvrp.base.Vehicle;
 import xf.xfvrp.base.preset.BlockNameConverter;
-import xf.xfvrp.opt.init.PresetSolutionBuilder;
 import xf.xfvrp.opt.init.precheck.PreCheckException;
 
 /** 
@@ -46,8 +42,6 @@ import xf.xfvrp.opt.init.precheck.PreCheckException;
  *
  */
 public class VRPPreCheckService  {
-
-	private static Logger LOG = LoggerFactory.getLogger(PresetSolutionBuilder.class);
 	
 	/**
 	 * Structural checks of the nodes without model 
@@ -76,7 +70,6 @@ public class VRPPreCheckService  {
 
 	private void checkFeasibility(Node[] nodes) throws PreCheckException {
 		if(nodes.length == 0) {
-			LOG.error("No nodes found.");
 			throw new PreCheckException("No nodes found.");
 		}
 	}

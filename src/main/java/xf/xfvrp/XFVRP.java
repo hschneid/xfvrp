@@ -8,9 +8,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import util.collection.ListMap;
 import xf.xfvrp.base.InvalidReason;
 import xf.xfvrp.base.LoadType;
@@ -62,8 +59,6 @@ import xf.xfvrp.report.build.ReportBuilder;
  * 
  */
 public class XFVRP extends XFVRP_Parameter {
-
-	private static Logger logger = LoggerFactory.getLogger(XFVRP.class);
 	
 	/* List of optimization procedures */
 	private List<XFVRPOptBase> optList = new ArrayList<>();
@@ -81,8 +76,6 @@ public class XFVRP extends XFVRP_Parameter {
 	 * @throws PreCheckException 
 	 */
 	public void executeRoutePlanning() throws PreCheckException {
-		logger.info("XFVRP started");
-
 		statusManager.fireMessage(StatusCode.RUNNING, "XFVRP started");
 		statusManager.setStartTime();
 
@@ -152,8 +145,8 @@ public class XFVRP extends XFVRP_Parameter {
 	 */
 	private XFVRPSolution executeRoutePlanning(Node[] globalNodes, Vehicle veh, boolean[] plannedCustomers) throws PreCheckException {
 		Node[] nodes = new PreCheckService().precheck(globalNodes, veh, plannedCustomers, parameter);
-		XFVRPModel model = new ModelBuilder().build(nodes, veh, metric, parameter);
-		Solution route = new InitialSolutionBuilder().build(model, parameter);
+		XFVRPModel model = new ModelBuilder().build(nodes, veh, metric, parameter, statusManager);
+		Solution route = new InitialSolutionBuilder().build(model, parameter, statusManager);
 
 		// VRP optimizations, if initiated route has appropriate length
 		if(route.getGiantRoute().length > 0) {

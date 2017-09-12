@@ -1,8 +1,5 @@
 package xf.xfvrp.opt.init;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.Vehicle;
 import xf.xfvrp.base.XFVRPModel;
@@ -13,11 +10,11 @@ import xf.xfvrp.base.metric.internal.AcceleratedMetricTransformator;
 import xf.xfvrp.base.metric.internal.FixCostMetricTransformator;
 import xf.xfvrp.base.metric.internal.OpenRouteMetricTransformator;
 import xf.xfvrp.base.metric.internal.PresetMetricTransformator;
+import xf.xfvrp.base.monitor.StatusCode;
+import xf.xfvrp.base.monitor.StatusManager;
 import xf.xfvrp.base.preset.BlockNameConverter;
 
 public class ModelBuilder {
-
-	private static Logger LOG = LoggerFactory.getLogger(ModelBuilder.class);
 	
 	/**
 	 * Transforms the read data into a model, which can be used
@@ -28,8 +25,8 @@ public class ModelBuilder {
 	 * @return Returns a model, which can be used for optimization procedures.
 	 * @throws IllegalArgumentException
 	 */
-	public XFVRPModel build(Node[] nodes, Vehicle veh, Metric externalMetric, XFVRPParameter parameter) throws IllegalArgumentException {
-		LOG.info("Initialisation of instance for vehicle "+veh.name);
+	public XFVRPModel build(Node[] nodes, Vehicle veh, Metric externalMetric, XFVRPParameter parameter, StatusManager statusManager) throws IllegalArgumentException {
+		statusManager.fireMessage(StatusCode.RUNNING, "Initialisation of instance for vehicle "+veh.name);
 
 		// Set local node index
 		indexNodes(nodes);
@@ -40,7 +37,7 @@ public class ModelBuilder {
 		// Metric transformations for optimization
 		InternalMetric optMetric = buildOptimizationMetric(nodes, veh, internalMetric);
 
-		LOG.info("Nbr of nodes : "+nodes.length);
+		statusManager.fireMessage(StatusCode.RUNNING, "Nbr of nodes : "+nodes.length);
 
 		XFVRPModel model = new XFVRPModel(nodes, internalMetric, optMetric, veh, parameter);
 

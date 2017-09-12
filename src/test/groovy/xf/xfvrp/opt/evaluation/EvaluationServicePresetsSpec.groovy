@@ -9,11 +9,13 @@ import xf.xfvrp.base.XFVRPModel
 import xf.xfvrp.base.XFVRPParameter
 import xf.xfvrp.base.metric.EucledianMetric
 import xf.xfvrp.base.metric.internal.AcceleratedMetricTransformator
+import xf.xfvrp.base.monitor.StatusManager
 import xf.xfvrp.opt.Solution
 import xf.xfvrp.opt.init.ModelBuilder
 
 class EvaluationServicePresetsSpec extends Specification {
 
+	def statusManager = Stub StatusManager
 	def service = new EvaluationService();
 
 	def nd = new TestNode(
@@ -375,7 +377,7 @@ class EvaluationServicePresetsSpec extends Specification {
 
 		def iMetric = new AcceleratedMetricTransformator().transform(metric, nodes, v);
 
-		return new ModelBuilder().build(nodes, v, metric, parameter)
+		return new ModelBuilder().build(nodes, v, metric, parameter, statusManager)
 	}
 	
 	XFVRPModel initMultiDepotScenAbstract(Vehicle v, int[] presetBlocks, int[] presetRanks, int[] presetPos, int[] presetDepots) {
