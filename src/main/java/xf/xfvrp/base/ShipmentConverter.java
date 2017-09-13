@@ -32,15 +32,18 @@ public class ShipmentConverter {
 		int shipmentIdx = 0;
 		Map<String, Integer> shipmentIdxMap = new HashMap<>();
 		for (InternalCustomerData iCust : customerList) {
-			String shipID = iCust.getShipID();
+			String shipId = iCust.getShipID();
+			
+			if(shipId == null || shipId.length() == 0)
+				continue;
 
 			// Wenn shipID noch keinen Index zugewiesen bekommen hat,
 			// dann füge einen neuen Index ein.
-			if(!shipmentIdxMap.containsKey(shipID))
-				shipmentIdxMap.put(shipID, shipmentIdx++);
+			if(!shipmentIdxMap.containsKey(shipId))
+				shipmentIdxMap.put(shipId, shipmentIdx++);
 			
 			// Setze zu Customer-Objekt den Shipment-Index
-			nodeMap.get(iCust.getExternID()).setShipmentIdx(shipmentIdxMap.get(shipID));
+			nodeMap.get(iCust.getExternID()).setShipmentIdx(shipmentIdxMap.get(shipId));
 		}
 	}
 }
