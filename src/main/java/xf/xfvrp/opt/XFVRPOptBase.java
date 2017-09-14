@@ -183,6 +183,15 @@ public abstract class XFVRPOptBase extends XFVRPBase<XFVRPModel> {
 			solution.setGiantRoute(giantTour);
 		}
 	}
+	
+	protected void shipmentMove(Solution solution, int srcShipmentPickup, int srcShipmentDelivery, int dstShipmentPickup, int dstShipmentDelivery) {
+		move(solution, srcShipmentPickup, dstShipmentPickup);
+		
+		if(dstShipmentPickup > srcShipmentDelivery) srcShipmentDelivery--;
+		if(dstShipmentPickup < srcShipmentPickup && dstShipmentDelivery < srcShipmentPickup) dstShipmentDelivery++;
+		
+		move(solution, srcShipmentDelivery, dstShipmentDelivery);
+	}
 
 	/**
 	 * Internal method of all improvment heuristics to bring to list of improving steps
