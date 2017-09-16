@@ -3,7 +3,6 @@ package xf.xfpdp.opt;
 import java.util.ArrayList;
 import java.util.List;
 
-import xf.xfpdp.XFPDPUtils;
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.Quality;
 import xf.xfvrp.base.SiteType;
@@ -44,27 +43,55 @@ public class XFPDPRelocate extends XFVRPOptImpBase {
 		sort(improvements, 4);
 
 		// Finde die erste valide verbessernde L�sung
-		Node[] copy = new Node[giantTour.length];
 		for (float[] val : improvements) {
-			int srcA = (int) val[0];
-			int srcB = (int) val[1];
-			int dstA = (int) val[2];
-			int dstB = (int) val[3];
+			change(solution, val);
 
-			System.arraycopy(giantTour, 0, copy, 0, giantTour.length);
-			XFPDPUtils.move(giantTour, srcA, srcB, dstA, dstB);
-
-			Solution newSolution = new Solution();
-			newSolution.setGiantRoute(giantTour);
-			Quality result = checkIt(newSolution);
+			Quality result = checkIt(solution);
 			if(result != null && result.getFitness() < bestResult.getFitness()) {
 				return result;
 			}
 
-			System.arraycopy(copy, 0, giantTour, 0, giantTour.length);
+			reverseChange(solution, val);
 		}
 
 		return null;
+	}
+	
+	private void change(Solution solution, float[] val) {
+		int srcA = (int) val[0];
+		int srcB = (int) val[1];
+		int dstA = (int) val[2];
+		int dstB = (int) val[3];
+
+		shipmentMove(solution, srcA, srcB, dstA, dstB);
+	}
+
+	private void reverseChange(Solution solution, float[] val) {
+		int srcA = (int) val[0];
+		int srcB = (int) val[1];
+		int dstA = (int) val[2];
+		int dstB = (int) val[3];
+		
+		int srcAOffset = 0;
+		int srcBOffset = 0;
+		int dstAOffset = 0;
+		int dstBOffset = 0;
+		
+		dstAOffset += (dstA > srcB) ? -1 : 0;
+		dstAOffset += (dstA > srcA) ? -1 : 0;
+		dstBOffset += (dstB > srcA && dstB > srcB) ? -1 : 0;
+		dstBOffset += (dstB < srcA && dstB < srcB) ? 1 : 0;
+		srcAOffset += (srcA > dstB) ? 2 : 0;
+		srcAOffset += (srcA > dstA && srcA < dstB) ? 1 : 0;
+		srcBOffset += (srcB > dstA) ? 1 : 0;
+		srcBOffset += (srcB > dstB) ? 0 : -1;
+		
+		srcA += srcAOffset;
+		srcB += srcBOffset;
+		dstA += dstAOffset;
+		dstB += dstBOffset;
+		
+		shipmentMove(solution, dstA, dstB, srcA, srcB);
 	}
 
 	/**
@@ -125,41 +152,42 @@ public class XFPDPRelocate extends XFVRPOptImpBase {
 		val -= getDistanceForOptimization(route[srcA - 1], route[srcA]);
 		val -= getDistanceForOptimization(route[srcA], route[srcA + 1]);
 		val -= getDistanceForOptimization(route[srcB], route[srcB + 1]);
+		// Wenn A und B nicht direkt nebeneinander liegen.
 		if(srcB - srcA != 1)
 			val -= getDistanceForOptimization(route[srcB - 1], route[srcB]);
-		if(srcA - dstA != 1 && srcB - dstA != 1)
-			val -= getDistanceForOptimization(route[dstA], route[dstA + 1]);
-		if(srcA - dstB != 1 && srcB - dstB != 1 && dstA != dstB)
-			val -= getDistanceForOptimization(route[dstB], route[dstB + 1]);
+		// Wenn A und B nicht direkt vor dstA weggeschoben werden
+		if(dstA - srcA != 1 && dstA - srcB != 1)
+			val -= getDistanceForOptimization(route[dstA - 1], route[dstA]);
+		// Wenn A und B nicht direkt vor dstB weggeschoben werden UND dstA und dstB nicht gleich sind
+		if(dstB - srcA != 1 && dstB - srcB != 1 && dstA != dstB)
+			val -= getDistanceForOptimization(route[dstB - 1], route[dstB]);
 
-
-		int offset = 1;
-		val += getDistanceForOptimization(route[dstA], route[srcA]);
+		int offset;
+		
+		offset = (dstA - srcB == 1 || dstA - srcA == 1) ? (srcB - srcA == 1) ? 3 : 2 : 1;
+		val += getDistanceForOptimization(route[dstA - offset], route[srcA]);
 		if(dstA != dstB) {
-			offset = (srcB - dstA == 1) ? 2 : (srcA - dstA == 1 && srcB - srcA == 1) ? 3 : 1;
-			val += getDistanceForOptimization(route[srcA], route[dstA + offset]);
-			val += getDistanceForOptimization(route[dstB], route[srcB]);
+			val += getDistanceForOptimization(route[srcA], route[dstA]);
+			val += getDistanceForOptimization(route[dstB - 1], route[srcB]);
 		} else
 			val += getDistanceForOptimization(route[srcA], route[srcB]);
 
-		offset = (srcA - dstB == 1 || srcB - dstB == 1) ? (srcA - dstB == 1 && srcB - srcA == 1) ? 3 : 2: 1;
-		val += getDistanceForOptimization(route[srcB], route[dstB + offset]);
+		val += getDistanceForOptimization(route[srcB], route[dstB]);
 
-		// Wenn srcA wirklich verschoben wird (dstA also nicht dahinter ist)
-		if(srcA - dstA != 1) {
+		// Wenn vor dstB NICHT irgend etwas weggeschoben wird
+		offset = (srcB - srcA == 1) ? 2 : 1;
+		if(dstB - srcA != offset && dstA - srcA != offset) {
 			// Wenn srcA und srcB direkt nebeneinander liegen, dann �berspringe srcB
 			offset = (srcB - srcA == 1) ? 2 : 1;
 			val += getDistanceForOptimization(route[srcA - 1], route[srcA + offset]);
 		}
-		// Wenn nicht gilt, dass srcB vor dstA eingef�gt wird oder
-		// srcA vor dstA eingef�gt wird und srcA und srcB hintereinander liegen
-		if(srcB - srcA != 1 && ! (srcB - dstA == 1 || (srcA - dstA == 1 && srcB - srcA == 1)))
+		// Wenn nicht gilt, dass srcB vor dstA eingefügt wird oder
+		// srcA vor dstA eingefügt wird und srcA und srcB hintereinander liegen
+		if(srcB - srcA != 1 && ! (dstA - srcB == 1 || (dstA - srcA == 1 && srcB - srcA == 1)))
 			val += getDistanceForOptimization(route[srcB - 1], route[srcB + 1]);
 
 		return val;
 	}
-
-
 
 	private int[] getRouteIndex(Node[] route) {
 		int[] routeIdxArr = new int[route.length];
@@ -171,8 +199,6 @@ public class XFPDPRelocate extends XFVRPOptImpBase {
 		}
 		return routeIdxArr;
 	}
-
-
 
 	private int[] getShipmentPositions(Node[] route) {
 		int[] shipmentPairIdxArr = new int[route.length];

@@ -2,6 +2,7 @@ package xf.xfvrp.opt.improve
 
 import java.util.stream.Collectors
 
+import spock.lang.Ignore
 import spock.lang.Specification
 import xf.xfpdp.opt.XFPDPRelocate
 import xf.xfvrp.base.LoadType
@@ -17,7 +18,7 @@ import xf.xfvrp.opt.Solution
 import xf.xfvrp.opt.evaluation.TestNode
 import xf.xfvrp.opt.evaluation.TestVehicle
 
-class XFPDPRelocateSpec extends Specification {
+class XFPDPRelocateExtSpec extends Specification {
 
 	def service = new XFPDPRelocate();
 
@@ -35,6 +36,7 @@ class XFPDPRelocateSpec extends Specification {
 
 	def metric = new EucledianMetric()
 
+	@Ignore
 	def "Search single depot - Find improve"() {
 		def model = initScen()
 		def n = model.getNodes()
@@ -59,14 +61,110 @@ class XFPDPRelocateSpec extends Specification {
 		Math.abs(impList.stream().filter({f -> f[0] == 3 && f[1] == 2}).collect(Collectors.toList()).get(0)[2] - 1.618) < 0.001f
 		Math.abs(impList.stream().filter({f -> f[0] == 1 && f[1] == 4}).collect(Collectors.toList()).get(0)[2] - 1.618) < 0.001f
 	}
+	
+	def "Potential 1"() {
+		def model = initScen()
+		def n = model.getNodes()
+		service.setModel(model)
 
+		sol = new Solution()
+		sol.setGiantRoute([nd, n[3], n[4], n[1], n[2], nd] as Node[])
+		def route = sol.getGiantRoute()
+
+		when:
+		def result = service.getPotential(route, 3, 4, 1, 1)
+		
+		then:
+		result == -2
+	}
+	
+	def "Potential 2"() {
+		def model = initScen()
+		def n = model.getNodes()
+		service.setModel(model)
+
+		sol = new Solution()
+		sol.setGiantRoute([nd, n[3], n[1], n[4], n[2], nd] as Node[])
+		def route = sol.getGiantRoute()
+
+		when:
+		def result = service.getPotential(route, 2, 4, 1, 3)
+		
+		then:
+		result == -2
+	}
+	
+	def "Potential 3"() {
+		def model = initScen()
+		def n = model.getNodes()
+		service.setModel(model)
+
+		sol = new Solution()
+		sol.setGiantRoute([nd, n[3], n[1], n[4], n[2], nd] as Node[])
+		def route = sol.getGiantRoute()
+
+		when:
+		def result = service.getPotential(route, 1, 3, 4, 5)
+		
+		then:
+		result == -2
+	}
+	
+	def "Potential 4"() {
+		def model = initScen()
+		def n = model.getNodes()
+		service.setModel(model)
+
+		sol = new Solution()
+		sol.setGiantRoute([nd, n[1], n[2], n[3], n[4], nd] as Node[])
+		def route = sol.getGiantRoute()
+
+		when:
+		def result = service.getPotential(route, 3, 4, 1, 2)
+		
+		then:
+		result == 4
+	}
+	
+	def "Potential no move"() {
+		def model = initScen()
+		def n = model.getNodes()
+		service.setModel(model)
+
+		sol = new Solution()
+		sol.setGiantRoute([nd, n[1], n[2], n[3], n[4], nd] as Node[])
+		def route = sol.getGiantRoute()
+
+		when:
+		def result = service.getPotential(route, 1, 2, 3, 3)
+		
+		then:
+		result == 0
+	}
+	
+	def "Potential partial move"() {
+		def model = initScen()
+		def n = model.getNodes()
+		service.setModel(model)
+
+		sol = new Solution()
+		sol.setGiantRoute([nd, n[2], n[3], n[4], n[1], nd] as Node[])
+		def route = sol.getGiantRoute()
+
+		when:
+		def result = service.getPotential(route, 4, 1, 2, 2)
+		
+		then:
+		result == 0
+	}
+	
 	XFVRPModel initScen() {
 		def v = new TestVehicle(name: "V1", capacity: [3, 3]).getVehicle()
 
 		def n1 = new TestNode(
 				globalIdx: 1,
 				externID: "1",
-				xlong: -2,
+				xlong: 1,
 				ylat: 0,
 				geoId: 1,
 				demand: [2, 2],
@@ -77,8 +175,8 @@ class XFPDPRelocateSpec extends Specification {
 		def n2 = new TestNode(
 				globalIdx: 2,
 				externID: "2",
-				xlong: -2,
-				ylat: 1f,
+				xlong: 2,
+				ylat: 0,
 				geoId: 2,
 				demand: [-2, -2],
 				timeWindow: [[0,99]],
@@ -88,8 +186,8 @@ class XFPDPRelocateSpec extends Specification {
 		def n3 = new TestNode(
 				globalIdx: 3,
 				externID: "3",
-				xlong: -1,
-				ylat: 2,
+				xlong: 3,
+				ylat: 0,
 				geoId: 3,
 				demand: [1, 1],
 				timeWindow: [[0,99]],
@@ -99,8 +197,8 @@ class XFPDPRelocateSpec extends Specification {
 		def n4 = new TestNode(
 				globalIdx: 4,
 				externID: "4",
-				xlong: 0,
-				ylat: 2,
+				xlong: 4,
+				ylat: 0,
 				geoId: 1,
 				demand: [-1, -1],
 				timeWindow: [[0,99]],
@@ -110,8 +208,8 @@ class XFPDPRelocateSpec extends Specification {
 		def n5 = new TestNode(
 				globalIdx: 5,
 				externID: "5",
-				xlong: 1,
-				ylat: 1,
+				xlong: 5,
+				ylat: 0,
 				geoId: 2,
 				demand: [3, 3],
 				timeWindow: [[0,99]],
@@ -121,7 +219,7 @@ class XFPDPRelocateSpec extends Specification {
 		def n6 = new TestNode(
 				globalIdx: 6,
 				externID: "6",
-				xlong: 1,
+				xlong: 6,
 				ylat: 0,
 				geoId: 3,
 				demand: [-3, -3],
