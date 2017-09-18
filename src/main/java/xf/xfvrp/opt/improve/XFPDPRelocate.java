@@ -111,20 +111,27 @@ public class XFPDPRelocate extends XFVRPOptImpBase {
 			// Source must not be a depot
 			if(route[srcA].getSiteType() == SiteType.DEPOT)
 				continue;
+			// Source A must be pickup
 			if(route[srcA].getDemand()[0] < 0)
 				continue;
 
+			// srcB is dependent delivery to pickup srcA
 			int srcB = shipmentPositions[srcA];
 
-			for (int dstA = 0; dstA < route.length - 1; dstA++) {
-				for (int dstB = dstA; dstB < route.length - 1; dstB++) {
+			for (int dstA = 1; dstA < route.length; dstA++) {
+				for (int dstB = dstA; dstB < route.length; dstB++) {
+					// Destinations must be on same route
 					if(routeIdx[dstA] != routeIdx[dstB])
 						break;
 
 					// Destination pointer must not be at Source pointer
 					if((srcA - dstA) * (srcB - dstB) * (srcA - dstB) * (srcB - dstA) == 0)
 						continue;
-
+					
+					// Prevent no move
+					if(srcB - srcA == 1 && dstA == dstB && dstB - srcB == 1)
+						continue;
+					
 					float val = getPotential(route, srcA, srcB, dstA, dstB);
 
 					if(val < -epsilon)
@@ -192,9 +199,9 @@ public class XFPDPRelocate extends XFVRPOptImpBase {
 		int[] routeIdxArr = new int[route.length];
 		int id = 0;
 		for (int i = 1; i < route.length; i++) {
+			routeIdxArr[i] = id;
 			if(route[i].getSiteType() == SiteType.DEPOT)
 				id++;
-			routeIdxArr[i] = id;
 		}
 		return routeIdxArr;
 	}

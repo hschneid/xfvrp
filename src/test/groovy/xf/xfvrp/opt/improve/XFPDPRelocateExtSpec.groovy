@@ -1,8 +1,5 @@
 package xf.xfvrp.opt.improve
 
-import java.util.stream.Collectors
-
-import spock.lang.Ignore
 import spock.lang.Specification
 import xf.xfvrp.base.LoadType
 import xf.xfvrp.base.Node
@@ -35,30 +32,26 @@ class XFPDPRelocateExtSpec extends Specification {
 
 	def metric = new EucledianMetric()
 
-	@Ignore
-	def "Search single depot - Find improve"() {
+	def "Search"() {
 		def model = initScen()
 		def n = model.getNodes()
 		service.setModel(model)
 
 		sol = new Solution()
-		sol.setGiantRoute([nd, n[5], n[6], nd, n[3], n[4], nd, n[1], n[2], nd] as Node[])
-
-		def impList = [] as List<float[]>
+		sol.setGiantRoute([nd, n[1], n[2], nd, n[3], n[4], nd] as Node[])
 
 		when:
-		service.search(sol.getGiantRoute(), impList)
+		def impList = service.search(sol.getGiantRoute())
 
 		then:
-		impList.size() > 0
-		impList.stream().filter({f -> f[0] == 3 && f[1] == 1}).count() == 1
-		impList.stream().filter({f -> f[0] == 1 && f[1] == 3}).count() == 1
-		impList.stream().filter({f -> f[0] == 3 && f[1] == 2}).count() == 1
-		impList.stream().filter({f -> f[0] == 1 && f[1] == 4}).count() == 1
-		Math.abs(impList.stream().filter({f -> f[0] == 3 && f[1] == 1}).collect(Collectors.toList()).get(0)[2] - 1.618) < 0.001f
-		Math.abs(impList.stream().filter({f -> f[0] == 1 && f[1] == 3}).collect(Collectors.toList()).get(0)[2] - 1.618) < 0.001f
-		Math.abs(impList.stream().filter({f -> f[0] == 3 && f[1] == 2}).collect(Collectors.toList()).get(0)[2] - 1.618) < 0.001f
-		Math.abs(impList.stream().filter({f -> f[0] == 1 && f[1] == 4}).collect(Collectors.toList()).get(0)[2] - 1.618) < 0.001f
+		impList.stream().filter({f -> f[0] == 1 && f[1] == 2 && f[2] == 4 && f[3] == 4}).count() == 1
+		impList.stream().filter({f -> f[0] == 1 && f[1] == 2 && f[2] == 6 && f[3] == 6}).count() == 1
+		impList.stream().filter({f -> f[0] == 1 && f[1] == 2 && f[2] == 4 && f[3] == 5}).count() == 1
+		impList.stream().filter({f -> f[0] == 1 && f[1] == 2 && f[2] == 4 && f[3] == 6}).count() == 1
+		impList.stream().filter({f -> f[0] == 4 && f[1] == 5 && f[2] == 1 && f[3] == 1}).count() == 1
+		impList.stream().filter({f -> f[0] == 4 && f[1] == 5 && f[2] == 2 && f[3] == 2}).count() == 1
+		impList.stream().filter({f -> f[0] == 4 && f[1] == 5 && f[2] == 3 && f[3] == 3}).count() == 1
+		impList.stream().filter({f -> f[0] == 4 && f[1] == 5 && f[2] == 2 && f[3] == 3}).count() == 1
 	}
 	
 	def "Potential 1"() {

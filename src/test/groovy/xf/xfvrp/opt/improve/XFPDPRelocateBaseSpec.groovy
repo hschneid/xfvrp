@@ -72,11 +72,11 @@ class XFPDPRelocateBaseSpec extends Specification {
 		result[1] == 0
 		result[2] == 0
 		result[3] == 0
-		result[4] == 1
+		result[4] == 0
 		result[5] == 1
 		result[6] == 1
 		result[7] == 1
-		result[8] == 2
+		result[8] == 1
 	}
 	
 	def "Change"() {
