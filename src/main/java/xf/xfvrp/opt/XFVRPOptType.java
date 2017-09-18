@@ -1,10 +1,10 @@
 package xf.xfvrp.opt;
 
-import xf.xfpdp.opt.XFPDPRelocate;
 import xf.xfvrp.opt.construct.XFVRPConst;
 import xf.xfvrp.opt.construct.XFVRPSavings;
 import xf.xfvrp.opt.construct.insert.XFPDPFirstBestInsert;
 import xf.xfvrp.opt.construct.insert.XFVRPFirstBestInsert;
+import xf.xfvrp.opt.improve.XFPDPRelocate;
 import xf.xfvrp.opt.improve.XFVRP2Opt;
 import xf.xfvrp.opt.improve.XFVRP2OptIntra;
 import xf.xfvrp.opt.improve.XFVRP3Opt;

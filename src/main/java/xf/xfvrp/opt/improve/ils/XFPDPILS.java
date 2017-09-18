@@ -2,8 +2,6 @@ package xf.xfvrp.opt.improve.ils;
 
 import java.util.Arrays;
 
-import xf.xfpdp.XFPDPUtils;
-import xf.xfpdp.opt.XFPDPRelocate;
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.NormalizeSolutionService;
 import xf.xfvrp.base.Quality;
@@ -12,6 +10,7 @@ import xf.xfvrp.base.Vehicle;
 import xf.xfvrp.base.monitor.StatusCode;
 import xf.xfvrp.opt.Solution;
 import xf.xfvrp.opt.XFVRPOptBase;
+import xf.xfvrp.opt.improve.XFPDPRelocate;
 
 /** 
  * Copyright (c) 2012-present Holger Schneider
@@ -109,7 +108,7 @@ public class XFPDPILS extends XFVRPOptBase {
 				
 				// Move
 				System.arraycopy(giantRoute, 0, copy, 0, giantRoute.length);
-				XFPDPUtils.move(giantRoute, param[0], param[1], param[2], param[3]);
+				move(giantRoute, param[0], param[1], param[2], param[3]);
 				
 				// Eval
 				Solution newSolution = new Solution();
@@ -263,20 +262,33 @@ public class XFPDPILS extends XFVRPOptBase {
 
 	/**
 	 * 
-	 * @param nodes
-	 * @return
+	 * @param giantRoute
+	 * @param srcA
+	 * @param srcB
+	 * @param dstA
+	 * @param dstB
 	 */
-	//	@SuppressWarnings("unused")
-	//	private boolean checkDups(Node[] nodes) {
-	//		Set<String> set = new HashSet<String>();
-	//		for (Node n : nodes) {
-	//			if(n.getSiteType() == SiteType.CUSTOMER) {
-	//				if(set.contains(n.getExternID()))
-	//					return false;
-	//				set.add(n.getExternID());
-	//			}
-	//		}
-	//
-	//		return true;
-	//	}
+	public static void move(Node[] giantRoute, int srcA, int srcB, int dstA, int dstB) {
+		Node nSrcA = giantRoute[srcA];
+		Node nSrcB = giantRoute[srcB];
+		
+		Node[] arr = new Node[giantRoute.length];
+		System.arraycopy(giantRoute, 0, arr, 0, giantRoute.length);
+		
+		int j = 0;
+		for (int i = 0; i < giantRoute.length; i++) {
+			// Packe einen Knoten nur dann zurück in giant route, 
+			// falls der Index nicht auf einem Source-Knoten liegt.
+			if(i != srcA && i != srcB) 
+				giantRoute[j++] = arr[i];
+			
+			// Es wird nach einem Knoten i eingefügt.
+			if(i == dstA)
+				giantRoute[j++] = nSrcA;
+			// dstA und dstB k�nnen den gleichen Index haben, wenn A vor B direkt
+			// eingef�gt werden soll.
+			if(i == dstB)
+				giantRoute[j++] = nSrcB;
+		}
+	}
 }

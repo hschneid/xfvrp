@@ -1,7 +1,6 @@
 package xf.xfvrp.opt.improve
 
 import spock.lang.Specification
-import xf.xfpdp.opt.XFPDPRelocate
 import xf.xfvrp.base.LoadType
 import xf.xfvrp.base.Node
 import xf.xfvrp.base.ShipmentConverter
