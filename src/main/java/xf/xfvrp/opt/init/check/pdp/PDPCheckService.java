@@ -69,10 +69,12 @@ public class PDPCheckService {
 	private boolean checkRouteDuration(XFVRPModel model, Node pick, Node deli, Node depot) {
 		float travelTime = model.getTime(depot, pick);
 		float travelTime2 = model.getTime(pick, deli);
-		float travelTime3 = model.getTime(deli, depot);		
+		float travelTime3 = model.getTime(deli, depot);
+		float serviceTime = pick.getServiceTime() + pick.getServiceTimeForSite() + 
+				deli.getServiceTime() + deli.getServiceTimeForSite();
 		
 		// Check route duration with this customer
-		float time = travelTime + travelTime2 + travelTime3 + pick.getServiceTime() + deli.getServiceTime();
+		float time = travelTime + travelTime2 + travelTime3 + serviceTime;
 		if(time > model.getVehicle().maxRouteDuration) {
 			pick.setInvalidReason(InvalidReason.TRAVEL_TIME, "Customer " + pick.getExternID() + " - Traveltime required: " + time);
 			deli.setInvalidReason(InvalidReason.TRAVEL_TIME, "Customer " + deli.getExternID() + " - Traveltime required: " + time);

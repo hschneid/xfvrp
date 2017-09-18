@@ -26,6 +26,8 @@ public class PDPPreCheckService {
 		
 		checkShipments(shipments, customers);
 		
+		checkCapactiy(customers, vehicle);
+		
 		return getValidNodes(customers, nodesPerType);
 	}
 
@@ -112,6 +114,22 @@ public class PDPPreCheckService {
 				}
 			}
 		});
+	}
+	
+	/**
+	 * 
+	 * @param node
+	 * @param amountVal
+	 * @return
+	 */
+	private void checkCapactiy(List<Node> customers, Vehicle vehicle) {
+		for (Node customer : customers) {
+			for (int j = 0; j < customer.getDemand().length; j++)
+				if(customer.getDemand()[j] > vehicle.capacity[j]) {
+					customer.setInvalidReason(InvalidReason.PDP_IMPROPER_AMOUNTS);
+					break;
+				}
+		}
 	}
 
 	private Node[] getValidNodes(List<Node> customers, Map<SiteType, List<Node>> nodesPerType) {
