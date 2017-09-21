@@ -88,66 +88,7 @@ public class InternalVehicleData extends VehicleData {
 	public float getMaxWaitingTime() {
 		return maxWaitingTime;
 	}
-	/**
-	 * @return the capacityOfVesselFirst
-	 */
-	public float getCapacityOfVesselFirst() {
-		return capacityOfVesselFirst;
-	}
-	/**
-	 * @return the capacity2OfVesselFirst
-	 */
-	public float getCapacity2OfVesselFirst() {
-		return capacity2OfVesselFirst;
-	}
-	/**
-	 * @return the heightOfVesselFirst
-	 */
-	public int getHeightOfVesselFirst() {
-		return heightOfVesselFirst;
-	}
-	/**
-	 * @return the widthOfVesselFirst
-	 */
-	public int getWidthOfVesselFirst() {
-		return widthOfVesselFirst;
-	}
-	/**
-	 * @return the lengthOfVesselFirst
-	 */
-	public int getLengthOfVesselFirst() {
-		return lengthOfVesselFirst;
-	}
-	/**
-	 * @return the capacityOfVesselSecond
-	 */
-	public float getCapacityOfVesselSecond() {
-		return capacityOfVesselSecond;
-	}
-	/**
-	 * @return the capacity2OfVesselSecond
-	 */
-	public float getCapacity2OfVesselSecond() {
-		return capacity2OfVesselSecond;
-	}
-	/**
-	 * @return the heightOfVesselSecond
-	 */
-	public int getHeightOfVesselSecond() {
-		return heightOfVesselSecond;
-	}
-	/**
-	 * @return the widthOfVesselSecond
-	 */
-	public float getWidthOfVesselSecond() {
-		return widthOfVesselSecond;
-	}
-	/**
-	 * @return the lengthOfVesselSecond
-	 */
-	public float getLengthOfVesselSecond() {
-		return lengthOfVesselSecond;
-	}
+	
 	/**
 	 * 
 	 * @return
@@ -179,16 +120,6 @@ public class InternalVehicleData extends VehicleData {
 				fixCost,
 				varCost,
 				vehicleMetricId,
-				capacityOfVesselFirst,
-				capacity2OfVesselFirst,
-				heightOfVesselFirst,
-				widthOfVesselFirst,
-				lengthOfVesselFirst,
-				capacityOfVesselSecond,
-				capacity2OfVesselSecond,
-				heightOfVesselSecond,
-				widthOfVesselSecond,
-				lengthOfVesselSecond,
 				maxDrivingTimePerShift,
 				waitingTimeBetweenShifts,
 				priority

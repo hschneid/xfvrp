@@ -90,62 +90,6 @@ public class InternalCustomerData extends CustomerData {
 	}
 
 	/**
-	 * @return the nbrOfPackages
-	 */
-	public int getNbrOfPackages() {
-		return nbrOfPackages;
-	}
-
-	/**
-	 * @return the heightOfPackage
-	 */
-	public int getHeightOfPackage() {
-		return heightOfPackage;
-	}
-
-	/**
-	 * @return the widthOfPackage
-	 */
-	public int getWidthOfPackage() {
-		return widthOfPackage;
-	}
-
-	/**
-	 * @return the lengthOfPackage
-	 */
-	public int getLengthOfPackage() {
-		return lengthOfPackage;
-	}
-
-	/**
-	 * @return the weightOfPackage
-	 */
-	public float getWeightOfPackage() {
-		return weightOfPackage;
-	}
-
-	/**
-	 * @return the loadBearingOfPackage
-	 */
-	public float getLoadBearingOfPackage() {
-		return loadBearingOfPackage;
-	}
-
-	/**
-	 * @return the stackingGroupOfPackage
-	 */
-	public int getStackingGroupOfPackage() {
-		return stackingGroupOfPackage;
-	}
-
-	/**
-	 * @return the containerTypeOfPackage
-	 */
-	public int getContainerTypeOfPackage() {
-		return containerTypeOfPackage;
-	}
-
-	/**
 	 * @return the presetBlockName
 	 */
 	public String getPresetBlockName() {
@@ -206,15 +150,7 @@ public class InternalCustomerData extends CustomerData {
 				loadType,
 				presetBlockPos,
 				presetBlockRank,
-				shipID,
-				nbrOfPackages,
-				heightOfPackage,
-				widthOfPackage,
-				lengthOfPackage,
-				weightOfPackage,
-				loadBearingOfPackage,
-				stackingGroupOfPackage,
-				containerTypeOfPackage
+				shipID
 				);
 
 		return n;

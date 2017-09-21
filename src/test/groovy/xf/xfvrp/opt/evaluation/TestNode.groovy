@@ -22,14 +22,6 @@ class TestNode {
 	int presetBlockPos = 0;
 	int presetBlockRank = 0;
 	String shipID = "";
-	int nbrOfPackages = 1;
-	int heightOfPackage = 1;
-	int widthOfPackage = 1;
-	int lengthOfPackage = 1;
-	float weightOfPackage = 1;
-	float loadBearingOfPackage = 1;
-	int stackingGroupOfPackage = 1;
-	int containerTypeOfPackage = 1;
 	int presetDepotGlobalIdx = -1;
 	int presetVehicleIdx = -1;
 	int presetBlackNodeIdx = -1;
@@ -49,15 +41,7 @@ class TestNode {
 				loadType,
 				presetBlockPos,
 				presetBlockRank,
-				shipID,
-				nbrOfPackages,
-				heightOfPackage,
-				widthOfPackage,
-				lengthOfPackage,
-				weightOfPackage,
-				loadBearingOfPackage,
-				stackingGroupOfPackage,
-				containerTypeOfPackage
+				shipID
 				);
 		node.setPresetBlockIdx(presetBlockIdx)
 		if(presetDepotGlobalIdx > -1) node.addPresetDepot(presetDepotGlobalIdx)

@@ -30,13 +30,6 @@ public class Vehicle {
 	public final float maxWaitingTime;
 	
 	public final int vehicleMetricId;
-
-	/** Efficient Load - parameter **/
-	/* Each truck can contain at max two vessels like i.e. two trailers or containers */
-	public final float capacityOfVesselFirst, capacity2OfVesselFirst; 
-	public final int heightOfVesselFirst, widthOfVesselFirst, lengthOfVesselFirst;
-	public final float capacityOfVesselSecond, capacity2OfVesselSecond; 
-	public final int heightOfVesselSecond, widthOfVesselSecond, lengthOfVesselSecond;
 	
 	/** Driver time restriction **/
 	public final float maxDrivingTimePerShift;
@@ -61,23 +54,11 @@ public class Vehicle {
 	 * @param varCost Variable cost per each distance unit
 	 * @param vehicleMetricId id of the associated metric data
 	 * 
-	 * @param capacityOfVesselFirst
-	 * @param capacity2OfVesselFirst
-	 * @param heightOfVesselFirst
-	 * @param widthOfVesselFirst
-	 * @param lengthOfVesselFirst
-	 * @param capacityOfVesselSecond
-	 * @param capacity2OfVesselSecond
-	 * @param heightOfVesselSecond
-	 * @param widthOfVesselSecond
-	 * @param lengthOfVesselSecond
 	 * @param withDriverTimeRestriction
 	 * @param priority
 	 */
 	public Vehicle(int idx, String name, int nbrOfAvailableVehicles, float[] capacity,
 			float maxRouteDuration, int maxStopCount, float maxWaitingTime,	float fixCost, float varCost, int vehicleMetricId,
-			float capacityOfVesselFirst, float capacity2OfVesselFirst, int heightOfVesselFirst, int widthOfVesselFirst, int lengthOfVesselFirst,
-			float capacityOfVesselSecond, float capacity2OfVesselSecond,  int heightOfVesselSecond, int widthOfVesselSecond, int lengthOfVesselSecond,
 			float maxDrivingTimePerShift, float waitingTimeBetweenShifts, int priority
 			) {		
 		float sumCapacity = 0;
@@ -107,18 +88,6 @@ public class Vehicle {
 		this.fixCost = fixCost;
 		this.varCost = varCost;
 		this.vehicleMetricId = vehicleMetricId;
-
-		this.capacityOfVesselFirst = capacityOfVesselFirst;
-		this.capacity2OfVesselFirst = capacity2OfVesselFirst;
-		this.heightOfVesselFirst = heightOfVesselFirst;
-		this.widthOfVesselFirst = widthOfVesselFirst;
-		this.lengthOfVesselFirst = lengthOfVesselFirst;
-
-		this.capacityOfVesselSecond = capacityOfVesselSecond;
-		this.capacity2OfVesselSecond = capacity2OfVesselSecond;
-		this.heightOfVesselSecond = heightOfVesselSecond;
-		this.widthOfVesselSecond = widthOfVesselSecond;
-		this.lengthOfVesselSecond = lengthOfVesselSecond;
 		
 		this.maxDrivingTimePerShift = maxDrivingTimePerShift;
 		this.waitingTimeBetweenShifts = waitingTimeBetweenShifts;
@@ -142,16 +111,6 @@ public class Vehicle {
 				maxStopCount+"\t"+
 				maxWaitingTime+"\t"+
 				vehicleMetricId+"\t"+
-				capacityOfVesselFirst+"\t"+
-				capacity2OfVesselFirst+"\t"+ 
-				heightOfVesselFirst+"\t"+
-				widthOfVesselFirst+"\t"+
-				lengthOfVesselFirst+"\t"+
-				capacityOfVesselSecond+"\t"+
-				capacity2OfVesselSecond +"\t"+
-				heightOfVesselSecond+"\t"+
-				widthOfVesselSecond+"\t"+
-				lengthOfVesselSecond+"\t"+
 				maxDrivingTimePerShift+"\t"+
 				waitingTimeBetweenShifts+"\t"+
 				priority+"\n";

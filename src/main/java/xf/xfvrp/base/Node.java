@@ -47,17 +47,7 @@ public class Node implements Cloneable {
 	private final float serviceTime;
 	private final float serviceTimeForSite;
 	private int depotId = -1;
-
-	/** Efficient Load parameter **/
 	private final String shipID;
-	private final int nbrOfPackages;
-	private final int heightOfPackage;
-	private final int widthOfPackage;
-	private final int lengthOfPackage;
-	private final float weightOfPackage;
-	private final float loadBearingOfPackage;
-	private final int stackingGroupOfPackage;
-	private final int containerTypeOfPackage;
 
 	/** Preset parameter **/
 	private int presetBlockIdx = BlockNameConverter.UNDEF_BLOCK_IDX;
@@ -89,14 +79,6 @@ public class Node implements Cloneable {
 		serviceTimeForSite = 0;
 
 		shipID = "";
-		nbrOfPackages = 0;
-		heightOfPackage = 0;
-		widthOfPackage = 0;
-		lengthOfPackage = 0;
-		weightOfPackage = 0;
-		loadBearingOfPackage = 0;
-		stackingGroupOfPackage = 0;
-		containerTypeOfPackage = 0;
 	}
 
 	/**
@@ -118,15 +100,7 @@ public class Node implements Cloneable {
 			LoadType loadType,
 			int presetBlockPos,
 			int presetBlockRank,
-			String shipID,
-			int nbrOfPackages,
-			int heightOfPackage,
-			int widthOfPackage,
-			int lengthOfPackage,
-			float weightOfPackage,
-			float loadBearingOfPackage,
-			int stackingGroupOfPackage,
-			int containerTypeOfPackage			
+			String shipID			
 			) {
 		this.globalIdx = globalIdx;
 		this.externID = externID;
@@ -142,14 +116,6 @@ public class Node implements Cloneable {
 		this.presetBlockPos = presetBlockPos;
 		this.presetBlockRank = presetBlockRank;
 		this.shipID = shipID;
-		this.nbrOfPackages = nbrOfPackages;
-		this.heightOfPackage = heightOfPackage;
-		this.widthOfPackage = widthOfPackage;
-		this.lengthOfPackage = lengthOfPackage;
-		this.weightOfPackage = weightOfPackage;
-		this.loadBearingOfPackage = loadBearingOfPackage;
-		this.stackingGroupOfPackage = stackingGroupOfPackage;
-		this.containerTypeOfPackage = containerTypeOfPackage;
 	}
 
 	/**
@@ -311,63 +277,7 @@ public class Node implements Cloneable {
 	public final String getShipID() {
 		return shipID;
 	}
-
-	/**
-	 * @return the nbrOfPackages
-	 */
-	public final int getNbrOfPackages() {
-		return nbrOfPackages;
-	}
-
-	/**
-	 * @return the heightOfPackage
-	 */
-	public final int getHeightOfPackage() {
-		return heightOfPackage;
-	}
-
-	/**
-	 * @return the widthOfPackage
-	 */
-	public final int getWidthOfPackage() {
-		return widthOfPackage;
-	}
-
-	/**
-	 * @return the lengthOfPackage
-	 */
-	public final int getLengthOfPackage() {
-		return lengthOfPackage;
-	}
-
-	/**
-	 * @return the weightOfPackage
-	 */
-	public final float getWeightOfPackage() {
-		return weightOfPackage;
-	}
-
-	/**
-	 * @return the loadBearingOfPackage
-	 */
-	public final float getLoadBearingOfPackage() {
-		return loadBearingOfPackage;
-	}
-
-	/**
-	 * @return the stackingGroupOfPackage
-	 */
-	public final int getStackingGroupOfPackage() {
-		return stackingGroupOfPackage;
-	}
-
-	/**
-	 * @return the containerTypeOfPackage
-	 */
-	public final int getContainerTypeOfPackage() {
-		return containerTypeOfPackage;
-	}
-
+	
 	/**
 	 * 
 	 * @param blockIdx

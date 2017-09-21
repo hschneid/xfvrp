@@ -33,17 +33,7 @@ public abstract class CustomerData extends DepotData {
 	protected float[] demand = new float[]{0, 0, 0};
 	protected float serviceTime = 0;
 	protected float serviceTimeForSite = 0;
-
-	/** Efficient Load - parameter **/
 	protected String shipID = "";
-	protected int nbrOfPackages = 0;
-	protected int heightOfPackage = 0;
-	protected int widthOfPackage = 0;
-	protected int lengthOfPackage = 0;
-	protected float weightOfPackage = 0;
-	protected float loadBearingOfPackage = Float.MAX_VALUE;
-	protected int stackingGroupOfPackage = 0;
-	protected int containerTypeOfPackage = 0;
 	
 	/** Preset parameter **/
 	protected String presetBlockName = "";
@@ -106,70 +96,6 @@ public abstract class CustomerData extends DepotData {
 	 */
 	public CustomerData setShipID(String shipID) {
 		this.shipID = shipID;
-		return this;
-	}
-	
-	/**
-	 * @param nbrOfPackages the nbrOfPackages to set
-	 */
-	public CustomerData setNbrOfPackages(int nbrOfPackages) {
-		this.nbrOfPackages = nbrOfPackages;
-		return this;
-	}
-	
-	/**
-	 * @param heightOfPackage the heightOfPackage to set
-	 */
-	public CustomerData setHeightOfPackage(int heightOfPackage) {
-		this.heightOfPackage = heightOfPackage;
-		return this;
-	}
-	
-	/**
-	 * @param widthOfPackage the widthOfPackage to set
-	 */
-	public CustomerData setWidthOfPackage(int widthOfPackage) {
-		this.widthOfPackage = widthOfPackage;
-		return this;
-	}
-	
-	/**
-	 * @param lengthOfPackage the lengthOfPackage to set
-	 */
-	public CustomerData setLengthOfPackage(int lengthOfPackage) {
-		this.lengthOfPackage = lengthOfPackage;
-		return this;
-	}
-	
-	/**
-	 * @param weightOfPackage the weightOfPackage to set
-	 */
-	public CustomerData setWeightOfPackage(float weightOfPackage) {
-		this.weightOfPackage = weightOfPackage;
-		return this;
-	}
-	
-	/**
-	 * @param loadBearingOfPackage the loadBearingOfPackage to set
-	 */
-	public CustomerData setLoadBearingOfPackage(float loadBearingOfPackage) {
-		this.loadBearingOfPackage = loadBearingOfPackage;
-		return this;
-	}
-	
-	/**
-	 * @param stackingGroupOfPackage the stackingGroupOfPackage to set
-	 */
-	public CustomerData setStackingGroupOfPackage(int stackingGroupOfPackage) {
-		this.stackingGroupOfPackage = stackingGroupOfPackage;
-		return this;
-	}
-	
-	/**
-	 * @param containerTypeOfPackage the containerTypeOfPackage to set
-	 */
-	public CustomerData setContainerTypeOfPackage(int containerTypeOfPackage) {
-		this.containerTypeOfPackage = containerTypeOfPackage;
 		return this;
 	}
 

@@ -46,8 +46,6 @@ public abstract class ReplenishData implements Serializable{
 	protected float close1 = Integer.MAX_VALUE;
 	protected float open2 = 0;
 	protected float close2 = Integer.MAX_VALUE;
-	protected float open3 = 0;
-	protected float close3 = Integer.MAX_VALUE;
 
 
 	/**
@@ -151,22 +149,6 @@ public abstract class ReplenishData implements Serializable{
 	 */
 	public ReplenishData setClose2(float close2) {
 		this.close2 = close2;
-		return this;
-	}
-
-	/**
-	 * @param open3 the open3 to set
-	 */
-	public ReplenishData setOpen3(float open3) {
-		this.open3 = open3;
-		return this;
-	}
-
-	/**
-	 * @param close3 the close3 to set
-	 */
-	public ReplenishData setClose3(float close3) {
-		this.close3 = close3;
 		return this;
 	}
 
