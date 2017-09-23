@@ -16,7 +16,7 @@ class TestVehicle {
 	int vehicleMetricId = 0;
 	float maxDrivingTimePerShift = 999999;
 	float waitingTimeBetweenShifts = 999999;
-	int priority = 0;
+	int priority = Vehicle.PRIORITY_UNDEF;
 	
 	Vehicle getVehicle() {
 		return new Vehicle(

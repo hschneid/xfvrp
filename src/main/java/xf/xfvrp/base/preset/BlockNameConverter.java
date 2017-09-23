@@ -28,25 +28,40 @@ public class BlockNameConverter {
 	/**
 	 * Converts the user block names into indexed numbers.
 	 * 
-	 * @param node Node without block indexes
-	 * @param cust Contains the input data
-	 * @param list
+	 * @param node Nodes without block indexes (depots, replenish and customers)
+	 * @param list list of user given customers
 	 * @return Node with block indexes
 	 */
 	public static void convert(Node[] nodes, List<InternalCustomerData> list) {
-		Map<String, Node> nodeMap = Arrays.stream(nodes).collect(Collectors.toMap(k -> k.getExternID(), v -> v, (v1, v2) -> v1));
+		Map<String, Node> nodeMap = allocateNodesByExternID(nodes);
 
-		// Index block names
+		Map<String, Integer> blockNameMap = allocateIndexByExternID(list);
+		
+		setBlockIndexes(list, nodeMap, blockNameMap);
+	}
+
+	private static Map<String, Node> allocateNodesByExternID(Node[] nodes) {
+		return Arrays.stream(nodes).collect(Collectors.toMap(k -> k.getExternID(), v -> v, (v1, v2) -> v1));
+	}
+
+	private static void setBlockIndexes(List<InternalCustomerData> list, Map<String, Node> nodeMap,
+			Map<String, Integer> blockNameMap) {
+		for (InternalCustomerData cust : list) {
+			int blockIdx = (blockNameMap.containsKey(cust.getPresetBlockName())) ? blockNameMap.get(cust.getPresetBlockName()) : DEFAULT_BLOCK_IDX;
+			nodeMap.get(cust.getExternID()).setPresetBlockIdx(blockIdx);
+		}
+	}
+
+	private static Map<String, Integer> allocateIndexByExternID(List<InternalCustomerData> list) {
 		Map<String, Integer> blockNameMap = new HashMap<>();
 		int idx = DEFAULT_BLOCK_IDX + 1;
 		for (InternalCustomerData c : list)
-			if(c.getPresetBlockName().length() > 0 && !blockNameMap.containsKey(c.getPresetBlockName()))
+			if(!isBlockNameUndefined(c.getPresetBlockName()) && !blockNameMap.containsKey(c.getPresetBlockName()))
 				blockNameMap.put(c.getPresetBlockName(), idx++);
-		
-		// Insert block index into nodes
-		list.forEach(cust -> {
-			int blockIdx = (blockNameMap.containsKey(cust.getPresetBlockName())) ? blockNameMap.get(cust.getPresetBlockName()) : DEFAULT_BLOCK_IDX;
-			nodeMap.get(cust.getExternID()).setPresetBlockIdx(blockIdx);
-		});
+		return blockNameMap;
+	}
+	
+	private static boolean isBlockNameUndefined(String blockName) {
+		return (blockName == null || blockName.trim().length() == 0);
 	}
 }
