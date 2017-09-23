@@ -58,7 +58,7 @@ public class BlockedVehicleListConverter {
 				if(vehMap.containsKey(vehName)) 
 					node.addPresetVehicle(vehMap.get(vehName));
 				else 
-					mon.fireMessage(StatusCode.RUNNING, "Found blocked vehicle name "+vehName+" for node "+node.getExternID()+" could not be bound to existing vehicle names. It will be ignored.");
+					mon.fireMessage(StatusCode.EXCEPTION, "Found blocked vehicle name "+vehName+" for node "+node.getExternID()+" could not be bound to existing vehicle names. It will be ignored.");
 			});
 		}		
 	}

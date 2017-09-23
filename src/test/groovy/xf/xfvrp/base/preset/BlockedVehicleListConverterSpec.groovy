@@ -75,6 +75,6 @@ class BlockedVehicleListConverterSpec extends Specification {
 
 		then:
 		1 * statusManager.fireMessage(_,_)
-		nodes[0].getPresetBlockVehicleList().size() == 0
+		nodes[1].getPresetBlockVehicleList().size() == 0
 	}
 }

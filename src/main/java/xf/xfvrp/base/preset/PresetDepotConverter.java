@@ -1,9 +1,10 @@
 package xf.xfvrp.base.preset;
 
-import java.util.HashMap;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.SiteType;
@@ -34,20 +35,18 @@ public class PresetDepotConverter {
 	 * @param st
 	 */
 	public static final void convert(Node[] nodes, List<InternalCustomerData> customerList, StatusManager st) {
-		Map<String, Set<String>> presetMap = new HashMap<>();
-		customerList.forEach(cust -> presetMap.put(cust.getExternID(), cust.getPresetDepotList()));
+		Map<String, Set<String>> presetMap = getPresetDepotsByExternID(customerList);
 
-		Map<String, Integer> depotIdxMap = new HashMap<>();
-		for (Node n : nodes)
-			if(n.getSiteType() == SiteType.DEPOT)
-				depotIdxMap.put(n.getExternID(), n.getGlobalIdx());
+		Map<String, Integer> depotIdxMap = getDepotIdxByExternID(nodes);
 
+		setPresetDepotIndex(nodes, presetMap, depotIdxMap, st);
+	}
 
-		// Converting external preset depot string to internal preset depot index (global)
+	private static void setPresetDepotIndex(Node[] nodes, Map<String, Set<String>> presetMap,
+			Map<String, Integer> depotIdxMap, StatusManager st) {
 		for (Node node : nodes) {
 			if(presetMap.containsKey(node.getExternID())) {
-				Set<String> idSet = presetMap.get(node.getExternID());
-				idSet.forEach(id -> {
+				presetMap.get(node.getExternID()).forEach(id -> {
 					if(!depotIdxMap.containsKey(id))
 						st.fireMessage(StatusCode.EXCEPTION, "Could not found preset depot extern id "+id+" in depots.");
 					else
@@ -55,5 +54,20 @@ public class PresetDepotConverter {
 				});
 			}
 		}
+	}
+
+	private static Map<String, Integer> getDepotIdxByExternID(Node[] nodes) {
+		return Arrays.stream(nodes)
+				.filter(node -> node.getSiteType() == SiteType.DEPOT)
+				.collect(Collectors.toMap(Node::getExternID, Node::getGlobalIdx, (v1, v2) -> v1));
+	}
+
+	private static Map<String, Set<String>> getPresetDepotsByExternID(List<InternalCustomerData> customerList) {
+		return customerList.stream()
+				.collect(Collectors.toMap(
+						InternalCustomerData::getExternID,
+						InternalCustomerData::getPresetDepotList,
+						(v1, v2) -> v1
+						));
 	}
 }
