@@ -1,13 +1,13 @@
 package xf.xfvrp.base.preset
 
 import spock.lang.Specification
+import util.instances.TestNode
+import util.instances.TestVehicle
 import xf.xfvrp.base.Node
 import xf.xfvrp.base.SiteType
 import xf.xfvrp.base.Vehicle
 import xf.xfvrp.base.fleximport.InternalCustomerData
 import xf.xfvrp.base.monitor.StatusManager
-import xf.xfvrp.opt.evaluation.TestNode
-import xf.xfvrp.opt.evaluation.TestVehicle
 
 class BlockedVehicleListConverterSpec extends Specification {
 

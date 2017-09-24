@@ -148,7 +148,6 @@ public class InternalCustomerData extends CustomerData {
 				serviceTime,
 				serviceTimeForSite,
 				loadType,
-				presetBlockPos,
 				presetBlockRank,
 				shipID
 				);

@@ -1,6 +1,8 @@
 package xf.xfvrp.opt.evaluation
 
 import spock.lang.Specification
+import util.instances.TestNode
+import util.instances.TestVehicle
 import xf.xfvrp.base.LoadType
 import xf.xfvrp.base.Node
 import xf.xfvrp.base.SiteType

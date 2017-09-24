@@ -1,4 +1,4 @@
-package xf.xfvrp.opt.evaluation
+package util.instances
 
 import xf.xfvrp.base.Vehicle
 

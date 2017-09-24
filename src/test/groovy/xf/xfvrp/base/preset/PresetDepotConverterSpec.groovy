@@ -1,12 +1,12 @@
 package xf.xfvrp.base.preset
 
 import spock.lang.Specification
+import util.instances.TestNode
 import xf.xfvrp.base.Node
 import xf.xfvrp.base.SiteType
 import xf.xfvrp.base.fleximport.InternalCustomerData
 import xf.xfvrp.base.monitor.StatusCode
 import xf.xfvrp.base.monitor.StatusManager
-import xf.xfvrp.opt.evaluation.TestNode
 
 class PresetDepotConverterSpec extends Specification {
 

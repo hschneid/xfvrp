@@ -8,6 +8,7 @@ import xf.xfvrp.base.Node;
 import xf.xfvrp.base.SiteType;
 import xf.xfvrp.base.Vehicle;
 import xf.xfvrp.base.preset.BlockNameConverter;
+import xf.xfvrp.base.preset.BlockPositionConverter;
 
 public class Context {
 
@@ -298,7 +299,7 @@ public class Context {
 			// Common Load of Pickups and Deliveries
 			sum += (int)Math.ceil(Math.max(0, (amountsOfRoute[i * 2 + 0] + amountsOfRoute[i * 2 + 1]) - v.capacity[i]));
 		}
-		
+
 		return sum;
 	}
 
@@ -320,13 +321,15 @@ public class Context {
 	}
 
 	public int checkPresetPosition() {
-		if (currentNode.getPresetBlockPos() > 1)
-			if (currentNode.getPresetBlockIdx() > BlockNameConverter.DEFAULT_BLOCK_IDX)
-				if (currentNode.getPresetBlockIdx() == lastNode.getPresetBlockIdx()) {
-					if (lastNode.getPresetBlockPos() != currentNode.getPresetBlockPos() - 1)
+		if (currentNode.getPresetBlockPos() > BlockPositionConverter.UNDEF_POSITION)
+			// 1 is the first setted block position. The second block pos needs to be checked at first. 
+			if(currentNode.getPresetBlockPos() > 1)
+				if (currentNode.getPresetBlockIdx() > BlockNameConverter.DEFAULT_BLOCK_IDX)
+					if (currentNode.getPresetBlockIdx() == lastNode.getPresetBlockIdx()) {
+						if (lastNode.getPresetBlockPos() != currentNode.getPresetBlockPos() - 1)
+							return 1;
+					} else 
 						return 1;
-				} else 
-					return 1;
 
 		return 0;
 	}

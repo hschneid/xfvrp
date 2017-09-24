@@ -1,8 +1,6 @@
 package xf.xfvrp.base.metric.internal;
 
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import util.collection.ListMap;
@@ -10,6 +8,7 @@ import xf.xfvrp.base.Node;
 import xf.xfvrp.base.SiteType;
 import xf.xfvrp.base.metric.InternalMetric;
 import xf.xfvrp.base.preset.BlockNameConverter;
+import xf.xfvrp.base.preset.BlockPositionConverter;
 
 /** 
  * Copyright (c) 2012-present Holger Schneider
@@ -32,79 +31,83 @@ public class PresetMetricTransformator {
 	 * is modified to unlimited.
 	 * 
 	 * @param metric The original internal metric
-	 * @param nodeArr The nodes of current XFVRP model
+	 * @param nodes The nodes of current XFVRP model
 	 * @return An internal optimization metric, where sequence position preset is considered.
 	 */
-	public static InternalMetric transform(InternalMetric metric, final Node[] nodeArr) {
-		// Check if transformation is necessary. So, one sequence position preset is set.
-		{
-			boolean shallTransform = false;
-			for (int i = 0; i < nodeArr.length; i++) {
-				if(nodeArr[i].getPresetBlockPos() > BlockNameConverter.DEFAULT_BLOCK_IDX) {
-					shallTransform = true;
-					break;
-				}
-			}
+	public static InternalMetric transform(InternalMetric metric, final Node[] nodes) {
+		boolean shallTransform = isNecessary(nodes);
+		if(!shallTransform)
+			return metric;
 
-			if(!shallTransform)
-				return metric;
-		}
+		InternalOptMetric optMetric = new InternalOptMetric(nodes.length);
+		int[] followers = new int[nodes.length];
+		int[] ancestors = new int[nodes.length];
+		Arrays.fill(followers, -1); Arrays.fill(ancestors, -1);
 
-		InternalOptMetric optMetric = new InternalOptMetric(nodeArr.length);
-		int[] followerArr = new int[nodeArr.length];
-		int[] ancestorArr = new int[nodeArr.length];
-		Arrays.fill(followerArr, -1); Arrays.fill(ancestorArr, -1);
+		ListMap<Integer, Integer> blockIdxMap = allocateNodeToBlockIdx(nodes);
 
-		// Allocate the nodes to their the preset block index
-		ListMap<Integer, Integer> blockIdxMap = ListMap.create();
-		for (int i = 0; i < nodeArr.length; i++) {
-			if(nodeArr[i].getSiteType() == SiteType.DEPOT ||
-					nodeArr[i].getSiteType() == SiteType.REPLENISH)
-				continue;
+		fillFollowersAndAncestors(nodes, followers, ancestors, blockIdxMap);
 
-			blockIdxMap.put(nodeArr[i].getPresetBlockIdx(), i);
-		}
+		fillInternalMetric(metric, nodes, optMetric, followers, ancestors);
+		
+		return optMetric;
+	}
 
-		// For each block
-		for (int blockIdx : blockIdxMap.keySet()) {
-			// For all nodes, which are allocated to this block
-			List<Integer> nodeList = blockIdxMap.get(blockIdx);
-			Collections.sort(nodeList, new Comparator<Integer>() {
-				@Override
-				public int compare(Integer o1, Integer o2) {
-					return nodeArr[o1].getPresetBlockPos() - nodeArr[o2].getPresetBlockPos();
-				}
-			});
-
-			// Build up a follower and ancestor array:
-			// follower[i] = j means that node j is follower of i
-			// same for ancestor
-			for (int i = 0; i < nodeList.size(); i++) {
-				final Node node = nodeArr[nodeList.get(i)];
-				if(node.getPresetBlockPos() == -1)
-					continue;
-
-				if(i + 1 < nodeList.size()) {
-					followerArr[node.getIdx()] = nodeArr[nodeList.get(i + 1)].getIdx();
-					ancestorArr[nodeArr[nodeList.get(i + 1)].getIdx()] = node.getIdx();
-				}
-			}
-		}
-
+	private static void fillInternalMetric(InternalMetric metric, final Node[] nodes, InternalOptMetric optMetric,
+			int[] followers, int[] ancestors) {
 		// Fill new metric with
 		// - the original metric data, if no follower or ancestor data are set
 		// - OR an infinite number (=infinite distance).
-		for (Node src : nodeArr) {
-			for (Node dst : nodeArr) {
+
+		for (Node src : nodes) {
+			for (Node dst : nodes) {
 				int sIdx = src.getIdx();
 				int dIdx = dst.getIdx();
-				if((followerArr[sIdx] != -1 && followerArr[sIdx] != dIdx) || 
-						(ancestorArr[dIdx] != -1 && ancestorArr[dIdx] != sIdx))
+				if((followers[sIdx] != -1 && followers[sIdx] != dIdx) || 
+						(ancestors[dIdx] != -1 && ancestors[dIdx] != sIdx))
 					optMetric.setDistance(src, dst, Float.MAX_VALUE);
 				else
 					optMetric.setDistance(src, dst, metric.getDistance(src, dst));
 			}
 		}
-		return optMetric;
+	}
+
+	private static void fillFollowersAndAncestors(final Node[] nodes, int[] followerArr, int[] ancestorArr,
+			ListMap<Integer, Integer> blockIdxMap) {
+		for (int blockIdx : blockIdxMap.keySet()) {
+			// For all nodes, which are allocated to this block
+			List<Integer> nodeList = blockIdxMap.get(blockIdx);
+			nodeList.sort((o1, o2) -> nodes[o1].getPresetBlockPos() - nodes[o2].getPresetBlockPos());
+
+			// Build up a follower and ancestor array:
+			// follower[i] = j means that node j is follower of i
+			// same for ancestor
+			for (int i = 0; i < nodeList.size(); i++) {
+				final Node node = nodes[nodeList.get(i)];
+				if(node.getPresetBlockPos() == BlockPositionConverter.UNDEF_POSITION)
+					continue;
+
+				if(i + 1 < nodeList.size()) {
+					followerArr[node.getIdx()] = nodes[nodeList.get(i + 1)].getIdx();
+					ancestorArr[nodes[nodeList.get(i + 1)].getIdx()] = node.getIdx();
+				}
+			}
+		}
+	}
+
+	private static ListMap<Integer, Integer> allocateNodeToBlockIdx(final Node[] nodes) {
+		ListMap<Integer, Integer> blockIdxMap = ListMap.create();
+		for (int i = 0; i < nodes.length; i++) {
+			if(nodes[i].getSiteType() == SiteType.DEPOT ||
+					nodes[i].getSiteType() == SiteType.REPLENISH)
+				continue;
+
+			blockIdxMap.put(nodes[i].getPresetBlockIdx(), i);
+		}
+		return blockIdxMap;
+	}
+
+	private static boolean isNecessary(final Node[] nodes) {
+		return Arrays.stream(nodes).anyMatch(node -> node.getPresetBlockIdx() > BlockNameConverter.DEFAULT_BLOCK_IDX);
 	}
 }

@@ -1,6 +1,8 @@
 package xf.xfvrp.opt.evaluation
 
 import spock.lang.Specification
+import util.instances.TestNode
+import util.instances.TestVehicle
 import xf.xfvrp.base.LoadType
 import xf.xfvrp.base.Node
 import xf.xfvrp.base.SiteType
@@ -146,7 +148,7 @@ class EvaluationServicePresetsSpec extends Specification {
 	
 	def "Block Pos Preset - Not Okay"() {
 		def v = new TestVehicle(name: "V1", capacity: [3, 3]).getVehicle()
-		def model = initScenWithPos(v, [2, 3, 2] as int[], [1, 0, 2] as int[])
+		def model = initScenWithPos(v, [2, 3, 2] as int[], [2, 1, 3] as int[])
 		def n = model.getNodes()
 
 		sol = new Solution()
@@ -163,7 +165,7 @@ class EvaluationServicePresetsSpec extends Specification {
 	
 	def "Block Pos Preset - Okay, DEFAULT BLOCK"() {
 		def v = new TestVehicle(name: "V1", capacity: [3, 3]).getVehicle()
-		def model = initScenWithPos(v, [0, 3, 0] as int[], [1, 0, 2] as int[])
+		def model = initScenWithPos(v, [0, 3, 0] as int[], [2, 1, 3] as int[])
 		def n = model.getNodes()
 
 		sol = new Solution()

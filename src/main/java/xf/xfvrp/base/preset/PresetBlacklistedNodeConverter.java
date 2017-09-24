@@ -1,7 +1,6 @@
 package xf.xfvrp.base.preset;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -22,7 +21,7 @@ import xf.xfvrp.base.fleximport.InternalCustomerData;
  * @author hschneid
  *
  */
-public class BlackListIDConverter {
+public class PresetBlacklistedNodeConverter {
 
 	/**
 	 * This method converts the external information about black listed customer combinations
@@ -35,26 +34,32 @@ public class BlackListIDConverter {
 	 * @param customerList List of external customer informations
 	 */
 	public static void convert(Node[] nodes, List<InternalCustomerData> customerList) {
-		Map<String, Set<String>> blackListMap = new HashMap<>();
-		//Map<String, Node> nodeMap = new HashMap<>();
+		Map<String, Integer> indexes = allocateNodeIndexByExternID(nodes);
 
-		// Translate Node name to Node object
-		Map<String, Integer> nodeMap = Arrays.stream(nodes).filter(f -> f.getSiteType() == SiteType.CUSTOMER).collect(Collectors.toMap(k -> k.getExternID(), v -> v.getGlobalIdx(), (v1, v2) -> v1));
+		Map<String, Set<String>> blacklistedNodes = allocateBlacklistedNodesByExternID(customerList);
 
-		// Map ExternID with external black list
-		customerList.forEach(cust -> blackListMap.put(cust.getExternID(), cust.getPresetRoutingBlackList()));
+		setBlacklistedNodeIndexes(nodes, indexes, blacklistedNodes);
+	}
 
-		// Allocate for each internal node the internal black list
+	private static void setBlacklistedNodeIndexes(Node[] nodes, Map<String, Integer> indexes,
+			Map<String, Set<String>> blacklistedNodes) {
 		for (Node n : nodes) {
-			if(blackListMap.containsKey(n.getExternID())) {
+			if(blacklistedNodes.containsKey(n.getExternID())) {
 				// Translate black listed node name to node idx
-				blackListMap.get(n.getExternID())
+				blacklistedNodes.get(n.getExternID())
 					.stream()
-					.filter(blackName -> nodeMap.containsKey(blackName))
-					.map(blackName -> nodeMap.get(blackName))
+					.filter(blackName -> indexes.containsKey(blackName))
+					.map(blackName -> indexes.get(blackName))
 					.forEach(f -> n.addToBlacklist(f));
 			}
 		}
 	}
 
+	private static Map<String, Set<String>> allocateBlacklistedNodesByExternID(List<InternalCustomerData> customerList) {
+		return customerList.stream().collect(Collectors.toMap(InternalCustomerData::getExternID, InternalCustomerData::getPresetRoutingBlackList, (v1, v2) -> v1));
+	}
+
+	private static Map<String, Integer> allocateNodeIndexByExternID(Node[] nodes) {
+		return Arrays.stream(nodes).filter(f -> f.getSiteType() == SiteType.CUSTOMER).collect(Collectors.toMap(k -> k.getExternID(), v -> v.getGlobalIdx(), (v1, v2) -> v1));
+	}
 }

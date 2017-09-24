@@ -1,8 +1,8 @@
 package xf.xfvrp.base.preset
 
 import spock.lang.Specification
+import util.instances.TestVehicle
 import xf.xfvrp.base.Vehicle
-import xf.xfvrp.opt.evaluation.TestVehicle
 
 class VehiclePriorityInitialiserSpec extends Specification {
 

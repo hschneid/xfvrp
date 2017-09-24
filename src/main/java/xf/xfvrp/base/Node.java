@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import xf.xfvrp.base.preset.BlockNameConverter;
+import xf.xfvrp.base.preset.BlockPositionConverter;
 
 /** 
  * Copyright (c) 2012-present Holger Schneider
@@ -51,7 +52,7 @@ public class Node implements Cloneable {
 
 	/** Preset parameter **/
 	private int presetBlockIdx = BlockNameConverter.UNDEF_BLOCK_IDX;
-	private int presetBlockPos;
+	private int presetBlockPos = BlockPositionConverter.UNDEF_POSITION;
 	private int presetBlockRank;
 
 	private final Set<Integer> presetBlockVehicleList = new HashSet<>();
@@ -98,7 +99,6 @@ public class Node implements Cloneable {
 			float serviceTime,
 			float serviceTimeForSite,
 			LoadType loadType,
-			int presetBlockPos,
 			int presetBlockRank,
 			String shipID			
 			) {
@@ -113,7 +113,6 @@ public class Node implements Cloneable {
 		this.xlong = xlong;
 		this.ylat = ylat;
 		this.geoId = geoId;
-		this.presetBlockPos = presetBlockPos;
 		this.presetBlockRank = presetBlockRank;
 		this.shipID = shipID;
 	}

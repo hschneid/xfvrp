@@ -1,8 +1,8 @@
 package xf.xfvrp.base
 
 import spock.lang.Specification
+import util.instances.TestNode
 import xf.xfvrp.base.fleximport.InternalCustomerData
-import xf.xfvrp.opt.evaluation.TestNode
 
 class ShipmentConverterSpec extends Specification {
 

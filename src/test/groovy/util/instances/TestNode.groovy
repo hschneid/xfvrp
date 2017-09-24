@@ -1,4 +1,4 @@
-package xf.xfvrp.opt.evaluation
+package util.instances
 
 import xf.xfvrp.base.LoadType
 import xf.xfvrp.base.Node
@@ -39,11 +39,11 @@ class TestNode {
 				serviceTime,
 				serviceTimeForSite,
 				loadType,
-				presetBlockPos,
 				presetBlockRank,
 				shipID
 				);
 		node.setPresetBlockIdx(presetBlockIdx)
+		node.setPresetBlockPos(presetBlockPos)
 		if(presetDepotGlobalIdx > -1) node.addPresetDepot(presetDepotGlobalIdx)
 		if(presetVehicleIdx > -1) node.addPresetVehicle(presetVehicleIdx)
 		if(presetBlackNodeIdx > -1) node.addToBlacklist(presetBlackNodeIdx)

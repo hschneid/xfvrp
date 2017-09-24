@@ -83,7 +83,6 @@ public class InternalReplenishData extends ReplenishData {
 				0,
 				LoadType.REPLENISH,
 				0,
-				0,
 				""
 				);
 		

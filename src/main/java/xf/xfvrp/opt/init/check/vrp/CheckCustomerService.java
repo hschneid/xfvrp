@@ -42,7 +42,7 @@ public class CheckCustomerService {
 	private void checkPresets(Node cust, SolutionBuilderDataBag solutionBuilderDataBag) {
 		if(cust.getPresetBlockRank() < 0)
 			throw new IllegalArgumentException("The sequence rank " + cust.getPresetBlockRank() + " in block " + cust.getPresetBlockIdx() + " is lower than zero, which is forbidden.");
-		if(cust.getPresetBlockPos() < -1)
+		if(cust.getPresetBlockPos() < 0)
 			throw new IllegalArgumentException("The sequence position " + cust.getPresetBlockPos() + " in block " + cust.getPresetBlockIdx() + " is lower than zero, which is forbidden.");
 		if(cust.getPresetBlockPos() >=0 && solutionBuilderDataBag.getKnownSequencePositions().contains(cust.getPresetBlockPos()))
 			throw new IllegalArgumentException("The sequence position " + cust.getPresetBlockPos() + " in block " + cust.getPresetBlockIdx() + " is given multiple times, which is forbidden.");

@@ -79,7 +79,7 @@ public class InternalDepotData extends DepotData {
 				timeWindowList.toArray(new float[0][]),
 				0,
 				0,
-				null, 0, 0,
+				null, 0,
 				""
 				);
 		

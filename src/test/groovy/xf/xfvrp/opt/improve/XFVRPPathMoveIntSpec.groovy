@@ -1,6 +1,8 @@
 package xf.xfvrp.opt.improve
 
 import spock.lang.Specification
+import util.instances.TestNode
+import util.instances.TestVehicle
 import xf.xfvrp.base.LoadType
 import xf.xfvrp.base.Node
 import xf.xfvrp.base.NormalizeSolutionService
@@ -11,8 +13,6 @@ import xf.xfvrp.base.metric.EucledianMetric
 import xf.xfvrp.base.metric.internal.AcceleratedMetricTransformator
 import xf.xfvrp.opt.Solution
 import xf.xfvrp.opt.evaluation.EvaluationService
-import xf.xfvrp.opt.evaluation.TestNode
-import xf.xfvrp.opt.evaluation.TestVehicle
 
 class XFVRPPathMoveIntSpec extends Specification {
 

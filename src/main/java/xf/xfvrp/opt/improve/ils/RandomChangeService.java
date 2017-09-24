@@ -5,6 +5,7 @@ import xf.xfvrp.base.Quality;
 import xf.xfvrp.base.SiteType;
 import xf.xfvrp.base.XFVRPModel;
 import xf.xfvrp.base.preset.BlockNameConverter;
+import xf.xfvrp.base.preset.BlockPositionConverter;
 import xf.xfvrp.opt.Solution;
 import xf.xfvrp.opt.XFVRPOptBase;
 
@@ -104,7 +105,7 @@ public class RandomChangeService extends XFVRPOptBase {
 		int srcBlockIdx = giantRoute[src].getPresetBlockIdx();
 		int srcPosValue = giantRoute[src].getPresetBlockPos();
 
-		if(srcBlockIdx > BlockNameConverter.UNDEF_BLOCK_IDX && srcPosValue > 0) {
+		if(srcBlockIdx > BlockNameConverter.UNDEF_BLOCK_IDX && srcPosValue > BlockPositionConverter.UNDEF_POSITION) {
 
 			for (int i = src + 1; i < giantRoute.length; i++) {
 				Node n = giantRoute[i];
