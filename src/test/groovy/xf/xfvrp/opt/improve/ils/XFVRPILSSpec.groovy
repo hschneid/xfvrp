@@ -5,16 +5,28 @@ import util.instances.TestNode
 import util.instances.TestVehicle
 import xf.xfvrp.base.LoadType
 import xf.xfvrp.base.Node
+import xf.xfvrp.base.Quality
 import xf.xfvrp.base.SiteType
 import xf.xfvrp.base.XFVRPModel
 import xf.xfvrp.base.XFVRPParameter
 import xf.xfvrp.base.metric.EucledianMetric
 import xf.xfvrp.base.metric.internal.AcceleratedMetricTransformator
 import xf.xfvrp.base.monitor.StatusManager
+import xf.xfvrp.opt.Solution
+import xf.xfvrp.opt.XFVRPOptBase
+import xf.xfvrp.opt.evaluation.EvaluationService
+import xf.xfvrp.opt.improve.XFVRP2Opt
+import xf.xfvrp.opt.improve.XFVRPPathMove
+import xf.xfvrp.opt.improve.XFVRPRelocate
 
 class XFVRPILSSpec extends Specification {
 
-	def service = new XFVRPILS();
+	def opt1 = Stub XFVRP2Opt
+	def opt2 = Stub XFVRPRelocate
+	def opt3 = Stub XFVRPPathMove
+	def evaluationService = Stub EvaluationService
+	def statusManager = Stub StatusManager
+	def service = new XFVRPILS(evaluationService: evaluationService);
 
 	def nd = new TestNode(
 	externID: "DEP",
@@ -39,10 +51,10 @@ class XFVRPILSSpec extends Specification {
 	def parameter = new XFVRPParameter()
 
 	def metric = new EucledianMetric()
-	
+
 	def "Choose"() {
 		service.optPropArr = [0.1, 0.2, 0.3, 0.4]
-		
+
 		when:
 		def res = service.choose([false, false, false, false] as boolean[])
 		then:
@@ -52,20 +64,20 @@ class XFVRPILSSpec extends Specification {
 
 	def "Choose Only one"() {
 		service.optPropArr = [0.1, 0.2, 0.3, 0.4]
-		
+
 		when:
 		def res = service.choose([true, true, false, true] as boolean[])
 		then:
 		res == 2
 	}
-	
+
 	def "Check termination - Loops"() {
 		def model = initScen()
 		def n = model.getNodes()
 		service.setModel(model)
-		
+
 		service.model.getParameter().setNbrOfILSLoops(15)
-		
+
 		when:
 		def result = service.checkTerminationCriteria(16)
 		then:
@@ -76,57 +88,86 @@ class XFVRPILSSpec extends Specification {
 		def model = initScen()
 		def n = model.getNodes()
 		service.setModel(model)
-		
+
 		service.model.getParameter().setNbrOfILSLoops(15)
 		service.model.getParameter().setMaxRunningTimeInSec(1);
 		def statusManager = new StatusManager(startTime: System.currentTimeMillis())
 		service.statusManager = statusManager
-		
+
 		Thread.sleep(1500);
-		
+
 		when:
 		def result = service.checkTerminationCriteria(1)
-		
+
 		then:
 		result == false
 	}
-	
+
 	def "Check termination - Okay"() {
 		def model = initScen()
 		def n = model.getNodes()
 		service.setModel(model)
-		
+
 		service.model.getParameter().setNbrOfILSLoops(15)
 		service.model.getParameter().setMaxRunningTimeInSec(10000);
 		def statusManager = new StatusManager(startTime: System.currentTimeMillis())
 		service.statusManager = statusManager
-		
+
 		when:
 		def result = service.checkTerminationCriteria(1)
-		
+
 		then:
 		result == true
 	}
 
-	
-	/*def "Search single depot - Find improve"() {
+	def "Local search"() {
 		def model = initScen()
 		def n = model.getNodes()
 		service.setModel(model)
 
+		service.optArr = [opt1, opt2, opt3] as XFVRPOptBase[]
+		service.optPropArr = [0.1, 0.3, 0.6]
+
+		sol = new Solution()
+		sol.setGiantRoute([nd, n[2], n[3], n[4], n[5], nd] as Node[])
+
+		def quality = new Quality(cost: 111, penalty: 0)
+		evaluationService.check(_) >> quality
+		opt1.improve(_ ,_) >> sol
+		opt2.improve(_ ,_) >> sol
+		opt3.improve(_ ,_) >> sol
+
+		when:
+		def result = service.localSearch(sol, model.getVehicle())
+
+		then:
+		result != null
+	}
+
+
+	def "Execute"() {
+		def model = initScen()
+		model.getParameter().setNbrOfILSLoops(5)
+		def n = model.getNodes()
+		service.setModel(model)
+		service.optArr = [opt1, opt2]
+		service.optPropArr = [0.5, 0.5]
+		def quality = new Quality(cost: 100, penalty: 0)
+		def betterQuality = new Quality(cost: 80, penalty: 0)
+		evaluationService.check(_ as Solution, _) >>> [quality, betterQuality]
+
 		sol = new Solution()
 		sol.setGiantRoute([nd, n[2], n[5], n[4], nd, nd, n[3], nd] as Node[])
 
-		def impList = [] as List<float[]>
+		opt1.execute(_ ,_ , _) >> sol
+		opt2.execute(_ ,_ , _) >> sol
 
 		when:
-		service.searchSingleDepot(sol.getGiantRoute(), impList)
+		def result = service.execute(sol, model, statusManager)
 
 		then:
-		impList.size() > 0
-		impList.stream().filter({f -> f[0] == 2 && f[1] == 6}).count() == 1
-		Math.abs(impList.stream().filter({f -> f[0] == 2 && f[1] == 6}).collect(Collectors.toList()).get(0)[2] - 1.390) < 0.001f
-	}*/
+		result != null
+	}
 
 	XFVRPModel initScen() {
 		def v = new TestVehicle(name: "V1", capacity: [3, 3]).getVehicle()

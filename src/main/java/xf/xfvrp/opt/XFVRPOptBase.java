@@ -35,7 +35,7 @@ public abstract class XFVRPOptBase extends XFVRPBase<XFVRPModel> {
 	public boolean isSplittable = false;
 	protected Random rand = new Random(1234);
 	protected static final float epsilon = 0.001f;
-	private EvaluationService check = new EvaluationService();
+	protected EvaluationService evaluationService = new EvaluationService();
 
 	/**
 	 * Inverts the node sequence in the range
@@ -218,7 +218,11 @@ public abstract class XFVRPOptBase extends XFVRPBase<XFVRPModel> {
 	 * @return
 	 */
 	public Quality check(Solution solution) {	
-		return check.check(solution, model);
+		return evaluationService.check(solution, model);
+	}
+	
+	public Random getRandom() {
+		return rand;
 	}
 
 	/**

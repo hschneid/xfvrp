@@ -7,10 +7,10 @@ import java.util.Random;
 import java.util.stream.Collectors;
 
 import xf.xfvrp.base.Node;
+import xf.xfvrp.base.Quality;
 import xf.xfvrp.base.SiteType;
 import xf.xfvrp.base.XFVRPModel;
 import xf.xfvrp.base.monitor.StatusManager;
-import xf.xfvrp.report.build.ReportBuilder;
 
 /** 
  * Copyright (c) 2012-present Holger Schneider
@@ -42,8 +42,7 @@ public class XFVRPOptSplitter {
 	private static int ALLOWED_NBR_OF_CUSTOMERS_IN_BLOCK = 250;
 
 	private static int ALLOWED_NBR_OF_BLOCKS = 1;
-	private static int ALLOWED_NON_IMPROVES = 2;
-	private static Random rand = new Random(1234);
+	private static int ALLOWED_NBR_OF_NON_IMPROVES = 2;
 
 	/**
 	 * Executes the optimization by splitting a big route plan into smaller
@@ -51,48 +50,53 @@ public class XFVRPOptSplitter {
 	 * the optimized blocks are joined back. This process is iterated until no further
 	 * improvement could be found.
 	 * 
-	 * @param giantTour Current route plan
+	 * @param solution Current route plan
 	 * @param model Model with nodes, distances and parameters
 	 * @param opt Optimization procedure
 	 * @param statusManager
 	 * @return Optimized route plan 
 	 */
-	public Solution execute(final Solution giantTour, XFVRPModel model, StatusManager statusManager, XFVRPOptBase opt) {
-		ALLOWED_NBR_OF_BLOCKS = (int)Math.max(1, model.getNbrOfNodes() / (float)ALLOWED_NBR_OF_CUSTOMERS_IN_BLOCK);
+	public Solution execute(final Solution solution, XFVRPModel model, StatusManager statusManager, XFVRPOptBase opt) {
+		init(model);
 
-		Solution best = giantTour.copy();
-		float bestCost = getCost(giantTour, model);
+		Solution best = solution.copy();
+		float bestCost = getCost(solution, opt);
 
-		int nbrOfNonImproves = 0;
-		while(true) {
-			// Zerlege
-			List<Solution> blocks = splitIntoBlocks(best);
-
-			// Optimiere
-			List<Node> resultGiantList = new ArrayList<>();
-			for (Solution partialSolution : blocks) {
-				opt.execute(partialSolution, model, statusManager);
-				resultGiantList.addAll(Arrays.asList(partialSolution.getGiantRoute()));
-			}
+		int nbrOfTries = 0;
+		while(nbrOfTries < ALLOWED_NBR_OF_NON_IMPROVES) {
 			
-			Solution newSolution = new Solution();
-			newSolution.setGiantRoute(resultGiantList.toArray(new Node[0]));
+			List<Solution> blocks = splitIntoBlocks(best, opt.getRandom());
 
-			// Pr�fe auf Verbesserung
-			float cost = getCost(newSolution, model);
+			Solution newSolution = optimizeBlocks(model, statusManager, opt, blocks);
+
+			float cost = getCost(newSolution, opt);
+			
+			nbrOfTries++;
+			
 			if(cost < bestCost) {
 				best = newSolution;
 				bestCost = cost;
-				nbrOfNonImproves = 0;
-			} else {
-				nbrOfNonImproves++;
-				if(nbrOfNonImproves > ALLOWED_NON_IMPROVES) {
-					break;
-				}
+				nbrOfTries = 0;
 			}
 		}
 
 		return best;
+	}
+
+	private void init(XFVRPModel model) {
+		ALLOWED_NBR_OF_BLOCKS = (int)Math.max(1, model.getNbrOfNodes() / (float)ALLOWED_NBR_OF_CUSTOMERS_IN_BLOCK);
+	}
+
+	private Solution optimizeBlocks(XFVRPModel model, StatusManager statusManager, XFVRPOptBase opt, List<Solution> blocks) {
+		List<Node> resultGiantList = new ArrayList<>();
+		for (Solution partialSolution : blocks) {
+			opt.execute(partialSolution, model, statusManager);
+			resultGiantList.addAll(Arrays.asList(partialSolution.getGiantRoute()));
+		}
+		
+		Solution newSolution = new Solution();
+		newSolution.setGiantRoute(resultGiantList.toArray(new Node[0]));
+		return newSolution;
 	}
 
 	/**
@@ -103,27 +107,17 @@ public class XFVRPOptSplitter {
 	 * @param giantRoute Current route plan
 	 * @return List of blocks, where each block is a route plan (small giant tour)
 	 */
-	@SuppressWarnings("unchecked")
-	private static List<Solution> splitIntoBlocks(Solution solution) {
-		List<Node>[] blocks = new ArrayList[ALLOWED_NBR_OF_BLOCKS];
-		for (int i = 0; i < blocks.length; i++)
-			blocks[i] = new ArrayList<>();
+	private static List<Solution> splitIntoBlocks(Solution solution, Random random) {
+		List<Node>[] blocks = initBlocks();
 
-		int lastDepot = 0;
-		Node[] giantTour = solution.getGiantRoute();
-		for (int i = 1; i < giantTour.length; i++) {
-			if(giantTour[i].getSiteType() == SiteType.DEPOT) {
-				int blockIdx = rand.nextInt(ALLOWED_NBR_OF_BLOCKS);
-				for (int j = lastDepot; j < i; j++)
-					blocks[blockIdx].add(giantTour[j]);
-				lastDepot = i;
-			}
-		}
+		fillRoutesIntoBlocks(solution, blocks, random);
 
-		for (int i = 0; i < blocks.length; i++)
-			if(blocks[i].size() > 0)
-				blocks[i].add(blocks[i].get(0));
+		addDepotsToBlocks(blocks);
 
+		return convertToSolutions(solution, blocks);
+	}
+
+	private static List<Solution> convertToSolutions(Solution solution, List<Node>[] blocks) {
 		List<Solution> partialSolutions = Arrays.stream(blocks)
 				.filter(b -> b.size() > 0)
 				.map(b -> {
@@ -132,19 +126,47 @@ public class XFVRPOptSplitter {
 					return solution;
 				})
 				.collect(Collectors.toList());
-
 		return partialSolutions;
+	}
+
+	private static void addDepotsToBlocks(List<Node>[] blocks) {
+		for (int i = 0; i < blocks.length; i++)
+			if(blocks[i].size() > 0)
+				blocks[i].add(blocks[i].get(0));
+	}
+
+	private static void fillRoutesIntoBlocks(Solution solution, List<Node>[] blocks, Random random) {
+		int lastDepot = 0;
+		Node[] giantTour = solution.getGiantRoute();
+		for (int i = 1; i < giantTour.length; i++) {
+			if(giantTour[i].getSiteType() == SiteType.DEPOT) {
+				int blockIdx = random.nextInt(ALLOWED_NBR_OF_BLOCKS);
+				
+				for (int j = lastDepot; j < i; j++)
+					blocks[blockIdx].add(giantTour[j]);
+				
+				lastDepot = i;
+			}
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private static List<Node>[] initBlocks() {
+		List<Node>[] blocks = new ArrayList[ALLOWED_NBR_OF_BLOCKS];
+		for (int i = 0; i < blocks.length; i++)
+			blocks[i] = new ArrayList<>();
+		return blocks;
 	}
 
 	/**
 	 * Returns the cost of route plan by building up a report.
 	 * 
 	 * @param giantRoute Current route plan
-	 * @param model Current model with nodes, distances and parameters
+	 * @param optBase Current model with nodes, distances and parameters
 	 * @return Fitness of current solution
 	 */
-	private float getCost(Solution solution, XFVRPModel model) {
-		XFVRPSolution sol = new XFVRPSolution(solution, model);
-		return new ReportBuilder().getReport(sol).getSummary().getCost();
+	private float getCost(Solution solution, XFVRPOptBase optBase) {
+		Quality quality = optBase.check(solution);	
+		return quality.getCost();
 	}
 }

@@ -34,6 +34,8 @@ public class Quality {
 	public static final int PENALTY_REASON_DELAY = 5;
 	public static final int PENALTY_REASON_STOPCOUNT = 6;
 
+	public Quality() {
+	}
 	
 	/**
 	 * Initializes a new Quality object by cloneing the information

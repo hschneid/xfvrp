@@ -161,23 +161,4 @@ public class XFVRPILS extends XFVRPOptBase {
 
 		return idx;
 	}
-
-	/**
-	 * 
-	 * @param nodes
-	 * @return
-	 */
-//	@SuppressWarnings("unused")
-//	private boolean checkDups(Node[] nodes) {
-//		Set<String> set = new HashSet<String>();
-//		for (Node n : nodes) {
-//			if(n.getSiteType() == SiteType.CUSTOMER) {
-//				if(set.contains(n.getExternID()))
-//					return false;
-//				set.add(n.getExternID());
-//			}
-//		}
-//
-//		return true;
-//	}
 }
