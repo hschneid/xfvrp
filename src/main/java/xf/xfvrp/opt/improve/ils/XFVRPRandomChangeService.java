@@ -8,12 +8,20 @@ import xf.xfvrp.base.preset.BlockNameConverter;
 import xf.xfvrp.base.preset.BlockPositionConverter;
 import xf.xfvrp.opt.Solution;
 import xf.xfvrp.opt.XFVRPOptBase;
+import xf.xfvrp.opt.improve.XFVRPPathMove;
 
-public class RandomChangeService extends XFVRPOptBase {
+public class XFVRPRandomChangeService extends XFVRPOptBase implements XFRandomChangeService {
 
 	private int NBR_ACCEPTED_INVALIDS = 100;
 	private int NBR_OF_VARIATIONS = 5;
+	
+	private XFVRPPathMove operator = new XFVRPPathMove();
 
+	/*
+	 * (non-Javadoc)
+	 * @see xf.xfvrp.opt.improve.ils.XFRandomChangeService#change(xf.xfvrp.opt.Solution, xf.xfvrp.base.XFVRPModel)
+	 */
+	@Override
 	public Solution change(Solution solution, XFVRPModel model) {
 		this.setModel(model);
 
@@ -58,21 +66,14 @@ public class RandomChangeService extends XFVRPOptBase {
 	}
 
 	private boolean checkMove(Choice choice, Solution solution) {
-		// Move
-		pathMove(solution, choice.srcIdx, choice.srcIdx + choice.srcPathLength, choice.dstIdx);
+		operator.change(solution, choice.toArray());
 
-		// Eval
 		Quality q = check(solution);
 		if(q.getPenalty() == 0) {
 			return true;
 		}
 
-		// Re-Move
-		if(choice.dstIdx > choice.srcIdx)
-			pathMove(solution, choice.dstIdx - choice.srcPathLength - 1, choice.dstIdx - 1, choice.srcIdx);
-		else
-			pathMove(solution, choice.dstIdx, choice.dstIdx + choice.srcPathLength, choice.srcIdx + choice.srcPathLength + 1);
-
+		operator.reverseChange(solution, choice.toArray());
 		return false;
 	}
 
@@ -158,6 +159,10 @@ public class RandomChangeService extends XFVRPOptBase {
 		int dstIdx;
 
 		public Choice() {
+		}
+		
+		public float[] toArray() {
+			return new float[] {srcIdx, dstIdx, srcPathLength, XFVRPPathMove.NO_INVERT};
 		}
 	}
 }

@@ -11,12 +11,12 @@ import xf.xfvrp.base.XFVRPParameter
 import xf.xfvrp.base.metric.EucledianMetric
 import xf.xfvrp.base.metric.internal.AcceleratedMetricTransformator
 import xf.xfvrp.opt.Solution
-import xf.xfvrp.opt.improve.ils.RandomChangeService.Choice
+import xf.xfvrp.opt.improve.ils.XFVRPRandomChangeService.Choice
 
-class RandomChangeServiceSpec extends Specification {
+class XFVRPRandomChangeServiceSpec extends Specification {
 
 	def random = Stub Random
-	def service = new RandomChangeService();
+	def service = new XFVRPRandomChangeService();
 
 	def nd = new TestNode(
 	externID: "DEP",

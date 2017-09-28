@@ -56,7 +56,7 @@ public class XFPDPRelocate extends XFVRPOptImpBase {
 		return null;
 	}
 	
-	private void change(Solution solution, float[] val) {
+	public void change(Solution solution, float[] val) {
 		int srcA = (int) val[0];
 		int srcB = (int) val[1];
 		int dstA = (int) val[2];
@@ -65,7 +65,7 @@ public class XFPDPRelocate extends XFVRPOptImpBase {
 		shipmentMove(solution, srcA, srcB, dstA, dstB);
 	}
 
-	private void reverseChange(Solution solution, float[] val) {
+	public void reverseChange(Solution solution, float[] val) {
 		int srcA = (int) val[0];
 		int srcB = (int) val[1];
 		int dstA = (int) val[2];

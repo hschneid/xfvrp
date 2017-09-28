@@ -34,8 +34,8 @@ import xf.xfvrp.opt.Solution;
  */
 public class XFVRPPathMove extends XFVRPOptImpBase {
 
-	private static final int NO_INVERT = 0;
-	private static final int INVERT = 1;
+	public static final int NO_INVERT = 0;
+	public static final int INVERT = 1;
 
 	private boolean isInvertationActive = true;
 
@@ -68,7 +68,7 @@ public class XFVRPPathMove extends XFVRPOptImpBase {
 		return null;
 	}
 
-	private void change(Solution solution, float[] val) {
+	public void change(Solution solution, float[] val) {
 		int a = (int) val[0];
 		int b = (int) val[1];
 		int l = (int) val[2];
@@ -78,7 +78,7 @@ public class XFVRPPathMove extends XFVRPOptImpBase {
 		pathMove(solution, a, a + l, b);
 	}
 
-	private void reverseChange(Solution solution, float[] val) {
+	public void reverseChange(Solution solution, float[] val) {
 		int a = (int) val[0];
 		int b = (int) val[1];
 		int l = (int) val[2];
