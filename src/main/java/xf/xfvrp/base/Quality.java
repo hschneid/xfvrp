@@ -19,8 +19,6 @@ package xf.xfvrp.base;
  */
 public class Quality {
 
-	private TourQuality[] tqArr;
-
 	private float cost = 0;
 	private float penalty = 0;
 
@@ -48,43 +46,6 @@ public class Quality {
 			cost = q.getCost();
 			penalty = q.getPenalty();
 		}
-	}
-
-	/**
-	 * Updates the 
-	 * 
-	 * @param q
-	 */
-	public void setQuality(Quality q){
-		cost = q.getCost();
-		penalty = q.getPenalty();
-		tqArr = q.tqArr.clone();
-	}
-
-	/**
-	 * 
-	 * @param tourQualityArr
-	 */
-	public void setTourQuality(TourQuality[] tourQualityArr){
-		tqArr = tourQualityArr;
-	}
-
-	/**
-	 * 
-	 * @param index
-	 * @return
-	 */
-	public TourQuality getTourQuality(int index){
-		return tqArr[index];
-	}
-
-	/**
-	 * 
-	 * @param tq
-	 * @param index
-	 */
-	public void setTourQuality(TourQuality tq, int index){
-		tqArr[index] = tq;
 	}
 
 	/**
@@ -133,24 +94,6 @@ public class Quality {
 	public void addCost(float cost) {
 		this.cost += cost;
 	}
-
-	/**
-	 * 
-	 * @param tq
-	 */
-	public void addQuality(TourQuality tq) {
-		penalty += tq.getPenalty();
-		cost += tq.getFitness();
-	}
-
-	/**
-	 * 
-	 * @param tq
-	 */
-	public void removeQuality(TourQuality tq) {
-		penalty -= tq.getPenalty();
-		cost -= tq.getFitness();
-	}
 	
 	/*
 	 * (non-Javadoc)
@@ -160,19 +103,4 @@ public class Quality {
 	public String toString() {
 		return cost+" "+penalty;
 	}
-
-	public static void printStats() {
-		StringBuffer b = new StringBuffer();
-		b.append("[");
-		if (reasons.length > 0) {
-			b.append(reasons[0]);
-		}
-		for (int i = 1; i < reasons.length; i++) {
-			b.append(", ");
-			b.append(reasons[i]);
-		}
-		b.append("]");
-		System.out.println(b.toString());
-	}
-
 }

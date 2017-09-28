@@ -67,7 +67,7 @@ public class CheckService {
 		Map<Integer, List<Node>> blocks = getBlocks(model);
 
 		checkBlocks(blocks, solutionBuilderDataBag, invalidNodes, model);
-		
+
 		return solutionBuilderDataBag;
 	}
 
@@ -75,7 +75,7 @@ public class CheckService {
 		Map<Integer, List<Node>> blocks = Arrays
 				.stream(model.getNodes())
 				.collect(Collectors.groupingBy(k -> k.getPresetBlockIdx()));
-		
+
 		return blocks;
 	}
 
@@ -99,7 +99,7 @@ public class CheckService {
 
 	private boolean checkNodesOfBlock(int blockIdx, List<Node> nodesOfBlock, SolutionBuilderDataBag solutionBuilderDataBag, List<Node> invalidNodes, XFVRPModel model) {
 		CheckCustomerService checkCustomerService = new CheckCustomerService();
-		
+
 		for (Node node : nodesOfBlock) {
 			if(node.getSiteType() == SiteType.DEPOT)
 				solutionBuilderDataBag.getValidDepots().add(node);
@@ -110,7 +110,7 @@ public class CheckService {
 				solutionBuilderDataBag.getKnownSequencePositions().add(node.getPresetBlockPos());
 			} else {
 				// Customer is not valid
-				
+
 				// If this is not the default block and one node
 				// of this block is invalid, then all nodes are
 				// set to invalid.
@@ -119,7 +119,7 @@ public class CheckService {
 
 					return false;
 				}
-				
+
 				invalidNodes.add(node);
 			}
 		}
@@ -129,9 +129,11 @@ public class CheckService {
 
 	private void checkBlock(SolutionBuilderDataBag solutionBuilderDataBag, List<Node> invalidNodes, XFVRPModel model,
 			int blockIdx, List<Node> nodesOfBlock) {
-		if(blockIdx != BlockNameConverter.DEFAULT_BLOCK_IDX && !checkBlock(nodesOfBlock, model)) {
-			solutionBuilderDataBag.getValidNodes().removeAll(nodesOfBlock);
-			invalidNodes.addAll(nodesOfBlock);
+		if(blockIdx != BlockNameConverter.DEFAULT_BLOCK_IDX) {
+			if(!checkBlock(nodesOfBlock, model)) {
+				solutionBuilderDataBag.getValidNodes().removeAll(nodesOfBlock);
+				invalidNodes.addAll(nodesOfBlock);
+			}
 		}
 	}
 
@@ -168,7 +170,7 @@ public class CheckService {
 		XFVRPOptBase opt = XFVRPOptType.RELOCATE.createInstance();
 
 		boolean isValid = false;
-		
+
 		// A block can be allocated to each depot in multi depot problems
 		for (int i = 0; i < model.getNbrOfDepots(); i++) {
 			Node[] blockGiantRoute = new Node[nodesOfBlock.size() + 2];
@@ -185,6 +187,7 @@ public class CheckService {
 			solution.setGiantRoute(blockGiantRoute);
 
 			solution = opt.execute(solution, model, null);
+			
 			Quality q = opt.check(solution);
 			if(q.getPenalty() == 0)
 				isValid |= true;
