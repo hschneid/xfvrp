@@ -1,5 +1,7 @@
 package xf.xfvrp.opt.improve.ils;
 
+import java.util.NoSuchElementException;
+
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.Quality;
 import xf.xfvrp.base.SiteType;
@@ -10,9 +12,10 @@ import xf.xfvrp.opt.improve.XFPDPRelocate;
 
 public class XFPDPRandomChangeService extends XFVRPOptBase implements XFRandomChangeService {
 
+	private static final int MAX_TRIES_CHOOSING = 100;
 	private int NBR_ACCEPTED_INVALIDS = 100;
 	private int NBR_OF_VARIATIONS = 5;
-	
+
 	private XFPDPRelocate operator = new XFPDPRelocate();
 
 	/*
@@ -38,26 +41,30 @@ public class XFPDPRandomChangeService extends XFVRPOptBase implements XFRandomCh
 		Choice choice = new Choice();
 
 		for (int i = 0; i < NBR_OF_VARIATIONS; i++) {
-			// Search nodes for source shipment
-			// Restriction: no depot
-			chooseSrcPickup(choice, solution);
-			chooseSrcDelivery(choice, solution);
+			try {
+				// Search nodes for source shipment
+				// Restriction: no depot
+				chooseSrcPickup(choice, solution);
+				chooseSrcDelivery(choice, solution);
 
-			// Search destination
-			// Restriction: 
-			//   Source is not destination
-			//   Solution is not invalid
-			int cnt = 0;
-			while(cnt < NBR_ACCEPTED_INVALIDS) {
-				// Choose
-				chooseDstPickup(choice, solution);
-				chooseDstDelivery(choice, solution);
+				// Search destination
+				// Restriction: 
+				//   Source is not destination
+				//   Solution is not invalid
+				int cnt = 0;
+				while(cnt < NBR_ACCEPTED_INVALIDS) {
+					// Choose
+					chooseDstPickup(choice, solution);
+					chooseDstDelivery(choice, solution);
 
-				boolean isValid = checkMove(choice, solution);
-				if(isValid)
-					break;
+					boolean isValid = checkMove(choice, solution);
+					if(isValid)
+						break;
 
-				cnt++;
+					cnt++;
+				}
+			} catch (NoSuchElementException e) {
+				// Means, that one of the choose methods could not find a valid variation parameter.
 			}
 		}
 
@@ -103,14 +110,18 @@ public class XFPDPRandomChangeService extends XFVRPOptBase implements XFRandomCh
 			}
 		}
 
-		if(choice.srcDeliveryIdx == -1)
-			throw new IllegalStateException("Structural exception of giant route, where a pickup nopde of a shipment has no delivery node.");
+		throw new NoSuchElementException("Structural exception of giant route, where a pickup nopde of a shipment has no delivery node.");
 	}
 
 	private void chooseDstPickup(Choice choice, Solution solution) {
 		Node[] giantRoute = solution.getGiantRoute();
 
-		choice.dstPickupIdx = rand.nextInt(giantRoute.length - 1) + 1;
+		int dstPickupIdx = -1;
+		do {
+			dstPickupIdx = rand.nextInt(giantRoute.length - 1) + 1;
+		} while(dstPickupIdx == choice.srcPickupIdx || dstPickupIdx == choice.srcDeliveryIdx);
+
+		choice.dstPickupIdx = dstPickupIdx;
 	}
 
 	/**
@@ -121,6 +132,33 @@ public class XFPDPRandomChangeService extends XFVRPOptBase implements XFRandomCh
 	private void chooseDstDelivery(Choice choice, Solution solution) {
 		Node[] giantRoute = solution.getGiantRoute();
 
+		int[] routeIdxArr = getIndexOfRoutes(giantRoute);
+
+		int dstDeliveryIdx = -1;
+		int counter = 0;
+		do {
+			dstDeliveryIdx = rand.nextInt(giantRoute.length - 1) + 1;
+			counter++;
+		} while(isInvalidDstDeliveryIdx(choice, routeIdxArr, dstDeliveryIdx) && counter < MAX_TRIES_CHOOSING);
+
+		if(counter == MAX_TRIES_CHOOSING)
+			throw new NoSuchElementException();
+
+		choice.dstDeliveryIdx = dstDeliveryIdx;
+	}
+
+	private boolean isInvalidDstDeliveryIdx(Choice choice, int[] routeIdxArr, int dstDeliveryIdx) {
+		return (
+				// pickup before delivery
+				choice.dstPickupIdx > dstDeliveryIdx ||
+				// Same route
+				routeIdxArr[dstDeliveryIdx] != routeIdxArr[choice.dstPickupIdx] ||
+				// Prevent no-op change
+				(choice.srcPickupIdx + 2 == choice.dstPickupIdx && choice.srcDeliveryIdx + 1 == dstDeliveryIdx)
+				);
+	}
+
+	private int[] getIndexOfRoutes(Node[] giantRoute) {
 		int[] routeIdxArr = new int[giantRoute.length];
 		int id = 0;
 		for (int i = 1; i < giantRoute.length; i++) {
@@ -128,23 +166,8 @@ public class XFPDPRandomChangeService extends XFVRPOptBase implements XFRandomCh
 			if(giantRoute[i].getSiteType() == SiteType.DEPOT)
 				id++;
 		}
-
-		int dstPickupIdx = routeIdxArr[choice.dstPickupIdx];
-
-		int dstDeliveryIdx = -1;
-		do {
-			dstDeliveryIdx = rand.nextInt(giantRoute.length - 1) + 1;
-		} while(
-				// pickup before delivery
-				dstPickupIdx > dstDeliveryIdx ||
-				// Same route
-				routeIdxArr[dstDeliveryIdx] != dstPickupIdx ||
-				// Prevent no-op change
-				(choice.srcPickupIdx == choice.dstPickupIdx + 1 && choice.srcDeliveryIdx == dstDeliveryIdx)
-				);
-
-
-		choice.dstDeliveryIdx = dstDeliveryIdx;
+		
+		return routeIdxArr;
 	}
 
 	private class Choice {
@@ -155,7 +178,7 @@ public class XFPDPRandomChangeService extends XFVRPOptBase implements XFRandomCh
 
 		public Choice() {
 		}
-		
+
 		public float[] toArray() {
 			return new float[] {srcPickupIdx, srcDeliveryIdx, dstPickupIdx, dstDeliveryIdx};
 		}

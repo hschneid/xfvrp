@@ -22,6 +22,7 @@ class TestNode {
 	int presetBlockPos = 0;
 	int presetBlockRank = 0;
 	String shipID = "";
+	int shipmentIdx = -1;
 	int presetDepotGlobalIdx = -1;
 	int presetVehicleIdx = -1;
 	int presetBlackNodeIdx = -1;
@@ -44,6 +45,7 @@ class TestNode {
 				);
 		node.setPresetBlockIdx(presetBlockIdx)
 		node.setPresetBlockPos(presetBlockPos)
+		node.setShipmentIdx(shipmentIdx);
 		if(presetDepotGlobalIdx > -1) node.addPresetDepot(presetDepotGlobalIdx)
 		if(presetVehicleIdx > -1) node.addPresetVehicle(presetVehicleIdx)
 		if(presetBlackNodeIdx > -1) node.addToBlacklist(presetBlackNodeIdx)
