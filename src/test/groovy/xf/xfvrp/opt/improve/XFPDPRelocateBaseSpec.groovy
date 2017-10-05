@@ -247,6 +247,28 @@ class XFPDPRelocateBaseSpec extends Specification {
 		nn[7].externID == "DEP"
 	}
 	
+	def "Reverse change - Some case"() {
+		def model = initScen()
+		def n = model.getNodes()
+		service.setModel(model)
+
+		sol = new Solution()
+		sol.setGiantRoute([nd, n[1], n[2], n[3], n[4], nd] as Node[])
+
+		when:
+		service.reverseChange(sol, [2, 4, 5, 5] as float[])
+		
+		def nn = sol.getGiantRoute()
+
+		then:
+		nn[0].externID == "DEP"
+		nn[1].externID == "1"
+		nn[2].externID == "3"
+		nn[3].externID == "2"
+		nn[4].externID == "4"
+		nn[5].externID == "DEP"
+	}
+		
 	XFVRPModel initScen() {
 		def v = new TestVehicle(name: "V1", capacity: [3, 3]).getVehicle()
 

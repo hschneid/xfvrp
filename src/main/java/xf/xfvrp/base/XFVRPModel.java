@@ -36,6 +36,18 @@ public class XFVRPModel {
 	protected final int[] blockCountArr;
 
 	protected final int maxGlobalNodeIdx;
+	
+	protected XFVRPModel() {
+		nbrOfDepots = 0;
+		nbrOfReplenish = 0;
+		nodeArr = null;
+		metric = null;
+		optMetric = null;
+		vehicle = null;
+		parameter = null;
+		blockCountArr = null;
+		maxGlobalNodeIdx = -1;
+	}
 
 	/**
 	 * Initialize an optimization model object with the given input data. It contains the general

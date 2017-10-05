@@ -89,6 +89,12 @@ public class XFPDPRelocate extends XFVRPOptImpBase {
 		srcB += srcBOffset;
 		dstA += dstAOffset;
 		dstB += dstBOffset;
+
+		srcA += (srcA == dstA) ? 1 : 0;
+		srcA += (srcA == dstB) ? 1 : 0;
+		
+		srcB += (srcB == dstA) ? 1 : 0;
+		srcB += (srcB == dstB) ? 1 : 0;
 		
 		shipmentMove(solution, dstA, dstB, srcA, srcB);
 	}

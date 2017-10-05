@@ -46,6 +46,9 @@ import xf.xfvrp.opt.init.solution.vrp.SolutionBuilderDataBag;
  */
 public class CheckService {
 
+	private XFVRPOptBase optimizationMethod = XFVRPOptType.RELOCATE.createInstance();
+	private CheckCustomerService checkCustomerService = new CheckCustomerService();
+	
 	/**
 	 * Builds the giant route.<br>
 	 * A list of nodes, where the depot is allowed to be placed multiple times.
@@ -98,8 +101,6 @@ public class CheckService {
 	}
 
 	private boolean checkNodesOfBlock(int blockIdx, List<Node> nodesOfBlock, SolutionBuilderDataBag solutionBuilderDataBag, List<Node> invalidNodes, XFVRPModel model) {
-		CheckCustomerService checkCustomerService = new CheckCustomerService();
-
 		for (Node node : nodesOfBlock) {
 			if(node.getSiteType() == SiteType.DEPOT)
 				solutionBuilderDataBag.getValidDepots().add(node);
@@ -139,6 +140,7 @@ public class CheckService {
 
 	private void setNodesOfBlockInvalid(List<Node> nodesOfBlock, List<Node> invalidNodes, Node node) {
 		for (Node n : nodesOfBlock)
+			// First node of block has already a detailed information of invalidity
 			if(n != node)
 				n.setInvalidReason(
 						node.getInvalidReason(),
@@ -167,8 +169,6 @@ public class CheckService {
 	 * @return isValid
 	 */
 	private boolean checkBlock(List<Node> nodesOfBlock, XFVRPModel model) {
-		XFVRPOptBase opt = XFVRPOptType.RELOCATE.createInstance();
-
 		boolean isValid = false;
 
 		// A block can be allocated to each depot in multi depot problems
@@ -186,9 +186,9 @@ public class CheckService {
 			Solution solution = new Solution();
 			solution.setGiantRoute(blockGiantRoute);
 
-			solution = opt.execute(solution, model, null);
-			
-			Quality q = opt.check(solution);
+			solution = optimizationMethod.execute(solution, model, null);
+
+			Quality q = optimizationMethod.check(solution);
 			if(q.getPenalty() == 0)
 				isValid |= true;
 		}

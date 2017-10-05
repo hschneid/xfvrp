@@ -90,13 +90,14 @@ public class XFPDPRandomChangeService extends XFVRPOptBase implements XFRandomCh
 		// Choose a random source node (customer or replenish)
 		int srcPickupIdx = -1;
 		do {
-			srcPickupIdx = rand.nextInt(giantRoute.length - 2) + 1;
+			// Max value (DEP, ..., X, >Y<, Z, DEP)
+			srcPickupIdx = rand.nextInt(giantRoute.length - 3) + 1;
 		} while(giantRoute[srcPickupIdx].getSiteType() == SiteType.DEPOT || giantRoute[srcPickupIdx].getDemand()[0] < 0);
 
 		choice.srcPickupIdx = srcPickupIdx;
 	}
 
-	private void chooseSrcDelivery(Choice choice, Solution solution) {
+	private void chooseSrcDelivery(Choice choice, Solution solution) throws NoSuchElementException {
 		Node[] giantRoute = solution.getGiantRoute();
 
 		Node srcPickup = giantRoute[choice.srcPickupIdx];
@@ -110,7 +111,7 @@ public class XFPDPRandomChangeService extends XFVRPOptBase implements XFRandomCh
 			}
 		}
 
-		throw new NoSuchElementException("Structural exception of giant route, where a pickup nopde of a shipment has no delivery node.");
+		throw new NoSuchElementException("Structural exception of giant route, where a pickup node of a shipment has no delivery node.");
 	}
 
 	private void chooseDstPickup(Choice choice, Solution solution) {
@@ -118,7 +119,8 @@ public class XFPDPRandomChangeService extends XFVRPOptBase implements XFRandomCh
 
 		int dstPickupIdx = -1;
 		do {
-			dstPickupIdx = rand.nextInt(giantRoute.length - 1) + 1;
+			// Max value (DEP, ..., X, Y, >Z<, DEP)
+			dstPickupIdx = rand.nextInt(giantRoute.length - 2) + 1;
 		} while(dstPickupIdx == choice.srcPickupIdx || dstPickupIdx == choice.srcDeliveryIdx);
 
 		choice.dstPickupIdx = dstPickupIdx;
@@ -129,7 +131,7 @@ public class XFPDPRandomChangeService extends XFVRPOptBase implements XFRandomCh
 	 * @param choice
 	 * @param solution
 	 */
-	private void chooseDstDelivery(Choice choice, Solution solution) {
+	private void chooseDstDelivery(Choice choice, Solution solution) throws NoSuchElementException {
 		Node[] giantRoute = solution.getGiantRoute();
 
 		int[] routeIdxArr = getIndexOfRoutes(giantRoute);
@@ -137,12 +139,13 @@ public class XFPDPRandomChangeService extends XFVRPOptBase implements XFRandomCh
 		int dstDeliveryIdx = -1;
 		int counter = 0;
 		do {
+			// Max value (DEP, ..., X, Y, Z, >DEP<)
 			dstDeliveryIdx = rand.nextInt(giantRoute.length - 1) + 1;
 			counter++;
 		} while(isInvalidDstDeliveryIdx(choice, routeIdxArr, dstDeliveryIdx) && counter < MAX_TRIES_CHOOSING);
 
 		if(counter == MAX_TRIES_CHOOSING)
-			throw new NoSuchElementException();
+			throw new NoSuchElementException("Choice "+choice.srcPickupIdx+"_"+choice.srcDeliveryIdx+"_"+choice.dstPickupIdx);
 
 		choice.dstDeliveryIdx = dstDeliveryIdx;
 	}
@@ -154,7 +157,9 @@ public class XFPDPRandomChangeService extends XFVRPOptBase implements XFRandomCh
 				// Same route
 				routeIdxArr[dstDeliveryIdx] != routeIdxArr[choice.dstPickupIdx] ||
 				// Prevent no-op change
-				(choice.srcPickupIdx + 2 == choice.dstPickupIdx && choice.srcDeliveryIdx + 1 == dstDeliveryIdx)
+				(choice.srcPickupIdx + 2 == choice.dstPickupIdx && choice.srcDeliveryIdx + 1 == dstDeliveryIdx) ||
+				// Not on src nodes
+				dstDeliveryIdx == choice.srcPickupIdx || dstDeliveryIdx == choice.srcDeliveryIdx
 				);
 	}
 

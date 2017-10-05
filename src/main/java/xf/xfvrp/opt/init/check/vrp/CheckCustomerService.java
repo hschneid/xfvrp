@@ -53,6 +53,8 @@ public class CheckCustomerService {
 		// with valid constraints
 		boolean canBeValid = false;
 		for (int i = 0; i < model.getNbrOfDepots(); i++) {
+			cust.setInvalidReason(InvalidReason.NONE, "");
+			
 			Node depot = model.getNodes()[i];
 
 			float travelTime = model.getTime(depot, cust);
@@ -85,14 +87,15 @@ public class CheckCustomerService {
 	}
 
 	private boolean checkDemands(Node cust, XFVRPModel model) {
-		float[] demandArr = cust.getDemand();
-		float[] capArr = model.getVehicle().capacity;
+		float[] demands = cust.getDemand();
+		float[] capacities = model.getVehicle().capacity;
 
-		for (int i = 0; i < demandArr.length; i++) {
-			if(	demandArr[i] > capArr[i]) {
+		int length = Math.min(demands.length, capacities.length);
+		for (int i = 0; i < length; i++) {
+			if(	demands[i] > capacities[i]) {
 				cust.setInvalidReason(
 						InvalidReason.CAPACITY,
-						"Customer " + cust.getExternID() + " - Capacity " + (i + 1) + " demand: " +capArr[i]+" required: "+demandArr[i]
+						"Customer " + cust.getExternID() + " - Capacity " + (i + 1) + " demand: " +capacities[i]+" required: "+demands[i]
 						);
 				return false;
 			} 				
