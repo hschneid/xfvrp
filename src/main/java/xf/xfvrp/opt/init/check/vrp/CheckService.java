@@ -117,6 +117,7 @@ public class CheckService {
 				// set to invalid.
 				if(blockIdx != BlockNameConverter.DEFAULT_BLOCK_IDX) {
 					setNodesOfBlockInvalid(nodesOfBlock, invalidNodes, node);
+					solutionBuilderDataBag.getValidNodes().removeAll(nodesOfBlock);
 
 					return false;
 				}

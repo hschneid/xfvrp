@@ -3,6 +3,7 @@ package xf.xfvrp.opt.construct;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import util.collection.ListMap;
 import xf.xfvrp.base.Node;
@@ -44,33 +45,32 @@ public class XFVRPConst extends XFVRPOptBase {
 
 		// Separate giantRoute into pieces of nearest allocated customers
 		List<Node> giantList = new ArrayList<>();
-		{
-			int depIDGlobal = 0;
-			for (int depIdx : allocMap.keySet()) {
-				Node dep = model.getNodes()[depIdx];
-				List<Node> customers = allocMap.get(depIdx);
 
-				// Prepare customer list: customers with same block are placed togehter
-				customers.sort((arg0, arg1) -> {
-					int diff = arg0.getPresetBlockIdx() - arg1.getPresetBlockIdx();
-					if(diff == 0)
-						diff = arg0.getPresetBlockPos() - arg1.getPresetBlockPos();
-					return diff;
-				});
+		int depIDGlobal = 0;
+		for (int depIdx : allocMap.keySet()) {
+			Node dep = model.getNodes()[depIdx];
+			List<Node> customers = allocMap.get(depIdx);
 
-				// Create temp giant tour with only one depot and allocated customers
-				Solution gT = buildGiantRouteForOptimization(dep, customers);
+			// Prepare customer list: customers with same block are placed togehter
+			customers.sort((arg0, arg1) -> {
+				int diff = arg0.getPresetBlockIdx() - arg1.getPresetBlockIdx();
+				if(diff == 0)
+					diff = arg0.getPresetBlockPos() - arg1.getPresetBlockPos();
+				return diff;
+			});
 
-				// Run optimizers for each piece and choose best
-				gT = savings.execute(gT, model, statusManager);
+			// Create temp giant tour with only one depot and allocated customers
+			Solution gT = buildGiantRouteForOptimization(dep, customers);
 
-				// Concatenate piece to new giant tour
-				for (Node n : gT.getGiantRoute()) {
-					if(n.getSiteType() == SiteType.DEPOT)
-						giantList.add(Util.createIdNode(dep, depIDGlobal++));
-					else
-						giantList.add(n);
-				}
+			// Run optimizers for each piece and choose best
+			gT = savings.execute(gT, model, statusManager);
+
+			// Concatenate piece to new giant tour
+			for (Node n : gT.getGiantRoute()) {
+				if(n.getSiteType() == SiteType.DEPOT)
+					giantList.add(Util.createIdNode(dep, depIDGlobal++));
+				else
+					giantList.add(n);
 			}
 		}
 
@@ -85,54 +85,64 @@ public class XFVRPConst extends XFVRPOptBase {
 	 */
 	private ListMap<Integer, Node> allocateNearestDepot(Solution solution) {
 		ListMap<Integer, Node> allocMap = ListMap.create();
-		{
-			List<Node> depotList = new ArrayList<>();
-			for (Node n : model.getNodes()) 
-				if(n.getSiteType() == SiteType.DEPOT)
-					depotList.add(n);
 
-			Node[] giantTour = solution.getGiantRoute();
-			for (int i = 0; i < giantTour.length; i++) {
-				Node n = giantTour[i];
+		List<Node> depotList = Arrays.stream(model.getNodes())
+				.filter(node -> node.getSiteType() == SiteType.DEPOT)
+				.collect(Collectors.toList());
 
-				if(n.getSiteType() == SiteType.CUSTOMER) {
+		Node[] giantTour = solution.getGiantRoute();
+		for (int i = 0; i < giantTour.length; i++) {
+			Node n = giantTour[i];
 
-					int bestIdx = -1;
-					float bestDistance = Float.MAX_VALUE;
-					if(depotList.size() > 1) {
-						for (Node d : depotList) {
-							float distance = getDistance(d, n);
-							if(distance < bestDistance) {
-								bestDistance = distance;
-								bestIdx = d.getIdx();
-							}
-						}
-					} else {
-						bestIdx = depotList.get(0).getIdx();
-					}
+			if(n.getSiteType() == SiteType.CUSTOMER) {
 
-					if(bestIdx == -1)
-						throw new IllegalStateException();
+				int bestIdx = findNearestDepot(depotList, n);
 
-					allocMap.put(bestIdx, n);
+				allocMap.put(bestIdx, n);
 
-					if(depotList.size() > 1) {
-						// All other nodes in this route have to be
-						// put to the same depot
-						for (int j = i + 1; j < giantTour.length; j++) {
-							Node nextN = giantTour[j];
-							if(nextN.getSiteType() == SiteType.DEPOT)
-								break;
-
-							allocMap.put(bestIdx, nextN);
-
-							i++;
-						}
-					}
-				}
+				i = allocateCustomersToNearestDepot(allocMap, depotList, giantTour, i, bestIdx);
 			}
 		}
+
 		return allocMap;
+	}
+
+	private int allocateCustomersToNearestDepot(ListMap<Integer, Node> allocMap, List<Node> depotList, Node[] giantTour,
+			int i, int bestIdx) {
+		if(depotList.size() == 1)
+			return i;
+
+		for (int j = i + 1; j < giantTour.length; j++) {
+			Node nextN = giantTour[j];
+			if(nextN.getSiteType() == SiteType.DEPOT)
+				return i;
+
+			allocMap.put(bestIdx, nextN);
+
+			i++;
+		}
+
+		return i;
+	}
+
+	private int findNearestDepot(List<Node> depotList, Node n) {
+		int bestIdx = -1;
+		float bestDistance = Float.MAX_VALUE;
+		if(depotList.size() > 1) {
+			for (Node d : depotList) {
+				float distance = getDistance(d, n);
+				if(distance < bestDistance) {
+					bestDistance = distance;
+					bestIdx = d.getIdx();
+				}
+			}
+		} else {
+			bestIdx = depotList.get(0).getIdx();
+		}
+
+		if(bestIdx == -1)
+			throw new IllegalStateException();
+		return bestIdx;
 	}
 
 	/**
