@@ -15,10 +15,10 @@ public class PDPPreCheckService {
 
 	public static boolean IGNORE_IMPROPER_AMOUNTS = false;
 	
-	public Node[] precheck(Node[] nodes, Vehicle vehicle, boolean[] plannedCustomers) {
+	public Node[] precheck(Node[] nodes, Vehicle vehicle) {
 		Map<SiteType, List<Node>> nodesPerType = getNodesPerType(nodes);
 		
-		List<Node> customers = getCustomers(plannedCustomers, nodesPerType);
+		List<Node> customers = getCustomers(nodesPerType);
 		
 		removeUncompleteShipments(customers);
 		
@@ -37,10 +37,9 @@ public class PDPPreCheckService {
 		return nodesPerType;
 	}
 
-	private List<Node> getCustomers(boolean[] plannedCustomers, Map<SiteType, List<Node>> nodesPerType) {
+	private List<Node> getCustomers(Map<SiteType, List<Node>> nodesPerType) {
 		return nodesPerType.get(SiteType.CUSTOMER)
 				.stream()
-				.filter(n -> plannedCustomers[n.getGlobalIdx()] == false)
 				.collect(Collectors.toList());
 	}
 

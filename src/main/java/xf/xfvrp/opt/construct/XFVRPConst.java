@@ -136,12 +136,13 @@ public class XFVRPConst extends XFVRPOptBase {
 					bestIdx = d.getIdx();
 				}
 			}
-		} else {
+		} else if(depotList.size() == 1) {
 			bestIdx = depotList.get(0).getIdx();
 		}
 
 		if(bestIdx == -1)
 			throw new IllegalStateException();
+		
 		return bestIdx;
 	}
 

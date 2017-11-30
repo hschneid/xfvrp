@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import xf.xfvrp.base.InvalidReason;
 import xf.xfvrp.base.Node;
@@ -52,13 +51,13 @@ public class VRPPreCheckService  {
 	 * @return list of valid nodes
 	 * @throws PreCheckException 
 	 */
-	public Node[] precheck(Node[] nodes, Vehicle vehicle, boolean[] plannedCustomers) throws PreCheckException {
+	public Node[] precheck(Node[] nodes, Vehicle vehicle) throws PreCheckException {
 		checkFeasibility(nodes);
 
 		// Fetch block informations
 		Map<Integer, List<Node>> blocks = getBlocks(nodes);
 
-		List<Node> plannedNodes = getPlannedNodes(nodes, plannedCustomers);
+		List<Node> plannedNodes = getPlannedNodes(nodes);
 
 		// Check if customer is allowed for this vehicle type
 		checkVehicleType(nodes, vehicle, blocks, plannedNodes);
@@ -107,11 +106,8 @@ public class VRPPreCheckService  {
 			.collect(Collectors.groupingBy(Node::getPresetBlockIdx));
 	}
 
-	private List<Node> getPlannedNodes(Node[] nodes, boolean[] plannedCustomers) {
+	private List<Node> getPlannedNodes(Node[] nodes) {
 		// Already planned customers (true = planned, false = unplanned, DEPOTS/REPLENISH always false)
-		return IntStream.range(0, nodes.length)
-			.filter(i -> !plannedCustomers[i])
-			.mapToObj(i -> nodes[i])
-			.collect(Collectors.toList());		
+		return Arrays.asList(nodes);		
 	}
 }
