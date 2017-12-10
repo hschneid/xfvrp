@@ -2,9 +2,9 @@ package xf.xfvrp.opt;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -19,6 +19,7 @@ import xf.xfvrp.base.Util;
 import xf.xfvrp.base.Vehicle;
 import xf.xfvrp.base.XFVRPModel;
 import xf.xfvrp.base.XFVRPParameter;
+import xf.xfvrp.base.fleximport.InternalVehicleData;
 import xf.xfvrp.base.metric.InternalMetric;
 import xf.xfvrp.base.metric.Metric;
 import xf.xfvrp.base.metric.internal.AcceleratedMetricTransformator;
@@ -26,24 +27,24 @@ import xf.xfvrp.base.monitor.StatusCode;
 import xf.xfvrp.base.monitor.StatusManager;
 import xf.xfvrp.base.preset.BlockNameConverter;
 import xf.xfvrp.base.preset.VehiclePriorityInitialiser;
-import xf.xfvrp.report.Event;
 import xf.xfvrp.report.RouteReport;
 import xf.xfvrp.report.build.ReportBuilder;
 
 /**
- *   Mixed fleet heuristic
- *   Choose biggest vehicle type and optimize with no
- *   fleet size limitation. Afterwards the k best
- *   routes are chosen. The customers on the trashed
- *   routes are the base for the next run with next
- *   vehicle type.
+ * Mixed fleet heuristic
+ * 
+ * Choose biggest vehicle type and optimize with no
+ * fleet size limitation. Afterwards the k best
+ * routes are chosen. The customers on the trashed
+ * routes are the base for the next run with next
+ * vehicle type.
  *   
  * @author hschneid
  *
  */
 public class FullRouteMixedFleetHeuristic {
 
-	private final FullRouteMixedFleetSelector selector = new FullRouteMixedFleetSelector();
+	private FullRouteMixedFleetSelector selector = new FullRouteMixedFleetSelector();
 
 	public List<XFVRPSolution> execute(
 			Node[] nodes,
@@ -51,7 +52,6 @@ public class FullRouteMixedFleetHeuristic {
 			Function<RoutingDataBag, XFVRPSolution> routePlanningFunction,
 			Metric metric,
 			XFVRPParameter parameter,
-			Vehicle invalidVehicle,
 			StatusManager statusManager) {
 		List<Node> unplannedNodes = Arrays.asList(nodes);
 
@@ -77,8 +77,8 @@ public class FullRouteMixedFleetHeuristic {
 		}
 
 		// Insert invalid and unplanned nodes into solution 
-		vehicleSolutions.add(insertUnplannedNodes(unplannedNodes, vehicles, metric, parameter, invalidVehicle, statusManager));
-		
+		vehicleSolutions.add(insertUnplannedNodes(unplannedNodes, metric, parameter, statusManager));
+
 		return vehicleSolutions;
 	}
 
@@ -113,45 +113,30 @@ public class FullRouteMixedFleetHeuristic {
 	 * @param model
 	 */
 	private XFVRPSolution reconstructGiantRoute(List<RouteReport> routes, XFVRPModel model) {
-		Map<String, Node> nodeMap = new HashMap<>();
-		Arrays.stream(model.getNodes()).forEach(n -> nodeMap.put(n.getExternID(), n));
+		Map<String, Node> nodeMap = Arrays.stream(model.getNodes()).collect(Collectors.toMap(Node::getExternID, node -> node, (v1, v2) -> v1));
 
-		int depotId = 0;
-		ArrayList<Node> al = new ArrayList<>();
-		for (RouteReport r : routes) {
-			List<Event> events = r.getEvents();
-			for (int i = 0; i < events.size(); i++) {
-				Event e = events.get(i);
-
-				// Jump over Depots with empty routes
-				if(e.getSiteType() == SiteType.DEPOT
-						&& i + 1 < events.size()
-						&& events.get(i + 1).getSiteType() == SiteType.DEPOT)
-					continue;
-
-				Node node = nodeMap.get(e.getID());
-
-				// Depots
-				if(e.getSiteType() == SiteType.DEPOT)
-					al.add(Util.createIdNode(node, depotId++));
+		AtomicInteger depotId = new AtomicInteger(0);
+		Node[] giantRoute = routes.stream()
+				.map(route -> route.getEvents())
+				.filter(events -> events.size() > 2)
+				.flatMap(events -> events.stream().sequential())
 				// Other nodes (PAUSE is no structural node type. It is only inserted for evaluation issues in reports.)
-				else if(e.getLoadType() != LoadType.PAUSE)
-					al.add(node);
-			}
-		}
+				.filter(event -> event.getLoadType() != LoadType.PAUSE)
+				.map(event -> nodeMap.get(event.getID()))
+				.map(node -> {
+					if(node.getSiteType() == SiteType.DEPOT)
+						return Util.createIdNode(node, depotId.getAndIncrement());
+					return node;
+				})
+				.toArray(Node[]::new);
 
-		Solution solution = new Solution();
-		solution.setGiantRoute(al.stream().toArray(Node[]::new));
-
-		return new XFVRPSolution(solution, model);
+		return new XFVRPSolution(getSolution(giantRoute), model);
 	}
 
 	private XFVRPSolution insertUnplannedNodes(
 			List<Node> unplannedNodes,
-			Vehicle[] vehicles,
 			Metric metric, 
 			XFVRPParameter parameter,
-			Vehicle invalidVehicle,
 			StatusManager statusManager) {
 
 		// Get unplanned or invalid nodes
@@ -159,43 +144,37 @@ public class FullRouteMixedFleetHeuristic {
 				.filter(n -> n.getSiteType() == SiteType.CUSTOMER)
 				.collect(Collectors.toList());
 
-		if(unplannedCustomers.size() > 0) {
-			// Set unplanned reason, for valid nodes
-			unplannedCustomers.stream()
-			.filter(n -> n.getInvalidReason() == InvalidReason.NONE)
-			.forEach(n -> n.setInvalidReason(InvalidReason.UNPLANNED));
-
-			// Build new node array only with unplanned customers
-			List<Node> nodeList = unplannedNodes.stream()
-					.filter(n -> n.getSiteType() == SiteType.DEPOT || n.getSiteType() == SiteType.REPLENISH)
-					.collect(Collectors.toList());
-			nodeList.addAll(unplannedCustomers);
-
-			// Set local index
-			IntStream.range(0, nodeList.size()).forEach(i -> nodeList.get(i).setIdx(i));
-
-			Node[] nodes = nodeList.toArray(new Node[0]);
-
-			Solution giantRoute = buildGiantRouteForInvalidNodes(unplannedCustomers, nodes[0], statusManager);
-
-			// Create solution with single routes for each invalid node
-			InternalMetric internalMetric = AcceleratedMetricTransformator.transform(metric, nodes, vehicles[0]);
-			
-			return new XFVRPSolution(
-							giantRoute,
-							new XFVRPModel(
-									nodes,
-									internalMetric,
-									internalMetric, 
-									invalidVehicle,
-									parameter
-									)
-							);
+		if(unplannedCustomers.size() == 0) {
+			statusManager.fireMessage(StatusCode.RUNNING, "Invalid or unplanned nodes are inserted in result. (nbr of invalid nodes = " + unplannedCustomers.size()+")");
+			return null;
 		}
-		
-		statusManager.fireMessage(StatusCode.RUNNING, "Invalid or unplanned nodes are inserted in result. (nbr of invalid nodes = " + unplannedCustomers.size()+")");
-		
-		return null;
+
+		// Set unplanned reason, for valid nodes
+		unplannedCustomers.stream()
+		.filter(n -> n.getInvalidReason() == InvalidReason.NONE)
+		.forEach(n -> n.setInvalidReason(InvalidReason.UNPLANNED));
+
+		// Set local index
+		Node[] nodes = unplannedNodes.toArray(new Node[0]);
+		IntStream.range(0, nodes.length).forEach(i -> nodes[i].setIdx(i));
+
+		Solution giantRoute = buildGiantRouteForInvalidNodes(unplannedCustomers, nodes[0], statusManager);
+
+		Vehicle invalidVehicle = InternalVehicleData.createInvalid().createVehicle(-1);
+
+		// Create solution with single routes for each invalid node
+		InternalMetric internalMetric = AcceleratedMetricTransformator.transform(metric, nodes, invalidVehicle);
+
+		return new XFVRPSolution(
+				giantRoute,
+				new XFVRPModel(
+						nodes,
+						internalMetric,
+						internalMetric, 
+						invalidVehicle,
+						parameter
+						)
+				);
 	}
 
 	/**
@@ -210,6 +189,9 @@ public class FullRouteMixedFleetHeuristic {
 	 * @return Giant route with single routes for each invalid node.
 	 */
 	private Solution buildGiantRouteForInvalidNodes(List<Node> unplannedNodes, Node depot, StatusManager statusManager) {
+		if(unplannedNodes.size() == 0)
+			return getSolution(null);
+
 		Node[] giantRoute = new Node[unplannedNodes.size() * 2 + 2];
 
 		// Cluster blocked nodes
@@ -247,9 +229,15 @@ public class FullRouteMixedFleetHeuristic {
 			giantRoute[i++] = Util.createIdNode(depot, maxDepotId++);
 		}
 
-		Solution solution = new Solution();
-		solution.setGiantRoute(Arrays.copyOf(giantRoute, i));
-		return solution;
+		return getSolution(Arrays.copyOf(giantRoute, i));
 	}
 
+	private Solution getSolution(Node[] giantRoute) {
+		if(giantRoute == null)
+			giantRoute = new Node[0];
+
+		Solution solution = new Solution();
+		solution.setGiantRoute(giantRoute);
+		return solution;		
+	}
 }

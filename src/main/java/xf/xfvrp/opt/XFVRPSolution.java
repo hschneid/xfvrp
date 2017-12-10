@@ -1,6 +1,5 @@
 package xf.xfvrp.opt;
 
-import xf.xfvrp.base.Vehicle;
 import xf.xfvrp.base.XFVRPModel;
 
 /** 
@@ -21,7 +20,6 @@ public class XFVRPSolution {
 
 	protected Solution solution;
 	protected XFVRPModel model;
-	protected final Vehicle vehicle;
 
 	/**
 	 * 
@@ -31,7 +29,6 @@ public class XFVRPSolution {
 	public XFVRPSolution(Solution solution, XFVRPModel model) {
 		this.solution = solution;
 		this.model = model;
-		this.vehicle = model.getVehicle();
 	}
 	
 	

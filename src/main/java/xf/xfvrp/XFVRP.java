@@ -72,17 +72,14 @@ public class XFVRP extends XFVRP_Parameter {
 		Node[] nodes = importer.getNodes(vehicles, statusManager);
 
 		// Check of input parameter
-		{
-			if(importer.getDepotList().size() == 0) {
-				statusManager.fireMessage(StatusCode.ABORT, "No depot is given.");
-				throw new IllegalArgumentException("No depot is given.");
-			}
-			if(vehicles.length == 0) {
-				statusManager.fireMessage(StatusCode.ABORT, "No vehicle information were set.");
-				throw new IllegalArgumentException("No vehicle information were set.");
-			}
+		if(importer.getDepotList().size() == 0) {
+			statusManager.fireMessage(StatusCode.ABORT, "No depot is given.");
+			throw new IllegalArgumentException("No depot is given.");
 		}
-
+		if(vehicles.length == 0) {
+			statusManager.fireMessage(StatusCode.ABORT, "No vehicle information were set.");
+			throw new IllegalArgumentException("No vehicle information were set.");
+		}
 
 		vehicleSolutionList.addAll(
 				new FullRouteMixedFleetHeuristic().execute(
@@ -97,8 +94,7 @@ public class XFVRP extends XFVRP_Parameter {
 							return null;
 						},
 						metric,
-						parameter, 
-						importer.invalidVehicle.createVehicle(-1),
+						parameter,
 						statusManager)
 				);
 

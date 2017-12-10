@@ -59,7 +59,6 @@ class XFVRPSolutionSpec extends Specification {
 		then:
 		solution.solution == sol
 		solution.model == model
-		solution.vehicle == model.getVehicle()
 	}
 	
 	

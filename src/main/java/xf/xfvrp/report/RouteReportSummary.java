@@ -232,5 +232,22 @@ public class RouteReportSummary {
 		return overload3;
 	}
 
+	public void setDuration(float duration) {
+		this.duration = duration;
+	}
 
+	public void setPickupLoad(float pickupLoad) {
+		this.pickupLoad = pickupLoad;
+	}
+
+	public void setDelivery(float delivery) {
+		this.delivery = delivery;
+	}
+
+	public void setDelay(float delay) {
+		this.delay = delay;
+	}
+
+
+	
 }

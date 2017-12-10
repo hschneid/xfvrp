@@ -1,5 +1,6 @@
 package util.instances
 
+import xf.xfvrp.base.InvalidReason
 import xf.xfvrp.base.LoadType
 import xf.xfvrp.base.Node
 import xf.xfvrp.base.SiteType
@@ -26,6 +27,7 @@ class TestNode {
 	int presetDepotGlobalIdx = -1;
 	int presetVehicleIdx = -1;
 	int presetBlackNodeIdx = -1;
+	InvalidReason invalidReason = InvalidReason.NONE;
 
 	Node getNode() {
 		Node node = new Node(
@@ -49,6 +51,7 @@ class TestNode {
 		if(presetDepotGlobalIdx > -1) node.addPresetDepot(presetDepotGlobalIdx)
 		if(presetVehicleIdx > -1) node.addPresetVehicle(presetVehicleIdx)
 		if(presetBlackNodeIdx > -1) node.addToBlacklist(presetBlackNodeIdx)
+		node.invalidReason = invalidReason;
 
 		return node;
 	}

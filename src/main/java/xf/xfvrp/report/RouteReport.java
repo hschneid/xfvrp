@@ -70,4 +70,6 @@ public class RouteReport {
 	public List<Event> getEvents() {
 		return eventList;
 	}
+	
+	
 }
