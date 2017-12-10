@@ -37,3 +37,10 @@ xfvrp.setOptType(XFVRPOptType.RELOCATE);
 Report report = xfvrp.executeRoutePlanning();
 report.getSummary().getDistance();
 ```
+
+## Release nodes
+Version 11:
+- Automatical test with 70% code coverage of lines
+- Removed unusual features (i.e. XFLP)
+- A lot of code rework as preparation of further improvements
+- Solved a lot of bugs, due to testing ;-)
