@@ -1,7 +1,5 @@
 package xf.xfvrp.base.fleximport;
 
-import java.util.List;
-
 import xf.xfvrp.base.LoadType;
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.SiteType;
@@ -25,42 +23,6 @@ import xf.xfvrp.base.SiteType;
  *
  */
 public class InternalReplenishData extends ReplenishData {
-	private static final long serialVersionUID = 241228949417013107L;
-
-	/**
-	 * @return the externID
-	 */
-	public String getExternID() {
-		return externID;
-	}
-
-	/**
-	 * @return the geoId
-	 */
-	public int getGeoId() {
-		return geoId;
-	}
-
-	/**
-	 * @return the xlong
-	 */
-	public float getXlong() {
-		return xlong;
-	}
-
-	/**
-	 * @return the ylat
-	 */
-	public float getYlat() {
-		return ylat;
-	}
-
-	/**
-	 * @return the timeWindowList
-	 */
-	public List<float[]> getTimeWindowList() {
-		return timeWindowList;
-	}
 
 	/**
 	 * 

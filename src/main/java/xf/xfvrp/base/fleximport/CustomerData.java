@@ -25,8 +25,7 @@ import xf.xfvrp.base.LoadType;
  * @author hschneid
  *
  */
-public abstract class CustomerData extends DepotData {
-	private static final long serialVersionUID = -2498257823778005561L;
+public abstract class CustomerData extends NodeData {
 	
 	/** Basic XFVRP - parameter **/
 	protected LoadType loadType = LoadType.PICKUP;
@@ -102,7 +101,6 @@ public abstract class CustomerData extends DepotData {
 	/**
 	 * @param externID the externID to set
 	 */
-	@Override
 	public CustomerData setExternID(String externID) {
 		this.externID = externID;
 		return this;
@@ -111,7 +109,6 @@ public abstract class CustomerData extends DepotData {
 	/**
 	 * @param geoId the geoId to set
 	 */
-	@Override
 	public CustomerData setGeoId(int geoId) {
 		this.geoId = geoId;
 		return this;
@@ -120,7 +117,6 @@ public abstract class CustomerData extends DepotData {
 	/**
 	 * @param xlong the xlong to set
 	 */
-	@Override
 	public CustomerData setXlong(float xlong) {
 		this.xlong = xlong;
 		return this;
@@ -129,7 +125,6 @@ public abstract class CustomerData extends DepotData {
 	/**
 	 * @param ylat the ylat to set
 	 */
-	@Override
 	public CustomerData setYlat(float ylat) {
 		this.ylat = ylat;
 		return this;
@@ -146,7 +141,6 @@ public abstract class CustomerData extends DepotData {
 	/**
 	 * @param open1 the open1 to set
 	 */
-	@Override
 	public CustomerData setOpen1(float open1) {
 		this.open1 = open1;
 		return this;
@@ -155,7 +149,6 @@ public abstract class CustomerData extends DepotData {
 	/**
 	 * @param close1 the close1 to set
 	 */
-	@Override
 	public CustomerData setClose1(float close1) {
 		this.close1 = close1;
 		return this;
@@ -164,7 +157,6 @@ public abstract class CustomerData extends DepotData {
 	/**
 	 * @param open2 the open2 to set
 	 */
-	@Override
 	public CustomerData setOpen2(float open2) {
 		this.open2 = open2;
 		return this;
@@ -173,7 +165,6 @@ public abstract class CustomerData extends DepotData {
 	/**
 	 * @param close2 the close2 to set
 	 */
-	@Override
 	public CustomerData setClose2(float close2) {
 		this.close2 = close2;
 		return this;

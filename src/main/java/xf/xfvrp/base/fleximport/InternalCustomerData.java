@@ -1,9 +1,7 @@
 package xf.xfvrp.base.fleximport;
 
-import java.util.List;
 import java.util.Set;
 
-import xf.xfvrp.base.LoadType;
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.SiteType;
 
@@ -24,56 +22,6 @@ import xf.xfvrp.base.SiteType;
  *
  */
 public class InternalCustomerData extends CustomerData {
-	private static final long serialVersionUID = -5336103246844878384L;
-
-	/**
-	 * @return the externID
-	 */
-	public String getExternID() {
-		return externID;
-	}
-
-	/**
-	 * @return the geoId
-	 */
-	public int getGeoId() {
-		return geoId;
-	}
-
-	/**
-	 * @return the loadType
-	 */
-	public LoadType getLoadType() {
-		return loadType;
-	}
-
-	/**
-	 * @return the xlong
-	 */
-	public float getXlong() {
-		return xlong;
-	}
-
-	/**
-	 * @return the ylat
-	 */
-	public float getYlat() {
-		return ylat;
-	}
-
-	/**
-	 * @return the demand
-	 */
-	public float[] getDemand() {
-		return demand;
-	}
-
-	/**
-	 * @return the timeWindowList
-	 */
-	public List<float[]> getTimeWindowList() {
-		return timeWindowList;
-	}
 
 	/**
 	 * @return the serviceTime
