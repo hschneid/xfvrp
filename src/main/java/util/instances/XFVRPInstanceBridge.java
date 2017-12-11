@@ -1,15 +1,17 @@
 package util.instances;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.nio.file.Paths;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.xml.bind.JAXBException;
 
-import util.instances.Instance.Fleet.VehicleProfile;
-import util.instances.Instance.Network.Nodes.Node;
-import util.instances.Instance.Requests.Request;
+import org.vrprep.model.instance.Instance;
+import org.vrprep.model.instance.Instance.Fleet.VehicleProfile;
+import org.vrprep.model.instance.Instance.Network.Nodes.Node;
+import org.vrprep.model.instance.Instance.Requests.Request;
+import org.vrprep.model.util.Instances;
+
 import xf.xfvrp.XFVRP;
 import xf.xfvrp.base.LoadType;
 import xf.xfvrp.base.metric.EucledianMetric;
@@ -19,14 +21,14 @@ import xf.xfvrp.report.Report;
 
 public class XFVRPInstanceBridge {
 
-	public XFVRP build(String pathName) throws FileNotFoundException, JAXBException {
-		Instance instance = InstanceBuilder.read(new FileInputStream(pathName));
+	public XFVRP build(String pathName) throws JAXBException {
+		Instance instance = Instances.read(Paths.get(pathName));
 
 		XFVRP vrp = new XFVRP();
 
-		Map<String, Request> requests = instance.requests.request.stream().collect(Collectors.toMap(n -> n.getNode().toString(), v -> v));
+		Map<String, Request> requests = instance.getRequests().getRequest().stream().collect(Collectors.toMap(n -> n.getNode().toString(), v -> v));
 
-		for (Node node : instance.network.nodes.node) {
+		for (Node node : instance.getNetwork().getNodes().getNode()) {
 			int nodeType = node.getType().intValue();
 			
 			if(nodeType == 0) {
@@ -36,7 +38,7 @@ public class XFVRPInstanceBridge {
 			}
 		}
 
-		for (VehicleProfile vehicle : instance.fleet.vehicleProfile) {
+		for (VehicleProfile vehicle : instance.getFleet().getVehicleProfile()) {
 			vrp.addVehicle()
 			.setName(vehicle.getType().toString())
 			.setCapacity(new float[]{vehicle.getCapacity().floatValue()});
@@ -84,8 +86,7 @@ public class XFVRPInstanceBridge {
 			XFVRPInstanceBridge i = new XFVRPInstanceBridge();
 			XFVRP vrp = i.build("./src/test/resources/CMT05.xml");
 			i.opt(vrp);
-		} catch (FileNotFoundException | JAXBException | PreCheckException e) {
-			// TODO Auto-generated catch block
+		} catch (JAXBException | PreCheckException e) {
 			e.printStackTrace();
 		}
 	}

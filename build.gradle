@@ -25,16 +25,14 @@ mainClassName = 'util.Application'
 
 // In this section you declare the dependencies for your production and test code
 dependencies {
-	//compile('org.springframework.boot:spring-boot-starter')
-	//compile('org.springframework.boot:spring-boot-starter-web')
 	compile 'org.codehaus.groovy:groovy-all:2.4.11'
 	compile 'org.apache.commons:commons-compress:1.5'
 	compile 'colt:colt:1.2.0'
 	compile 'com.google.collections:google-collections:1.0'
+	compile 'cglib:cglib-nodep:3.2.5'
+	compile 'org.vrp-rep:vrprep-model:0.5.0'
 	
 	testCompile 'junit:junit:4.12'
 	testCompile "org.spockframework:spock-core:1.1-groovy-2.4"
-	compile 'cglib:cglib-nodep:3.2.5'
-	//testCompile('org.springframework.boot:spring-boot-starter-test')
 }
 
