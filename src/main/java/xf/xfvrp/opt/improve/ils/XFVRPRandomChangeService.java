@@ -31,9 +31,6 @@ public class XFVRPRandomChangeService extends XFVRPOptBase implements XFRandomCh
 	/**
 	 * This perturb routine relocates single nodes iterativly. The nodes are
 	 * selected randomly.
-	 * 
-	 * @param giantRoute
-	 * @param vehicle
 	 */
 	@Override
 	protected Solution execute(Solution solution) {
@@ -77,11 +74,6 @@ public class XFVRPRandomChangeService extends XFVRPOptBase implements XFRandomCh
 		return false;
 	}
 
-	/**
-	 * 
-	 * @param param
-	 * @param giantRoute
-	 */
 	private void chooseSrc(Choice choice, Solution solution) {
 		Node[] giantRoute = solution.getGiantRoute();
 
@@ -119,11 +111,6 @@ public class XFVRPRandomChangeService extends XFVRPOptBase implements XFRandomCh
 		}
 	}
 
-	/**
-	 * 
-	 * @param param
-	 * @param giantRoute
-	 */
 	private void chooseDst(Choice choice, Solution solution) {
 		Node[] giantRoute = solution.getGiantRoute();
 

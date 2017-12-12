@@ -40,10 +40,6 @@ public abstract class XFVRPOptBase extends XFVRPBase<XFVRPModel> {
 	/**
 	 * Inverts the node sequence in the range
 	 * from start to end, both inclusive. 
-	 * 
-	 * @param giantRoute node sequence
-	 * @param start starting index of range (incl.)
-	 * @param end ending index of range (incl.)
 	 */
 	protected void swap(Solution solution, int start, int end) {
 		Node[] giantTour = solution.getGiantRoute();
@@ -66,10 +62,6 @@ public abstract class XFVRPOptBase extends XFVRPBase<XFVRPModel> {
 	/**
 	 * Moves the src-node from its position in giant tour
 	 * to before the dst-node.
-	 * 
-	 * @param giantRoute node sequence
-	 * @param src index of the node, which will be moved.
-	 * @param dst index of the node, where src-node will be inserted before.
 	 */
 	protected void move(Solution solution, int src, int dst) {
 		Node[] giantTour = solution.getGiantRoute();
@@ -98,11 +90,6 @@ public abstract class XFVRPOptBase extends XFVRPBase<XFVRPModel> {
 	/**
 	 * Moves the nodes in the range from srcStart and srcEnd, both inclusive, 
 	 * before the position dst. 
-	 * 
-	 * @param giantRoute node sequence
-	 * @param srcStart index of the node, which is the starting point of the segment, which will be moved.
-	 * @param srcEnd index of the node, which is the ending point of the segment, which will be moved.
-	 * @param dst index of the node, where the segment will be inserted before.
 	 */
 	protected void pathMove(Solution solution, int srcStart, int srcEnd, int dst) {
 		if(srcEnd < srcStart)
@@ -127,10 +114,6 @@ public abstract class XFVRPOptBase extends XFVRPBase<XFVRPModel> {
 	/**
 	 * Exchanges the node positions of node i and j with
 	 * their counterparts.
-	 * 
-	 * @param giantRoute node sequence
-	 * @param i index of the node, which will be moved to position j.
-	 * @param j index of the node, which will be moved to position i.
 	 */
 	protected void exchange(Solution solution, int i, int j) {
 		Node[] giantTour = solution.getGiantRoute();
@@ -147,12 +130,6 @@ public abstract class XFVRPOptBase extends XFVRPBase<XFVRPModel> {
 	 * starts at position a and includes la many nodes. Second segments
 	 * starts at position b and includes lb many nodes. The two
 	 * segments must not overlap each other.
-	 * 
-	 * @param giantRoute node sequence
-	 * @param a index of the first node in first segment
-	 * @param b index of the first node in second segment
-	 * @param la number of nodes in first segment
-	 * @param lb number of nodes in second segment
 	 */
 	protected void exchange(Solution solution, int a, int b, int la, int lb) {
 		if(((a < b) && (a + la) >= b) || ((b < a) && (b + lb) >= a))
@@ -196,9 +173,6 @@ public abstract class XFVRPOptBase extends XFVRPBase<XFVRPModel> {
 	/**
 	 * Internal method of all improvment heuristics to bring to list of improving steps
 	 * in the rigth ordering. 
-	 * 
-	 * @param list A list of improving steps, where each step is indicated by an float array. A certain position in the array has to contain the amount of improvement.
-	 * @param position The position of the improving amount of a step in the improving step list.
 	 */
 	protected void sort(List<float[]> list, final int position) {
 		// Sort descending for potential
@@ -213,9 +187,6 @@ public abstract class XFVRPOptBase extends XFVRPBase<XFVRPModel> {
 
 	/**
 	 * Processes a check evaluation.
-	 * 
-	 * @param giantRoute sequence of nodes
-	 * @return
 	 */
 	public Quality check(Solution solution) {	
 		return evaluationService.check(solution, model);
@@ -227,10 +198,6 @@ public abstract class XFVRPOptBase extends XFVRPBase<XFVRPModel> {
 
 	/**
 	 * Returns the distance between two given XFNodes
-	 * 
-	 * @param n1
-	 * @param n2
-	 * @return
 	 */
 	protected float getDistanceForOptimization(Node n1, Node n2) {
 		return model.getDistanceForOptimization(n1, n2);

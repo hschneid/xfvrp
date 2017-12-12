@@ -25,11 +25,6 @@ public class BlockPositionConverter {
 	
 	/**
 	 * Converts the user block positions into an indexed numbers.
-	 * 
-	 * @param node Node without block indexes
-	 * @param cust Contains the input data
-	 * @param list
-	 * @return Node with block indexes
 	 */
 	public static void convert(Node[] nodes, List<InternalCustomerData> list) {
 		Map<String, Node> nodeMap = getMapping(nodes);

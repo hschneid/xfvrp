@@ -13,12 +13,15 @@ buildscript {
 apply plugin:'groovy'
 apply plugin:'eclipse'
 apply plugin:'application'
-// apply plugin: 'org.springframework.boot'
+apply plugin: 'maven'
+apply plugin: 'signing'
 
-version = '0.0.1-SNAPSHOT'
- 
+group = "com.github.hschneid"
+archivesBaseName = "xfvrp"
+version = "11.0-SNAPSHOT"
+
 repositories {
-    mavenCentral()
+	mavenCentral()
 }
 
 mainClassName = 'util.Application'
@@ -31,8 +34,72 @@ dependencies {
 	compile 'com.google.collections:google-collections:1.0'
 	compile 'cglib:cglib-nodep:3.2.5'
 	compile 'org.vrp-rep:vrprep-model:0.5.0'
-	
+
 	testCompile 'junit:junit:4.12'
 	testCompile "org.spockframework:spock-core:1.1-groovy-2.4"
+}
+
+// Maven
+task javadocJar(type: Jar) {
+	classifier = 'javadoc'
+	from javadoc
+}
+
+task sourcesJar(type: Jar) {
+	classifier = 'sources'
+	from sourceSets.main.allSource
+}
+
+artifacts {
+	archives javadocJar, sourcesJar
+}
+
+signing {
+	sign configurations.archives
+}
+
+uploadArchives {
+	repositories {
+		mavenDeployer {
+			beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+			repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+				authentication(userName: ossrhUsername, password: ossrhPassword)
+			}
+
+			snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+				authentication(userName: ossrhUsername, password: ossrhPassword)
+			}
+
+			pom.project {
+				name 'XFVRP'
+				packaging 'jar'
+				// optionally artifactId can be defined here
+				description 'Fast and easy solver for a lot of Vehicle Routing constraints'
+				url 'https://github.com/hschneid/xfvrp'
+
+				scm {
+					connection 'scm:git:git://github.com/hschneid/xfvrp.git'
+					developerConnection 'scm:git:ssh://github.com/hschneid/xfvrp.git'
+					url 'https://github.com/hschneid/xfvrp'
+				}
+
+				licenses {
+					license {
+						name 'MIT License'
+						url 'http://www.opensource.org/licenses/mit-license.php'
+					}
+				}
+
+				developers {
+					developer {
+						id 'hschneid'
+						name 'Holger Schneider'
+						email 'holger.schneider.81@gmail.com'
+					}
+				}
+			}
+		}
+	}
 }
 

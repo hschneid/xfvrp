@@ -34,10 +34,6 @@ public class EvaluationService {
 	 * from the ending depot, then a multi depot vehicle routing is solved. A route
 	 * is evaluated always as closed route with same starting and ending depot. The
 	 * starting depot of a route stands also for the ending depot, in any case. 
-	 * 
-	 * @param giantRoute sequence of nodes, which is evaluated
-	 * @param model The model which contains the main planning data
-	 * @return
 	 */
 	public Quality check(Solution solution, XFVRPModel model) {
 		Node[] giantRoute = solution.getGiantRoute();
@@ -137,13 +133,6 @@ public class EvaluationService {
 		q.addPenalty(penalty, Quality.PENALTY_REASON_CAPACITY);
 	}
 
-	/**
-	 * 
-	 * @param model
-	 * @param q
-	 * @param vehicle
-	 * @param context
-	 */
 	private void checkTimeWindow(XFVRPModel model, Quality q, Vehicle vehicle, Context context) {
 		Node currentNode = context.getCurrentNode();
 
@@ -173,23 +162,9 @@ public class EvaluationService {
 		context.addToDuration(serviceTime + waiting);
 	}
 
-
-
 	/**
 	 * Checks for a lot of preset restrictions or prepare
 	 * for later preset restriction checks.
-	 * 
-	 * @param q
-	 * @param routeVar
-	 * @param blockPresetArr
-	 * @param foundPresetCountArr
-	 * @param lastPresetSequenceRankArr
-	 * @param presetRoutingBlackList
-	 * @param presetRoutingNodeList
-	 * @param currDepot
-	 * @param currNode
-	 * @param lastNode
-	 * @param currSiteType
 	 */
 	private void checkPreset(Quality q, Context context) {
 		Node currNode = context.getCurrentNode();
@@ -222,10 +197,6 @@ public class EvaluationService {
 		q.addPenalty(penalty, Quality.PENALTY_REASON_PRESETTING);
 	}
 
-	/**
-	 * @param vehicle
-	 * @param routeVar
-	 */
 	private void checkDriverRestrictions(Vehicle vehicle, Context context) {
 		// check max driving time per shift restrictions
 		if(context.getDrivingTime() >= vehicle.maxDrivingTimePerShift) {
@@ -239,13 +210,6 @@ public class EvaluationService {
 		context.drive(dist);
 	}
 
-	/**
-	 * 
-	 * @param v
-	 * @param q
-	 * @param model
-	 * @param context
-	 */
 	private void finishRoute(Vehicle v, Quality q, XFVRPModel model, Context context) {
 		float stopCountPenalty = Math.max(0, context.getNbrOfStops() - v.maxStopCount);
 		float durationPenalty = Math.max(0, context.getDuration() - v.maxRouteDuration);
@@ -263,14 +227,6 @@ public class EvaluationService {
 			q.addCost(v.fixCost);
 	}
 
-	/**
-	 * 
-	 * @param newDepot
-	 * @param nextNode
-	 * @param q
-	 * @param model
-	 * @param context
-	 */
 	private void beginRoute(Node newDepot, Node nextNode, Vehicle vehicle, Quality q, XFVRPModel model, Context context) {
 		// Check for black listed nodes on route
 		// Afterwards reset the arrays for next route
@@ -291,12 +247,6 @@ public class EvaluationService {
 		context.setDepartureTimeAtDepot(earliestDepartureTime, loadingTimeAtDepot);
 	}
 
-	/**
-	 * 
-	 * @param nodes
-	 * @param pos
-	 * @return
-	 */
 	private Node findNextCustomer(List<Node> nodes, int pos) {
 		for (int i = pos + 1; i < nodes.size(); i++) {
 			if(nodes.get(i).getSiteType() == SiteType.CUSTOMER)
@@ -305,12 +255,6 @@ public class EvaluationService {
 		return null;
 	}
 
-	/**
-	 * 
-	 * @param vehicle
-	 * @param q
-	 * @param context
-	 */
 	private void replenishAmount(Vehicle vehicle, Quality q, Context context) {
 		if(context.getCurrentNode().getSiteType() != SiteType.REPLENISH)
 			return;

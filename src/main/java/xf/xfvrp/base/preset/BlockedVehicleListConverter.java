@@ -28,12 +28,6 @@ public class BlockedVehicleListConverter {
 	/**
 	 * Sets for a node the blocked vehicle object which was given in
 	 * the input data
-	 * 
-	 * @param node Nodes without associated blocked vehicle objects
-	 * @param customerList Contains the input data
-	 * @param vehicles
-	 * @param mon
-	 * @return Node with associated blocked vehicle objects
 	 */
 	public static void convert(Node[] nodes, List<InternalCustomerData> customerList, Vehicle[] vehicles, StatusManager mon) {
 		Map<String, Integer> vehMap = getVehicleMapping(vehicles);

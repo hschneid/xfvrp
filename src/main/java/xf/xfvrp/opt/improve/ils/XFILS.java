@@ -59,9 +59,6 @@ public abstract class XFILS extends XFVRPOptBase {
 	 * Criteria are:
 	 *  - Max number of loops
 	 *  - Max running time
-	 * 
-	 * @param loopIdx Current loop index
-	 * @return Should continue?
 	 */
 	protected boolean checkTerminationCriteria(int loopIdx) {
 		if(loopIdx >= model.getParameter().getILSLoops())
@@ -73,12 +70,6 @@ public abstract class XFILS extends XFVRPOptBase {
 		return true;
 	}
 	
-	/**
-	 * 
-	 * @param giantRoute
-	 * @param vehicle
-	 * @return
-	 */
 	protected Solution localSearch(Solution solution, Vehicle vehicle) {
 		boolean[] processedArr = new boolean[optArr.length];
 
@@ -107,11 +98,6 @@ public abstract class XFILS extends XFVRPOptBase {
 		return solution;
 	}
 	
-	/**
-	 * 
-	 * @param processedArr
-	 * @return
-	 */
 	protected int choose(boolean[] processedArr) {
 		int idx = -1;
 		do {

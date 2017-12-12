@@ -48,10 +48,6 @@ public abstract class XFVRPOptImpBase extends XFVRPOptBase {
 	 * 
 	 * If the result is null, no improvement was found and giant tour
 	 * was not changed.
-	 * 
-	 * @param giantRoute
-	 * @param bestResult
-	 * @return
 	 */
 	protected abstract Quality improve(Solution giantTour, Quality bestResult);
 
@@ -61,11 +57,6 @@ public abstract class XFVRPOptImpBase extends XFVRPOptBase {
 	 * several lower optimization operators. The model may switch between the lower operators.
 	 * 
 	 * Currently it is only used by the PathExchange operator.
-	 * 
-	 * @param giantRoute
-	 * @param bestResult
-	 * @param model
-	 * @return
 	 */
 	protected Quality improve(Solution giantTour, Quality bestResult, XFVRPModel model) {
 		this.model = model;
@@ -103,12 +94,6 @@ public abstract class XFVRPOptImpBase extends XFVRPOptBase {
 	 * Overwrites the getDistance method. If node b is a depot, then
 	 * b is replaced by the depot of node at index aa or if node a is a depot, then
 	 * a is replaced by the depot of node at index bb. 
-	 * 
-	 * @param a Source node
-	 * @param b Destination node
-	 * @param aa Node index of depot for node b
-	 * @param bb Node index of depot for node a
-	 * @return distance
 	 */
 	protected float getDistance(Node a, Node b, int aa, int bb) {
 		if(aa != bb) {
@@ -123,11 +108,6 @@ public abstract class XFVRPOptImpBase extends XFVRPOptBase {
 	/**
 	 * Overwrites the getDistance method. If node b is a depot, then
 	 * b is replaced by the allocated depot of node a.
-	 * 
-	 * @param a Source node
-	 * @param b Destination node
-	 * @param depotAlloc
-	 * @return distance
 	 */
 	protected float getDistance(Node a, Node b, int depotAlloc) {
 		if(b.getSiteType() == SiteType.DEPOT)
@@ -139,11 +119,6 @@ public abstract class XFVRPOptImpBase extends XFVRPOptBase {
 	 * This method checks a new solution, if it is better than the current best solution. If
 	 * the result of this method is not null, then the new solution is better. Otherwise not. The
 	 * check includes a possible check of the loading restrictions.
-	 * 
-	 * @param solution A new VRP solution
-	 * @param bestResult The quality of the current best solution
-	 * @param loadingFootprint A pre-evaluated footprint of load planning
-	 * @return The quality of the new solution. If it is null, then the new solution is not better than the current best solution.
 	 */
 	protected Quality checkIt(Solution solution) {
 		// Evaluate the costs and restrictions (penalties) of a giant route

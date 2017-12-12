@@ -27,10 +27,6 @@ public class BlockNameConverter {
 	
 	/**
 	 * Converts the user block names into indexed numbers.
-	 * 
-	 * @param node Nodes without block indexes (depots, replenish and customers)
-	 * @param list list of user given customers
-	 * @return Node with block indexes
 	 */
 	public static void convert(Node[] nodes, List<InternalCustomerData> list) {
 		Map<String, Node> nodeMap = allocateNodesByExternID(nodes);
