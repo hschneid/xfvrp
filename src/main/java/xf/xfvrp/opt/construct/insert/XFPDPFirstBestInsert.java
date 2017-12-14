@@ -24,7 +24,7 @@ import xf.xfvrp.opt.XFVRPOptBase;
  * LICENSE file in the root directory of this source tree.
  *
  *
- * Insertion heuristic First-Best for Pickup & Delivery Problem
+ * Insertion heuristic First-Best for Pickup and Delivery Problem
  * 
  * All shipments are marked as unplanned and are brought in 
  * a randomized order. Then the shipments are inserted sequentially,

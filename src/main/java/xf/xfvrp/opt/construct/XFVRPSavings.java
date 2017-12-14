@@ -33,9 +33,6 @@ public class XFVRPSavings extends XFVRPOptBase {
 
 	/**
 	 * Executes the Savings routing
-	 * 
-	 * @param giantRoute
-	 * @return
 	 */
 	@Override
 	public Solution execute(Solution solution) {

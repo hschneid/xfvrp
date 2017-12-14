@@ -203,7 +203,7 @@ public abstract class CustomerData extends NodeData {
 
 	/**
 	 * 
-	 * @param pos
+	 * @param rank
 	 * @return
 	 */
 	public CustomerData setPresetBlockRank(int rank) {

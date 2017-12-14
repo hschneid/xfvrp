@@ -27,7 +27,7 @@ public class PresetMetricTransformator {
 	 * This method transforms an internal metric into an internal optimization metric, where distance
 	 * informations are modified for the user given sequence position preset. This means:
 	 * 
-	 * if a node A must not be the predecessor of node B, than the distance between A->B
+	 * if a node A must not be the predecessor of node B, than the distance between A-B
 	 * is modified to unlimited.
 	 * 
 	 * @param metric The original internal metric

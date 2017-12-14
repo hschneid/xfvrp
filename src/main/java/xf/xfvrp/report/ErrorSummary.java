@@ -36,8 +36,6 @@ public class ErrorSummary {
 	/**
 	 * Adds the errors in an evaluated giant route. Evaluated route means,
 	 * that the route is build up by the init routine in the XFVRPInit class.
-	 * 
-	 * @param route giant route with potential invalid customers.
 	 */
 	public void add(Solution solution) {
 		Node[] route = solution.getGiantRoute();

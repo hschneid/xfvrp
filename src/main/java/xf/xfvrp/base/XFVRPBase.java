@@ -23,9 +23,6 @@ public abstract class XFVRPBase<M extends XFVRPModel> {
 
 	/**
 	 * Executes the planning or optimization method
-	 * 
-	 * @param giantRoute
-	 * @return
 	 */
 	protected abstract Solution execute(Solution giantTour);
 

@@ -68,7 +68,7 @@ public class MapMetric implements Metric {
 	 * 
 	 * @param srcId
 	 * @param dstId
-	 * @param dist
+	 * @param time
 	 */
 	public void addTime(int srcId, int dstId, float time) {
 		String key = genKey(srcId, dstId, DEFAULT_VEHICLE_METRIC_ID);

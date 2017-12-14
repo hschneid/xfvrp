@@ -38,6 +38,7 @@ public abstract class XFVRPOptBase extends XFVRPBase<XFVRPModel> {
 	protected EvaluationService evaluationService = new EvaluationService();
 
 	/**
+	 * 
 	 * Inverts the node sequence in the range
 	 * from start to end, both inclusive. 
 	 */

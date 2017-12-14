@@ -23,7 +23,7 @@ public class XFVRPSolution {
 
 	/**
 	 * 
-	 * @param giantRoute
+	 * @param solution
 	 * @param model
 	 */
 	public XFVRPSolution(Solution solution, XFVRPModel model) {

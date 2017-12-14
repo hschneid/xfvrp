@@ -11,66 +11,7 @@ public class NormalizeSolutionService {
 	 * Normalizes the giant tour by applying the following methods
 	 * - Removing empty routes
 	 * - Adding empty routes for each available depot (multi depot) 
-	 * 
-	 * @param giantRoute node sequence with unknown number of empty routes
-	 * @return node sequence with one empty routes for each depot site.
-	 */
-	/*public static Node[] normalizeRouteWithoutDepotId(Node[] giantTour, XFVRPModel model) {
-		Node[] nodeArr = model.getNodes();
-		final int nbrOfDepots = model.getNbrOfDepots();
-
-		List<Node> list = new ArrayList<>();
-
-		int maxDepotId = 0;
-
-		// Remove empty routes and reindex depot nodes (depotId)
-		for (int i = 0; i < giantTour.length - 1; i++) {
-			final SiteType currType = giantTour[i].getSiteType();
-			final SiteType nextType = giantTour[i+1].getSiteType();
-
-			if(currType == SiteType.DEPOT && nextType == SiteType.DEPOT) 
-				continue;
-
-			if(currType == SiteType.REPLENISH && nextType == SiteType.DEPOT)
-				continue;
-
-			list.add(giantTour[i]);
-
-			// If next node is replenish node and current node depot or replenish node,
-			// then ignore the next node.
-			if(currType == SiteType.DEPOT && nextType == SiteType.REPLENISH) 
-				i++;
-			else if(currType == SiteType.REPLENISH && nextType == SiteType.REPLENISH) 
-				i++;
-		}
-
-		// Bei leeren Touren, schließe direkt ab.
-		if(giantTour.length != 0) {
-			list.add(giantTour[giantTour.length - 1]);
-		}
-
-		// Erzeuge für jedes Depot eine leere Tour
-		for (int i = 0; i < nbrOfDepots; i++)
-			list.add(Util.createIdNode(nodeArr[i], maxDepotId++));
-
-		// Create additional empty route with all replenish nodes on it
-		if(model.getNbrOfReplenish() > 0) {
-			for (int i = nbrOfDepots; i < nbrOfDepots + model.getNbrOfReplenish(); i++)
-				list.add(nodeArr[i].copy());
-			list.add(Util.createIdNode(nodeArr[0], maxDepotId++));
-		}
-
-		return list.toArray(new Node[list.size()]);
-	}*/
-
-	/**
-	 * Normalizes the giant tour by applying the following methods
-	 * - Removing empty routes
-	 * - Adding empty routes for each available depot (multi depot) 
 	 * - Reindex the depotIDs which are used for build a solution report
-	 * 
-	 * @param giantRoute node sequence with unknown number of empty routes
-	 * @return node sequence with one empty routes for each depot site.
 	 */
 	public static Solution normalizeRoute(Solution solution, XFVRPModel model) {
 		List<Node> list = new ArrayList<>();

@@ -44,12 +44,6 @@ public class VRPPreCheckService  {
 	
 	/**
 	 * Structural checks of the nodes without model 
-	 * 
-	 * @param nodes
-	 * @param vehicle
-	 * @param plannedCustomers 
-	 * @return list of valid nodes
-	 * @throws PreCheckException 
 	 */
 	public Node[] precheck(Node[] nodes, Vehicle vehicle) throws PreCheckException {
 		checkFeasibility(nodes);
