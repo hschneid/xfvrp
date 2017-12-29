@@ -38,7 +38,7 @@ Report report = xfvrp.executeRoutePlanning();
 report.getSummary().getDistance();
 ```
 
-## Release nodes
+## Release notes
 Version 11:
 - Automatical test with 70% code coverage of lines
 - Removed unusual features (i.e. XFLP)
