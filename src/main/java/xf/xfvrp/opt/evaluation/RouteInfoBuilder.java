@@ -1,47 +1,55 @@
 package xf.xfvrp.opt.evaluation;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import xf.xfvrp.base.LoadType;
 import xf.xfvrp.base.Node;
-import xf.xfvrp.base.SiteType;
 import xf.xfvrp.base.XFVRPModel;
 
 public class RouteInfoBuilder {
 
 	/**
 	 * 
-	 * @param nodes
+	 * @param route
 	 * @param model 
 	 * @return
 	 */
-	public static Map<Node, RouteInfo> build(List<Node> nodes, XFVRPModel model) {
+	public static Map<Node, RouteInfo> build(Node[] route, XFVRPModel model) {
 		Map<Node, RouteInfo> routeInfos = new HashMap<>();
-		RouteInfo routeInfo = new RouteInfo(null);
+		RouteInfo routeInfo = null;
 		
-		for (int idx = 0; idx < nodes.size(); idx++) {
-			Node node = nodes.get(idx);
+		for (int idx = 0; idx < route.length; idx++) {
+			Node node = route[idx];
 			
 			routeInfo = createRouteInfo(routeInfos, routeInfo, node);
 		}
-		
-		if(!routeInfos.containsKey(routeInfo.getDepot()))
-			routeInfos.put(routeInfo.getDepot(), routeInfo);
 		
 		return routeInfos;
 	}
 
 	private static RouteInfo createRouteInfo(Map<Node, RouteInfo> routeInfos, RouteInfo routeInfo, Node node) {
-		if(node.getSiteType() == SiteType.DEPOT || node.getSiteType() == SiteType.REPLENISH) {
-			routeInfos.put(routeInfo.getDepot(), routeInfo);
-			return new RouteInfo(node);
-		} else if(node.getSiteType() == SiteType.CUSTOMER) {
-			changeRouteInfo(node, routeInfo);
-			return routeInfo;
-		} else
-			throw new IllegalStateException("Found unexpected site type ("+node.getSiteType().toString()+")");
+		switch(node.getSiteType()) {
+			case DEPOT : {
+				if(routeInfo != null) {
+					routeInfos.put(routeInfo.getDepot(), routeInfo);
+				}
+				return new RouteInfo(node);
+			}
+			case REPLENISH : {
+				if(routeInfo != null) {
+					routeInfos.put(routeInfo.getDepot(), routeInfo);
+				}
+				return new RouteInfo(node);
+			}
+			case CUSTOMER : {
+				changeRouteInfo(node, routeInfo);
+				return routeInfo;
+			}
+			default : {
+				throw new IllegalStateException("Found unexpected site type ("+node.getSiteType().toString()+")");
+			}
+		}			
 	}
 
 	private static void changeRouteInfo(Node node, RouteInfo routeInfo) {

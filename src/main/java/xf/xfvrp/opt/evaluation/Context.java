@@ -1,12 +1,12 @@
 package xf.xfvrp.opt.evaluation;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.SiteType;
 import xf.xfvrp.base.Vehicle;
+import xf.xfvrp.base.XFVRPModel;
 import xf.xfvrp.base.preset.BlockNameConverter;
 import xf.xfvrp.base.preset.BlockPositionConverter;
 
@@ -19,9 +19,6 @@ public class Context {
 	private static final int NBR_OF_STOPS = 4;
 	private static final int TIME = 5; // Time incl. time windows, driving time, service time, waiting time, rest times
 	private static final int DRIVING_TIME = 6; // only driving time
-
-	// Active nodes for evalution are true, duplicates or empty routes are false
-	private List<Node> activeNodes;
 
 	// Variables
 	private int maxGlobalNodeIdx;
@@ -44,6 +41,8 @@ public class Context {
 	private Node lastNode;
 
 	private float[] lastDrivenDistance;
+	
+	private XFVRPModel model;
 
 	public Context() {
 		routeVar = new float[7];
@@ -53,10 +52,6 @@ public class Context {
 	public void setNextNode(Node newCurrentNode) {
 		this.lastNode = this.currentNode;
 		this.currentNode = newCurrentNode;
-
-		// Replace ending depot with starting depot (in multi-depot problems its necessary)
-		if(currentNode.getSiteType() == SiteType.DEPOT)
-			this.currentNode = this.currentDepot; 
 	}
 
 	public float[] getFittingTimeWindow() {
@@ -80,20 +75,22 @@ public class Context {
 		routeVar[NBR_OF_STOPS]--;
 	}
 
-	public void resetDrivingTime(Vehicle vehicle) {
+	public void resetDrivingTime() {
+		Vehicle vehicle = model.getVehicle();
+		
 		routeVar[DRIVING_TIME] = 0;
 		routeVar[TIME] += vehicle.waitingTimeBetweenShifts;
 		routeVar[DURATION] += vehicle.waitingTimeBetweenShifts;
 	}
 
-	public int createNewRoute(Node newDepot, Vehicle vehicle) {
+	public int createNewRoute(Node newDepot) {
 		routeVar[ROUTE_IDX]++;
 
 		setCurrentDepot(newDepot);
 
 		routeVar[DRIVING_TIME] = 0;
 		routeVar[NBR_OF_STOPS] = 0;
-		int penalty = resetAmountsOfRoute(vehicle);
+		int penalty = resetAmountsOfRoute();
 
 		routeVar[LENGTH] = 0;
 		routeVar[DELAY] = 0;
@@ -114,7 +111,7 @@ public class Context {
 		routeVar[DURATION] = loadingTimeAtDepot;
 	}
 
-	public int resetAmountsOfRoute(Vehicle vehicle) {
+	public int resetAmountsOfRoute() {
 		Arrays.fill(amountsOfRoute, 0);
 
 		Amount deliveryOfRoute = routeInfos.get(currentNode).getDeliveryAmount();
@@ -126,7 +123,7 @@ public class Context {
 			for (int i = 0; i < amountsOfRoute.length / 2; i++)
 				amountsOfRoute[i * 2 + 0] = deliveryOfRoute.getAmounts()[i];
 
-			return checkCapacities(vehicle);
+			return checkCapacities();
 		}
 
 		return 0;
@@ -146,14 +143,6 @@ public class Context {
 
 	public void addToDuration(float addedDuration) {
 		routeVar[DURATION] += addedDuration;
-	}
-
-	public List<Node> getActiveNodes() {
-		return activeNodes;
-	}
-
-	public void setActiveNodes(List<Node> activeNodes) {
-		this.activeNodes = activeNodes;
 	}
 
 	public int getMaxGlobalNodeIdx() {
@@ -232,10 +221,6 @@ public class Context {
 		this.routeInfos = routeDepotServiceMap;
 	}
 
-	public Node getLastDepot() {
-		return currentDepot;
-	}
-
 	public void setCurrentDepot(Node newDepot) {
 		this.currentDepot = newDepot;
 		this.currentNode = newDepot;
@@ -277,6 +262,10 @@ public class Context {
 		return currentDepot;
 	}
 
+	public XFVRPModel getModel() {
+		return model;
+	}
+
 	public float getDrivingTime() {
 		return routeVar[DRIVING_TIME];
 	}
@@ -293,11 +282,13 @@ public class Context {
 		return (routeVar[TIME] < timeWindow[0]) ? timeWindow[0] - routeVar[TIME] : 0;
 	}
 
-	public int checkCapacities(Vehicle v) {
+	public int checkCapacities() {
+		Vehicle vehicle = model.getVehicle();
+		
 		int sum = 0;
 		for (int i = 0; i < amountsOfRoute.length / 2; i++) {
 			// Common Load of Pickups and Deliveries
-			sum += (int)Math.ceil(Math.max(0, (amountsOfRoute[i * 2 + 0] + amountsOfRoute[i * 2 + 1]) - v.capacity[i]));
+			sum += (int)Math.ceil(Math.max(0, (amountsOfRoute[i * 2 + 0] + amountsOfRoute[i * 2 + 1]) - vehicle.capacity[i]));
 		}
 
 		return sum;
@@ -390,5 +381,9 @@ public class Context {
 
 	public float getLength() {
 		return routeVar[LENGTH];
+	}
+
+	public void setModel(XFVRPModel model) {
+		this.model = model;
 	}
 }

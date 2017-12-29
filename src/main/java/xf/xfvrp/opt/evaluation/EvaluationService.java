@@ -1,8 +1,5 @@
 package xf.xfvrp.opt.evaluation;
 
-import java.util.Arrays;
-import java.util.List;
-
 import xf.xfvrp.base.LoadType;
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.Quality;
@@ -36,76 +33,65 @@ public class EvaluationService {
 	 * starting depot of a route stands also for the ending depot, in any case. 
 	 */
 	public Quality check(Solution solution, XFVRPModel model) {
-		Node[] giantRoute = solution.getGiantRoute();
-
 		Quality q = new Quality(null);
 
-		Context context = ContextBuilder.build(solution, model);
+		Context context = ContextBuilder.build(model);
 
-		// Feasibility check
-		FeasibilityAnalzer.checkFeasibility(giantRoute);
-
-		if(checkForEmpty(giantRoute))
-			return q;
-
-		checkRoutes(model, q, context);
+		checkRoutes(solution, context, q);
 
 		return q;
 	}
-
-	private void checkRoutes(XFVRPModel model, Quality q, Context context) {
-		Vehicle vehicle = model.getVehicle();
+	
+	private void checkRoutes(Solution solution, Context context, Quality q) {
+		for (Node[] route : solution.getRoutes()) {
+			// Feasibility check
+			FeasibilityAnalzer.checkFeasibility(route);
+			
+			checkRoute(route, context, q);
+		}
+	}
+	
+	private void checkRoute(Node[] route, Context context, Quality q) {
+		route = ActiveNodeAnalyzer.getActiveNodes(route);
+		context.setRouteInfos(RouteInfoBuilder.build(route, context.getModel()));
 		
-		// Initialization
-		List<Node> nodes = context.getActiveNodes();
-		context.setCurrentNode(nodes.get(0));
-		beginRoute(nodes.get(0), findNextCustomer(nodes, 0), vehicle, q, model, context);
-		context.setNextNode(nodes.get(0));
+		context.setCurrentNode(route[0]);
+		beginRoute(route[0], findNextCustomer(route, 0), q, context);
+		context.setNextNode(route[0]);
 
-		for (int i = 1; i < nodes.size(); i++) {
-			context.setNextNode(nodes.get(i));
+		for (int i = 1; i < route.length; i++) {
+			context.setNextNode(route[i]);
 
 			// Times and Distances
-			drive(model, context);
+			drive(context);
 
 			// Count each stop at different locations (distance between two locations is greater 0)
 			checkStop(context);
 
 			// Driver time restrictions for european drivers!
-			checkDriverRestrictions(vehicle, context);
+			checkDriverRestrictions(context);
 
 			// Time window constraint for VRPTW
-			checkTimeWindow(model, q, vehicle, context);
+			checkTimeWindow(q, context);
 
 			// Reset loaded or unloaded volume at replenish point
-			replenishAmount(vehicle, q, context);
+			replenishAmount(context);
 
 			// Capacity constraint for VRP with Pickup & Delivery
-			checkCapacities(q, vehicle, context);
+			checkCapacities(q, context);
 
 			// Presets
 			checkPreset(q, context);
 
 			// Reset of route, if next depot is reached
 			if(context.getCurrentNode().getSiteType() == SiteType.DEPOT) {
-				finishRoute(vehicle, q, model, context);
-
-				beginRoute(nodes.get(i), findNextCustomer(nodes, i), vehicle, q, model, context);
+				finishRoute(q, context);
 			}
 		}
 
 		// Check of block preset penalty after last node
 		int penalty = context.checkPresetBlockCount();
 		q.addPenalty(penalty, Quality.PENALTY_REASON_PRESETTING);
-	}
-
-	private boolean checkForEmpty(Node[] giantRoute) {
-		if(giantRoute.length == 2)
-			return true;
-		if(!Arrays.stream(giantRoute).anyMatch(n -> n.getSiteType() == SiteType.CUSTOMER))
-			return true;
-
-		return false;
 	}
 
 	private void checkStop(Context context) {
@@ -118,7 +104,7 @@ public class EvaluationService {
 			context.removeStop();
 	}
 
-	private void checkCapacities(Quality q, Vehicle vehicle, Context context) {
+	private void checkCapacities(Quality q, Context context) {
 		float[] amounts = context.getAmountsOfRoute();
 
 		for (int i = 0; i < amounts.length / 2; i++) {
@@ -129,12 +115,13 @@ public class EvaluationService {
 			amounts[i * 2 + 1] += pickup;
 		}
 
-		int penalty = context.checkCapacities(vehicle);
+		int penalty = context.checkCapacities();
 		q.addPenalty(penalty, Quality.PENALTY_REASON_CAPACITY);
 	}
 
-	private void checkTimeWindow(XFVRPModel model, Quality q, Vehicle vehicle, Context context) {
+	private void checkTimeWindow(Quality q, Context context) {
 		Node currentNode = context.getCurrentNode();
+		XFVRPModel model = context.getModel();
 
 		// Service time at depot should be considered into time window
 		if(model.getParameter().isWithUnloadingTimeAtDepot() && currentNode.getSiteType() == SiteType.DEPOT) {
@@ -152,7 +139,7 @@ public class EvaluationService {
 		float waiting = context.getWaitingTimeAtTimeWindow(timeWindow);		
 
 		// Check maxWaiting penalty
-		if(waiting > vehicle.maxWaitingTime)
+		if(waiting > model.getVehicle().maxWaitingTime)
 			q.addPenalty(1, Quality.PENALTY_REASON_DURATION);
 
 		float serviceTime = (context.getLastDrivenDistance()[0] == 0) ? currentNode.getServiceTime() : currentNode.getServiceTime() + currentNode.getServiceTimeForSite();
@@ -197,20 +184,22 @@ public class EvaluationService {
 		q.addPenalty(penalty, Quality.PENALTY_REASON_PRESETTING);
 	}
 
-	private void checkDriverRestrictions(Vehicle vehicle, Context context) {
+	private void checkDriverRestrictions(Context context) {
 		// check max driving time per shift restrictions
-		if(context.getDrivingTime() >= vehicle.maxDrivingTimePerShift) {
-			context.resetDrivingTime(vehicle);
+		if(context.getDrivingTime() >= context.getModel().getVehicle().maxDrivingTimePerShift) {
+			context.resetDrivingTime();
 		}
 	}
 
-	private void drive(XFVRPModel model, Context context) {
-		float[] dist = model.getDistanceAndTime(context.getLastNode(), context.getCurrentNode());
+	private void drive(Context context) {
+		float[] dist = context.getModel().getDistanceAndTime(context.getLastNode(), context.getCurrentNode());
 
 		context.drive(dist);
 	}
 
-	private void finishRoute(Vehicle v, Quality q, XFVRPModel model, Context context) {
+	private void finishRoute(Quality q, Context context) {
+		Vehicle v = context.getModel().getVehicle();
+		
 		float stopCountPenalty = Math.max(0, context.getNbrOfStops() - v.maxStopCount);
 		float durationPenalty = Math.max(0, context.getDuration() - v.maxRouteDuration);
 		float delayPenalty = context.getDelay();
@@ -225,15 +214,17 @@ public class EvaluationService {
 		// Add fix cost per route
 		if(context.getNbrOfStops() > 0)
 			q.addCost(v.fixCost);
-	}
-
-	private void beginRoute(Node newDepot, Node nextNode, Vehicle vehicle, Quality q, XFVRPModel model, Context context) {
+		
 		// Check for black listed nodes on route
 		// Afterwards reset the arrays for next route
 		int penalty = context.checkPresetBlackList();
 		q.addPenalty(penalty, Quality.PENALTY_REASON_BLACKLIST);
+	}
 
-		penalty = context.createNewRoute(newDepot, vehicle);
+	private void beginRoute(Node newDepot, Node nextNode, Quality q, Context context) {
+		XFVRPModel model = context.getModel();
+
+		float penalty = context.createNewRoute(newDepot);
 		q.addPenalty(penalty, Quality.PENALTY_REASON_CAPACITY);
 
 		float earliestDepartureTime = (nextNode != null) ? nextNode.getTimeWindow(0)[0] - model.getTime(newDepot, nextNode) : 0;
@@ -247,18 +238,18 @@ public class EvaluationService {
 		context.setDepartureTimeAtDepot(earliestDepartureTime, loadingTimeAtDepot);
 	}
 
-	private Node findNextCustomer(List<Node> nodes, int pos) {
-		for (int i = pos + 1; i < nodes.size(); i++) {
-			if(nodes.get(i).getSiteType() == SiteType.CUSTOMER)
-				return nodes.get(i);
+	private Node findNextCustomer(Node[] route, int pos) {
+		for (int i = pos + 1; i < route.length; i++) {
+			if(route[i].getSiteType() == SiteType.CUSTOMER)
+				return route[i];
 		}
 		return null;
 	}
 
-	private void replenishAmount(Vehicle vehicle, Quality q, Context context) {
+	private void replenishAmount(Context context) {
 		if(context.getCurrentNode().getSiteType() != SiteType.REPLENISH)
 			return;
 
-		context.resetAmountsOfRoute(vehicle);
+		context.resetAmountsOfRoute();
 	}
 }

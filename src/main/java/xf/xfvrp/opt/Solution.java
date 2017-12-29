@@ -10,6 +10,10 @@ import xf.xfvrp.base.SiteType;
 public class Solution {
 
 	private Node[][] routes;
+	
+	public Node[][] getRoutes() {
+		return routes;
+	}
 
 	/**
 	 * @return the giantRoute
