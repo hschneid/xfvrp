@@ -2,19 +2,14 @@ package xf.xfvrp.opt.evaluation;
 
 import java.util.Arrays;
 
-import xf.xfvrp.base.Node;
 import xf.xfvrp.base.XFVRPModel;
-import xf.xfvrp.opt.Solution;
 
 public class ContextBuilder {
 
-	public static Context build(Solution solution, XFVRPModel model) {
+	public static Context build(XFVRPModel model) {
 		Context context = new Context();
-
-		Node[] giantRoute = solution.getGiantRoute();
-
-		// Active nodes for evalution are true, duplicates or empty routes are false
-		context.setActiveNodes(ActiveNodeAnalyzer.getActiveNodes(giantRoute));
+		
+		context.setModel(model);
 
 		// Variables
 		context.setMaxGlobalNodeIdx(model.getMaxGlobalNodeIdx() + 1);
@@ -27,9 +22,6 @@ public class ContextBuilder {
 		context.setLastPresetSequenceRankArr(new int[model.getNbrOfBlocks()]);
 		context.setPresetRoutingBlackList(new boolean[context.getMaxGlobalNodeIdx()]);
 		context.setPresetRoutingNodeList(new boolean[context.getMaxGlobalNodeIdx()]);
-
-		// Service times at the depot for amount on the route
-		context.setRouteInfos(RouteInfoBuilder.build(context.getActiveNodes(), model));
 
 		return context;
 	}

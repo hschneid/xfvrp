@@ -1,10 +1,12 @@
 package xf.xfvrp.opt.evaluation;
 
+import static xf.xfvrp.base.SiteType.DEPOT;
+import static xf.xfvrp.base.SiteType.REPLENISH;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import xf.xfvrp.base.Node;
-import xf.xfvrp.base.SiteType;
 
 public class ActiveNodeAnalyzer {
 
@@ -14,33 +16,35 @@ public class ActiveNodeAnalyzer {
 	 * evalution. This can be the case for empty routes or unnecessary
 	 * replenishments.
 	 * 
-	 * @param giantRoute
+	 * @param route
 	 * @return list of active (true) or disabled (false) nodes in giant route
 	 */
-	public static List<Node> getActiveNodes(Node[] giantRoute) {
-		boolean[] activeFlags = new boolean[giantRoute.length];
-		if(giantRoute.length == 0)
-			return new ArrayList<>();
+	public static Node[] getActiveNodes(Node[] route) {
+		boolean[] activeFlags = new boolean[route.length];
+		if(route.length == 0)
+			return new Node[0];
+		if(route.length == 2 && route[0].getSiteType() == DEPOT && route[1].getSiteType() == DEPOT)
+			return route;
 
 		int lastNodeIdx = 0;
-		Node lastNode = giantRoute[lastNodeIdx];
+		Node lastNode = route[lastNodeIdx];
 		activeFlags[0] = true;
 		for (int i = 1; i < activeFlags.length; i++) {
 			activeFlags[i] = true;
 
-			Node currNode = giantRoute[i];
+			Node currNode = route[i];
 
-			if(currNode.getSiteType() == SiteType.DEPOT && 
-					lastNode.getSiteType() == SiteType.DEPOT)
+			if(currNode.getSiteType() == DEPOT && 
+					lastNode.getSiteType() == DEPOT)
 				activeFlags[lastNodeIdx] = false;
-			else if(currNode.getSiteType() == SiteType.REPLENISH &&
-					lastNode.getSiteType() == SiteType.REPLENISH)
+			else if(currNode.getSiteType() == REPLENISH &&
+					lastNode.getSiteType() == REPLENISH)
 				activeFlags[lastNodeIdx] = false;
-			else if(currNode.getSiteType() == SiteType.DEPOT &&
-					lastNode.getSiteType() == SiteType.REPLENISH)
+			else if(currNode.getSiteType() == DEPOT &&
+					lastNode.getSiteType() == REPLENISH)
 				activeFlags[lastNodeIdx] = false;
-			else if(currNode.getSiteType() == SiteType.REPLENISH &&
-					lastNode.getSiteType() == SiteType.DEPOT)
+			else if(currNode.getSiteType() == REPLENISH &&
+					lastNode.getSiteType() == DEPOT)
 				activeFlags[i] = false;
 
 			if(activeFlags[i]) {
@@ -49,12 +53,16 @@ public class ActiveNodeAnalyzer {
 			}
 		}
 
+		return extract(route, activeFlags);
+	}
+
+	private static Node[] extract(Node[] route, boolean[] activeFlags) {
 		List<Node> activeNodes = new ArrayList<>(); 
-		for (int i = 0; i < giantRoute.length; i++) {
+		for (int i = 0; i < route.length; i++) {
 			if(activeFlags[i])
-				activeNodes.add(giantRoute[i]);
+				activeNodes.add(route[i]);
 		}
 		
-		return activeNodes;
+		return activeNodes.toArray(new Node[0]);
 	}
 }
