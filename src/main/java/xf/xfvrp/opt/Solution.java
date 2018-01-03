@@ -14,6 +14,27 @@ public class Solution {
 	public Node[][] getRoutes() {
 		return routes;
 	}
+	
+	public void deleteRoute(int routeIndex) {
+		routes[routeIndex] = new Node[0];
+	}
+	
+	public void addRoute(Node[] newRoute) {
+		for (int i = 0; i < routes.length; i++) {
+			if(routes[i].length == 0) {
+				routes[i] = newRoute;
+				return;
+			}
+		}
+		
+		routes = Arrays.copyOf(routes, routes.length + 1);
+		routes[routes.length - 1] = newRoute;
+	}
+	
+	public void setRoute(int routeIndex, Node[] route) {
+		routes[routeIndex] = route;
+	}
+
 
 	/**
 	 * @return the giantRoute
@@ -84,5 +105,4 @@ public class Solution {
 		
 		return solution;
 	}
-	
 }
