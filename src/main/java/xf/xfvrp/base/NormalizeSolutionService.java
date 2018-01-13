@@ -29,9 +29,11 @@ public class NormalizeSolutionService {
 		for (int routeIndex = 0; routeIndex < solution.getRoutes().length; routeIndex++) {
 			Node[] route = solution.getRoutes()[routeIndex];
 
-			if(route.length == 0) {
+			if(route.length == 0) 
+				continue;
+			
+			if(route.length == 2) {
 				solution.deleteRoute(routeIndex);
-				routeIndex--;
 				continue;
 			}
 			
@@ -44,7 +46,7 @@ public class NormalizeSolutionService {
 	private static void removeEmptyReplenishments(int routeIndex, Solution solution) {
 		Node[] route = solution.getRoutes()[routeIndex];
 		
-		// Remove empty routes and reindex depot nodes (depotId)
+		// Remove empty routes
 		List<Node> cleanedRoute = new ArrayList<>();
 		for (int i = 0; i < route.length - 1; i++) {
 			final SiteType currType = route[i].getSiteType();
@@ -55,6 +57,7 @@ public class NormalizeSolutionService {
 			
 			cleanedRoute.add(route[i]);
 		}
+		cleanedRoute.add(route[route.length - 1]);
 		
 		if(cleanedRoute.size() != route.length) {
 			solution.setRoute(routeIndex, cleanedRoute.toArray(new Node[0]));

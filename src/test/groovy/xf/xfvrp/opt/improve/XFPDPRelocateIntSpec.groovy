@@ -59,11 +59,11 @@ class XFPDPRelocateIntSpec extends Specification {
 		newQuality.getPenalty() == 0
 		Math.abs(newQuality.getCost() - 8) < 0.001
 		newGiantRoute[0].getGlobalIdx() == nd.getGlobalIdx()
-		newGiantRoute[1] == n[1]
-		newGiantRoute[2] == n[2]
-		newGiantRoute[3] == n[3]
-		newGiantRoute[4] == n[4]
-		newGiantRoute[5].getGlobalIdx() == nd.getGlobalIdx()
+		newGiantRoute[1].getGlobalIdx() == nd.getGlobalIdx()
+		newGiantRoute[2] == n[1]
+		newGiantRoute[3] == n[2]
+		newGiantRoute[4] == n[3]
+		newGiantRoute[5] == n[4]
 		newGiantRoute[6].getGlobalIdx() == nd.getGlobalIdx()
 	}
 	

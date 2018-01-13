@@ -66,11 +66,11 @@ class XFVRPPathMoveIntSpec extends Specification {
 		newQuality.getPenalty() == 0
 		Math.abs(newQuality.getCost() - 9.656) < 0.001
 		newGiantRoute[0].getGlobalIdx() == nd.getGlobalIdx()
-		newGiantRoute[1] == n[3]
-		newGiantRoute[2] == n[1]
-		newGiantRoute[3] == n[2]
-		newGiantRoute[4] == n[4]
-		newGiantRoute[5].getGlobalIdx() == nd.getGlobalIdx()
+		newGiantRoute[1].getGlobalIdx() == nd.getGlobalIdx()
+		newGiantRoute[2] == n[3]
+		newGiantRoute[3] == n[1]
+		newGiantRoute[4] == n[2]
+		newGiantRoute[5] == n[4]
 		newGiantRoute[6].getGlobalIdx() == nd.getGlobalIdx()
 	}
 	
@@ -97,11 +97,11 @@ class XFVRPPathMoveIntSpec extends Specification {
 		newQuality.getPenalty() == 0
 		Math.abs(newQuality.getCost() - 9.656) < 0.001
 		newGiantRoute[0].getGlobalIdx() == nd.getGlobalIdx()
-		newGiantRoute[1] == n[4]
-		newGiantRoute[2] == n[2]
-		newGiantRoute[3] == n[3]
-		newGiantRoute[4] == n[5]
-		newGiantRoute[5].getGlobalIdx() == nd.getGlobalIdx()
+		newGiantRoute[1].getGlobalIdx() == nd.getGlobalIdx()
+		newGiantRoute[2] == n[4]
+		newGiantRoute[3] == n[2]
+		newGiantRoute[4] == n[3]
+		newGiantRoute[5] == n[5]
 		newGiantRoute[6].getGlobalIdx() == nd2.getGlobalIdx()
 		newGiantRoute[7].getGlobalIdx() == nd2.getGlobalIdx()
 	}

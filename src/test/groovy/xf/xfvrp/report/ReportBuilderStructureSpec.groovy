@@ -1,5 +1,6 @@
 package xf.xfvrp.report
 
+import spock.lang.Ignore
 import spock.lang.Specification
 import util.instances.TestNode
 import util.instances.TestVehicle
@@ -56,6 +57,7 @@ class ReportBuilderStructureSpec extends Specification {
 		thrown IllegalStateException
 	}
 
+	@Ignore
 	def "Feasability - Ends not with DEPOT"() {
 		def v = new TestVehicle(name: "V1", capacity: [3, 3]).getVehicle()
 		def model = initScen1(v, LoadType.DELIVERY)

@@ -2,12 +2,13 @@ package xf.xfvrp.opt;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.SiteType;
 
-public class Solution {
+public class Solution implements Iterable<Node[]> {
 
 	private Node[][] routes;
 	
@@ -50,8 +51,12 @@ public class Solution {
 			}
 		}
 		
-		Node[] lastRoute = routes[routes.length - 1];
-		giantRoute.add(lastRoute[lastRoute.length - 1]);
+		for (int i = routes.length - 1; i >= 0; i--) {
+			if(routes[i].length > 0) {
+				giantRoute.add(routes[i][routes[i].length - 1]);
+				break;
+			}
+		}
 		
 		return giantRoute.toArray(new Node[0]);
 	}
@@ -104,5 +109,10 @@ public class Solution {
 		solution.routes = copyRoutes;
 		
 		return solution;
+	}
+
+	@Override
+	public Iterator<Node[]> iterator() {
+		return new SolutionRoutesIterator(routes);
 	}
 }
