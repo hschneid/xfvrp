@@ -138,7 +138,7 @@ class XFVRPILSSpec extends Specification {
 		opt3.improve(_ ,_) >> sol
 
 		when:
-		def result = service.localSearch(sol, model.getVehicle())
+		def result = service.localSearch(sol)
 
 		then:
 		result != null

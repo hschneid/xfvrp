@@ -76,8 +76,10 @@ public class FullRouteMixedFleetHeuristic {
 			}
 		}
 
-		// Insert invalid and unplanned nodes into solution 
-		vehicleSolutions.add(insertUnplannedNodes(unplannedNodes, metric, parameter, statusManager));
+		// Insert invalid and unplanned nodes into solution
+		XFVRPSolution unplannedNodesSolution = insertUnplannedNodes(unplannedNodes, metric, parameter, statusManager);
+		if(unplannedNodesSolution != null) 
+			vehicleSolutions.add(unplannedNodesSolution);
 
 		return vehicleSolutions;
 	}

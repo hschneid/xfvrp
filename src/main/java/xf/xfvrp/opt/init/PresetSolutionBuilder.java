@@ -12,6 +12,11 @@ import xf.xfvrp.base.monitor.StatusCode;
 import xf.xfvrp.base.monitor.StatusManager;
 import xf.xfvrp.opt.Solution;
 
+/**
+ * 
+ * @author hschneid
+ *
+ */
 public class PresetSolutionBuilder {
 	
 	/**

@@ -1,5 +1,6 @@
 package xf.xfvrp.opt.init;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -11,7 +12,7 @@ import xf.xfvrp.base.XFVRPModel;
 public class PresetSolutionBuilderDataBag {
 
 	private Set<Node> availableCustomers;
-	private Map<String, Integer> idMap;
+	private Map<String, Integer> idMap = new HashMap<>();
 	private int depotIdx = 0;
 	private int depotId = 0;
 	private List<Node> nodes;

@@ -3,6 +3,7 @@ package xf.xfvrp.opt.init.check.vrp;
 import xf.xfvrp.base.InvalidReason;
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.XFVRPModel;
+import xf.xfvrp.base.preset.BlockPositionConverter;
 import xf.xfvrp.opt.init.solution.vrp.SolutionBuilderDataBag;
 
 public class CheckCustomerService {
@@ -44,7 +45,7 @@ public class CheckCustomerService {
 			throw new IllegalArgumentException("The sequence rank " + cust.getPresetBlockRank() + " in block " + cust.getPresetBlockIdx() + " is lower than zero, which is forbidden.");
 		if(cust.getPresetBlockPos() < 0)
 			throw new IllegalArgumentException("The sequence position " + cust.getPresetBlockPos() + " in block " + cust.getPresetBlockIdx() + " is lower than zero, which is forbidden.");
-		if(cust.getPresetBlockPos() >=0 && solutionBuilderDataBag.getKnownSequencePositions().contains(cust.getPresetBlockPos()))
+		if(cust.getPresetBlockPos() > BlockPositionConverter.UNDEF_POSITION && solutionBuilderDataBag.getKnownSequencePositions().contains(cust.getPresetBlockPos()))
 			throw new IllegalArgumentException("The sequence position " + cust.getPresetBlockPos() + " in block " + cust.getPresetBlockIdx() + " is given multiple times, which is forbidden.");
 	}
 

@@ -4,7 +4,6 @@ import java.util.Arrays;
 
 import xf.xfvrp.base.NormalizeSolutionService;
 import xf.xfvrp.base.Quality;
-import xf.xfvrp.base.Vehicle;
 import xf.xfvrp.base.monitor.StatusCode;
 import xf.xfvrp.opt.Solution;
 import xf.xfvrp.opt.XFVRPOptBase;
@@ -29,7 +28,7 @@ public abstract class XFILS extends XFVRPOptBase {
 			gT = randomChangeService.change(gT, model);
 			
 			// Intensification
-			gT = localSearch(gT, model.getVehicle());
+			gT = localSearch(gT);
 
 			// Evaluation
 			Quality q = check(gT);
@@ -42,7 +41,7 @@ public abstract class XFILS extends XFVRPOptBase {
 				bestBestQ = q;
 				bestBestTour = gT;
 			} else {
-				statusManager.fireMessage(StatusCode.RUNNING, this.getClass().getSimpleName()+"loop "+i+"\t with cost : "+q.getCost());
+				statusManager.fireMessage(StatusCode.RUNNING, this.getClass().getSimpleName()+" loop "+i+"\t with cost : "+q.getCost());
 				bestRoute = NormalizeSolutionService.normalizeRoute(bestRoute, model);
 			}
 		}
@@ -70,7 +69,7 @@ public abstract class XFILS extends XFVRPOptBase {
 		return true;
 	}
 	
-	protected Solution localSearch(Solution solution, Vehicle vehicle) {
+	protected Solution localSearch(Solution solution) {
 		boolean[] processedArr = new boolean[optArr.length];
 
 		Quality q = null;

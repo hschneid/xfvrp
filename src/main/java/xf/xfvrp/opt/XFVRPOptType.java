@@ -76,7 +76,7 @@ public enum XFVRPOptType {
 		try {
 			return (XFVRPOptBase) Class.forName(clazz.getName()).newInstance();
 		} catch (Exception e) {
-			throw new IllegalStateException("no copy of optimization procedure possible");
+			throw new IllegalStateException("no copy of optimization procedure possible", e);
 		}
 	}
 }
