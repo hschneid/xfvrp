@@ -2,18 +2,40 @@ package xf.xfvrp.opt;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.SiteType;
 
-public class Solution {
+public class Solution implements Iterable<Node[]> {
 
 	private Node[][] routes;
 	
 	public Node[][] getRoutes() {
 		return routes;
 	}
+	
+	public void deleteRoute(int routeIndex) {
+		routes[routeIndex] = new Node[0];
+	}
+	
+	public void addRoute(Node[] newRoute) {
+		for (int i = 0; i < routes.length; i++) {
+			if(routes[i].length == 0) {
+				routes[i] = newRoute;
+				return;
+			}
+		}
+		
+		routes = Arrays.copyOf(routes, routes.length + 1);
+		routes[routes.length - 1] = newRoute;
+	}
+	
+	public void setRoute(int routeIndex, Node[] route) {
+		routes[routeIndex] = route;
+	}
+
 
 	/**
 	 * @return the giantRoute
@@ -29,8 +51,12 @@ public class Solution {
 			}
 		}
 		
-		Node[] lastRoute = routes[routes.length - 1];
-		giantRoute.add(lastRoute[lastRoute.length - 1]);
+		for (int i = routes.length - 1; i >= 0; i--) {
+			if(routes[i].length > 0) {
+				giantRoute.add(routes[i][routes[i].length - 1]);
+				break;
+			}
+		}
 		
 		return giantRoute.toArray(new Node[0]);
 	}
@@ -84,5 +110,9 @@ public class Solution {
 		
 		return solution;
 	}
-	
+
+	@Override
+	public Iterator<Node[]> iterator() {
+		return new SolutionRoutesIterator(routes);
+	}
 }

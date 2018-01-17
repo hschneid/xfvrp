@@ -43,7 +43,7 @@ public class EvaluationService {
 	}
 	
 	private void checkRoutes(Solution solution, Context context, Quality q) {
-		for (Node[] route : solution.getRoutes()) {
+		for (Node[] route : solution) {
 			// Feasibility check
 			FeasibilityAnalzer.checkFeasibility(route);
 			

@@ -59,12 +59,14 @@ class XFPDPFirstBestInsertSpecInt extends Specification {
 		route[2] == n[3]
 		route[3] == n[4]
 		route[4] == n[5]
-		route[5].globalIdx == nd2.globalIdx
-		route[6] == n[6]
-		route[7] == n[7]
-		route[8] == n[8]
-		route[9] == n[9]
-		route[10].globalIdx == nd.globalIdx
+		route[5].globalIdx == nd.globalIdx
+		route[6].globalIdx == nd2.globalIdx
+		route[7] == n[6]
+		route[8] == n[7]
+		route[9] == n[8]
+		route[10] == n[9]
+		route[11].globalIdx == nd2.globalIdx
+		route[12].globalIdx == nd2.globalIdx
 	}
 	
 	def "Opt with reinsert"() {
@@ -85,12 +87,14 @@ class XFPDPFirstBestInsertSpecInt extends Specification {
 		route[2] == n[3]
 		route[3] == n[4]
 		route[4] == n[5]
-		route[5].globalIdx == nd2.globalIdx
-		route[6] == n[6]
-		route[7] == n[7]
-		route[8] == n[8]
-		route[9] == n[9]
-		route[10].globalIdx == nd.globalIdx
+		route[5].globalIdx == nd.globalIdx
+		route[6].globalIdx == nd2.globalIdx
+		route[7] == n[6]
+		route[8] == n[7]
+		route[9] == n[8]
+		route[10] == n[9]
+		route[11].globalIdx == nd2.globalIdx
+		route[12].globalIdx == nd2.globalIdx
 	}
 
 	XFVRPModel initScen() {

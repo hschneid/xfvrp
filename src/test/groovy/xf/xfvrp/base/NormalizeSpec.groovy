@@ -49,11 +49,11 @@ class NormalizeSpec extends Specification {
 		result[0].externID == "1"
 		result[1].externID == "2"
 		result[2].externID == "3"
-		result[3].externID == "4"
-		result[4].externID == "5"
-		result[5].externID == "6"
-		result[6].externID == "7"
-		result[7].externID == "1"
+		result[3].externID == "1"
+		result[4].externID == "4"
+		result[5].externID == "5"
+		result[6].externID == "6"
+		result[7].externID == "7"
 		result[8].externID == "4"
 		result[9].externID == "8"
 		result[10].externID == "8"
@@ -73,14 +73,14 @@ class NormalizeSpec extends Specification {
 		then:
 		result.length == 11
 		result[0].externID == "1"
-		result[1].externID == "2"
-		result[2].externID == "3"
-		result[3].externID == "4"
-		result[4].externID == "5"
-		result[5].externID == "6"
-		result[6].externID == "7"
-		result[7].externID == "1"
-		result[8].externID == "4"
+		result[1].externID == "1"
+		result[2].externID == "2"
+		result[3].externID == "3"
+		result[4].externID == "4"
+		result[5].externID == "4"
+		result[6].externID == "5"
+		result[7].externID == "6"
+		result[8].externID == "7"
 		result[9].externID == "8"
 		result[10].externID == "8"
 	}
@@ -99,16 +99,16 @@ class NormalizeSpec extends Specification {
 		then:
 		result.length == 11
 		result[0].externID == "1"
-		result[1].externID == "2"
-		result[2].externID == "3"
-		result[3].externID == "4"
-		result[4].externID == "5"
-		result[5].externID == "6"
-		result[6].externID == "7"
-		result[7].externID == "1"
-		result[8].externID == "4"
-		result[9].externID == "8"
-		result[10].externID == "8"
+		result[1].externID == "4"
+		result[2].externID == "1"
+		result[3].externID == "2"
+		result[4].externID == "3"
+		result[5].externID == "8"
+		result[6].externID == "4"
+		result[7].externID == "5"
+		result[8].externID == "6"
+		result[9].externID == "7"
+		result[10].externID == "4"
 	}
 	
 	def "Regular normalize - With replenishs"() {
@@ -136,10 +136,10 @@ class NormalizeSpec extends Specification {
 		result[9].externID == "1"
 		result[10].externID == "4"
 		result[11].externID == "8"
-		result[12].externID == "8"
+		result[12].externID == "1"
 		result[13].externID == "R1"
 		result[14].externID == "R2"
-		result[15].externID == "8"
+		result[15].externID == "1"
 	}
 	
 	def "Regular normalize - With empty replenishs"() {
@@ -154,21 +154,23 @@ class NormalizeSpec extends Specification {
 		def result = sol.getGiantRoute()
 		
 		then:
-		result.length == 14
+		result.length == 16
 		result[0].externID == "1"
-		result[1].externID == "2"
-		result[2].externID == "3"
-		result[3].externID == "4"
-		result[4].externID == "5"
-		result[5].externID == "6"
-		result[6].externID == "7"
-		result[7].externID == "1"
-		result[8].externID == "4"
-		result[9].externID == "8"
-		result[10].externID == "8"
-		result[11].externID == "R1"
-		result[12].externID == "R2"
-		result[13].externID == "8"
+		result[1].externID == "1"
+		result[2].externID == "2"
+		result[3].externID == "3"
+		result[4].externID == "R1"
+		result[5].externID == "4"
+		result[6].externID == "4"
+		result[7].externID == "R2"
+		result[8].externID == "5"
+		result[9].externID == "6"
+		result[10].externID == "7"
+		result[11].externID == "8"
+		result[12].externID == "1"
+		result[13].externID == "R1"
+		result[14].externID == "R2"
+		result[15].externID == "1"
 	}
 	
 	def "Regular normalize - With more empty replenishs"() {
@@ -183,22 +185,23 @@ class NormalizeSpec extends Specification {
 		def result = sol.getGiantRoute()
 		
 		then:
-		result.length == 15
+		result.length == 16
 		result[0].externID == "1"
-		result[1].externID == "2"
-		result[2].externID == "R1"
-		result[3].externID == "3"
-		result[4].externID == "4"
-		result[5].externID == "5"
-		result[6].externID == "6"
-		result[7].externID == "7"
-		result[8].externID == "1"
-		result[9].externID == "4"
-		result[10].externID == "8"
+		result[1].externID == "1"
+		result[2].externID == "2"
+		result[3].externID == "R1"
+		result[4].externID == "3"
+		result[5].externID == "4"
+		result[6].externID == "4"
+		result[7].externID == "R2"
+		result[8].externID == "5"
+		result[9].externID == "6"
+		result[10].externID == "7"
 		result[11].externID == "8"
-		result[12].externID == "R1"
-		result[13].externID == "R2"
-		result[14].externID == "8"
+		result[12].externID == "1"
+		result[13].externID == "R1"
+		result[14].externID == "R2"
+		result[15].externID == "1"
 	}
 	
 	def "Irregular normalize - model null"() {
@@ -240,10 +243,12 @@ class NormalizeSpec extends Specification {
 		def result = sol.getGiantRoute()
 		
 		then:
-		thrown Exception
+		result.length == 4
+		result[0].externID == "1"
+		result[1].externID == "4"
+		result[2].externID == "8"
+		result[3].externID == "8"
 	}
-
-	
 	
 	private XFVRPModel createModel() {
 		def n1 = new Node(externID: "1", siteType: SiteType.DEPOT);

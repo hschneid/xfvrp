@@ -46,7 +46,7 @@ class XFVRPFirstBestInsertSpecInt extends Specification {
 		def model = initScen()
 		def n = model.getNodes()
 		service.setModel(model)
-		
+
 		def solution = new Solution()
 
 		when:
@@ -57,24 +57,26 @@ class XFVRPFirstBestInsertSpecInt extends Specification {
 		route[0].globalIdx == nd.globalIdx
 		route[1] == n[2]
 		route[2] == n[3]
-		route[3].globalIdx == nd2.globalIdx
-		route[4] == n[9]
-		route[5] == n[8]
-		route[6].globalIdx == nd.globalIdx
-		route[7] == n[4]
-		route[8] == n[5]
-		route[9].globalIdx == nd2.globalIdx
-		route[10] == n[7]
-		route[11] == n[6]
-		route[12].globalIdx == nd.globalIdx
+		route[3].globalIdx == nd.globalIdx
+		route[4] == n[4]
+		route[5] == n[5]
+		route[6].globalIdx == nd2.globalIdx
+		route[7] == n[9]
+		route[8] == n[8]
+		route[9].globalIdx == nd.globalIdx
+		route[10].globalIdx == nd2.globalIdx
+		route[11] == n[7]
+		route[12] == n[6]
+		route[13].globalIdx == nd2.globalIdx
+		route[14].globalIdx == nd2.globalIdx
 	}
-	
+
 	def "Opt with reinsert"() {
 		def model = initScen()
 		def n = model.getNodes()
 		service.setModel(model)
 		parameter.setNbrOfILSLoops(3)
-		
+
 		def solution = new Solution()
 
 		when:
@@ -85,16 +87,18 @@ class XFVRPFirstBestInsertSpecInt extends Specification {
 		route[0].globalIdx == nd.globalIdx
 		route[1] == n[2]
 		route[2] == n[3]
-		route[3].globalIdx == nd2.globalIdx
-		route[4] == n[9]
-		route[5] == n[8]
-		route[6].globalIdx == nd.globalIdx
-		route[7] == n[4]
-		route[8] == n[5]
-		route[9].globalIdx == nd2.globalIdx
-		route[10] == n[7]
-		route[11] == n[6]
-		route[12].globalIdx == nd.globalIdx
+		route[3].globalIdx == nd.globalIdx
+		route[4] == n[4]
+		route[5] == n[5]
+		route[6].globalIdx == nd2.globalIdx
+		route[7] == n[9]
+		route[8] == n[8]
+		route[9].globalIdx == nd.globalIdx
+		route[10].globalIdx == nd2.globalIdx
+		route[11] == n[7]
+		route[12] == n[6]
+		route[13].globalIdx == nd2.globalIdx
+		route[14].globalIdx == nd2.globalIdx
 	}
 
 	XFVRPModel initScen() {

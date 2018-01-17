@@ -11,6 +11,7 @@ import xf.xfvrp.base.SiteType;
 import xf.xfvrp.base.Util;
 import xf.xfvrp.base.XFVRPModel;
 import xf.xfvrp.base.preset.BlockNameConverter;
+import xf.xfvrp.base.preset.BlockPositionConverter;
 import xf.xfvrp.opt.Solution;
 import xf.xfvrp.opt.XFVRPOptBase;
 import xf.xfvrp.opt.XFVRPOptType;
@@ -108,7 +109,8 @@ public class CheckService {
 				solutionBuilderDataBag.getValidReplenish().add(node);
 			else if(checkCustomerService.checkCustomer(node, model, solutionBuilderDataBag)) {
 				solutionBuilderDataBag.getValidNodes().add(node);
-				solutionBuilderDataBag.getKnownSequencePositions().add(node.getPresetBlockPos());
+				if(node.getPresetBlockPos() != BlockPositionConverter.UNDEF_POSITION)
+					solutionBuilderDataBag.getKnownSequencePositions().add(node.getPresetBlockPos());
 			} else {
 				// Customer is not valid
 
