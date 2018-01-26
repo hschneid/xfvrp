@@ -113,11 +113,12 @@ public class Context {
 
 	public int resetAmountsOfRoute() {
 		Arrays.fill(amountsOfRoute, 0);
+		
+		if(!routeInfos.containsKey(currentNode))
+			throw new IllegalStateException("Could not find route infos for depot id " + currentNode.getDepotId());
 
 		Amount deliveryOfRoute = routeInfos.get(currentNode).getDeliveryAmount();
 
-		if(deliveryOfRoute == null)
-			throw new IllegalStateException("Could not find route infos for depot id " + currentNode.getDepotId());
 
 		if(deliveryOfRoute.hasAmount()) {
 			for (int i = 0; i < amountsOfRoute.length / 2; i++)

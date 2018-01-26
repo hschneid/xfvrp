@@ -27,7 +27,7 @@ import xf.xfvrp.opt.init.check.vrp.CheckService;
 public class VRPInitialSolutionBuilder {
 
 	public Solution build(XFVRPModel model, List<Node> invalidNodes, StatusManager statusManager) {
-		List<Node> validNodes = getValidNodes(model, invalidNodes); 
+		List<Node> validNodes = getValidCustomers(model, invalidNodes); 
 
 		Solution solution = buildSolution(validNodes, model, statusManager);
 
@@ -45,10 +45,7 @@ public class VRPInitialSolutionBuilder {
 	 */
 	private Solution buildSolution(List<Node> nodes, XFVRPModel model, StatusManager statusManager) {
 		if(nodes == null) {
-			Solution solution = new Solution();
-			solution.setGiantRoute(new Node[0]);
-			
-			return solution;
+			return new Solution();
 		}
 		
 		// If user has given a predefined solution
@@ -114,20 +111,16 @@ public class VRPInitialSolutionBuilder {
 		return new ArrayList<>(depots);
 	}
 
-	private List<Node> getValidNodes(XFVRPModel model, List<Node> invalidNodes) {
-		CheckService checkService = new CheckService();
-
-		SolutionBuilderDataBag solutionBuilderDataBag = checkService.check(model, invalidNodes);
+	private List<Node> getValidCustomers(XFVRPModel model, List<Node> invalidNodes) {
+		SolutionBuilderDataBag solutionBuilderDataBag = new CheckService().check(model, invalidNodes);
 
 		// If all customers are invalid for this vehicle and parameters optimization has to be skipped.
-		if(solutionBuilderDataBag.getValidNodes().size() == 0) {
-			Solution solution = new Solution();
-			solution.setGiantRoute(new Node[0]);
+		if(solutionBuilderDataBag.getValidCustomers().size() == 0) {
 			return null;
 		}
 
 		// Consider Preset Rank and Position
-		solutionBuilderDataBag.getValidNodes().sort((c1, c2) -> {
+		solutionBuilderDataBag.getValidCustomers().sort((c1, c2) -> {
 			int diff = c1.getPresetBlockIdx() - c2.getPresetBlockIdx();
 			if(diff == 0)
 				diff = c1.getPresetBlockPos() - c2.getPresetBlockPos();
@@ -137,7 +130,7 @@ public class VRPInitialSolutionBuilder {
 		List<Node> validNodes = new ArrayList<>();
 		validNodes.addAll(solutionBuilderDataBag.getValidDepots());
 		validNodes.addAll(solutionBuilderDataBag.getValidReplenish());
-		validNodes.addAll(solutionBuilderDataBag.getValidNodes());
+		validNodes.addAll(solutionBuilderDataBag.getValidCustomers());
 
 		return validNodes;
 	}

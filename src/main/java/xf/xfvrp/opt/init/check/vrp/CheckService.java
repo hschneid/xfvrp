@@ -108,7 +108,7 @@ public class CheckService {
 			else if(node.getSiteType() == SiteType.REPLENISH)
 				solutionBuilderDataBag.getValidReplenish().add(node);
 			else if(checkCustomerService.checkCustomer(node, model, solutionBuilderDataBag)) {
-				solutionBuilderDataBag.getValidNodes().add(node);
+				solutionBuilderDataBag.getValidCustomers().add(node);
 				if(node.getPresetBlockPos() != BlockPositionConverter.UNDEF_POSITION)
 					solutionBuilderDataBag.getKnownSequencePositions().add(node.getPresetBlockPos());
 			} else {
@@ -119,7 +119,7 @@ public class CheckService {
 				// set to invalid.
 				if(blockIdx != BlockNameConverter.DEFAULT_BLOCK_IDX) {
 					setNodesOfBlockInvalid(nodesOfBlock, invalidNodes, node);
-					solutionBuilderDataBag.getValidNodes().removeAll(nodesOfBlock);
+					solutionBuilderDataBag.getValidCustomers().removeAll(nodesOfBlock);
 
 					return false;
 				}
@@ -135,7 +135,7 @@ public class CheckService {
 			int blockIdx, List<Node> nodesOfBlock) {
 		if(blockIdx != BlockNameConverter.DEFAULT_BLOCK_IDX) {
 			if(!checkBlock(nodesOfBlock, model)) {
-				solutionBuilderDataBag.getValidNodes().removeAll(nodesOfBlock);
+				solutionBuilderDataBag.getValidCustomers().removeAll(nodesOfBlock);
 				invalidNodes.addAll(nodesOfBlock);
 			}
 		}
@@ -164,7 +164,7 @@ public class CheckService {
 	}
 
 	/**
-	 * Checks the block contraints like
+	 * Checks the block constraints like
 	 * the block can be set into a single route without constraint violation
 	 * 
 	 * @param nodesOfBlock
@@ -172,30 +172,41 @@ public class CheckService {
 	 * @return isValid
 	 */
 	private boolean checkBlock(List<Node> nodesOfBlock, XFVRPModel model) {
-		boolean isValid = false;
-
 		// A block can be allocated to each depot in multi depot problems
 		for (int i = 0; i < model.getNbrOfDepots(); i++) {
-			Node[] blockGiantRoute = new Node[nodesOfBlock.size() + 2];
 
 			// Build a route with all nodes of a block
-			blockGiantRoute[0] = Util.createIdNode(model.getNodes()[i], 0);
-			for (int j = 0; j < nodesOfBlock.size(); j++)
-				blockGiantRoute[j+1] = nodesOfBlock.get(j); 
-			blockGiantRoute[nodesOfBlock.size() + 1] = Util.createIdNode(model.getNodes()[i], 1);
+			Node[] route = buildCheckRoute(nodesOfBlock, model.getNodes()[i]);
 
 			// Check with Relocate optimization, if there is a sequence of nodes
 			// in the block, which are valid for the constraints.
 			Solution solution = new Solution();
-			solution.setGiantRoute(blockGiantRoute);
+			solution.addRoute(route);
 
 			solution = optimizationMethod.execute(solution, model, null);
 
 			Quality q = optimizationMethod.check(solution);
+			
+			// If any depot is okay, then everything is fine
 			if(q.getPenalty() == 0)
-				isValid |= true;
+				return true;
 		}
-		return isValid;
+		return false;
+	}
+
+	private Node[] buildCheckRoute(List<Node> nodesOfBlock, Node depot) {
+		Node[] route = new Node[nodesOfBlock.size() + 2];
+		
+		int idx = 0;
+		
+		route[idx++] = Util.createIdNode(depot, 0);
+		for (int j = 0; j < nodesOfBlock.size(); j++) {
+			if(nodesOfBlock.get(j).getSiteType() == SiteType.CUSTOMER)
+				route[idx++] = nodesOfBlock.get(j); 
+		}
+		route[idx++] = Util.createIdNode(depot, 1);
+		
+		return Arrays.copyOf(route, idx);
 	}
 
 }

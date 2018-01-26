@@ -30,9 +30,7 @@ public class PDPInitialSolutionBuilder {
 		PDPCheckService checkService = new PDPCheckService();
 		
 		if (nodes.length == 0) {
-			Solution solution = new Solution();
-			solution.setGiantRoute(new Node[0]);
-			return solution;
+			return new Solution();
 		}
 		
 		List<Node> gL = new ArrayList<>();

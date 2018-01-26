@@ -47,8 +47,8 @@ class CheckServiceSpec extends Specification {
 		result.get(1).contains(nodes[2])
 		result.get(2).size() == 1
 		result.get(2).contains(nodes[3])
-		result.get(BlockNameConverter.DEFAULT_BLOCK_IDX).size() == 2
-		result.get(BlockNameConverter.DEFAULT_BLOCK_IDX).contains(nodes[0])
+		//result.get(BlockNameConverter.DEFAULT_BLOCK_IDX).size() == 2
+		//result.get(BlockNameConverter.DEFAULT_BLOCK_IDX).contains(nodes[0])
 		result.get(BlockNameConverter.DEFAULT_BLOCK_IDX).contains(nodes[4])
 	}
 
@@ -107,7 +107,7 @@ class CheckServiceSpec extends Specification {
 		def nodesOfBlock = [nodes[1], nodes[2]]
 
 		def dataBag = new SolutionBuilderDataBag(
-				validNodes: Arrays.asList(nodes)
+				validCustomers: Arrays.asList(nodes)
 				)
 
 		def invalidNodes = new ArrayList<Node>()
@@ -118,7 +118,7 @@ class CheckServiceSpec extends Specification {
 
 		then:
 		invalidNodes.size() == 0
-		dataBag.validNodes.size() == 5
+		dataBag.validCustomers.size() == 5
 	}
 
 	def "Check block 2 - Default block idx"() {
@@ -134,7 +134,7 @@ class CheckServiceSpec extends Specification {
 		def nodesOfBlock = [nodes[1], nodes[2]]
 
 		def dataBag = new SolutionBuilderDataBag(
-				validNodes: Arrays.asList(nodes)
+				validCustomers: Arrays.asList(nodes)
 				)
 
 		def invalidNodes = new ArrayList<Node>()
@@ -145,7 +145,7 @@ class CheckServiceSpec extends Specification {
 
 		then:
 		invalidNodes.size() == 0
-		dataBag.validNodes.size() == 5
+		dataBag.validCustomers.size() == 5
 	}
 
 	def "Check block 2 - Not okay"() {
@@ -163,7 +163,7 @@ class CheckServiceSpec extends Specification {
 		def validNodes = new ArrayList<Node>()
 		validNodes.addAll(Arrays.asList(nodes))
 		def dataBag = new SolutionBuilderDataBag(
-				validNodes: validNodes
+				validCustomers: validNodes
 				)
 
 		def invalidNodes = new ArrayList<Node>()
@@ -176,7 +176,7 @@ class CheckServiceSpec extends Specification {
 		invalidNodes.size() == 2
 		invalidNodes.contains(nodes[1])
 		invalidNodes.contains(nodes[2])
-		dataBag.validNodes.size() == 3
+		dataBag.validCustomers.size() == 3
 	}
 
 	def "Check nodes of block - Okay for customers"() {
@@ -201,9 +201,9 @@ class CheckServiceSpec extends Specification {
 		then:
 		result
 		invalidNodes.size() == 0
-		dataBag.validNodes.size() == 2
-		dataBag.validNodes.contains(nodes[1])
-		dataBag.validNodes.contains(nodes[2])
+		dataBag.validCustomers.size() == 2
+		dataBag.validCustomers.contains(nodes[1])
+		dataBag.validCustomers.contains(nodes[2])
 		dataBag.knownSequencePositions.size() == 2
 		dataBag.knownSequencePositions.contains(1)
 		dataBag.knownSequencePositions.contains(2)
@@ -233,7 +233,7 @@ class CheckServiceSpec extends Specification {
 		invalidNodes.size() == 2
 		invalidNodes.contains(nodes[1])
 		invalidNodes.contains(nodes[2])
-		dataBag.validNodes.size() == 0
+		dataBag.validCustomers.size() == 0
 	}
 	
 	def "Check nodes of block - Not okay for a customer of default block"() {
@@ -259,8 +259,8 @@ class CheckServiceSpec extends Specification {
 		result
 		invalidNodes.size() == 1
 		invalidNodes.contains(nodes[2])
-		dataBag.validNodes.size() == 1
-		dataBag.validNodes.contains(nodes[1])
+		dataBag.validCustomers.size() == 1
+		dataBag.validCustomers.contains(nodes[1])
 	}
 	
 	def "Check nodes of block - Okay for depots"() {
@@ -350,7 +350,7 @@ class CheckServiceSpec extends Specification {
 		then:
 		invalidNodes.size() == 0
 		dataBag.validDepots.size() == 1
-		dataBag.validNodes.size() == 4
+		dataBag.validCustomers.size() == 4
 	}
 	
 	def "Check blocks - One not okay"() {
@@ -382,7 +382,7 @@ class CheckServiceSpec extends Specification {
 		invalidNodes.size() == 1
 		invalidNodes.contains(nodes[3])
 		dataBag.validDepots.size() == 1
-		dataBag.validNodes.size() == 3
+		dataBag.validCustomers.size() == 3
 	}
 	
 	def "Check - Okay"() {
@@ -402,8 +402,7 @@ class CheckServiceSpec extends Specification {
 		
 		then:
 		invalidNodes.size() == 0
-		result.validDepots.size() == 1
-		result.validNodes.size() == 4
+		result.validCustomers.size() == 4
 	}
 
 	Node[] getNodes() {

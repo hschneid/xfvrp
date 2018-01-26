@@ -9,16 +9,16 @@ import xf.xfvrp.base.Node;
 
 public class SolutionBuilderDataBag {
 
-	private List<Node> validNodes = new ArrayList<>();
+	private List<Node> validCustomers = new ArrayList<>();
 	private List<Node> validDepots = new ArrayList<>();
 	private List<Node> validReplenish = new ArrayList<>();
 	private Set<Integer> knownSequencePositions = new HashSet<>();
 	
-	public List<Node> getValidNodes() {
-		return validNodes;
+	public List<Node> getValidCustomers() {
+		return validCustomers;
 	}
 	public void setValidNodes(List<Node> validNodes) {
-		this.validNodes = validNodes;
+		this.validCustomers = validNodes;
 	}
 	public List<Node> getValidDepots() {
 		return validDepots;

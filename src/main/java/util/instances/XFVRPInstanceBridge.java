@@ -74,7 +74,7 @@ public class XFVRPInstanceBridge {
 		vrp.addOptType(XFVRPOptType.SWAP);
 		vrp.addOptType(XFVRPOptType.PATH_RELOCATE);*/
 		vrp.addOptType(XFVRPOptType.ILS);
-		vrp.setNbrOfLoopsForILS(2000);
+		vrp.setNbrOfLoopsForILS(20000);
 
 		/*vrp.setPredefinedSolutionString(
 				"{(200,194,158,192,184,190,43,199,197,136,1,191,196,66,200),"+
@@ -106,7 +106,7 @@ public class XFVRPInstanceBridge {
 	public static void main(String[] args) {
 		try {
 			XFVRPInstanceBridge i = new XFVRPInstanceBridge();
-			XFVRP vrp = i.build("./src/test/resources/CMT05.xml");
+			XFVRP vrp = i.build("./src/test/resources/CMT01.xml");
 			i.opt(vrp);
 		} catch (JAXBException | PreCheckException e) {
 			e.printStackTrace();

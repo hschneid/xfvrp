@@ -10,7 +10,7 @@ import xf.xfvrp.base.SiteType;
 
 public class Solution implements Iterable<Node[]> {
 
-	private Node[][] routes;
+	private Node[][] routes = new Node[1][0];
 	
 	public Node[][] getRoutes() {
 		return routes;
