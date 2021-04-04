@@ -18,7 +18,9 @@ apply plugin:'signing'
 
 group = "com.github.hschneid"
 archivesBaseName = "xfvrp"
-version = "11.0"
+version = "11.0.0-SNAPSHOT"
+sourceCompatibility = JavaVersion.VERSION_11
+targetCompatibility = JavaVersion.VERSION_11
 
 repositories {
 	mavenCentral()
@@ -28,15 +30,16 @@ mainClassName = 'util.Application'
 
 // In this section you declare the dependencies for your production and test code
 dependencies {
-	compile 'org.codehaus.groovy:groovy-all:2.4.11'
-	compile 'org.apache.commons:commons-compress:1.5'
-	compile 'colt:colt:1.2.0'
-	compile 'com.google.collections:google-collections:1.0'
-	compile 'cglib:cglib-nodep:3.2.5'
-	compile 'org.vrp-rep:vrprep-model:0.5.0'
+	// compile 'org.codehaus.groovy:groovy-all:2.4.13'
+	implementation 'org.apache.commons:commons-compress:1.5'
+	implementation 'colt:colt:1.2.0'
+	implementation 'com.google.collections:google-collections:1.0'
+	implementation 'cglib:cglib-nodep:3.2.5'
+	implementation 'org.vrp-rep:vrprep-model:0.5.0'
 
-	testCompile 'junit:junit:4.12'
-	testCompile "org.spockframework:spock-core:1.1-groovy-2.4"
+	testImplementation 'junit:junit:4.12'
+	// testCompile "org.spockframework:spock-core:1.1-groovy-2.4"
+	testImplementation "org.spockframework:spock-core:2.0-M4-groovy-3.0"
 }
 
 // Maven
@@ -57,7 +60,7 @@ artifacts {
 signing {
 	sign configurations.archives
 }
-
+/*
 uploadArchives {
 	repositories {
 		mavenDeployer {
@@ -102,4 +105,4 @@ uploadArchives {
 		}
 	}
 }
-
+*/

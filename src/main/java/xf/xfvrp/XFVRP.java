@@ -45,7 +45,7 @@ import xf.xfvrp.report.build.ReportBuilder;
 public class XFVRP extends XFVRP_Parameter {
 
 	/* List of optimization procedures */
-	private List<XFVRPOptBase> optList = new ArrayList<>();
+	private final List<XFVRPOptBase> optList = new ArrayList<>();
 
 	/* Last model for the last created solution */
 	private XFVRPModel lastModel;
@@ -105,12 +105,6 @@ public class XFVRP extends XFVRP_Parameter {
 	/**
 	 * Calculates a single vehicle VRP for a given vehicle with all
 	 * announced optimization procedures.
-	 * 
-	 * @param depotList
-	 * @param customerList 
-	 * @param veh Container with parameters for capacity and route duration
-	 * @param plannedCustomers Marker for customers which are planned already in other stages
-	 * @throws PreCheckException 
 	 */
 	private XFVRPSolution executeRoutePlanning(RoutingDataBag dataBag) throws PreCheckException {
 		Node[] nodes = new PreCheckService().precheck(dataBag.nodes, dataBag.vehicle, parameter);

@@ -1,72 +1,56 @@
-# Compiled source #
-###################
-*.com
-*.class
-*.dll
-*.exe
-*.o
-*.so
-
-# Packages #
-############
-# it's better to unpack these files and commit the raw source
-# git has its own built in compression methods
-*.7z
-*.dmg
-*.gz
-*.iso
-*.jar
-*.rar
-*.tar
-*.zip
-
-# Logs and databases #
-######################
-*.log
-
-# OS generated files #
-######################
-.DS_Store*
-ehthumbs.db
-Icon?
+# Windows image file caches
 Thumbs.db
+ehthumbs.db
 
-# Editor Files #
-################
-*~
-*.swp
+# Folder config file
+Desktop.ini
 
-# Gradle Files #
-################
-.gradle
-.m2
+# Recycle Bin used on file shares
+$RECYCLE.BIN/
 
+# Windows Installer files
+*.cab
+*.msi
+*.msm
+*.msp
 
+# Windows shortcuts
+*.lnk
 
-# Build output directies #
-##########################
-/target
-*/target
-build
+# =========================
+# Operating System Files
+# =========================
 
+# OSX
+# =========================
 
+.DS_Store
+.AppleDouble
+.LSOverride
 
-# IntelliJ specific files/directories #
-#######################################
-out
-.idea
-*.ipr
-*.iws
+# Thumbnails
+._*
+
+# Files that might appear in the root of a volume
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+
+# Directories potentially created on remote AFP share
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+/.idea/
+/.gradle/
+/build/
+/out/
+/classes/
 *.iml
-atlassian-ide-plugin.xml
 
-# Eclipse specific files/directories #
-######################################
-.classpath
-.project
-.settings
-.metadata
-
-# NetBeans specific files/directories #
-#######################################
-.nbattrs
+# Hidden credentials
+application-secret.properties
