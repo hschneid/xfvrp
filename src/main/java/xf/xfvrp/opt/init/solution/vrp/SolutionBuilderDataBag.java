@@ -1,11 +1,11 @@
 package xf.xfvrp.opt.init.solution.vrp;
 
+import xf.xfvrp.base.Node;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import xf.xfvrp.base.Node;
 
 public class SolutionBuilderDataBag {
 

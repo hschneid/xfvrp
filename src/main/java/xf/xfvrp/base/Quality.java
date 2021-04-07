@@ -28,7 +28,6 @@ public class Quality {
 	public static final int PENALTY_REASON_PRESETTING = 1;
 	public static final int PENALTY_REASON_DURATION = 2;
 	public static final int PENALTY_REASON_BLACKLIST = 3;
-	public static final int PENALTY_REASON_EFFLOAD = 4;
 	public static final int PENALTY_REASON_DELAY = 5;
 	public static final int PENALTY_REASON_STOPCOUNT = 6;
 

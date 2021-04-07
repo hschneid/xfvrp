@@ -1,7 +1,11 @@
-xfvrp
+[![MIT License](https://img.shields.io/apm/l/atomic-design-ui.svg?)](https://github.com/tterb/atomic-design-ui/blob/master/LICENSEs)
+[![BCH compliance](https://bettercodehub.com/edge/badge/hschneid/xflp?branch=master)](https://bettercodehub.com/)
+![alt text](https://img.shields.io/static/v1?label=version&message=11.0.0&color=-)
+
+# xfvrp
 ======
 
-There are alot of solvers for the Vehicle Routing Problem (VRP) on github. Some are good at certain features (like CVRP or VRPTW) and some are quite complex.
+There are a lot of solvers for the Vehicle Routing Problem (VRP) on github. Some are good at certain features (like CVRP or VRPTW) and some are quite complex.
 
 xfvrp is a fast and easy solver for Rich Vehicle Routing Problems like
 - Multi capacities
@@ -38,8 +42,15 @@ Report report = xfvrp.executeRoutePlanning();
 report.getSummary().getDistance();
 ```
 
-## Release notes
-Version 11:
+## Change log
+### 11.1.0
+- Cleanup of repository
+- Add ReportBuilder (it compiles again :-) )  
+- Update of gradle 6.7 and Java 11
+- Added SpotBug
+- Cleaned obsolete code
+
+### 11.0.0
 - Automatical test with 70% code coverage of lines
 - Removed unusual features (i.e. XFLP)
 - A lot of code rework as preparation of further improvements

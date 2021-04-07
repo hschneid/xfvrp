@@ -1,9 +1,9 @@
 package xf.xfvrp.report;
 
+import xf.xfvrp.base.Vehicle;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import xf.xfvrp.base.Vehicle;
 
 /** 
  * Copyright (c) 2012-present Holger Schneider

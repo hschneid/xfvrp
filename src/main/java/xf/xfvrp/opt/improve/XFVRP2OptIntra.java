@@ -1,12 +1,12 @@
 package xf.xfvrp.opt.improve;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.Quality;
 import xf.xfvrp.base.SiteType;
 import xf.xfvrp.opt.Solution;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /** 

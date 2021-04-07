@@ -1,10 +1,10 @@
 package xf.xfvrp.base;
 
+import xf.xfvrp.base.fleximport.InternalCustomerData;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import xf.xfvrp.base.fleximport.InternalCustomerData;
 
 /** 
  * Copyright (c) 2012-present Holger Schneider

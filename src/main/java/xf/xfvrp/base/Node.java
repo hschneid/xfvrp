@@ -1,11 +1,11 @@
 package xf.xfvrp.base;
 
+import xf.xfvrp.base.preset.BlockNameConverter;
+import xf.xfvrp.base.preset.BlockPositionConverter;
+
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-
-import xf.xfvrp.base.preset.BlockNameConverter;
-import xf.xfvrp.base.preset.BlockPositionConverter;
 
 /** 
  * Copyright (c) 2012-present Holger Schneider

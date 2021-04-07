@@ -31,10 +31,9 @@ public enum LoadType {
 	public final int idx;
 	
 	/**
-	 * 
 	 * @param idx
 	 */
-	private LoadType(int idx) {
+	LoadType(int idx) {
 		this.idx = idx;
 	}
 }

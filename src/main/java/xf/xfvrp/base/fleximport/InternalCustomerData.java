@@ -1,9 +1,9 @@
 package xf.xfvrp.base.fleximport;
 
-import java.util.Set;
-
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.SiteType;
+
+import java.util.Set;
 
 /** 
  * Copyright (c) 2012-present Holger Schneider

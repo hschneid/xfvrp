@@ -1,11 +1,11 @@
 package xf.xfvrp.opt.evaluation;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import xf.xfvrp.base.LoadType;
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.XFVRPModel;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class RouteInfoBuilder {
 

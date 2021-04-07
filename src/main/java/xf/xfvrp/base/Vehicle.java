@@ -35,8 +35,10 @@ public class Vehicle {
 	public final float maxDrivingTimePerShift;
 	public final float waitingTimeBetweenShifts;
 	
-	/** Priority **/
-	public int priority = PRIORITY_UNDEF;
+	/**
+	 * Priority
+	 **/
+	public int priority;
 	
 	/**
 	 * Constructor for all variables

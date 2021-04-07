@@ -1,13 +1,13 @@
 package xf.xfvrp.report;
 
+import xf.xfvrp.base.InvalidReason;
+import xf.xfvrp.base.Node;
+import xf.xfvrp.opt.Solution;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import xf.xfvrp.base.InvalidReason;
-import xf.xfvrp.base.Node;
-import xf.xfvrp.opt.Solution;
 
 /** 
  * Copyright (c) 2012-present Holger Schneider

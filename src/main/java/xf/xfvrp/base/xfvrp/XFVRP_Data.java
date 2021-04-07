@@ -1,10 +1,6 @@
 package xf.xfvrp.base.xfvrp;
 
-import xf.xfvrp.base.fleximport.CustomerData;
-import xf.xfvrp.base.fleximport.DepotData;
-import xf.xfvrp.base.fleximport.FlexiImporter;
-import xf.xfvrp.base.fleximport.ReplenishData;
-import xf.xfvrp.base.fleximport.VehicleData;
+import xf.xfvrp.base.fleximport.*;
 import xf.xfvrp.base.metric.Metric;
 import xf.xfvrp.base.monitor.StatusCode;
 

@@ -1,12 +1,13 @@
 package xf.xfvrp.opt;
 
+import com.sun.istack.NotNull;
+import xf.xfvrp.base.Node;
+import xf.xfvrp.base.SiteType;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-
-import xf.xfvrp.base.Node;
-import xf.xfvrp.base.SiteType;
 
 public class Solution implements Iterable<Node[]> {
 
@@ -62,7 +63,8 @@ public class Solution implements Iterable<Node[]> {
 	}
 
 	/**
-	 * @param giantRoute the giantRoute to set
+	 * Converts a giant route into internal solution representation
+	 * with multiple routes
 	 */
 	public void setGiantRoute(Node[] giantRoute) {
 		if(giantRoute == null || giantRoute.length == 0) {
@@ -97,10 +99,6 @@ public class Solution implements Iterable<Node[]> {
 			routes[i] = list.get(i).toArray(new Node[0]);
 	}
 
-	/**
-	 * 
-	 * @return
-	 */
 	public Solution copy() {
 		Solution solution = new Solution();
 		Node[][] copyRoutes = new Node[routes.length][];
@@ -111,6 +109,7 @@ public class Solution implements Iterable<Node[]> {
 		return solution;
 	}
 
+	@NotNull
 	@Override
 	public Iterator<Node[]> iterator() {
 		return new SolutionRoutesIterator(routes);

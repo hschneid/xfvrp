@@ -1,16 +1,16 @@
 package xf.xfvrp.opt.construct;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Stream;
-
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.Quality;
 import xf.xfvrp.base.SiteType;
 import xf.xfvrp.base.Util;
 import xf.xfvrp.opt.Solution;
 import xf.xfvrp.opt.XFVRPOptBase;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Stream;
 
 
 /** 
@@ -137,10 +137,7 @@ public class XFVRPSavings extends XFVRPOptBase {
 		// Beide Routen m�ssen noch zur Verf�gung stehen
 		// ODER Wenn beide Knoten auf der selben Tour liegen,
 		// ist eine Verkn�pfung nicht mehr m�glich
-		if(routeIdxSrc == -1 || routeIdxDst == -1 || routeIdxSrc == routeIdxDst)
-			return false;
-
-		return true;
+		return routeIdxSrc != -1 && routeIdxDst != -1 && routeIdxSrc != routeIdxDst;
 	}
 
 	private void updateRoutes(Node[] mergedRoute, int srcNodeIdx, int dstNodeIdx, SavingsDataBag dataBag) {
@@ -250,10 +247,6 @@ public class XFVRPSavings extends XFVRPOptBase {
 
 	/**
 	 * Converts a list of lists into a giant route representation
-	 * 
-	 * @param routeArr
-	 * @param depot
-	 * @return giant route
 	 */
 	private Node[] buildGiantRoute(SavingsDataBag dataBag, Node depot) {
 		Node[][] routeArr = dataBag.getRoutes();
@@ -261,15 +254,14 @@ public class XFVRPSavings extends XFVRPOptBase {
 		int maxId = 0;
 		List<Node> giantList = new ArrayList<>();
 		for (int i = 0; i < routeArr.length; i++) {
-			if(routeArr[i] == null)
+			if (routeArr[i] == null)
 				continue;
 
 			giantList.add(Util.createIdNode(depot, maxId++));
-			for (int j = 0; j < routeArr[i].length; j++)
-				giantList.add(routeArr[i][j]);
+			giantList.addAll(Arrays.asList(routeArr[i]));
 
 		}
-		giantList.add(Util.createIdNode(depot, maxId++));
+		giantList.add(Util.createIdNode(depot, maxId));
 
 		return giantList.toArray(new Node[0]);
 	}
@@ -277,9 +269,6 @@ public class XFVRPSavings extends XFVRPOptBase {
 	/**
 	 * Creates the initial list of lists where each
 	 * sub list is a route.
-	 * 
-	 * @param giantRoute
-	 * @return
 	 */
 	private SavingsDataBag buildRoutes(Node[] giantRoute) {
 		SavingsDataBag dataBag = new SavingsDataBag();

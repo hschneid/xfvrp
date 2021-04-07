@@ -1,17 +1,17 @@
 package xf.xfvrp.opt.init.solution.pdp;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.NormalizeSolutionService;
 import xf.xfvrp.base.Util;
 import xf.xfvrp.base.XFVRPModel;
 import xf.xfvrp.opt.Solution;
 import xf.xfvrp.opt.init.check.pdp.PDPCheckService;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class PDPInitialSolutionBuilder {
 

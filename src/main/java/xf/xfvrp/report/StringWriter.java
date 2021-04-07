@@ -1,9 +1,9 @@
 package xf.xfvrp.report;
 
+import xf.xfvrp.base.Node;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import xf.xfvrp.base.Node;
 
 /** 
  * Copyright (c) 2012-present Holger Schneider

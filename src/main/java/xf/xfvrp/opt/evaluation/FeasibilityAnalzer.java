@@ -1,22 +1,22 @@
 package xf.xfvrp.opt.evaluation;
 
-import java.util.Arrays;
-import java.util.Objects;
-
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.SiteType;
 
+import java.util.Arrays;
+import java.util.Objects;
+
 public class FeasibilityAnalzer {
 
-	public static void checkFeasibility(Node[] giantRoute) {
+	public static void checkFeasibility(Node[] route) {
 		// Es kann hier leere Touren geben, weil es gelöschte Touren geben kann! :-(
-		if(giantRoute == null || giantRoute.length == 0)
+		if(route == null || route.length == 0)
 			throw new IllegalStateException("Empty route is not allowed to report");
-		if(giantRoute[0].getSiteType() != SiteType.DEPOT)
+		if(route[0].getSiteType() != SiteType.DEPOT)
 			throw new IllegalStateException("First node in giant route is not a depot.");
-		if(giantRoute[giantRoute.length - 1].getSiteType() != SiteType.DEPOT)
+		if(route[route.length - 1].getSiteType() != SiteType.DEPOT)
 			throw new IllegalStateException("Last node in giant route is not a depot.");
-		if(Arrays.stream(giantRoute).filter(Objects::isNull).count() > 0)
+		if(Arrays.stream(route).filter(Objects::isNull).count() > 0)
 			throw new IllegalStateException("Route contains NullPointer!");
 	}
 }

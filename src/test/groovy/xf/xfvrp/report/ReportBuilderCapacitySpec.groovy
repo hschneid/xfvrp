@@ -3,12 +3,7 @@ package xf.xfvrp.report
 import spock.lang.Specification
 import util.instances.TestNode
 import util.instances.TestVehicle
-import xf.xfvrp.base.LoadType
-import xf.xfvrp.base.Node
-import xf.xfvrp.base.SiteType
-import xf.xfvrp.base.Vehicle
-import xf.xfvrp.base.XFVRPModel
-import xf.xfvrp.base.XFVRPParameter
+import xf.xfvrp.base.*
 import xf.xfvrp.base.metric.EucledianMetric
 import xf.xfvrp.base.metric.internal.AcceleratedMetricTransformator
 import xf.xfvrp.opt.Solution
@@ -96,7 +91,7 @@ class ReportBuilderCapacitySpec extends Specification {
 		Math.abs(result.getRoutes().get(0).getEvents().get(3).getAmount() - 1) < 0.001
 		result.getRoutes().get(0).getEvents().get(3).getLoadType() == LoadType.DELIVERY
 		Math.abs(result.getRoutes().get(0).getEvents().get(4).getAmount() - 0) < 0.001
-		result.getRoutes().get(0).getEvents().get(4).getLoadType() == LoadType.DELIVERY
+		result.getRoutes().get(0).getEvents().get(4).getLoadType() == LoadType.UNDEF
 	}
 
 	def "Delivery - 2 capacity, first fail"() {
@@ -132,7 +127,7 @@ class ReportBuilderCapacitySpec extends Specification {
 		Math.abs(result.getRoutes().get(0).getEvents().get(3).getAmount() - 1) < 0.001
 		result.getRoutes().get(0).getEvents().get(3).getLoadType() == LoadType.DELIVERY
 		Math.abs(result.getRoutes().get(0).getEvents().get(4).getAmount() - 0) < 0.001
-		result.getRoutes().get(0).getEvents().get(4).getLoadType() == LoadType.DELIVERY
+		result.getRoutes().get(0).getEvents().get(4).getLoadType() == LoadType.UNDEF
 	}
 
 	def "Delivery - 2 capacity, second fail"() {
@@ -168,7 +163,7 @@ class ReportBuilderCapacitySpec extends Specification {
 		Math.abs(result.getRoutes().get(0).getEvents().get(3).getAmount() - 1) < 0.001
 		result.getRoutes().get(0).getEvents().get(3).getLoadType() == LoadType.DELIVERY
 		Math.abs(result.getRoutes().get(0).getEvents().get(4).getAmount() - 0) < 0.001
-		result.getRoutes().get(0).getEvents().get(4).getLoadType() == LoadType.DELIVERY
+		result.getRoutes().get(0).getEvents().get(4).getLoadType() == LoadType.UNDEF
 
 	}
 
@@ -204,7 +199,7 @@ class ReportBuilderCapacitySpec extends Specification {
 		Math.abs(result.getRoutes().get(0).getEvents().get(3).getAmount() - 1) < 0.001
 		result.getRoutes().get(0).getEvents().get(3).getLoadType() == LoadType.PICKUP
 		Math.abs(result.getRoutes().get(0).getEvents().get(4).getAmount() - 0) < 0.001
-		result.getRoutes().get(0).getEvents().get(4).getLoadType() == LoadType.DELIVERY
+		result.getRoutes().get(0).getEvents().get(4).getLoadType() == LoadType.UNDEF
 	}
 
 	def "Pickup - 2 capacity, first fail"() {
@@ -239,7 +234,7 @@ class ReportBuilderCapacitySpec extends Specification {
 		Math.abs(result.getRoutes().get(0).getEvents().get(3).getAmount() - 1) < 0.001
 		result.getRoutes().get(0).getEvents().get(3).getLoadType() == LoadType.PICKUP
 		Math.abs(result.getRoutes().get(0).getEvents().get(4).getAmount() - 0) < 0.001
-		result.getRoutes().get(0).getEvents().get(4).getLoadType() == LoadType.DELIVERY
+		result.getRoutes().get(0).getEvents().get(4).getLoadType() == LoadType.UNDEF
 	}
 
 	def "Pickup - 2 capacity, second fail"() {
@@ -274,7 +269,7 @@ class ReportBuilderCapacitySpec extends Specification {
 		Math.abs(result.getRoutes().get(0).getEvents().get(3).getAmount() - 1) < 0.001
 		result.getRoutes().get(0).getEvents().get(3).getLoadType() == LoadType.PICKUP
 		Math.abs(result.getRoutes().get(0).getEvents().get(4).getAmount() - 0) < 0.001
-		result.getRoutes().get(0).getEvents().get(4).getLoadType() == LoadType.DELIVERY
+		result.getRoutes().get(0).getEvents().get(4).getLoadType() == LoadType.UNDEF
 	}
 
 	def "Pickup/Delivery - all clear"() {
@@ -309,7 +304,7 @@ class ReportBuilderCapacitySpec extends Specification {
 		Math.abs(result.getRoutes().get(0).getEvents().get(3).getAmount() - 3) < 0.001
 		result.getRoutes().get(0).getEvents().get(3).getLoadType() == LoadType.PICKUP
 		Math.abs(result.getRoutes().get(0).getEvents().get(4).getAmount() - 0) < 0.001
-		result.getRoutes().get(0).getEvents().get(4).getLoadType() == LoadType.DELIVERY
+		result.getRoutes().get(0).getEvents().get(4).getLoadType() == LoadType.UNDEF
 
 		Math.abs(result.getRoutes().get(0).getEvents().get(0).getAmount2() - 2) < 0.001
 		result.getRoutes().get(0).getEvents().get(0).getLoadType() == LoadType.PICKUP
@@ -320,7 +315,7 @@ class ReportBuilderCapacitySpec extends Specification {
 		Math.abs(result.getRoutes().get(0).getEvents().get(3).getAmount2() - 1) < 0.001
 		result.getRoutes().get(0).getEvents().get(3).getLoadType() == LoadType.PICKUP
 		Math.abs(result.getRoutes().get(0).getEvents().get(4).getAmount2() - 0) < 0.001
-		result.getRoutes().get(0).getEvents().get(4).getLoadType() == LoadType.DELIVERY
+		result.getRoutes().get(0).getEvents().get(4).getLoadType() == LoadType.UNDEF
 	}
 
 	def "Pickup/Delivery - wrong route order"() {
@@ -355,7 +350,7 @@ class ReportBuilderCapacitySpec extends Specification {
 		Math.abs(result.getRoutes().get(0).getEvents().get(3).getAmount() - 2) < 0.001
 		result.getRoutes().get(0).getEvents().get(3).getLoadType() == LoadType.DELIVERY
 		Math.abs(result.getRoutes().get(0).getEvents().get(4).getAmount() - 0) < 0.001
-		result.getRoutes().get(0).getEvents().get(4).getLoadType() == LoadType.DELIVERY
+		result.getRoutes().get(0).getEvents().get(4).getLoadType() == LoadType.UNDEF
 	}
 
 	def "Replenish - homogenus - all clear"() {
@@ -387,14 +382,16 @@ class ReportBuilderCapacitySpec extends Specification {
 		result.getRoutes().get(0).getEvents().get(1).getLoadType() == LoadType.DELIVERY
 		Math.abs(result.getRoutes().get(0).getEvents().get(2).getAmount() - 2) < 0.001
 		result.getRoutes().get(0).getEvents().get(2).getLoadType() == LoadType.DELIVERY
+		// Replenishment Point
 		Math.abs(result.getRoutes().get(0).getEvents().get(3).getAmount() - 1) < 0.001
 		result.getRoutes().get(0).getEvents().get(3).getLoadType() == LoadType.PICKUP
+
 		Math.abs(result.getRoutes().get(0).getEvents().get(4).getAmount() - 1) < 0.001
 		result.getRoutes().get(0).getEvents().get(4).getLoadType() == LoadType.DELIVERY
 		Math.abs(result.getRoutes().get(0).getEvents().get(5).getAmount() - 3) < 0.001
 		result.getRoutes().get(0).getEvents().get(5).getLoadType() == LoadType.PICKUP
 		Math.abs(result.getRoutes().get(0).getEvents().get(6).getAmount() - 0) < 0.001
-		result.getRoutes().get(0).getEvents().get(6).getLoadType() == LoadType.DELIVERY
+		result.getRoutes().get(0).getEvents().get(6).getLoadType() == LoadType.UNDEF
 	}
 
 	def "Replenish - homogenus - pickup fail"() {
@@ -433,7 +430,7 @@ class ReportBuilderCapacitySpec extends Specification {
 		Math.abs(result.getRoutes().get(0).getEvents().get(5).getAmount() - 2) < 0.001
 		result.getRoutes().get(0).getEvents().get(5).getLoadType() == LoadType.PICKUP
 		Math.abs(result.getRoutes().get(0).getEvents().get(6).getAmount() - 0) < 0.001
-		result.getRoutes().get(0).getEvents().get(6).getLoadType() == LoadType.DELIVERY
+		result.getRoutes().get(0).getEvents().get(6).getLoadType() == LoadType.UNDEF
 	}
 
 	def "Replenish - homogenus - delivery fail"() {
@@ -472,7 +469,7 @@ class ReportBuilderCapacitySpec extends Specification {
 		Math.abs(result.getRoutes().get(0).getEvents().get(5).getAmount() - 3) < 0.001
 		result.getRoutes().get(0).getEvents().get(5).getLoadType() == LoadType.PICKUP
 		Math.abs(result.getRoutes().get(0).getEvents().get(6).getAmount() - 0) < 0.001
-		result.getRoutes().get(0).getEvents().get(6).getLoadType() == LoadType.DELIVERY
+		result.getRoutes().get(0).getEvents().get(6).getLoadType() == LoadType.UNDEF
 	}
 
 	def "Replenish - hetero - all clear"() {
@@ -513,7 +510,7 @@ class ReportBuilderCapacitySpec extends Specification {
 		Math.abs(result.getRoutes().get(0).getEvents().get(6).getAmount() - 3) < 0.001
 		result.getRoutes().get(0).getEvents().get(6).getLoadType() == LoadType.PICKUP
 		Math.abs(result.getRoutes().get(0).getEvents().get(7).getAmount() - 0) < 0.001
-		result.getRoutes().get(0).getEvents().get(7).getLoadType() == LoadType.DELIVERY
+		result.getRoutes().get(0).getEvents().get(7).getLoadType() == LoadType.UNDEF
 	}
 
 

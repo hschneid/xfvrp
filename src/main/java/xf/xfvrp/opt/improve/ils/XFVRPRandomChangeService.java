@@ -78,10 +78,10 @@ public class XFVRPRandomChangeService extends XFVRPOptBase implements XFRandomCh
 		Node[] giantRoute = solution.getGiantRoute();
 
 		// Choose a random source node (customer or replenish)
-		int src = -1;
+		int src;
 		do {
 			src = rand.nextInt(giantRoute.length - 2) + 1;
-		} while(giantRoute[src].getSiteType() == SiteType.DEPOT);
+		} while (giantRoute[src].getSiteType() == SiteType.DEPOT);
 
 		// Reset source node at the beginning of a block
 		src = adjustForBlockCriteria(giantRoute, src, 1);
@@ -114,10 +114,10 @@ public class XFVRPRandomChangeService extends XFVRPOptBase implements XFRandomCh
 	private void chooseDst(Choice choice, Solution solution) {
 		Node[] giantRoute = solution.getGiantRoute();
 
-		int dst = -1;
+		int dst;
 		do {
 			dst = rand.nextInt(giantRoute.length - 1) + 1;
-		} while(dst >= choice.srcIdx && dst <= choice.srcIdx + choice.srcPathLength);
+		} while (dst >= choice.srcIdx && dst <= choice.srcIdx + choice.srcPathLength);
 
 		choice.dstIdx = adjustForBlockCriteria(giantRoute, dst, 0);
 	}

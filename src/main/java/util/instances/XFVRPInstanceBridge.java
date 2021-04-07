@@ -1,17 +1,10 @@
 package util.instances;
 
-import java.nio.file.Paths;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import javax.xml.bind.JAXBException;
-
 import org.vrprep.model.instance.Instance;
 import org.vrprep.model.instance.Instance.Fleet.VehicleProfile;
 import org.vrprep.model.instance.Instance.Network.Nodes.Node;
 import org.vrprep.model.instance.Instance.Requests.Request;
 import org.vrprep.model.util.Instances;
-
 import xf.xfvrp.XFVRP;
 import xf.xfvrp.base.LoadType;
 import xf.xfvrp.base.metric.EucledianMetric;
@@ -19,6 +12,11 @@ import xf.xfvrp.base.monitor.DefaultStatusMonitor;
 import xf.xfvrp.opt.XFVRPOptType;
 import xf.xfvrp.opt.init.precheck.PreCheckException;
 import xf.xfvrp.report.Report;
+
+import javax.xml.bind.JAXBException;
+import java.nio.file.Paths;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class XFVRPInstanceBridge {
 

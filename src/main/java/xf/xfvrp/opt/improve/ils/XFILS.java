@@ -1,12 +1,12 @@
 package xf.xfvrp.opt.improve.ils;
 
-import java.util.Arrays;
-
 import xf.xfvrp.base.NormalizeSolutionService;
 import xf.xfvrp.base.Quality;
 import xf.xfvrp.base.monitor.StatusCode;
 import xf.xfvrp.opt.Solution;
 import xf.xfvrp.opt.XFVRPOptBase;
+
+import java.util.Arrays;
 
 public abstract class XFILS extends XFVRPOptBase {
 

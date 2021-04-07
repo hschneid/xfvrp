@@ -1,10 +1,10 @@
 package xf.xfvrp.base.metric;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.Vehicle;
+
+import java.util.HashMap;
+import java.util.Map;
 
 
 /** 

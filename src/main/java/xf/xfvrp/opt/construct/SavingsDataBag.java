@@ -1,9 +1,9 @@
 package xf.xfvrp.opt.construct;
 
+import xf.xfvrp.base.Node;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import xf.xfvrp.base.Node;
 
 public class SavingsDataBag {
 

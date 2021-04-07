@@ -1,13 +1,13 @@
 package xf.xfvrp.opt.init;
 
+import xf.xfvrp.base.Node;
+import xf.xfvrp.base.Util;
+import xf.xfvrp.base.XFVRPModel;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import xf.xfvrp.base.Node;
-import xf.xfvrp.base.Util;
-import xf.xfvrp.base.XFVRPModel;
 
 public class PresetSolutionBuilderDataBag {
 
@@ -54,33 +54,9 @@ public class PresetSolutionBuilderDataBag {
 	public void setAvailableCustomers(Set<Node> availableCustomers) {
 		this.availableCustomers = availableCustomers;
 	}
-	public Map<String, Integer> getIdMap() {
-		return idMap;
-	}
-	public void setIdMap(Map<String, Integer> idMap) {
-		this.idMap = idMap;
-	}
-	public int getDepotIdx() {
-		return depotIdx;
-	}
-	public void setDepotIdx(int depotIdx) {
-		this.depotIdx = depotIdx;
-	}
-	public int getDepotId() {
-		return depotId;
-	}
-	public void setDepotId(int depotId) {
-		this.depotId = depotId;
-	}
-	public List<Node> getNodes() {
-		return nodes;
-	}
+
 	public void setNodes(List<Node> nodes) {
 		this.nodes = nodes;
-	}
-
-	public XFVRPModel getModel() {
-		return model;
 	}
 
 	public void setModel(XFVRPModel model) {

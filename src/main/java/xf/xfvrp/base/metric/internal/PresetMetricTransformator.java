@@ -1,14 +1,14 @@
 package xf.xfvrp.base.metric.internal;
 
-import java.util.Arrays;
-import java.util.List;
-
 import util.collection.ListMap;
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.SiteType;
 import xf.xfvrp.base.metric.InternalMetric;
 import xf.xfvrp.base.preset.BlockNameConverter;
 import xf.xfvrp.base.preset.BlockPositionConverter;
+
+import java.util.Arrays;
+import java.util.List;
 
 /** 
  * Copyright (c) 2012-present Holger Schneider

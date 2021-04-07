@@ -1,13 +1,13 @@
 package xf.xfvrp.opt.improve;
 
+import xf.xfvrp.base.Node;
+import xf.xfvrp.base.Quality;
+import xf.xfvrp.opt.Solution;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import xf.xfvrp.base.Node;
-import xf.xfvrp.base.Quality;
-import xf.xfvrp.opt.Solution;
 
 /** 
  * Copyright (c) 2012-present Holger Schneider

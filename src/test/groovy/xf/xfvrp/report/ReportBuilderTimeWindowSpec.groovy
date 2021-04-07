@@ -3,11 +3,7 @@ package xf.xfvrp.report
 import spock.lang.Specification
 import util.instances.TestNode
 import util.instances.TestVehicle
-import xf.xfvrp.base.LoadType
-import xf.xfvrp.base.Node
-import xf.xfvrp.base.SiteType
-import xf.xfvrp.base.XFVRPModel
-import xf.xfvrp.base.XFVRPParameter
+import xf.xfvrp.base.*
 import xf.xfvrp.base.metric.EucledianMetric
 import xf.xfvrp.base.metric.internal.AcceleratedMetricTransformator
 import xf.xfvrp.opt.Solution
@@ -231,7 +227,7 @@ class ReportBuilderTimeWindowSpec extends Specification {
 		def n = model.getNodes()
 
 		sol = new Solution()
-		sol.setGiantRoute([depot, n[1], n[2], n[3], depot] as Node[])
+		sol.setGiantRoute([cp(depot), n[1], n[2], n[3], cp(depot)] as Node[])
 
 		def solution = new XFVRPSolution(sol, model)
 
@@ -268,7 +264,7 @@ class ReportBuilderTimeWindowSpec extends Specification {
 		def n = model.getNodes()
 
 		sol = new Solution()
-		sol.setGiantRoute([depot, n[1], n[2], n[3], depot] as Node[])
+		sol.setGiantRoute([cp(depot), n[1], n[2], n[3], cp(depot)] as Node[])
 
 		def solution = new XFVRPSolution(sol, model)
 
@@ -305,7 +301,7 @@ class ReportBuilderTimeWindowSpec extends Specification {
 		def n = model.getNodes()
 
 		sol = new Solution()
-		sol.setGiantRoute([depot, n[1], n[2], n[3], depot] as Node[])
+		sol.setGiantRoute([cp(depot), n[1], n[2], n[3], cp(depot)] as Node[])
 
 		def solution = new XFVRPSolution(sol, model)
 
@@ -344,7 +340,7 @@ class ReportBuilderTimeWindowSpec extends Specification {
 		def n = model.getNodes()
 
 		sol = new Solution()
-		sol.setGiantRoute([depot, n[1], n[2], n[3], depot] as Node[])
+		sol.setGiantRoute([cp(depot), n[1], n[2], n[3], cp(depot)] as Node[])
 
 		def solution = new XFVRPSolution(sol, model)
 
@@ -410,7 +406,9 @@ class ReportBuilderTimeWindowSpec extends Specification {
 
 	def "With Max Driving Time - Okay"() {
 		depot = nd2
-		def model = initScenBasic([[[3,4]],[[4,5]],[[5,6]]] as float[][][], 0f, new TestVehicle(name: "V1", capacity: [3, 3], maxDrivingTimePerShift: 2f, waitingTimeBetweenShifts: 1f))
+		def model = initScenBasic([[[3,4]],[[4,5]],[[5,6]]] as float[][][], 0f,
+				new TestVehicle(name: "V1", capacity: [3, 3], maxDrivingTimePerShift: 2f, waitingTimeBetweenShifts: 1f)
+		)
 		def n = model.getNodes()
 
 		sol = new Solution()
@@ -424,26 +422,36 @@ class ReportBuilderTimeWindowSpec extends Specification {
 		then:
 		result != null
 		result.getRoutes().size() == 1
-		Math.abs(result.getSummary().getDuration() - 5) < 0.001
-		Math.abs(result.getSummary().getDuration(model.getVehicle()) - 5) < 0.001
-		Math.abs(result.getRoutes().get(0).getSummary().getDuration() - 5) < 0.001
+		Math.abs(result.getSummary().getDuration() - 6) < 0.001
+		Math.abs(result.getSummary().getDuration(model.getVehicle()) - 6) < 0.001
+		Math.abs(result.getRoutes().get(0).getSummary().getDuration() - 6) < 0.001
 		Math.abs(result.getRoutes().get(0).getEvents().get(0).getArrival() - 2) < 0.001
 		Math.abs(result.getRoutes().get(0).getEvents().get(0).getDeparture() - 2) < 0.001
 		Math.abs(result.getRoutes().get(0).getEvents().get(1).getArrival() - 3) < 0.001
 		Math.abs(result.getRoutes().get(0).getEvents().get(1).getDeparture() - 3) < 0.001
-		Math.abs(result.getRoutes().get(0).getEvents().get(2).getArrival() - 4) < 0.001
-		Math.abs(result.getRoutes().get(0).getEvents().get(2).getDeparture() - 4) < 0.001
 
-		result.getRoutes().get(0).getEvents().get(3).getSiteType() == SiteType.PAUSE;
-		result.getRoutes().get(0).getEvents().get(3).getID() == n[3].getExternID();
-		Math.abs(result.getRoutes().get(0).getEvents().get(3).getArrival() - 0) < 0.001
-		Math.abs(result.getRoutes().get(0).getEvents().get(3).getDeparture() - 0) < 0.001
-		Math.abs(result.getRoutes().get(0).getEvents().get(3).getDuration() - 1) < 0.001
+		// PAUSE
+		result.getRoutes().get(0).getEvents().get(2).getSiteType() == SiteType.PAUSE;
+		result.getRoutes().get(0).getEvents().get(2).getID() == n[2].getExternID();
+		Math.abs(result.getRoutes().get(0).getEvents().get(2).getArrival() - 0) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(2).getDeparture() - 0) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(2).getDuration() - 1) < 0.001
+
+		Math.abs(result.getRoutes().get(0).getEvents().get(3).getArrival() - 5) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(3).getDeparture() - 5) < 0.001
 
 		Math.abs(result.getRoutes().get(0).getEvents().get(4).getArrival() - 6) < 0.001
 		Math.abs(result.getRoutes().get(0).getEvents().get(4).getDeparture() - 6) < 0.001
-		Math.abs(result.getRoutes().get(0).getEvents().get(5).getArrival() - 7) < 0.001
-		Math.abs(result.getRoutes().get(0).getEvents().get(5).getDeparture() - 7) < 0.001
+
+		// PAUSE 2
+		result.getRoutes().get(0).getEvents().get(5).getSiteType() == SiteType.PAUSE;
+		result.getRoutes().get(0).getEvents().get(5).getID() == depot.getExternID();
+		Math.abs(result.getRoutes().get(0).getEvents().get(5).getArrival() - 0) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(5).getDeparture() - 0) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(5).getDuration() - 1) < 0.001
+
+		Math.abs(result.getRoutes().get(0).getEvents().get(6).getArrival() - 8) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(6).getDeparture() - 8) < 0.001
 		
 		Math.abs(result.getRoutes().get(0).getEvents().get(0).getDuration() - 0) < 0.001
 		Math.abs(result.getRoutes().get(0).getEvents().get(1).getDuration() - 1) < 0.001
@@ -451,13 +459,15 @@ class ReportBuilderTimeWindowSpec extends Specification {
 		Math.abs(result.getRoutes().get(0).getEvents().get(3).getDuration() - 1) < 0.001
 		Math.abs(result.getRoutes().get(0).getEvents().get(4).getDuration() - 1) < 0.001
 		Math.abs(result.getRoutes().get(0).getEvents().get(5).getDuration() - 1) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(6).getDuration() - 1) < 0.001
 		
 		Math.abs(result.getRoutes().get(0).getEvents().get(0).getTravelTime() - 0) < 0.001
 		Math.abs(result.getRoutes().get(0).getEvents().get(1).getTravelTime() - 1) < 0.001
-		Math.abs(result.getRoutes().get(0).getEvents().get(2).getTravelTime() - 1) < 0.001
-		Math.abs(result.getRoutes().get(0).getEvents().get(3).getTravelTime() - 0) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(2).getTravelTime() - 0) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(3).getTravelTime() - 1) < 0.001
 		Math.abs(result.getRoutes().get(0).getEvents().get(4).getTravelTime() - 1) < 0.001
-		Math.abs(result.getRoutes().get(0).getEvents().get(5).getTravelTime() - 1) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(5).getTravelTime() - 0) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(6).getTravelTime() - 1) < 0.001
 	}
 
 	def "Multi Time Windows - Okay"() {
@@ -580,5 +590,10 @@ class ReportBuilderTimeWindowSpec extends Specification {
 		def iMetric = new AcceleratedMetricTransformator().transform(metric, nodes, v);
 
 		return new XFVRPModel(nodes, iMetric, iMetric, v, parameter)
+	}
+
+	def depotId = 0
+	private Node cp(Node node) {
+		return Util.createIdNode(node, depotId++)
 	}
 }

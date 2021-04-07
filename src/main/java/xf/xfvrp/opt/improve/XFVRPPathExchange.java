@@ -39,16 +39,28 @@ public class XFVRPPathExchange extends XFVRPOptImpBase {
 
 		Solution best = null;
 
-		Object[] o = null;
+		Object[] o;
 		{
 			o = opt(solution, bestResult, bestQ, rel);
-			if(o != null) {best = (Solution) o[0]; bestQ = (Quality) o[1];}
+			if (o != null) {
+				best = (Solution) o[0];
+				bestQ = (Quality) o[1];
+			}
 			o = opt(solution, bestResult, bestQ, swa);
-			if(o != null) {best = (Solution) o[0]; bestQ = (Quality) o[1];}
+			if (o != null) {
+				best = (Solution) o[0];
+				bestQ = (Quality) o[1];
+			}
 			o = opt(solution, bestResult, bestQ, or);
-			if(o != null) {best = (Solution) o[0]; bestQ = (Quality) o[1];}
+			if (o != null) {
+				best = (Solution) o[0];
+				bestQ = (Quality) o[1];
+			}
 			o = opt(solution, bestResult, bestQ, bod);
-			if(o != null) {best = (Solution) o[0]; bestQ = (Quality) o[1];}
+			if (o != null) {
+				best = (Solution) o[0];
+				bestQ = (Quality) o[1];
+			}
 		}
 
 		if(best != null) {

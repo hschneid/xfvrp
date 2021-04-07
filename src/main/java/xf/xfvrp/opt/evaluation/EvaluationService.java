@@ -1,11 +1,6 @@
 package xf.xfvrp.opt.evaluation;
 
-import xf.xfvrp.base.LoadType;
-import xf.xfvrp.base.Node;
-import xf.xfvrp.base.Quality;
-import xf.xfvrp.base.SiteType;
-import xf.xfvrp.base.Vehicle;
-import xf.xfvrp.base.XFVRPModel;
+import xf.xfvrp.base.*;
 import xf.xfvrp.base.preset.BlockNameConverter;
 import xf.xfvrp.opt.Solution;
 

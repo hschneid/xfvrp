@@ -17,17 +17,17 @@ package xf.xfvrp.base;
 public class Util {
 
 	/**
-	 * In single depot problems a giant tour contains only one depot multiple times. But each
-	 * version of the depot in giant tour is a deep copy with a unique depotId.
+	 * In single node problems a giant tour contains only one node multiple times. But each
+	 * version of the node in giant tour is a deep copy with a unique depotId.
 	 * 
 	 * This method creates the deep copy instance and assigns the depotId.
 	 * 
-	 * @param depot Current depot
+	 * @param node Current node
 	 * @param newId Last assigned depotId
-	 * @return The copy of depot object
+	 * @return The copy of node object
 	 */
-	public static Node createIdNode(Node depot, int newId) {
-		Node n = depot.copy();
+	public static Node createIdNode(Node node, int newId) {
+		Node n = node.copy();
 		n.setDepotId(newId);
 		return n;
 	}

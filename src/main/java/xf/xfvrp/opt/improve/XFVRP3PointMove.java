@@ -1,12 +1,12 @@
 package xf.xfvrp.opt.improve;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.Quality;
 import xf.xfvrp.base.SiteType;
 import xf.xfvrp.opt.Solution;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /** 
@@ -118,24 +118,24 @@ public class XFVRP3PointMove extends XFVRPOptImpBase {
 			return;
 
 
-		float old = 
-				getDistance(giantTour[predA], giantTour[a], markA) + 
-				getDistance(giantTour[a + 1], giantTour[a + 2], markA) +
-				getDistance(giantTour[b - 1], giantTour[b], markB) +
-				((b == giantTour.length - 1) ? 0 : getDistance(giantTour[b], giantTour[b + 1], markB));
+		float old =
+				getDistance(giantTour[predA], giantTour[a], markA) +
+						getDistance(giantTour[a + 1], giantTour[a + 2], markA) +
+						getDistance(giantTour[b - 1], giantTour[b], markB) +
+						((b == giantTour.length - 1) ? 0 : getDistance(giantTour[b], giantTour[b + 1], markB));
 
 
-		float val = 0;
-		if(a - b == 1) {
-			val = old -  
-					(getDistance(giantTour[a + 1], giantTour[b], markA) + 
+		float val;
+		if (a - b == 1) {
+			val = old -
+					(getDistance(giantTour[a + 1], giantTour[b], markA) +
 							getDistance(giantTour[b], giantTour[a + 2], markB) +
 							getDistance(giantTour[b - 1], giantTour[a], markB));
 		} else
-			val = old -  
-			(getDistance(giantTour[predA], giantTour[b], markA) + 
-					getDistance(giantTour[b], giantTour[a + 2], markA) +
-					getDistance(giantTour[b - 1], giantTour[a], markB) + 
+			val = old -
+					(getDistance(giantTour[predA], giantTour[b], markA) +
+							getDistance(giantTour[b], giantTour[a + 2], markA) +
+							getDistance(giantTour[b - 1], giantTour[a], markB) +
 					((b == giantTour.length - 1) ? 0 : getDistance(giantTour[a + 1], giantTour[b + 1], markB)));
 
 		if(val > epsilon) improvingStepList.add(new float[]{a, b, val});

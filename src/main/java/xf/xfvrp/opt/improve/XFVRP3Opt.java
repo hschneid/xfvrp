@@ -1,11 +1,11 @@
 package xf.xfvrp.opt.improve;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.Quality;
 import xf.xfvrp.opt.Solution;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /** 
  * Copyright (c) 2012-present Holger Schneider
@@ -159,22 +159,22 @@ public class XFVRP3Opt extends XFVRPOptImpBase {
 	 * @param impList
 	 */
 	private void findImprovements(Node[] giantTour, int a, int b, int c, List<float[]> impList) {
-		
-		
-		final float old = getDistanceForOptimization(giantTour[a], giantTour[a+1]) + 
-		getDistanceForOptimization(giantTour[b], giantTour[b+1]) + 
-		getDistanceForOptimization(giantTour[c], giantTour[c+1]);
 
-		float val = 0;
+
+		final float old = getDistanceForOptimization(giantTour[a], giantTour[a + 1]) +
+				getDistanceForOptimization(giantTour[b], giantTour[b + 1]) +
+				getDistanceForOptimization(giantTour[c], giantTour[c + 1]);
+
+		float val;
 		// Invert (b + 1 - c)
-		if(c - b > 1) {
+		if (c - b > 1) {
 			val = old - (getDistanceForOptimization(giantTour[a], giantTour[a + 1]) +
-			getDistanceForOptimization(giantTour[b], giantTour[c]) +
-			getDistanceForOptimization(giantTour[b + 1], giantTour[c + 1]));
-			if(val > epsilon) impList.add(new float[]{a, b, c, 0, val});
+					getDistanceForOptimization(giantTour[b], giantTour[c]) +
+					getDistanceForOptimization(giantTour[b + 1], giantTour[c + 1]));
+			if (val > epsilon) impList.add(new float[]{a, b, c, 0, val});
 		}
 		// Invert (a + 1 - b)
-		if(b - a > 1) {
+		if (b - a > 1) {
 			val = old - (getDistanceForOptimization(giantTour[a], giantTour[b]) +
 			getDistanceForOptimization(giantTour[a + 1], giantTour[b + 1]) +
 			getDistanceForOptimization(giantTour[c], giantTour[c + 1]));

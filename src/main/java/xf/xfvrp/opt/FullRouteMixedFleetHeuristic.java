@@ -1,24 +1,8 @@
 package xf.xfvrp.opt;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-
 import util.collection.ListMap;
 import xf.xfvrp.RoutingDataBag;
-import xf.xfvrp.base.InvalidReason;
-import xf.xfvrp.base.LoadType;
-import xf.xfvrp.base.Node;
-import xf.xfvrp.base.SiteType;
-import xf.xfvrp.base.Util;
-import xf.xfvrp.base.Vehicle;
-import xf.xfvrp.base.XFVRPModel;
-import xf.xfvrp.base.XFVRPParameter;
+import xf.xfvrp.base.*;
 import xf.xfvrp.base.fleximport.InternalVehicleData;
 import xf.xfvrp.base.metric.InternalMetric;
 import xf.xfvrp.base.metric.Metric;
@@ -29,6 +13,15 @@ import xf.xfvrp.base.preset.BlockNameConverter;
 import xf.xfvrp.base.preset.VehiclePriorityInitialiser;
 import xf.xfvrp.report.RouteReport;
 import xf.xfvrp.report.build.ReportBuilder;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * Mixed fleet heuristic

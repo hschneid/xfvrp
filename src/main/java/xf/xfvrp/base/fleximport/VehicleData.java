@@ -1,8 +1,8 @@
 package xf.xfvrp.base.fleximport;
 
-import java.io.Serializable;
-
 import xf.xfvrp.base.Vehicle;
+
+import java.io.Serializable;
 
 /** 
  * Copyright (c) 2012-present Holger Schneider

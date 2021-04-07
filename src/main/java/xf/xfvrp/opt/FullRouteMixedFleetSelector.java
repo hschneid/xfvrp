@@ -1,12 +1,12 @@
 package xf.xfvrp.opt;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import xf.xfvrp.base.Vehicle;
 import xf.xfvrp.report.Report;
 import xf.xfvrp.report.RouteReport;
 import xf.xfvrp.report.RouteReportSummary;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class FullRouteMixedFleetSelector {
 

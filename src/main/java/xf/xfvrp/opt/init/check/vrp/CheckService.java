@@ -1,21 +1,17 @@
 package xf.xfvrp.opt.init.check.vrp;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import xf.xfvrp.base.Node;
-import xf.xfvrp.base.Quality;
-import xf.xfvrp.base.SiteType;
-import xf.xfvrp.base.Util;
-import xf.xfvrp.base.XFVRPModel;
+import xf.xfvrp.base.*;
 import xf.xfvrp.base.preset.BlockNameConverter;
 import xf.xfvrp.base.preset.BlockPositionConverter;
 import xf.xfvrp.opt.Solution;
 import xf.xfvrp.opt.XFVRPOptBase;
 import xf.xfvrp.opt.XFVRPOptType;
 import xf.xfvrp.opt.init.solution.vrp.SolutionBuilderDataBag;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /** 
  * Copyright (c) 2012-present Holger Schneider

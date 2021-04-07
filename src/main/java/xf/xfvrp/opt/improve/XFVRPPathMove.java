@@ -1,14 +1,14 @@
 package xf.xfvrp.opt.improve;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.Quality;
 import xf.xfvrp.base.SiteType;
 import xf.xfvrp.opt.Solution;
 
-/** 
+import java.util.ArrayList;
+import java.util.List;
+
+/**
  * Copyright (c) 2012-present Holger Schneider
  * All rights reserved.
  *
@@ -21,14 +21,14 @@ import xf.xfvrp.opt.Solution;
  * specific logic (other than 3-opt) so that a certain
  * segment of the route plan (a path) is relocated to
  * any position in the route plan.
- * 
+ *
  * To improve the performance of this huge neighborhood search
  * the length of the paths is restricted up to 4. Longer paths
  * than 4 are not relocated.
- * 
+ *
  * As expansion of standard OrOpt a chosen path can be additionally inverted
  * in the ordering of nodes (like 2-Opt). 
- * 
+ *
  * @author hschneid
  *
  */
@@ -46,7 +46,7 @@ public class XFVRPPathMove extends XFVRPOptImpBase {
 	@Override
 	public Quality improve(final Solution solution, Quality bestResult) {
 		Node[] giantTour = solution.getGiantRoute();
-		
+
 		List<float[]> improvingStepList = search(giantTour);
 
 		// Sortier absteigend nach Potenzial
@@ -94,13 +94,13 @@ public class XFVRPPathMove extends XFVRPOptImpBase {
 	/**
 	 * Searches all improving valid steps in search space for
 	 * a VRP with multiple depots.
-	 * 
+	 *
 	 * @param giantRoute
 	 * @return improvingStepList
 	 */
 	private List<float[]> search(Node[] giantTour) {
 		List<float[]> improvingStepList = new ArrayList<>();
-		
+
 		final int length = giantTour.length;
 		int[] tourIdMarkArr = new int[length];
 		int[] depotMarkArr = new int[length];
@@ -136,7 +136,7 @@ public class XFVRPPathMove extends XFVRPOptImpBase {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param giantRoute
 	 * @param depotMarkArr
 	 * @param tourIdMarker
@@ -157,7 +157,7 @@ public class XFVRPPathMove extends XFVRPOptImpBase {
 		if(a < b && b - (a + l) == 1)
 			return;
 
-		if(tourIdMarker[a] != tourIdMarker[a + l])
+		if (tourIdMarker[a] != tourIdMarker[a + l])
 			return;
 
 		int predA = (a - b == 1) ? b : a - 1;
@@ -165,28 +165,27 @@ public class XFVRPPathMove extends XFVRPOptImpBase {
 		int markA = depotMarkArr[a];
 		int markB = depotMarkArr[b - 1];
 
-		float old = getDistance(giantRoute[predA], giantRoute[a], markA) + 
+		float old = getDistance(giantRoute[predA], giantRoute[a], markA) +
 				getDistance(giantRoute[a + l], giantRoute[a + l + 1], markA) +
 				getDistance(giantRoute[b - 1], giantRoute[b], markB);
 
-		float val = 0;
+		float val;
 		// No invert
-		{
-			val = 
-					old - 
-					(getDistance(giantRoute[predA], giantRoute[a + l + 1], markA) +
-							getDistance(giantRoute[b - 1], giantRoute[a], markB) +
-							getDistance(giantRoute[a + l], giantRoute[b], markB));
-			if(val > epsilon) impList.add(new float[]{a, b, l, NO_INVERT, val});
-		}
+		val =
+				old -
+						(getDistance(giantRoute[predA], giantRoute[a + l + 1], markA) +
+								getDistance(giantRoute[b - 1], giantRoute[a], markB) +
+								getDistance(giantRoute[a + l], giantRoute[b], markB));
+		if (val > epsilon) impList.add(new float[]{a, b, l, NO_INVERT, val});
+
 		// with invert
-		if(isInvertationActive) {
-			val = 
-					old - 
-					(getDistance(giantRoute[predA], giantRoute[a + l + 1], markA) +
-							getDistance(giantRoute[b - 1], giantRoute[a + l], markB) +
-							getDistance(giantRoute[a], giantRoute[b], markB));
-			if(val > epsilon) impList.add(new float[]{a, b, l, INVERT, val});
+		if (isInvertationActive) {
+			val =
+					old -
+							(getDistance(giantRoute[predA], giantRoute[a + l + 1], markA) +
+									getDistance(giantRoute[b - 1], giantRoute[a + l], markB) +
+									getDistance(giantRoute[a], giantRoute[b], markB));
+			if (val > epsilon) impList.add(new float[]{a, b, l, INVERT, val});
 		}
 	}
 

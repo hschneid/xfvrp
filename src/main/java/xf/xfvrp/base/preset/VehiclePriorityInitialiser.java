@@ -1,11 +1,11 @@
 package xf.xfvrp.base.preset;
 
+import xf.xfvrp.base.Vehicle;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import xf.xfvrp.base.Vehicle;
 
 /** 
  * Copyright (c) 2012-present Holger Schneider

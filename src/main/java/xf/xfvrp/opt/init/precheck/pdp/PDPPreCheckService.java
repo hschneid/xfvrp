@@ -1,15 +1,15 @@
 package xf.xfvrp.opt.init.precheck.pdp;
 
+import xf.xfvrp.base.InvalidReason;
+import xf.xfvrp.base.Node;
+import xf.xfvrp.base.SiteType;
+import xf.xfvrp.base.Vehicle;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
-import xf.xfvrp.base.InvalidReason;
-import xf.xfvrp.base.Node;
-import xf.xfvrp.base.SiteType;
-import xf.xfvrp.base.Vehicle;
 
 public class PDPPreCheckService {
 

@@ -3,12 +3,7 @@ package xf.xfvrp.opt.improve.ils
 import spock.lang.Specification
 import util.instances.TestNode
 import util.instances.TestVehicle
-import xf.xfvrp.base.LoadType
-import xf.xfvrp.base.Node
-import xf.xfvrp.base.Quality
-import xf.xfvrp.base.SiteType
-import xf.xfvrp.base.XFVRPModel
-import xf.xfvrp.base.XFVRPParameter
+import xf.xfvrp.base.*
 import xf.xfvrp.base.metric.EucledianMetric
 import xf.xfvrp.base.metric.internal.AcceleratedMetricTransformator
 import xf.xfvrp.base.monitor.StatusManager

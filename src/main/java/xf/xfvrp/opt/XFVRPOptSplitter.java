@@ -1,16 +1,16 @@
 package xf.xfvrp.opt;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
-import java.util.stream.Collectors;
-
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.Quality;
 import xf.xfvrp.base.SiteType;
 import xf.xfvrp.base.XFVRPModel;
 import xf.xfvrp.base.monitor.StatusManager;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
+import java.util.stream.Collectors;
 
 /** 
  * Copyright (c) 2012-present Holger Schneider

@@ -66,9 +66,7 @@ public class ModelBuilder {
 	}
 
 	private InternalMetric buildOptimizationMetric(Node[] nodes, Vehicle veh, InternalMetric internalMetric) {
-		InternalMetric optMetric = internalMetric;
-		optMetric = FixCostMetricTransformator.transform(internalMetric, nodes, veh);
-		optMetric = PresetMetricTransformator.transform(optMetric, nodes);
-		return optMetric;
+		InternalMetric optMetric = FixCostMetricTransformator.transform(internalMetric, nodes, veh);
+		return PresetMetricTransformator.transform(optMetric, nodes);
 	}
 }

@@ -1,10 +1,5 @@
 package xf.xfvrp.opt.construct;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import util.collection.ListMap;
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.NormalizeSolutionService;
@@ -13,6 +8,11 @@ import xf.xfvrp.base.Util;
 import xf.xfvrp.base.preset.BlockNameConverter;
 import xf.xfvrp.opt.Solution;
 import xf.xfvrp.opt.XFVRPOptBase;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /** 
  * Copyright (c) 2012-present Holger Schneider
@@ -161,14 +161,14 @@ public class XFVRPConst extends XFVRPOptBase {
 			int blockIdx = customers.get(i).getPresetBlockIdx();
 
 			// Default blocks or Change of block index lead to a new route
-			if(lastBlockIdx == BlockNameConverter.DEFAULT_BLOCK_IDX || blockIdx != lastBlockIdx)
+			if (lastBlockIdx == BlockNameConverter.DEFAULT_BLOCK_IDX || blockIdx != lastBlockIdx)
 				gT[idx++] = Util.createIdNode(dep, depID++);
 
 			gT[idx++] = customers.get(i);
 
 			lastBlockIdx = blockIdx;
 		}
-		gT[idx++] = Util.createIdNode(dep, depID++);
+		gT[idx++] = Util.createIdNode(dep, depID);
 
 		Solution solution = new Solution();
 		solution.setGiantRoute(Arrays.copyOf(gT, idx));

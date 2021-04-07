@@ -1,7 +1,5 @@
 package xf.xfvrp.opt.improve.ils;
 
-import java.util.NoSuchElementException;
-
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.Quality;
 import xf.xfvrp.base.SiteType;
@@ -9,6 +7,8 @@ import xf.xfvrp.base.XFVRPModel;
 import xf.xfvrp.opt.Solution;
 import xf.xfvrp.opt.XFVRPOptBase;
 import xf.xfvrp.opt.improve.XFPDPRelocate;
+
+import java.util.NoSuchElementException;
 
 public class XFPDPRandomChangeService extends XFVRPOptBase implements XFRandomChangeService {
 
@@ -88,11 +88,11 @@ public class XFPDPRandomChangeService extends XFVRPOptBase implements XFRandomCh
 		Node[] giantRoute = solution.getGiantRoute();
 
 		// Choose a random source node (customer or replenish)
-		int srcPickupIdx = -1;
+		int srcPickupIdx;
 		do {
 			// Max value (DEP, ..., X, >Y<, Z, DEP)
 			srcPickupIdx = rand.nextInt(giantRoute.length - 3) + 1;
-		} while(giantRoute[srcPickupIdx].getSiteType() == SiteType.DEPOT || giantRoute[srcPickupIdx].getDemand()[0] < 0);
+		} while (giantRoute[srcPickupIdx].getSiteType() == SiteType.DEPOT || giantRoute[srcPickupIdx].getDemand()[0] < 0);
 
 		choice.srcPickupIdx = srcPickupIdx;
 	}
@@ -117,11 +117,11 @@ public class XFPDPRandomChangeService extends XFVRPOptBase implements XFRandomCh
 	private void chooseDstPickup(Choice choice, Solution solution) {
 		Node[] giantRoute = solution.getGiantRoute();
 
-		int dstPickupIdx = -1;
+		int dstPickupIdx;
 		do {
 			// Max value (DEP, ..., X, Y, >Z<, DEP)
 			dstPickupIdx = rand.nextInt(giantRoute.length - 2) + 1;
-		} while(dstPickupIdx == choice.srcPickupIdx || dstPickupIdx == choice.srcDeliveryIdx);
+		} while (dstPickupIdx == choice.srcPickupIdx || dstPickupIdx == choice.srcDeliveryIdx);
 
 		choice.dstPickupIdx = dstPickupIdx;
 	}
@@ -136,16 +136,16 @@ public class XFPDPRandomChangeService extends XFVRPOptBase implements XFRandomCh
 
 		int[] routeIdxArr = getIndexOfRoutes(giantRoute);
 
-		int dstDeliveryIdx = -1;
+		int dstDeliveryIdx;
 		int counter = 0;
 		do {
 			// Max value (DEP, ..., X, Y, Z, >DEP<)
 			dstDeliveryIdx = rand.nextInt(giantRoute.length - 1) + 1;
 			counter++;
-		} while(isInvalidDstDeliveryIdx(choice, routeIdxArr, dstDeliveryIdx) && counter < MAX_TRIES_CHOOSING);
+		} while (isInvalidDstDeliveryIdx(choice, routeIdxArr, dstDeliveryIdx) && counter < MAX_TRIES_CHOOSING);
 
-		if(counter == MAX_TRIES_CHOOSING)
-			throw new NoSuchElementException("Choice "+choice.srcPickupIdx+"_"+choice.srcDeliveryIdx+"_"+choice.dstPickupIdx);
+		if (counter == MAX_TRIES_CHOOSING)
+			throw new NoSuchElementException("Choice " + choice.srcPickupIdx + "_" + choice.srcDeliveryIdx + "_" + choice.dstPickupIdx);
 
 		choice.dstDeliveryIdx = dstDeliveryIdx;
 	}

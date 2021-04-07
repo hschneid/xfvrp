@@ -47,4 +47,8 @@ public class RouteInfo {
 	public Amount getDeliveryAmount() {
 		return deliveryAmount;
 	}
+
+	public Amount getPickupAmount() {
+		return pickupAmount;
+	}
 }

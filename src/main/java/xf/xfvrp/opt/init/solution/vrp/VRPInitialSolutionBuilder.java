@@ -1,12 +1,5 @@
 package xf.xfvrp.opt.init.solution.vrp;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.NormalizeSolutionService;
 import xf.xfvrp.base.Util;
@@ -16,6 +9,8 @@ import xf.xfvrp.base.preset.BlockNameConverter;
 import xf.xfvrp.opt.Solution;
 import xf.xfvrp.opt.init.PresetSolutionBuilder;
 import xf.xfvrp.opt.init.check.vrp.CheckService;
+
+import java.util.*;
 
 /**
  * Creates a trivial solution out of the model. 
@@ -86,16 +81,16 @@ public class VRPInitialSolutionBuilder {
 				// Add depot with new own id
 				gL.add(Util.createIdNode(depotMap.get(allowedDepots.get(idx)), maxIdx++));
 			}
-	
+
 			// Add customer
 			gL.add(currNode);
-	
+
 			depotIdx++;
 			lastBlockIdx = blockIdx;
 		}
 		// Add last depot
-		gL.add(Util.createIdNode(nodes.get(depotIdx % depots.size()), maxIdx++));
-		
+		gL.add(Util.createIdNode(nodes.get(depotIdx % depots.size()), maxIdx));
+
 		Solution solution = new Solution();
 		solution.setGiantRoute(gL.toArray(new Node[0]));
 		return solution;

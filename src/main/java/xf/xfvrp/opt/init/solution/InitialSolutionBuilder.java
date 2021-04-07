@@ -1,7 +1,5 @@
 package xf.xfvrp.opt.init.solution;
 
-import java.util.ArrayList;
-
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.XFVRPModel;
 import xf.xfvrp.base.XFVRPParameter;
@@ -9,6 +7,8 @@ import xf.xfvrp.base.monitor.StatusManager;
 import xf.xfvrp.opt.Solution;
 import xf.xfvrp.opt.init.solution.pdp.PDPInitialSolutionBuilder;
 import xf.xfvrp.opt.init.solution.vrp.VRPInitialSolutionBuilder;
+
+import java.util.ArrayList;
 
 /**
  * Creates a trivial solution out of the model. 

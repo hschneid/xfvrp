@@ -1,14 +1,14 @@
 package xf.xfvrp.opt;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
-
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.Quality;
 import xf.xfvrp.base.XFVRPBase;
 import xf.xfvrp.base.XFVRPModel;
 import xf.xfvrp.opt.evaluation.EvaluationService;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Random;
 
 
 /** 

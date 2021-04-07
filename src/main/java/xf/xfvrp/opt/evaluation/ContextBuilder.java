@@ -1,8 +1,8 @@
 package xf.xfvrp.opt.evaluation;
 
-import java.util.Arrays;
-
 import xf.xfvrp.base.XFVRPModel;
+
+import java.util.Arrays;
 
 public class ContextBuilder {
 

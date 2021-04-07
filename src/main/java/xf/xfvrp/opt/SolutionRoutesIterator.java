@@ -1,8 +1,8 @@
 package xf.xfvrp.opt;
 
-import java.util.Iterator;
-
 import xf.xfvrp.base.Node;
+
+import java.util.Iterator;
 
 public class SolutionRoutesIterator implements Iterator<Node[]> {
 

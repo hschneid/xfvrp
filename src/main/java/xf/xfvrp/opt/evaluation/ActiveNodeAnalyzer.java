@@ -1,12 +1,12 @@
 package xf.xfvrp.opt.evaluation;
 
-import static xf.xfvrp.base.SiteType.DEPOT;
-import static xf.xfvrp.base.SiteType.REPLENISH;
+import xf.xfvrp.base.Node;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import xf.xfvrp.base.Node;
+import static xf.xfvrp.base.SiteType.DEPOT;
+import static xf.xfvrp.base.SiteType.REPLENISH;
 
 public class ActiveNodeAnalyzer {
 

@@ -1,12 +1,12 @@
 package xf.xfvrp.opt.improve;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.Quality;
 import xf.xfvrp.base.SiteType;
 import xf.xfvrp.opt.Solution;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /** 
  * Copyright (c) 2012-present Holger Schneider
@@ -126,33 +126,33 @@ public class XFVRPSwapSegmentWithInvert extends XFVRPOptImpBase {
 		int aa = a + la;
 		int bb = b + lb;
 
-		if(aa >= b)
+		if (aa >= b)
 			return;
 
 		int markA = depotMarkArr[a];
 		int markB = depotMarkArr[b - 1];
 
-		float old = 0;
-		if((b - aa) == 1) {
-			old = getDistance(giantRoute[a - 1], giantRoute[a], markA) + 
+		float old;
+		if ((b - aa) == 1) {
+			old = getDistance(giantRoute[a - 1], giantRoute[a], markA) +
 					getDistance(giantRoute[aa], giantRoute[b], markA) +
 					getDistance(giantRoute[bb], giantRoute[bb + 1], markB);
 		} else {
-			old = getDistance(giantRoute[a - 1], giantRoute[a], markA) + 
+			old = getDistance(giantRoute[a - 1], giantRoute[a], markA) +
 					getDistance(giantRoute[aa], giantRoute[aa + 1], markA) +
 					getDistance(giantRoute[b - 1], giantRoute[b], markB) +
 					getDistance(giantRoute[bb], giantRoute[bb + 1], markB);
 		}
 
-		float val = 0;
+		float val;
 		// NO INVERT
 		{
-			if((b - aa) == 1) {
-				val = old - (getDistance(giantRoute[a - 1], giantRoute[b], markA) + 
+			if ((b - aa) == 1) {
+				val = old - (getDistance(giantRoute[a - 1], giantRoute[b], markA) +
 						getDistance(giantRoute[bb], giantRoute[a], markA) +
 						getDistance(giantRoute[aa], giantRoute[bb + 1], markB));
 			} else {
-				val = old - (getDistance(giantRoute[a - 1], giantRoute[b], markA) + 
+				val = old - (getDistance(giantRoute[a - 1], giantRoute[b], markA) +
 						getDistance(giantRoute[bb], giantRoute[aa + 1], markA) +
 						getDistance(giantRoute[b - 1], giantRoute[a], markB) +
 						getDistance(giantRoute[aa], giantRoute[bb + 1], markB));

@@ -1,18 +1,14 @@
 package xf.xfvrp.opt.construct.insert;
 
+import xf.xfvrp.base.*;
+import xf.xfvrp.opt.Solution;
+import xf.xfvrp.opt.XFVRPOptBase;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.OptionalInt;
 import java.util.stream.IntStream;
-
-import xf.xfvrp.base.Node;
-import xf.xfvrp.base.NormalizeSolutionService;
-import xf.xfvrp.base.Quality;
-import xf.xfvrp.base.SiteType;
-import xf.xfvrp.base.Util;
-import xf.xfvrp.opt.Solution;
-import xf.xfvrp.opt.XFVRPOptBase;
 
 /** 
  * Copyright (c) 2012-present Holger Schneider

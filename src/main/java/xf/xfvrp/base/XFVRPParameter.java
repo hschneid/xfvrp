@@ -21,8 +21,6 @@ public class XFVRPParameter implements Serializable {
 	private static final long serialVersionUID = 8822219362823890492L;
 	
 	private boolean allowsRouteSplitting = false;
-	private boolean withLoadPlanning = false;
-	private boolean withoutLifoInLoadPlanning = false;
 
 	/* 
 	 * Parameters for Open VRP
@@ -64,8 +62,6 @@ public class XFVRPParameter implements Serializable {
 	 */
 	public void clear() {
 		allowsRouteSplitting = false;
-		withLoadPlanning = false;
-		withoutLifoInLoadPlanning = false;
 		openRouteAtStart = false;
 		openRouteAtEnd = false;
 		loadingTimeAtDepot = false;
@@ -76,30 +72,6 @@ public class XFVRPParameter implements Serializable {
 		maxRunningTimeInSec = Long.MAX_VALUE;
 	}
 
-	/**
-	 * @return the withLoadPlanning
-	 */
-	public final boolean isWithLoadPlanning() {
-		return withLoadPlanning;
-	}
-	/**
-	 * @param withLoadPlanning the withLoadPlanning to set
-	 */
-	public final void setLoadPlanning(boolean withLoadPlanning) {
-		this.withLoadPlanning = withLoadPlanning;
-	}
-	/**
-	 * @return the withoutLifoInLoadPlanning
-	 */
-	public final boolean isWithoutLifoInLoadPlanning() {
-		return withoutLifoInLoadPlanning;
-	}
-	/**
-	 * @param withoutLifoInLoadPlanning the withoutLifoInLoadPlanning to set
-	 */
-	public final void setNoLifoInLoadPlanning(boolean withoutLifoInLoadPlanning) {
-		this.withoutLifoInLoadPlanning = withoutLifoInLoadPlanning;
-	}
 	/**
 	 * @return the allowsRouteSplitting
 	 */

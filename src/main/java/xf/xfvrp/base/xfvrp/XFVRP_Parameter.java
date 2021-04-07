@@ -37,23 +37,6 @@ public abstract class XFVRP_Parameter extends XFVRP_Data {
 	}
 
 	/**
-	 * Activates the checking of loading constraints (3D oriented loading problem)
-	 * 
-	 * The input data should contain the additional informations
-	 */
-	public void allowsLoadPlanning() {
-		parameter.setLoadPlanning(true);
-	}
-
-	/**
-	 * Disables the lifo restriction in load planning, which means that
-	 * repacking along the route could be necessary.
-	 */
-	public void disableLifoInLoadPlanning() {
-		parameter.setNoLifoInLoadPlanning(true);
-	}
-
-	/**
 	 * By activating this flag, routes start with the first customer and ending at the depot.
 	 */
 	public void allowsOpenRoutesAtStart() {

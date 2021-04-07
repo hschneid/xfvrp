@@ -1,9 +1,9 @@
 package xf.xfvrp.base;
 
+import xf.xfvrp.opt.Solution;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import xf.xfvrp.opt.Solution;
 
 public class NormalizeSolutionService {
 
@@ -14,18 +14,17 @@ public class NormalizeSolutionService {
 	 * - Reindex the depotIDs which are used for build a solution report
 	 */
 	public static Solution normalizeRoute(Solution solution, XFVRPModel model) {
+		removeEmptyRoutes(solution);
+
 		int maxDepotId = 0;
-
-		maxDepotId = removeEmptyRoutes(solution, maxDepotId);
-
 		maxDepotId = addEmptyRoutes(solution, model, maxDepotId);
 
-		maxDepotId = addReplenishRoute(solution, model, maxDepotId);
+		addReplenishRoute(solution, model, maxDepotId);
 
 		return solution;
 	}
 
-	private static int removeEmptyRoutes(Solution solution, int maxDepotId) {
+	private static void removeEmptyRoutes(Solution solution) {
 		for (int routeIndex = 0; routeIndex < solution.getRoutes().length; routeIndex++) {
 			Node[] route = solution.getRoutes()[routeIndex];
 
@@ -39,8 +38,6 @@ public class NormalizeSolutionService {
 			
 			removeEmptyReplenishments(routeIndex, solution);
 		}
-
-		return maxDepotId;
 	}
 
 	private static void removeEmptyReplenishments(int routeIndex, Solution solution) {
@@ -95,7 +92,7 @@ public class NormalizeSolutionService {
 		for (int i = idxOfFirstReplenishInNodes; i < idxOfLastReplenishInNodes; i++) {
 			newRoute[idx++] = nodes[i].copy();
 		}
-		newRoute[idx++] = depot;
+		newRoute[idx] = depot;
 		
 		solution.addRoute(newRoute);
 

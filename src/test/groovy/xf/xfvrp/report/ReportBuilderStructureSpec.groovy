@@ -1,15 +1,10 @@
 package xf.xfvrp.report
 
-import spock.lang.Ignore
+
 import spock.lang.Specification
 import util.instances.TestNode
 import util.instances.TestVehicle
-import xf.xfvrp.base.LoadType
-import xf.xfvrp.base.Node
-import xf.xfvrp.base.SiteType
-import xf.xfvrp.base.Vehicle
-import xf.xfvrp.base.XFVRPModel
-import xf.xfvrp.base.XFVRPParameter
+import xf.xfvrp.base.*
 import xf.xfvrp.base.metric.EucledianMetric
 import xf.xfvrp.base.metric.internal.AcceleratedMetricTransformator
 import xf.xfvrp.opt.Solution
@@ -57,7 +52,6 @@ class ReportBuilderStructureSpec extends Specification {
 		thrown IllegalStateException
 	}
 
-	@Ignore
 	def "Feasability - Ends not with DEPOT"() {
 		def v = new TestVehicle(name: "V1", capacity: [3, 3]).getVehicle()
 		def model = initScen1(v, LoadType.DELIVERY)
@@ -69,7 +63,7 @@ class ReportBuilderStructureSpec extends Specification {
 		def solution = new XFVRPSolution(sol, model);
 
 		when:
-		def result = service.getReport(solution)
+		service.getReport(solution)
 
 		then:
 		thrown IllegalStateException
@@ -86,7 +80,7 @@ class ReportBuilderStructureSpec extends Specification {
 		def solution = new XFVRPSolution(sol, model);
 
 		when:
-		def result = service.getReport(solution)
+		service.getReport(solution)
 
 		then:
 		thrown IllegalStateException
@@ -124,7 +118,7 @@ class ReportBuilderStructureSpec extends Specification {
 		def result = service.getReport(solution)
 
 		then:
-		thrown IllegalStateException
+		result.getRoutes().isEmpty()
 	}
 	
 	def "Feasability - Null route"() {
@@ -141,7 +135,7 @@ class ReportBuilderStructureSpec extends Specification {
 		def result = service.getReport(solution)
 
 		then:
-		thrown IllegalStateException
+		result.getRoutes().isEmpty()
 	}
 
 	def "Ignore empty routes"() {
@@ -149,21 +143,19 @@ class ReportBuilderStructureSpec extends Specification {
 		def model = initScen1(v, LoadType.DELIVERY)
 		def n = model.getNodes()
 
-		sol = new Solution()
-		sol.setGiantRoute([nd, n[2], n[3], n[4], nd] as Node[])
+		def sol = new Solution()
+		sol.setGiantRoute([nd, nd, nr, nr, n[2], n[3], n[4], nr, nd, nd] as Node[])
 
-		def sol2 = new Solution()
-		sol2.setGiantRoute([nd, nd, nr, nr, n[2], n[3], n[4], nr, nd, nd] as Node[])
-
-		def solution1 = new XFVRPSolution(sol, model);
-		def solution2 = new XFVRPSolution(sol2, model);
+		def solution = new XFVRPSolution(sol, model);
 		
 		when:
-		def result2 = service.getReport(solution2)
+		def result = service.getReport(solution)
 
 		then:
-		result2 != null
-		result2.getSummary().getNbrOfUsedVehicles() == 1
+		result != null
+		result.getSummary().getNbrOfUsedVehicles() == 1
+		result.getRoutes().size() == 1
+		result.getRoutes().get(0).getEvents().size() == 5
 	}
 
 	XFVRPModel initScen1(Vehicle v, LoadType loadType) {

@@ -1,13 +1,13 @@
 package xf.xfvrp.base.preset;
 
+import xf.xfvrp.base.Node;
+import xf.xfvrp.base.fleximport.InternalCustomerData;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
-import xf.xfvrp.base.Node;
-import xf.xfvrp.base.fleximport.InternalCustomerData;
 
 /** 
  * Copyright (c) 2012-present Holger Schneider

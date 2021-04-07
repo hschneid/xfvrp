@@ -1,13 +1,13 @@
 package xf.xfvrp.report;
 
+import xf.xfvrp.base.Vehicle;
+import xf.xfvrp.base.XFVRPModel;
+import xf.xfvrp.opt.Solution;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import xf.xfvrp.base.Vehicle;
-import xf.xfvrp.base.XFVRPModel;
-import xf.xfvrp.opt.Solution;
 
 /** 
  * Copyright (c) 2012-present Holger Schneider

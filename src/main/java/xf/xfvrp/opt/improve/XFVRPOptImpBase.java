@@ -1,10 +1,6 @@
 package xf.xfvrp.opt.improve;
 
-import xf.xfvrp.base.Node;
-import xf.xfvrp.base.NormalizeSolutionService;
-import xf.xfvrp.base.Quality;
-import xf.xfvrp.base.SiteType;
-import xf.xfvrp.base.XFVRPModel;
+import xf.xfvrp.base.*;
 import xf.xfvrp.opt.Solution;
 import xf.xfvrp.opt.XFVRPOptBase;
 

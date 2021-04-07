@@ -3,12 +3,7 @@ package xf.xfvrp.opt
 import spock.lang.Specification
 import util.instances.TestNode
 import util.instances.TestVehicle
-import xf.xfvrp.base.InvalidReason
-import xf.xfvrp.base.Node
-import xf.xfvrp.base.SiteType
-import xf.xfvrp.base.Vehicle
-import xf.xfvrp.base.XFVRPModel
-import xf.xfvrp.base.XFVRPParameter
+import xf.xfvrp.base.*
 import xf.xfvrp.base.metric.Metric
 import xf.xfvrp.base.metric.internal.AcceleratedMetric
 import xf.xfvrp.base.monitor.StatusManager

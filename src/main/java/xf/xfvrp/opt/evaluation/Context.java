@@ -1,8 +1,5 @@
 package xf.xfvrp.opt.evaluation;
 
-import java.util.Arrays;
-import java.util.Map;
-
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.SiteType;
 import xf.xfvrp.base.Vehicle;
@@ -10,15 +7,18 @@ import xf.xfvrp.base.XFVRPModel;
 import xf.xfvrp.base.preset.BlockNameConverter;
 import xf.xfvrp.base.preset.BlockPositionConverter;
 
+import java.util.Arrays;
+import java.util.Map;
+
 public class Context {
 
-	private static final int ROUTE_IDX = 0;
-	private static final int LENGTH = 1;
-	private static final int DELAY = 2;
-	private static final int DURATION = 3;
-	private static final int NBR_OF_STOPS = 4;
-	private static final int TIME = 5; // Time incl. time windows, driving time, service time, waiting time, rest times
-	private static final int DRIVING_TIME = 6; // only driving time
+	public static final int ROUTE_IDX = 0;
+	public static final int LENGTH = 1;
+	public static final int DELAY = 2;
+	public static final int DURATION = 3;
+	public static final int NBR_OF_STOPS = 4;
+	public static final int TIME = 5; // Time incl. time windows, driving time, service time, waiting time, rest times
+	public static final int DRIVING_TIME = 6; // only driving time
 
 	// Variables
 	private int maxGlobalNodeIdx;
@@ -119,7 +119,6 @@ public class Context {
 
 		Amount deliveryOfRoute = routeInfos.get(currentNode).getDeliveryAmount();
 
-
 		if(deliveryOfRoute.hasAmount()) {
 			for (int i = 0; i < amountsOfRoute.length / 2; i++)
 				amountsOfRoute[i * 2 + 0] = deliveryOfRoute.getAmounts()[i];
@@ -158,10 +157,6 @@ public class Context {
 		return routeVar;
 	}
 
-	public void setRouteVar(float[] routeVar) {
-		this.routeVar = routeVar;
-	}
-
 	public float[] getAmountsOfRoute() {
 		return amountsOfRoute;
 	}
@@ -178,40 +173,20 @@ public class Context {
 		this.blockPresetArr = blockPresetArr;
 	}
 
-	public int[] getAvailablePresetCountArr() {
-		return availablePresetCountArr;
-	}
-
 	public void setAvailablePresetCountArr(int[] availablePresetCountArr) {
 		this.availablePresetCountArr = availablePresetCountArr;
-	}
-
-	public int[] getFoundPresetCountArr() {
-		return foundPresetCountArr;
 	}
 
 	public void setFoundPresetCountArr(int[] foundPresetCountArr) {
 		this.foundPresetCountArr = foundPresetCountArr;
 	}
 
-	public int[] getLastPresetSequenceRankArr() {
-		return lastPresetSequenceRankArr;
-	}
-
 	public void setLastPresetSequenceRankArr(int[] lastPresetSequenceRankArr) {
 		this.lastPresetSequenceRankArr = lastPresetSequenceRankArr;
 	}
 
-	public boolean[] getPresetRoutingBlackList() {
-		return presetRoutingBlackList;
-	}
-
 	public void setPresetRoutingBlackList(boolean[] presetRoutingBlackList) {
 		this.presetRoutingBlackList = presetRoutingBlackList;
-	}
-
-	public boolean[] getPresetRoutingNodeList() {
-		return presetRoutingNodeList;
 	}
 
 	public void setPresetRoutingNodeList(boolean[] presetRoutingNodeList) {
@@ -227,14 +202,6 @@ public class Context {
 		this.currentNode = newDepot;
 	}
 
-	public Node getLastReplenishNode() {
-		return lastReplenishNode;
-	}
-
-	public void setLastReplenishNode(Node lastReplenishNode) {
-		this.lastReplenishNode = lastReplenishNode;
-	}
-
 	public Node getCurrentNode() {
 		return currentNode;
 	}
@@ -247,20 +214,8 @@ public class Context {
 		return lastNode;
 	}
 
-	public void setLastNode(Node lastNode) {
-		this.lastNode = lastNode;
-	}
-
 	public float[] getLastDrivenDistance() {
 		return lastDrivenDistance;
-	}
-
-	public void setLastDrivenDistance(float[] lastDrivenDistance) {
-		this.lastDrivenDistance = lastDrivenDistance;
-	}
-
-	public Node getCurrentDepot() {
-		return currentDepot;
 	}
 
 	public XFVRPModel getModel() {
@@ -272,7 +227,7 @@ public class Context {
 	}
 
 	public void setTimeToTimeWindow(float[] timeWindow) {
-		routeVar[TIME] = (routeVar[TIME] > timeWindow[0]) ? routeVar[TIME] : timeWindow[0];
+		routeVar[TIME] = Math.max(routeVar[TIME], timeWindow[0]);
 	}
 
 	public void addDelayWithTimeWindow(float[] timeWindow) {
@@ -386,5 +341,9 @@ public class Context {
 
 	public void setModel(XFVRPModel model) {
 		this.model = model;
+	}
+
+	public RouteInfo getRouteInfo() {
+		return routeInfos.get(currentNode);
 	}
 }

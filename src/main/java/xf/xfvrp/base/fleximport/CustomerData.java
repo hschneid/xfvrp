@@ -1,9 +1,9 @@
 package xf.xfvrp.base.fleximport;
 
+import xf.xfvrp.base.LoadType;
+
 import java.util.HashSet;
 import java.util.Set;
-
-import xf.xfvrp.base.LoadType;
 
 /** 
  * Copyright (c) 2012-present Holger Schneider
