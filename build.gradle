@@ -118,6 +118,9 @@ signing {
 	sign publishing.publications.maven
 }
 
+spotbugsMain.onlyIf { false }
+spotbugsTest.onlyIf { false }
+
 // Example to configure HTML report
 spotbugsMain {
 	reports {
