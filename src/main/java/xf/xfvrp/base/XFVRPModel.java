@@ -53,11 +53,8 @@ public class XFVRPModel {
 	 * Initialize an optimization model object with the given input data. It contains the general
 	 * parameter for all optimization procedures. It holds no solution information.
 	 *
-	 * @param nodeArr
 	 * @param metric Metric that will be used to evaluate solutions
 	 * @param optMetric Metric that will be used for optimization processes
-	 * @param vehicle
-	 * @param parameter
 	 */
 	public XFVRPModel(Node[] nodeArr, InternalMetric metric, InternalMetric optMetric, Vehicle vehicle, XFVRPParameter parameter) {
 		this.nodeArr = nodeArr;
@@ -136,18 +133,10 @@ public class XFVRPModel {
 		return metric.getDistanceAndTime(n1, n2);
 	}
 
-	/**
-	 * 
-	 * @return
-	 */
 	public int getNbrOfDepots() {
 		return nbrOfDepots;
 	}
 	
-	/**
-	 * 
-	 * @return
-	 */
 	public int getNbrOfReplenish() {
 		return nbrOfReplenish;
 	}
@@ -160,50 +149,26 @@ public class XFVRPModel {
 		return nodeArr.length;
 	}
 
-	/**
-	 * 
-	 * @return
-	 */
 	public Vehicle getVehicle() {
 		return vehicle;
 	}
 
-	/**
-	 * 
-	 * @return
-	 */
 	public XFVRPParameter getParameter() {
 		return parameter;
 	}
 
-	/**
-	 * 
-	 * @return
-	 */
 	public Node[] getNodes() {
 		return nodeArr;
 	}
 
-	/**
-	 * 
-	 * @return
-	 */
 	public int getNbrOfBlocks() {
 		return blockCountArr.length;
 	}
 
-	/**
-	 * 
-	 * @return
-	 */
 	public int[] getBlockPresetCountList() {
 		return blockCountArr;
 	}
-	
-	/**
-	 * 
-	 * @return
-	 */
+
 	public int getMaxGlobalNodeIdx() {
 		return maxGlobalNodeIdx;
 	}

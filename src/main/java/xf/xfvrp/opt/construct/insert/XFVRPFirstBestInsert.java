@@ -24,7 +24,7 @@ import java.util.stream.IntStream;
  * a randomized order. Then the customers are inserted sequentially,
  * where the cheapest insert position is search for the current customers to plan.
  * 
- * Additionally a reinsert is possible, so that bad descisions can be corrected.
+ * Additionally a reinsert is possible, so that bad decisions can be corrected.
  * 
  * @author hschneid
  *
@@ -98,7 +98,7 @@ public class XFVRPFirstBestInsert extends XFVRPOptBase {
 			// Prepare new solution (additional space for new customer)
 			Node[] newGiantRoute = new Node[giantRoute.length + 1];
 
-			// For all found feasable insertion points
+			// For all found feasible insertion points
 			for (int i = 0; i < insertPoints.size(); i++) {
 				float[] val = insertPoints.get(i);
 

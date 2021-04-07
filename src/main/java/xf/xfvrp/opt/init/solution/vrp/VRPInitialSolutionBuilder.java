@@ -4,6 +4,7 @@ import xf.xfvrp.base.Node;
 import xf.xfvrp.base.NormalizeSolutionService;
 import xf.xfvrp.base.Util;
 import xf.xfvrp.base.XFVRPModel;
+import xf.xfvrp.base.exception.XFVRPException;
 import xf.xfvrp.base.monitor.StatusManager;
 import xf.xfvrp.base.preset.BlockNameConverter;
 import xf.xfvrp.opt.Solution;
@@ -13,20 +14,29 @@ import xf.xfvrp.opt.init.check.vrp.CheckService;
 import java.util.*;
 
 /**
- * Creates a trivial solution out of the model. 
- * 
+ * Copyright (c) 2012-present Holger Schneider
+ * All rights reserved.
+ *
+ * This source code is licensed under the MIT License (MIT) found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ *
+ * Creates a trivial solution out of the model.
+ *
  * The solution must be feasible/valid, but no optimization is
  * applied.
- * 
+ *
+ * @author hschneid
+ *
  */
 public class VRPInitialSolutionBuilder {
 
-	public Solution build(XFVRPModel model, List<Node> invalidNodes, StatusManager statusManager) {
+	public Solution build(XFVRPModel model, List<Node> invalidNodes, StatusManager statusManager) throws XFVRPException {
 		List<Node> validNodes = getValidCustomers(model, invalidNodes); 
 
 		Solution solution = buildSolution(validNodes, model, statusManager);
 
-		solution = NormalizeSolutionService.normalizeRoute(solution, model);
+		NormalizeSolutionService.normalizeRoute(solution, model);
 
 		return solution;
 	}
@@ -106,7 +116,7 @@ public class VRPInitialSolutionBuilder {
 		return new ArrayList<>(depots);
 	}
 
-	private List<Node> getValidCustomers(XFVRPModel model, List<Node> invalidNodes) {
+	private List<Node> getValidCustomers(XFVRPModel model, List<Node> invalidNodes) throws XFVRPException {
 		SolutionBuilderDataBag solutionBuilderDataBag = new CheckService().check(model, invalidNodes);
 
 		// If all customers are invalid for this vehicle and parameters optimization has to be skipped.
@@ -115,12 +125,11 @@ public class VRPInitialSolutionBuilder {
 		}
 
 		// Consider Preset Rank and Position
-		solutionBuilderDataBag.getValidCustomers().sort((c1, c2) -> {
-			int diff = c1.getPresetBlockIdx() - c2.getPresetBlockIdx();
-			if(diff == 0)
-				diff = c1.getPresetBlockPos() - c2.getPresetBlockPos();
-			return diff;			
-		});
+		solutionBuilderDataBag.getValidCustomers().sort(
+				Comparator
+						.comparingInt(Node::getPresetBlockIdx)
+						.thenComparingInt(Node::getPresetBlockPos)
+		);
 
 		List<Node> validNodes = new ArrayList<>();
 		validNodes.addAll(solutionBuilderDataBag.getValidDepots());

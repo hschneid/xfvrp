@@ -1,6 +1,7 @@
 package xf.xfvrp.opt.init.check.vrp;
 
 import xf.xfvrp.base.*;
+import xf.xfvrp.base.exception.XFVRPException;
 import xf.xfvrp.base.preset.BlockNameConverter;
 import xf.xfvrp.base.preset.BlockPositionConverter;
 import xf.xfvrp.opt.Solution;
@@ -46,7 +47,10 @@ public class CheckService {
 
 	private XFVRPOptBase optimizationMethod = XFVRPOptType.RELOCATE.createInstance();
 	private CheckCustomerService checkCustomerService = new CheckCustomerService();
-	
+
+	public CheckService() throws XFVRPException {
+	}
+
 	/**
 	 * Builds the giant route.<br>
 	 * A list of nodes, where the depot is allowed to be placed multiple times.
@@ -58,7 +62,7 @@ public class CheckService {
 	 * If nodes cannot be served within the given constraints, these nodes
 	 * are excluded from optimization in the invalidNodes list.
 	 */
-	public SolutionBuilderDataBag check(XFVRPModel model, List<Node> invalidNodes) {
+	public SolutionBuilderDataBag check(XFVRPModel model, List<Node> invalidNodes) throws XFVRPException {
 		SolutionBuilderDataBag solutionBuilderDataBag = new SolutionBuilderDataBag();
 
 		Map<Integer, List<Node>> blocks = getBlocks(model);
@@ -74,7 +78,7 @@ public class CheckService {
 				.collect(Collectors.groupingBy(Node::getPresetBlockIdx));
 	}
 
-	private void checkBlocks(Map<Integer, List<Node>> blocks, SolutionBuilderDataBag solutionBuilderDataBag, List<Node> invalidNodes, XFVRPModel model) {
+	private void checkBlocks(Map<Integer, List<Node>> blocks, SolutionBuilderDataBag solutionBuilderDataBag, List<Node> invalidNodes, XFVRPModel model) throws XFVRPException {
 		for (Map.Entry<Integer, List<Node>> entry : blocks.entrySet()) {
 			int blockIdx = entry.getKey();
 			List<Node> nodesOfBlock = entry.getValue();
@@ -93,7 +97,7 @@ public class CheckService {
 		}
 	}
 
-	private boolean checkNodesOfBlock(int blockIdx, List<Node> nodesOfBlock, SolutionBuilderDataBag solutionBuilderDataBag, List<Node> invalidNodes, XFVRPModel model) {
+	private boolean checkNodesOfBlock(int blockIdx, List<Node> nodesOfBlock, SolutionBuilderDataBag solutionBuilderDataBag, List<Node> invalidNodes, XFVRPModel model) throws XFVRPException {
 		for (Node node : nodesOfBlock) {
 			if(node.getSiteType() == SiteType.DEPOT)
 				solutionBuilderDataBag.getValidDepots().add(node);
@@ -185,7 +189,7 @@ public class CheckService {
 		int idx = 0;
 		
 		route[idx++] = Util.createIdNode(depot, 0);
-		for (int j = 0; j < nodesOfBlock.size(); j++) {
+		for (int j = nodesOfBlock.size() - 1; j >= 0; j--) {
 			if(nodesOfBlock.get(j).getSiteType() == SiteType.CUSTOMER)
 				route[idx++] = nodesOfBlock.get(j); 
 		}

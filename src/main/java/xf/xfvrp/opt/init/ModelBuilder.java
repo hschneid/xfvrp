@@ -20,10 +20,8 @@ public class ModelBuilder {
 	 * Transforms the read data into a model, which can be used
 	 * for optimization.
 	 * 
-	 * @param nodes
 	 * @param veh Contains parameters for capacity, max route duration and others.
 	 * @return Returns a model, which can be used for optimization procedures.
-	 * @throws IllegalArgumentException
 	 */
 	public XFVRPModel build(Node[] nodes, Vehicle veh, Metric externalMetric, XFVRPParameter parameter, StatusManager statusManager) throws IllegalArgumentException {
 		statusManager.fireMessage(StatusCode.RUNNING, "Initialisation of instance for vehicle "+veh.name);
@@ -48,7 +46,7 @@ public class ModelBuilder {
 
 	private void countNbrOfNodesInBlocks(Node[] nodes, XFVRPModel model) {
 		int[] nbrOfNodesInBlocks = model.getBlockPresetCountList();
-		for (int i = 0; i < nodes.length; i++)
+		for (int i = nodes.length - 1; i >= 0; i--)
 			if(nodes[i].getPresetBlockIdx() >= BlockNameConverter.DEFAULT_BLOCK_IDX)
 				nbrOfNodesInBlocks[nodes[i].getPresetBlockIdx()]++;
 	}

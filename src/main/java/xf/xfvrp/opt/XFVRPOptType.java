@@ -1,5 +1,7 @@
 package xf.xfvrp.opt;
 
+import xf.xfvrp.base.exception.XFVRPException;
+import xf.xfvrp.base.exception.XFVRPExceptionType;
 import xf.xfvrp.opt.construct.XFVRPConst;
 import xf.xfvrp.opt.construct.XFVRPSavings;
 import xf.xfvrp.opt.construct.insert.XFPDPFirstBestInsert;
@@ -60,11 +62,11 @@ public enum XFVRPOptType {
 	 * 
 	 * @return An object instance
 	 */
-	public XFVRPOptBase createInstance() {
+	public XFVRPOptBase createInstance() throws XFVRPException {
 		try {
-			return (XFVRPOptBase) Class.forName(clazz.getName()).newInstance();
+			return (XFVRPOptBase) Class.forName(clazz.getName()).getDeclaredConstructor().newInstance();
 		} catch (Exception e) {
-			throw new IllegalStateException("no copy of optimization procedure possible", e);
+			throw new XFVRPException(XFVRPExceptionType.ILLEGAL_STATE, "no copy of optimization procedure possible", e);
 		}
 	}
 }

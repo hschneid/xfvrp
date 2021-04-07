@@ -1,8 +1,8 @@
 [![MIT License](https://img.shields.io/apm/l/atomic-design-ui.svg?)](https://github.com/tterb/atomic-design-ui/blob/master/LICENSEs)
 [![BCH compliance](https://bettercodehub.com/edge/badge/hschneid/xflp?branch=master)](https://bettercodehub.com/)
-![alt text](https://img.shields.io/static/v1?label=version&message=11.1.0&color=-)
+![alt text](https://img.shields.io/static/v1?label=version&message=11.2.0&color=-)
 
-# xfvrp
+xfvrp
 ======
 
 There are a lot of solvers for the Vehicle Routing Problem (VRP) on github. Some are good at certain features (like CVRP or VRPTW) and some are quite complex.
@@ -42,7 +42,17 @@ Report report = xfvrp.executeRoutePlanning();
 report.getSummary().getDistance();
 ```
 
+## Benchmarks
+As a general purpose solver, XFVRP is not fully compatable with single problem solvers. But even though it can prove its relevance by [benchmarks](BENCHMARKS.md).
+
 ## Change log
+### 11.2.0
+- Changed exception handling
+  - No Runtime Exceptions (like IllegalState) anymore
+- Added benchmark section in Readme
+- Added benchmark for VRPTW with large instances to repo (more will be added in future)
+- Minor cleanups in code
+
 ### 11.1.0
 - Cleanup of repository
 - Add ReportBuilder (it compiles again :-) )  
