@@ -38,6 +38,7 @@ import java.util.stream.IntStream;
 public class FullRouteMixedFleetHeuristic {
 
 	private FullRouteMixedFleetSelector selector = new FullRouteMixedFleetSelector();
+	private final ReportBuilder reportBuilder = new ReportBuilder();
 
 	public List<XFVRPSolution> execute(
 			Node[] nodes,
@@ -58,7 +59,7 @@ public class FullRouteMixedFleetHeuristic {
 			XFVRPSolution solution = routePlanningFunction.apply(new RoutingDataBag(unplannedNodes.toArray(new Node[0]), veh));
 
 			// Point out best routes for this vehicle type
-			List<RouteReport> bestRoutes = selector.getBestRoutes(veh, new ReportBuilder().getReport(solution));
+			List<RouteReport> bestRoutes = selector.getBestRoutes(veh, reportBuilder.getReport(solution));
 
 			if(bestRoutes.size() > 0) {
 				// Add selected routes to overall best solution

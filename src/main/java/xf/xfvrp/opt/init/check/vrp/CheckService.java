@@ -9,6 +9,7 @@ import xf.xfvrp.opt.XFVRPOptType;
 import xf.xfvrp.opt.init.solution.vrp.SolutionBuilderDataBag;
 
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -56,10 +57,6 @@ public class CheckService {
 	 * 
 	 * If nodes cannot be served within the given constraints, these nodes
 	 * are excluded from optimization in the invalidNodes list.
-	 * 
-	 * @param model
-	 * @param invalidNodes
-	 * @return giant route 
 	 */
 	public SolutionBuilderDataBag check(XFVRPModel model, List<Node> invalidNodes) {
 		SolutionBuilderDataBag solutionBuilderDataBag = new SolutionBuilderDataBag();
@@ -72,19 +69,18 @@ public class CheckService {
 	}
 
 	private Map<Integer, List<Node>> getBlocks(XFVRPModel model) {
-		Map<Integer, List<Node>> blocks = Arrays
+		return Arrays
 				.stream(model.getNodes())
-				.collect(Collectors.groupingBy(k -> k.getPresetBlockIdx()));
-
-		return blocks;
+				.collect(Collectors.groupingBy(Node::getPresetBlockIdx));
 	}
 
 	private void checkBlocks(Map<Integer, List<Node>> blocks, SolutionBuilderDataBag solutionBuilderDataBag, List<Node> invalidNodes, XFVRPModel model) {
-		for (int blockIdx : blocks.keySet()) {
-			List<Node> nodesOfBlock = blocks.get(blockIdx);
+		for (Map.Entry<Integer, List<Node>> entry : blocks.entrySet()) {
+			int blockIdx = entry.getKey();
+			List<Node> nodesOfBlock = entry.getValue();
 			solutionBuilderDataBag.resetKnownSequencePositions();
 
-			nodesOfBlock.sort((c1, c2) -> c1.getPresetBlockPos() - c2.getPresetBlockPos());
+			nodesOfBlock.sort(Comparator.comparingInt(Node::getPresetBlockPos));
 
 			boolean isValid = checkNodesOfBlock(blockIdx, nodesOfBlock, solutionBuilderDataBag, invalidNodes, model);
 			if(!isValid) 
@@ -150,9 +146,6 @@ public class CheckService {
 
 	/**
 	 * Checks a situation where no customer can be reached in waiting time limit.
-	 * 
-	 * @param nodeList
-	 * @param model
 	 */
 	private void checkMaxWaiting(List<Node> nodeList, XFVRPModel model) {
 		// TODO Auto-generated method stub
@@ -162,10 +155,6 @@ public class CheckService {
 	/**
 	 * Checks the block constraints like
 	 * the block can be set into a single route without constraint violation
-	 * 
-	 * @param nodesOfBlock
-	 * @param model
-	 * @return isValid
 	 */
 	private boolean checkBlock(List<Node> nodesOfBlock, XFVRPModel model) {
 		// A block can be allocated to each depot in multi depot problems

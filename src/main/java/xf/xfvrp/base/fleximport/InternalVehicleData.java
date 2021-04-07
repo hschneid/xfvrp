@@ -11,11 +11,11 @@ import xf.xfvrp.base.Vehicle;
  *
  */
 public class InternalVehicleData extends VehicleData {
+
 	private static final long serialVersionUID = -2633261848511514004L;
 
-	public static String defaultVehicleName = "DEFAULT";
-	public static String invalidVehicleName = "INVALID";
-
+	public static final String defaultVehicleName = "DEFAULT";
+	public static final String invalidVehicleName = "INVALID";
 
 	/**
 	 * Creates a default vehicle object, which parameters mean no restriction.
@@ -23,9 +23,7 @@ public class InternalVehicleData extends VehicleData {
 	 * @return default vehicle
 	 */
 	public static InternalVehicleData createDefault() {
-		InternalVehicleData v = (InternalVehicleData) new InternalVehicleData().setName(defaultVehicleName);
-
-		return v;
+		return (InternalVehicleData) new InternalVehicleData().setName(defaultVehicleName);
 	}
 
 	/**
@@ -34,9 +32,7 @@ public class InternalVehicleData extends VehicleData {
 	 * @return default vehicle for invalid routes
 	 */
 	public static InternalVehicleData createInvalid() {
-		InternalVehicleData v = (InternalVehicleData) new InternalVehicleData().setName(invalidVehicleName);
-
-		return v;
+		return (InternalVehicleData) new InternalVehicleData().setName(invalidVehicleName);
 	}
 
 	/**
@@ -82,34 +78,29 @@ public class InternalVehicleData extends VehicleData {
 	public int getMaxStopCount() {
 		return maxStopCount;
 	}
+
 	/**
-	 * @return
+	 * @return the maximal allowed time to wait at a certain node
 	 */
 	public float getMaxWaitingTime() {
 		return maxWaitingTime;
 	}
 	
-	/**
-	 * 
-	 * @return
-	 */
 	public int getVehicleMetricId() {
 		return vehicleMetricId;
 	}
 	/**
-	 * 
-	 * @return
+	 * @return the rank of the vehicle type, which vehicle type ordering should be planned
 	 */
 	public int getPriority() {
 		return priority;
 	}
 
 	/**
-	 * 
-	 * @return
+	 * @return Creates an internal Vehicle object with imported vehicle data
 	 */
 	public Vehicle createVehicle(int idx) {
-		Vehicle v = new Vehicle(
+		return new Vehicle(
 				idx,
 				name,
 				count,
@@ -124,8 +115,6 @@ public class InternalVehicleData extends VehicleData {
 				waitingTimeBetweenShifts,
 				priority
 				);
-
-		return v;
 	}
 
 	/*

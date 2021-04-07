@@ -18,7 +18,7 @@ import java.util.*;
 public class ListMap<K, E> implements Copyable<ListMap<K,E>> {
 	
 	private static final int DEFAULT_LIST_SIZE = 10;
-	private HashMap<K, List<E>> map;
+	private final HashMap<K, List<E>> map;
 	
 	private ListMap() {
 		map = new HashMap<>();

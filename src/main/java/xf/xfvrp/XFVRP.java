@@ -114,12 +114,13 @@ public class XFVRP extends XFVRP_Parameter {
 			 * number of routes is splitted into smaller solution plans.
 			 * This is a speed up.
 			 */
+			XFVRPOptSplitter splitter = new XFVRPOptSplitter();
 			for (XFVRPOptBase xfvrp : optList) {
 				statusManager.fireMessage(StatusCode.RUNNING, "Optimization for algorithm " + xfvrp.getClass().getSimpleName() + " started.");
 
 				try {
 					if (parameter.isRouteSplittingAllowed() && xfvrp.isSplittable)
-						solution = new XFVRPOptSplitter().execute(solution, model, statusManager, xfvrp);
+						solution = splitter.execute(solution, model, statusManager, xfvrp);
 					else
 						solution = xfvrp.execute(solution, model, statusManager);
 				} catch (UnsupportedOperationException usoex) {

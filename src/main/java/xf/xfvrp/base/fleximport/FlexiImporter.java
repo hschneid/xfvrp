@@ -6,7 +6,6 @@ import xf.xfvrp.base.Vehicle;
 import xf.xfvrp.base.monitor.StatusManager;
 import xf.xfvrp.base.preset.*;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,13 +30,12 @@ import java.util.List;
  * @author hschneid
  *
  */
-public class FlexiImporter implements Serializable{
-	private static final long serialVersionUID = 7120322928045866326L;
+public class FlexiImporter {
 
-	private List<InternalDepotData> depotList = new ArrayList<>();
-	private List<InternalCustomerData> customerList = new ArrayList<>();
-	private List<InternalReplenishData> replenishList = new ArrayList<>();
-	private List<InternalVehicleData> vehicleList = new ArrayList<>();
+	private final List<InternalDepotData> depotList = new ArrayList<>();
+	private final List<InternalCustomerData> customerList = new ArrayList<>();
+	private final List<InternalReplenishData> replenishList = new ArrayList<>();
+	private final List<InternalVehicleData> vehicleList = new ArrayList<>();
 
 	public final InternalVehicleData defaultVehicle = InternalVehicleData.createDefault();
 	public final InternalVehicleData invalidVehicle = InternalVehicleData.createInvalid();
@@ -57,10 +55,9 @@ public class FlexiImporter implements Serializable{
 	}
 
 	/**
-	 * 
-	 * @param vehicles
-	 * @param statusManager
-	 * @return
+	 * Transforms the imported nodes (depots, customers and replenishments)
+	 * into an array. This is used by internal algorithm to gather the
+	 * imported data.
 	 */
 	public Node[] getNodes(Vehicle[] vehicles, StatusManager statusManager) {
 		int idx = 0;
@@ -149,6 +146,12 @@ public class FlexiImporter implements Serializable{
 		return lastCustomerData;
 	}
 
+	/**
+	 * Returns a data object, which describes a replenishment node. At
+	 * a replenishment node, the loaded amounts are cleared.
+	 *
+	 * Replenishment nodes are optional.
+	 */
 	public ReplenishData getReplenishData() {
 		if(lastReplenishData != null)
 			replenishList.add(lastReplenishData);

@@ -1,13 +1,9 @@
 package util;
 
-import org.apache.commons.compress.compressors.CompressorException;
-import org.apache.commons.compress.compressors.CompressorOutputStream;
-import org.apache.commons.compress.compressors.CompressorStreamFactory;
-
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 /** 
  * Copyright (c) 2012-present Holger Schneider
@@ -18,39 +14,29 @@ import java.nio.file.Path;
  *
  **/
 public class XFVRPFileUtil {
-	private final static CompressorStreamFactory FACTORY = new CompressorStreamFactory();
 
 	public static void writeGZip(String content, String name){
-		try {
-			FileOutputStream fos = new FileOutputStream(new File(name+".txt.gz"));
-			CompressorOutputStream out = 
-					FACTORY.createCompressorOutputStream(CompressorStreamFactory.GZIP, fos);
-
-			PrintWriter pw = new PrintWriter(out);
-			pw.write(content);
-			pw.flush();
-			pw.close();
-			fos.close();
-			out.close();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (CompressorException e) {
-			e.printStackTrace();
+		try (FileOutputStream output = new FileOutputStream(name + ".txt.gz")) {
+			try (Writer writer = new OutputStreamWriter(new GZIPOutputStream(output), StandardCharsets.ISO_8859_1)) {
+				writer.write(content);
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
-		} 
+		}
 	}
 
 	public static String readCompressedFile(String file){
 		String out = null;
 		File f = new File(file);
 		try(
-				FileInputStream fis = new FileInputStream(new File(file));
+				FileInputStream fis = new FileInputStream(file);
 				BufferedInputStream bis = new BufferedInputStream(fis);
-				InputStream in = (f.getName().endsWith(".gz")) ? FACTORY.createCompressorInputStream(bis) : bis;
+				InputStream in = (f.getName().endsWith(".gz")) ?
+						new GZIPInputStream(bis) :
+						bis;
 				) {
 			out = getStreamContents(in);
-		} catch (IOException | CompressorException e) {
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		return out;
@@ -58,27 +44,15 @@ public class XFVRPFileUtil {
 
 	public static String getStreamContents(InputStream stream) throws IOException {
 		StringBuilder content = new StringBuilder();
-		BufferedReader reader = new BufferedReader(new InputStreamReader(stream, "UTF-8"));
 
-		String lineSeparator = System.getProperty("line.separator");
-
-		try {
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))) {
+			String lineSeparator = System.getProperty("line.separator");
 			String line;
 			while ((line = reader.readLine()) != null) {
 				content.append(line + lineSeparator);
 			}
 			return content.toString();
-
-		} finally {
-			reader.close();
 		}
-	}
-
-	public static String getStreamContentsJava7_ISO(Path p) throws IOException{
-		return new String(
-				Files.readAllBytes(p),
-				StandardCharsets.ISO_8859_1
-				);
 	}
 
 	public static void main(String[] args) {

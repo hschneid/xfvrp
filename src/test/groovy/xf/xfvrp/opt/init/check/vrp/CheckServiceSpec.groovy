@@ -15,11 +15,12 @@ class CheckServiceSpec extends Specification {
 	def opt = Stub XFVRPRelocate
 	def checkCustomerService = Stub CheckCustomerService
 
-	def service = new CheckService();
+	def service = new CheckService(
+			checkCustomerService: checkCustomerService,
+			optimizationMethod: opt
+	);
 
 	def setup() {
-		service.checkCustomerService = checkCustomerService
-		service.optimizationMethod = opt
 		opt.execute(_, _, null) >> {it[0]}
 	}
 

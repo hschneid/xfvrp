@@ -4,10 +4,17 @@ buildscript {
 	}
 }
 
+plugins {
+	id "com.github.spotbugs" version "4.7.0"
+}
+
 apply plugin:'java'
 apply plugin:'groovy'
 apply plugin:'idea'
 apply plugin:'application'
+apply plugin:'maven-publish'
+apply plugin:'signing'
+apply plugin:'com.github.spotbugs'
 
 group = "com.github.hschneid"
 archivesBaseName = "xfvrp"
@@ -33,6 +40,16 @@ dependencies {
 	implementation 'javax.activation:activation:1.1'
 
 	testImplementation 'org.spockframework:spock-core:2.0-M4-groovy-3.0'
+
+	spotbugsPlugins 'com.h3xstream.findsecbugs:findsecbugs-plugin:1.11.0'
+	spotbugsPlugins 'com.mebigfatguy.fb-contrib:fb-contrib:7.4.7'
+}
+
+
+// Maven - Publish
+task javadocJar(type: Jar) {
+	archiveClassifier.set('javadoc')
+	from javadoc
 }
 
 task sourcesJar(type: Jar) {
@@ -42,4 +59,82 @@ task sourcesJar(type: Jar) {
 
 task mainJar(type: Jar) {
 	with jar
+}
+
+publishing {
+	publications {
+		maven(MavenPublication) {
+			artifact mainJar
+			artifact sourcesJar
+			artifact javadocJar
+
+			pom {
+				name = 'XFVRP'
+				packaging 'jar'
+				// optionally artifactId can be defined here
+				description = 'Solver for realistic vehicle routing problems'
+				url = 'https://github.com/hschneid/xfvrp'
+
+				scm {
+					connection = 'scm:git:git://github.com/hschneid/xfvrp.git'
+					developerConnection = 'scm:git:ssh://github.com/hschneid/xfvrp.git'
+					url = 'https://github.com/hschneid/xfvrp'
+				}
+
+				licenses {
+					license {
+						name = 'MIT License'
+						url = 'http://www.opensource.org/licenses/mit-license.php'
+					}
+				}
+
+				developers {
+					developer {
+						id = 'hschneid'
+						name = 'Holger Schneider'
+						email = 'holger.schneider.81@gmail.com'
+					}
+				}
+			}
+
+		}
+	}
+	repositories {
+		maven {
+			credentials {
+				username ossrhUsername
+				password ossrhPassword
+			}
+			if (project.version.endsWith("-SNAPSHOT")) {
+				url "https://oss.sonatype.org/content/repositories/snapshots/"
+			} else {
+				url "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+			}
+		}
+	}
+}
+
+signing {
+	sign publishing.publications.maven
+}
+
+// Example to configure HTML report
+spotbugsMain {
+	reports {
+		html {
+			enabled = true
+			destination = file("$buildDir/reports/spotbugs/main/spotbugs.html")
+			stylesheet = 'fancy-hist.xsl'
+		}
+	}
+}
+
+spotbugsTest {
+	reports {
+		html {
+			enabled = true
+			destination = file("$buildDir/reports/spotbugs/test/spotbugs.html")
+			stylesheet = 'fancy-hist.xsl'
+		}
+	}
 }
