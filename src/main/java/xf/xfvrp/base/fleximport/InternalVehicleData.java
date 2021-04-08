@@ -1,6 +1,7 @@
 package xf.xfvrp.base.fleximport;
 
 import xf.xfvrp.base.Vehicle;
+import xf.xfvrp.base.exception.XFVRPException;
 
 /** 
  * Copyright (c) 2012-present Holger Schneider
@@ -99,7 +100,7 @@ public class InternalVehicleData extends VehicleData {
 	/**
 	 * @return Creates an internal Vehicle object with imported vehicle data
 	 */
-	public Vehicle createVehicle(int idx) {
+	public Vehicle createVehicle(int idx) throws XFVRPException {
 		return new Vehicle(
 				idx,
 				name,

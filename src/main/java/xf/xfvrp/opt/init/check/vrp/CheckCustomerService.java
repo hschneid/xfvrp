@@ -3,6 +3,8 @@ package xf.xfvrp.opt.init.check.vrp;
 import xf.xfvrp.base.InvalidReason;
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.XFVRPModel;
+import xf.xfvrp.base.exception.XFVRPException;
+import xf.xfvrp.base.exception.XFVRPExceptionType;
 import xf.xfvrp.base.preset.BlockPositionConverter;
 import xf.xfvrp.opt.init.solution.vrp.SolutionBuilderDataBag;
 
@@ -11,42 +13,38 @@ public class CheckCustomerService {
 	/**
 	 * Checks a customers whether it can be served within all constraints.
 	 * If one constraint is violated, the customer is invalid for optimization.
-	 * 
+	 *
 	 * The checked constraints are:
 	 *  - A customer have to be allowed for this vehicle type
 	 *  - No customer must have more demand than max loading capacity
 	 *  - All customers must be reached from one depot (see Multiple Depots) directly within their time windows.
 	 *  - The route duration for direct service from one depot (see Multiple Depots) must be smaller than maximal route duration.
-	 * 
+	 *
 	 * If a customer leads to an invalid route plan, then the cause for this is written into the invalid reason at the customer object 
-	 * 
+	 *
 	 * @param cust Customer node
 	 * @param model Model with all necessary data
 	 * @return Can the customer be served within given constraints?
 	 */
-	public boolean checkCustomer(Node cust, XFVRPModel model, SolutionBuilderDataBag solutionBuilderDataBag) {
+	public boolean checkCustomer(Node cust, XFVRPModel model, SolutionBuilderDataBag solutionBuilderDataBag) throws XFVRPException {
 		checkPresets(cust, solutionBuilderDataBag);
 
 		// Time Windows or duration
 		boolean isValid = checkTimeWindows(cust, model);
-		if(!isValid)			
-			return false;
-
-		// Capacities
-		isValid = checkDemands(cust, model);
 		if(!isValid)
 			return false;
 
-		return true;
+		// Capacities
+		return checkDemands(cust, model);
 	}
 
-	private void checkPresets(Node cust, SolutionBuilderDataBag solutionBuilderDataBag) {
+	private void checkPresets(Node cust, SolutionBuilderDataBag solutionBuilderDataBag) throws XFVRPException {
 		if(cust.getPresetBlockRank() < 0)
-			throw new IllegalArgumentException("The sequence rank " + cust.getPresetBlockRank() + " in block " + cust.getPresetBlockIdx() + " is lower than zero, which is forbidden.");
+			throw new XFVRPException(XFVRPExceptionType.ILLEGAL_INPUT, "The sequence rank " + cust.getPresetBlockRank() + " in block " + cust.getPresetBlockIdx() + " is lower than zero, which is forbidden.");
 		if(cust.getPresetBlockPos() < 0)
-			throw new IllegalArgumentException("The sequence position " + cust.getPresetBlockPos() + " in block " + cust.getPresetBlockIdx() + " is lower than zero, which is forbidden.");
+			throw new XFVRPException(XFVRPExceptionType.ILLEGAL_INPUT, "The sequence position " + cust.getPresetBlockPos() + " in block " + cust.getPresetBlockIdx() + " is lower than zero, which is forbidden.");
 		if(cust.getPresetBlockPos() > BlockPositionConverter.UNDEF_POSITION && solutionBuilderDataBag.getKnownSequencePositions().contains(cust.getPresetBlockPos()))
-			throw new IllegalArgumentException("The sequence position " + cust.getPresetBlockPos() + " in block " + cust.getPresetBlockIdx() + " is given multiple times, which is forbidden.");
+			throw new XFVRPException(XFVRPExceptionType.ILLEGAL_INPUT, "The sequence position " + cust.getPresetBlockPos() + " in block " + cust.getPresetBlockIdx() + " is given multiple times, which is forbidden.");
 	}
 
 	private boolean checkTimeWindows(Node cust, XFVRPModel model) {
@@ -55,11 +53,11 @@ public class CheckCustomerService {
 		boolean canBeValid = false;
 		for (int i = 0; i < model.getNbrOfDepots(); i++) {
 			cust.setInvalidReason(InvalidReason.NONE, "");
-			
+
 			Node depot = model.getNodes()[i];
 
 			float travelTime = model.getTime(depot, cust);
-			float travelTime2 = model.getTime(cust, depot);		
+			float travelTime2 = model.getTime(cust, depot);
 
 			// Check route duration with this customer
 			float time = travelTime + travelTime2 + cust.getServiceTime();
@@ -97,11 +95,11 @@ public class CheckCustomerService {
 				cust.setInvalidReason(
 						InvalidReason.CAPACITY,
 						"Customer " + cust.getExternID() + " - Capacity " + (i + 1) + " demand: " +capacities[i]+" required: "+demands[i]
-						);
+				);
 				return false;
-			} 				
+			}
 		}
-		
+
 		return true;
 	}
 }

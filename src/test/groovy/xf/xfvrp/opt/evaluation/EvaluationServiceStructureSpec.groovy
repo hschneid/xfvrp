@@ -4,6 +4,7 @@ import spock.lang.Specification
 import util.instances.TestNode
 import util.instances.TestVehicle
 import xf.xfvrp.base.*
+import xf.xfvrp.base.exception.XFVRPException
 import xf.xfvrp.base.metric.EucledianMetric
 import xf.xfvrp.base.metric.internal.AcceleratedMetricTransformator
 import xf.xfvrp.opt.Solution
@@ -44,7 +45,7 @@ class EvaluationServiceStructureSpec extends Specification {
 		def result = service.check(sol, model)
 
 		then:
-		thrown IllegalStateException
+		thrown XFVRPException
 	}
 	
 	def "Feasability - Ends not with DEPOT"() {
@@ -59,7 +60,7 @@ class EvaluationServiceStructureSpec extends Specification {
 		def result = service.check(sol, model)
 
 		then:
-		thrown IllegalStateException
+		thrown XFVRPException
 	}
 
 	def "Ignore empty routes"() {

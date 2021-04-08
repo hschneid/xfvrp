@@ -4,6 +4,8 @@ import xf.xfvrp.base.Node;
 import xf.xfvrp.base.NormalizeSolutionService;
 import xf.xfvrp.base.Vehicle;
 import xf.xfvrp.base.XFVRPModel;
+import xf.xfvrp.base.exception.XFVRPException;
+import xf.xfvrp.base.exception.XFVRPExceptionType;
 import xf.xfvrp.base.monitor.StatusCode;
 import xf.xfvrp.base.xfvrp.XFVRP_Parameter;
 import xf.xfvrp.opt.*;
@@ -53,7 +55,7 @@ public class XFVRP extends XFVRP_Parameter {
 	 * by addDepot(), addCustomer(), addMetric() and 
 	 * addVehicle() or the parameters setCapacity() and setMaxRouteDuration()
 	 */
-	public void executeRoutePlanning() throws PreCheckException {
+	public void executeRoutePlanning() throws PreCheckException, XFVRPException {
 		statusManager.fireMessage(StatusCode.RUNNING, "XFVRP started");
 		statusManager.setStartTime();
 
@@ -68,11 +70,11 @@ public class XFVRP extends XFVRP_Parameter {
 		// Check of input parameter
 		if(importer.getDepotList().size() == 0) {
 			statusManager.fireMessage(StatusCode.ABORT, "No depot is given.");
-			throw new IllegalArgumentException("No depot is given.");
+			throw new XFVRPException(XFVRPExceptionType.ILLEGAL_INPUT, "No depot is given.");
 		}
 		if(vehicles.length == 0) {
-			statusManager.fireMessage(StatusCode.ABORT, "No vehicle information were set.");
-			throw new IllegalArgumentException("No vehicle information were set.");
+			statusManager.fireMessage(StatusCode.ABORT, "No vehicle information are present.");
+			throw new XFVRPException(XFVRPExceptionType.ILLEGAL_INPUT, "No vehicle information are present.");
 		}
 
 		vehicleSolutionList.addAll(
@@ -82,7 +84,7 @@ public class XFVRP extends XFVRP_Parameter {
 						(dataBag) -> {
 							try {
 								return executeRoutePlanning(dataBag);
-							} catch (PreCheckException e) {
+							} catch (PreCheckException | XFVRPException e) {
 								e.printStackTrace();
 							}
 							return null;
@@ -100,7 +102,7 @@ public class XFVRP extends XFVRP_Parameter {
 	 * Calculates a single vehicle VRP for a given vehicle with all
 	 * announced optimization procedures.
 	 */
-	private XFVRPSolution executeRoutePlanning(RoutingDataBag dataBag) throws PreCheckException {
+	private XFVRPSolution executeRoutePlanning(RoutingDataBag dataBag) throws PreCheckException, XFVRPException {
 		Node[] nodes = new PreCheckService().precheck(dataBag.nodes, dataBag.vehicle, parameter);
 		XFVRPModel model = new ModelBuilder().build(nodes, dataBag.vehicle, metric, parameter, statusManager);
 		Solution solution = new InitialSolutionBuilder().build(model, parameter, statusManager);
@@ -144,7 +146,7 @@ public class XFVRP extends XFVRP_Parameter {
 	 * 
 	 * @return A report data structure with detailed information about the route plan or null if no solution was calculated.
 	 */
-	public Report getReport() {
+	public Report getReport() throws XFVRPException {
 		if(vehicleSolutionList.size() > 0) {
 
 			Report rep = new Report(lastModel);
@@ -163,7 +165,7 @@ public class XFVRP extends XFVRP_Parameter {
 	 * 
 	 * @param type algorithm type. it can't be null.
 	 */
-	public void addOptType(XFVRPOptType type) {
+	public void addOptType(XFVRPOptType type) throws XFVRPException {
 		if(type != null)
 			optList.add(type.createInstance());
 	}

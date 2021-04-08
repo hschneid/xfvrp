@@ -2,6 +2,7 @@ package xf.xfvrp.opt.improve;
 
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.Quality;
+import xf.xfvrp.base.exception.XFVRPException;
 import xf.xfvrp.opt.Solution;
 
 import java.util.ArrayList;
@@ -31,7 +32,7 @@ public class XFVRP3Opt extends XFVRPOptImpBase {
 	 * @see de.fhg.iml.vlog.xftour.xfvrp.opt.improve.XFVRPOptImpBase#improve(de.fhg.iml.vlog.xftour.model.XFNode[], de.fhg.iml.vlog.xftour.model.Quality)
 	 */
 	@Override
-	public Quality improve(final Solution solution, Quality bestResult) {
+	public Quality improve(final Solution solution, Quality bestResult) throws XFVRPException {
 		if(model.getNbrOfDepots() > 1)
 			throw new UnsupportedOperationException(this.getClass().getName()+" supports no multi depot");
 		
@@ -150,17 +151,7 @@ public class XFVRP3Opt extends XFVRPOptImpBase {
 		return improvingStepList;
 	}
 
-	/**
-	 * 
-	 * @param giantTour
-	 * @param a
-	 * @param b
-	 * @param c
-	 * @param impList
-	 */
 	private void findImprovements(Node[] giantTour, int a, int b, int c, List<float[]> impList) {
-
-
 		final float old = getDistanceForOptimization(giantTour[a], giantTour[a + 1]) +
 				getDistanceForOptimization(giantTour[b], giantTour[b + 1]) +
 				getDistanceForOptimization(giantTour[c], giantTour[c + 1]);
@@ -217,11 +208,6 @@ public class XFVRP3Opt extends XFVRPOptImpBase {
 		}
 	}
 
-	/**
-	 * 
-	 * @param m
-	 * @return
-	 */
 	private int modifyForReverseChange(int m) {
 		switch(m) {
 		case 3 : {return 7;}

@@ -4,6 +4,7 @@ import xf.xfvrp.base.Node;
 import xf.xfvrp.base.Quality;
 import xf.xfvrp.base.SiteType;
 import xf.xfvrp.base.Util;
+import xf.xfvrp.base.exception.XFVRPException;
 import xf.xfvrp.opt.Solution;
 import xf.xfvrp.opt.XFVRPOptBase;
 
@@ -35,7 +36,7 @@ public class XFVRPSavings extends XFVRPOptBase {
 	 * Executes the Savings routing
 	 */
 	@Override
-	public Solution execute(Solution solution) {
+	public Solution execute(Solution solution) throws XFVRPException {
 		Node[] giantRoute = solution.getGiantRoute();
 
 		final Node depot = giantRoute[0];
@@ -82,14 +83,14 @@ public class XFVRPSavings extends XFVRPOptBase {
 		dataBag.setNodeList(nodeList);
 	}
 
-	private void improve(Node depot, SavingsDataBag dataBag) {
+	private void improve(Node depot, SavingsDataBag dataBag) throws XFVRPException {
 		boolean isImproved = true;
 		while(isImproved) {
 			isImproved = applyNextSaving(depot, dataBag);
 		}
 	}
 
-	private boolean applyNextSaving(Node depot, SavingsDataBag dataBag) {
+	private boolean applyNextSaving(Node depot, SavingsDataBag dataBag) throws XFVRPException {
 		Node depotStart = Util.createIdNode(depot, 0);
 		Node depotEnd = Util.createIdNode(depot, 1);
 

@@ -1,17 +1,18 @@
 package xf.xfvrp.opt.evaluation;
 
 import xf.xfvrp.base.*;
+import xf.xfvrp.base.exception.XFVRPException;
 import xf.xfvrp.base.preset.BlockNameConverter;
 import xf.xfvrp.opt.Solution;
 
-/** 
+/**
  * Copyright (c) 2012-present Holger Schneider
  * All rights reserved.
  *
  * This source code is licensed under the MIT License (MIT) found in the
  * LICENSE file in the root directory of this source tree.
  *
- * 
+ *
  * @author hschneid
  *
  */
@@ -19,39 +20,71 @@ public class EvaluationService {
 
 	/**
 	 * Evaluates the costs and validates the restrictions of the 
-	 * given giant route. The costs are equal to the driven distance.
-	 * The giant route contains several routes, which are connected to
+	 * given solution. The costs are equal to the driven distance.
+	 * The solution contains several routes, which are connected to
 	 * a long node sequence. The first and the last node of the
 	 * giant route has to be a depot. If a starting depot of a route is different
 	 * from the ending depot, then a multi depot vehicle routing is solved. A route
 	 * is evaluated always as closed route with same starting and ending depot. The
 	 * starting depot of a route stands also for the ending depot, in any case. 
 	 */
-	public Quality check(Solution solution, XFVRPModel model) {
-		Quality q = new Quality(null);
-
+	public Quality check(Solution solution, XFVRPModel model) throws XFVRPException {
 		Context context = ContextBuilder.build(model);
 
-		checkRoutes(solution, context, q);
+		checkRoutes(solution, context);
 
-		return q;
+		return new Quality(solution.getQuality());
 	}
-	
-	private void checkRoutes(Solution solution, Context context, Quality q) {
-		for (Node[] route : solution) {
-			// Feasibility check
-			FeasibilityAnalzer.checkFeasibility(route);
-			
-			checkRoute(route, context, q);
+
+	/**
+	 * Checks, if routes are valid and returns the quality.
+	 *
+	 * Here only 2 routes are checked, which are changed by neighborhood search.
+	 */
+	public Quality check(Solution solution, XFVRPModel model, int routeIdxA, int routeIdxB) throws XFVRPException {
+		Context context = ContextBuilder.build(model);
+
+		solution.invalidateRouteQuality(routeIdxA);
+		checkAndUpdateRoutes(routeIdxA, solution, context);
+		if(routeIdxA != routeIdxB) {
+			solution.invalidateRouteQuality(routeIdxB);
+			checkAndUpdateRoutes(routeIdxB, solution, context);
+		}
+
+		return new Quality(solution.getQuality());
+	}
+
+	private void checkRoutes(Solution solution, Context context) throws XFVRPException {
+		Node[][] routes = solution.getRoutes();
+
+		for (int i = 0, routesLength = routes.length; i < routesLength; i++) {
+			checkAndUpdateRoutes(i, solution, context);
 		}
 	}
-	
-	private void checkRoute(Node[] route, Context context, Quality q) {
+
+	private void checkAndUpdateRoutes(int routeIdx, Solution solution, Context context) throws XFVRPException {
+		Node[] route = solution.getRoutes()[routeIdx];
+		if(route.length == 0) {
+			solution.setRouteQuality(routeIdx, new Quality(null));
+			return;
+		}
+
+		// Feasibility check
+		FeasibilityAnalzer.checkFeasibility(route);
+
+		Quality routeQuality = checkRoute(route, context);
+
+		solution.setRouteQuality(routeIdx, routeQuality);
+	}
+
+	private Quality checkRoute(Node[] route, Context context) throws XFVRPException {
+		Quality q = new Quality(null);
+
 		route = ActiveNodeAnalyzer.getActiveNodes(route);
-		context.setRouteInfos(RouteInfoBuilder.build(route, context.getModel()));
-		
+		context.setRouteInfos(RouteInfoBuilder.build(route));
+
 		context.setCurrentNode(route[0]);
-		beginRoute(route[0], findNextCustomer(route, 0), q, context);
+		beginRoute(route[0], findNextCustomer(route), q, context);
 		context.setNextNode(route[0]);
 
 		for (int i = 1; i < route.length; i++) {
@@ -87,13 +120,15 @@ public class EvaluationService {
 		// Check of block preset penalty after last node
 		int penalty = context.checkPresetBlockCount();
 		q.addPenalty(penalty, Quality.PENALTY_REASON_PRESETTING);
+
+		return q;
 	}
 
 	private void checkStop(Context context) {
 		if(context.getCurrentNode().getSiteType() == SiteType.CUSTOMER)
 			context.addStop();
 
-		if(context.getLastNode().getSiteType() == SiteType.CUSTOMER 
+		if(context.getLastNode().getSiteType() == SiteType.CUSTOMER
 				&& context.getCurrentNode().getSiteType() == SiteType.CUSTOMER
 				&& context.getLastDrivenDistance()[0] == 0)
 			context.removeStop();
@@ -131,7 +166,7 @@ public class EvaluationService {
 
 		// Wenn der letzte Knoten ein Depot war, wird die
 		// Wartezeit nicht mitberechnet, die er h�tte sp�ter abfahren k�nnen
-		float waiting = context.getWaitingTimeAtTimeWindow(timeWindow);		
+		float waiting = context.getWaitingTimeAtTimeWindow(timeWindow);
 
 		// Check maxWaiting penalty
 		if(waiting > model.getVehicle().maxWaitingTime)
@@ -156,7 +191,7 @@ public class EvaluationService {
 		// Only for non default blocks
 		if(blockIndex > BlockNameConverter.DEFAULT_BLOCK_IDX) {
 			int peanlty = context.setAndCheckPresetBlock(blockIndex);
-			q.addPenalty(peanlty, Quality.PENALTY_REASON_PRESETTING);	
+			q.addPenalty(peanlty, Quality.PENALTY_REASON_PRESETTING);
 		}
 
 		// Sequence rank of current node must be greater or equal than last node
@@ -194,7 +229,7 @@ public class EvaluationService {
 
 	private void finishRoute(Quality q, Context context) {
 		Vehicle v = context.getModel().getVehicle();
-		
+
 		float stopCountPenalty = Math.max(0, context.getNbrOfStops() - v.maxStopCount);
 		float durationPenalty = Math.max(0, context.getDuration() - v.maxRouteDuration);
 		float delayPenalty = context.getDelay();
@@ -209,14 +244,14 @@ public class EvaluationService {
 		// Add fix cost per route
 		if(context.getNbrOfStops() > 0)
 			q.addCost(v.fixCost);
-		
+
 		// Check for black listed nodes on route
 		// Afterwards reset the arrays for next route
 		int penalty = context.checkPresetBlackList();
 		q.addPenalty(penalty, Quality.PENALTY_REASON_BLACKLIST);
 	}
 
-	private void beginRoute(Node newDepot, Node nextNode, Quality q, Context context) {
+	private void beginRoute(Node newDepot, Node nextNode, Quality q, Context context) throws XFVRPException {
 		XFVRPModel model = context.getModel();
 
 		float penalty = context.createNewRoute(newDepot);
@@ -233,15 +268,15 @@ public class EvaluationService {
 		context.setDepartureTimeAtDepot(earliestDepartureTime, loadingTimeAtDepot);
 	}
 
-	private Node findNextCustomer(Node[] route, int pos) {
-		for (int i = pos + 1; i < route.length; i++) {
+	private Node findNextCustomer(Node[] route) {
+		for (int i = 1; i < route.length; i++) {
 			if(route[i].getSiteType() == SiteType.CUSTOMER)
 				return route[i];
 		}
 		return null;
 	}
 
-	private void replenishAmount(Context context) {
+	private void replenishAmount(Context context) throws XFVRPException {
 		if(context.getCurrentNode().getSiteType() != SiteType.REPLENISH)
 			return;
 

@@ -1,6 +1,9 @@
 package xf.xfvrp.base;
 
-/** 
+import xf.xfvrp.base.exception.XFVRPException;
+import xf.xfvrp.base.exception.XFVRPExceptionType;
+
+/**
  * Copyright (c) 2012-present Holger Schneider
  * All rights reserved.
  *
@@ -46,23 +49,23 @@ public class Vehicle {
 	public Vehicle(int idx, String name, int nbrOfAvailableVehicles, float[] capacity,
 			float maxRouteDuration, int maxStopCount, float maxWaitingTime,	float fixCost, float varCost, int vehicleMetricId,
 			float maxDrivingTimePerShift, float waitingTimeBetweenShifts, int priority
-			) {		
+			) throws XFVRPException {
 		float sumCapacity = 0;
-		for(int i = 0; i < capacity.length; i++)
+		for(int i = capacity.length - 1; i >= 0; i--)
 			sumCapacity += capacity[i];
 		if(sumCapacity <= 0)
-			throw new IllegalStateException("Parameter for capacities must be greater than zero.");
+			throw new XFVRPException(XFVRPExceptionType.ILLEGAL_INPUT, "Parameter for capacities must be greater than zero.");
 		
 		if(maxRouteDuration <= 0)
-			throw new IllegalStateException("Parameter for maxRouteDuration must be greater than zero.");
+			throw new XFVRPException(XFVRPExceptionType.ILLEGAL_INPUT, "Parameter for maxRouteDuration must be greater than zero.");
 		if(maxStopCount <= 0)
-			throw new IllegalStateException("Parameter for maxStopCount must be greater than zero.");
+			throw new XFVRPException(XFVRPExceptionType.ILLEGAL_INPUT, "Parameter for maxStopCount must be greater than zero.");
 		if(nbrOfAvailableVehicles <= 0)
-			throw new IllegalStateException("Parameter for nbrOfAvailableVehicles must be greater than zero.");
+			throw new XFVRPException(XFVRPExceptionType.ILLEGAL_INPUT, "Parameter for nbrOfAvailableVehicles must be greater than zero.");
 		if(maxWaitingTime < 0)
-			throw new IllegalStateException("Parameter for maxWaitingTime must be greater or equal than zero.");
+			throw new XFVRPException(XFVRPExceptionType.ILLEGAL_INPUT, "Parameter for maxWaitingTime must be greater or equal than zero.");
 		if(vehicleMetricId < 0)
-			throw new IllegalStateException("Parameter for vehicleMetricId must be greater or equal than zero.");
+			throw new XFVRPException(XFVRPExceptionType.ILLEGAL_INPUT, "Parameter for vehicleMetricId must be greater or equal than zero.");
 
 		this.idx = idx;
 		this.name = name;
@@ -79,29 +82,5 @@ public class Vehicle {
 		this.waitingTimeBetweenShifts = waitingTimeBetweenShifts;
 		
 		this.priority = priority;
-	}
-	
-	public String exportToString() {
-		return
-				"VEHICLE\t"+
-				name+"\t"+
-				exportArrayToString(capacity)+"\t"+
-				fixCost+"\t"+
-				varCost+"\t"+
-				nbrOfAvailableVehicles+"\t"+
-				maxRouteDuration+"\t"+
-				maxStopCount+"\t"+
-				maxWaitingTime+"\t"+
-				vehicleMetricId+"\t"+
-				maxDrivingTimePerShift+"\t"+
-				waitingTimeBetweenShifts+"\t"+
-				priority+"\n";
-	}
-	
-	private String exportArrayToString(float[] arr){
-		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < arr.length; i++)
-			sb.append(arr[i]+";");
-		return sb.toString();
 	}
 }

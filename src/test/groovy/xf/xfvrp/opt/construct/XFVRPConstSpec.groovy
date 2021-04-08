@@ -4,6 +4,7 @@ import spock.lang.Specification
 import util.instances.TestNode
 import util.instances.TestVehicle
 import xf.xfvrp.base.*
+import xf.xfvrp.base.exception.XFVRPException
 import xf.xfvrp.base.metric.internal.AcceleratedMetric
 
 class XFVRPConstSpec extends Specification {
@@ -153,7 +154,7 @@ class XFVRPConstSpec extends Specification {
 		def result = service.findNearestDepot(depots, customer)
 
 		then:
-		thrown IllegalStateException
+		thrown XFVRPException
 	}
 	
 	XFVRPModel initScen() {

@@ -2,6 +2,7 @@ package xf.xfvrp.opt.improve;
 
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.Quality;
+import xf.xfvrp.base.exception.XFVRPException;
 import xf.xfvrp.opt.Solution;
 
 import java.util.ArrayList;
@@ -29,7 +30,7 @@ public class XFVRP3CyclicTransfer extends XFVRPOptImpBase {
 	 * @see de.fhg.iml.vlog.xftour.xfvrp.opt.improve.XFVRPOptImpBase#improve(de.fhg.iml.vlog.xftour.model.XFNode[], de.fhg.iml.vlog.xftour.model.Quality)
 	 */
 	@Override
-	protected Quality improve(final Solution solution, Quality bestResult) {
+	protected Quality improve(final Solution solution, Quality bestResult) throws XFVRPException {
 		Node[] giantTour = solution.getGiantRoute();
 		
 		if(model.getNbrOfDepots() > 1)
@@ -93,14 +94,6 @@ public class XFVRP3CyclicTransfer extends XFVRPOptImpBase {
 		return improvingStepList;
 	}
 
-	/**
-	 * 
-	 * @param giantRoute
-	 * @param a
-	 * @param b
-	 * @param c
-	 * @return
-	 */
 	private float getPotential(Node[] giantTour, int a, int b, int c) {
 		int[] aa = new int[]{a-1, a, a+1, c};
 		int[] bb = new int[]{b-1, b, b+1, a};

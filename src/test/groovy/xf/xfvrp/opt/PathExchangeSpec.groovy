@@ -3,6 +3,7 @@ package xf.xfvrp.opt
 import spock.lang.Specification
 import xf.xfvrp.base.Node
 import xf.xfvrp.base.SiteType
+import xf.xfvrp.base.exception.XFVRPException
 import xf.xfvrp.opt.improve.XFVRPRelocate
 
 class PathExchangeSpec extends Specification {
@@ -185,7 +186,7 @@ class PathExchangeSpec extends Specification {
 		def result = sol.getGiantRoute()
 		
 		then:
-		thrown IllegalStateException
+		thrown XFVRPException
 	}
 
 }

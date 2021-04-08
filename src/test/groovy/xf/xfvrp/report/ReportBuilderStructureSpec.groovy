@@ -5,6 +5,7 @@ import spock.lang.Specification
 import util.instances.TestNode
 import util.instances.TestVehicle
 import xf.xfvrp.base.*
+import xf.xfvrp.base.exception.XFVRPException
 import xf.xfvrp.base.metric.EucledianMetric
 import xf.xfvrp.base.metric.internal.AcceleratedMetricTransformator
 import xf.xfvrp.opt.Solution
@@ -49,7 +50,7 @@ class ReportBuilderStructureSpec extends Specification {
 		def result = service.getReport(solution)
 
 		then:
-		thrown IllegalStateException
+		thrown XFVRPException
 	}
 
 	def "Feasability - Ends not with DEPOT"() {
@@ -66,7 +67,7 @@ class ReportBuilderStructureSpec extends Specification {
 		service.getReport(solution)
 
 		then:
-		thrown IllegalStateException
+		thrown XFVRPException
 	}
 	
 	def "Feasability - NullPointer in Route"() {
@@ -83,7 +84,7 @@ class ReportBuilderStructureSpec extends Specification {
 		service.getReport(solution)
 
 		then:
-		thrown IllegalStateException
+		thrown XFVRPException
 	}
 	
 	def "Feasability - No customer"() {

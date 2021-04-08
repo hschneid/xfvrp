@@ -3,6 +3,7 @@ package xf.xfvrp.opt.improve;
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.Quality;
 import xf.xfvrp.base.SiteType;
+import xf.xfvrp.base.exception.XFVRPException;
 import xf.xfvrp.opt.Solution;
 
 import java.util.ArrayList;
@@ -27,7 +28,7 @@ public class XFVRP3PointMove extends XFVRPOptImpBase {
 	 * @see de.fhg.iml.vlog.xftour.xfvrp.opt.improve.XFVRPOptImpBase#improve(de.fhg.iml.vlog.xftour.model.XFNode[], de.fhg.iml.vlog.xftour.model.Quality)
 	 */
 	@Override
-	public Quality improve(final Solution solution, Quality bestResult) {
+	public Quality improve(final Solution solution, Quality bestResult) throws XFVRPException {
 		Node[] giantTour = solution.getGiantRoute();
 		
 		List<float[]> improvingStepList = search(giantTour);
@@ -69,23 +70,16 @@ public class XFVRP3PointMove extends XFVRPOptImpBase {
 	/**
 	 * Searches all improving valid steps in search space for
 	 * a VRP with multiple depots.
-	 * 
-	 * @param giantRoute
-	 * @return improvingStepList
 	 */
 	private List<float[]> search(Node[] giantTour) {
 		List<float[]> improvingStepList = new ArrayList<>();
 		
-		int[] tourIdMarkArr = new int[giantTour.length];
 		int[] depotMarkArr = new int[giantTour.length];
 		int lastDepotIdx = 0;
-		int id = 0;
-		for (int i = 1; i < tourIdMarkArr.length; i++) {
+		for (int i = 1; i < giantTour.length; i++) {
 			if(giantTour[i].getSiteType() == SiteType.DEPOT) {
-				id++;
 				lastDepotIdx = giantTour[i].getIdx();
 			}
-			tourIdMarkArr[i] = id;
 			depotMarkArr[i] = lastDepotIdx;
 		}
 
@@ -141,12 +135,6 @@ public class XFVRP3PointMove extends XFVRPOptImpBase {
 		if(val > epsilon) improvingStepList.add(new float[]{a, b, val});
 	}
 
-	/**
-	 * 
-	 * @param giantRoute
-	 * @param a
-	 * @param b
-	 */
 	private void swap3Point(Solution solution, int a, int b) {
 		Node[] giantRoute = solution.getGiantRoute();
 

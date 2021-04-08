@@ -3,6 +3,7 @@ package xf.xfvrp.opt;
 import util.collection.ListMap;
 import xf.xfvrp.RoutingDataBag;
 import xf.xfvrp.base.*;
+import xf.xfvrp.base.exception.XFVRPException;
 import xf.xfvrp.base.fleximport.InternalVehicleData;
 import xf.xfvrp.base.metric.InternalMetric;
 import xf.xfvrp.base.metric.Metric;
@@ -11,13 +12,11 @@ import xf.xfvrp.base.monitor.StatusCode;
 import xf.xfvrp.base.monitor.StatusManager;
 import xf.xfvrp.base.preset.BlockNameConverter;
 import xf.xfvrp.base.preset.VehiclePriorityInitialiser;
+import xf.xfvrp.report.Event;
 import xf.xfvrp.report.RouteReport;
 import xf.xfvrp.report.build.ReportBuilder;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -46,7 +45,7 @@ public class FullRouteMixedFleetHeuristic {
 			Function<RoutingDataBag, XFVRPSolution> routePlanningFunction,
 			Metric metric,
 			XFVRPParameter parameter,
-			StatusManager statusManager) {
+			StatusManager statusManager) throws XFVRPException {
 		List<Node> unplannedNodes = Arrays.asList(nodes);
 
 		vehicles = VehiclePriorityInitialiser.execute(vehicles);
@@ -81,9 +80,6 @@ public class FullRouteMixedFleetHeuristic {
 	/**
 	 * This method removes customers which are found in the given solution
 	 * from the nodeList object, which is managed by executeRoutePlanning() method.
-	 * 
-	 * @param routes
-	 * @param customerList 
 	 */
 	private List<Node> getUnusedNodes(List<RouteReport> routes, List<Node> unplannedNodes) {	
 		Map<String, Node> nodeIdxMap = unplannedNodes.stream().collect(Collectors.toMap(Node::getExternID, node -> node, (v1, v2) -> v1));
@@ -91,9 +87,9 @@ public class FullRouteMixedFleetHeuristic {
 		List<Node> usedNodes = routes.stream()
 				.flatMap(route -> route.getEvents().stream())
 				.filter(event -> event.getSiteType().equals(SiteType.CUSTOMER))
-				.map(event -> event.getID())
-				.filter(id -> nodeIdxMap.containsKey(id))
-				.map(id -> nodeIdxMap.get(id))
+				.map(Event::getID)
+				.filter(nodeIdxMap::containsKey)
+				.map(nodeIdxMap::get)
 				.collect(Collectors.toList());
 
 		List<Node> unusedNodes = new ArrayList<>(unplannedNodes);
@@ -104,16 +100,13 @@ public class FullRouteMixedFleetHeuristic {
 	/**
 	 * This method constructs a giant tour for a given list of route reports
 	 * (can be found in solution objects).
-	 * 
-	 * @param routes Tour reports from getReport()
-	 * @param model
 	 */
 	private XFVRPSolution reconstructGiantRoute(List<RouteReport> routes, XFVRPModel model) {
 		Map<String, Node> nodeMap = Arrays.stream(model.getNodes()).collect(Collectors.toMap(Node::getExternID, node -> node, (v1, v2) -> v1));
 
 		AtomicInteger depotId = new AtomicInteger(0);
 		Node[] giantRoute = routes.stream()
-				.map(route -> route.getEvents())
+				.map(RouteReport::getEvents)
 				.filter(events -> events.size() > 2)
 				.flatMap(events -> events.stream().sequential())
 				// Other nodes (PAUSE is no structural node type. It is only inserted for evaluation issues in reports.)
@@ -133,7 +126,7 @@ public class FullRouteMixedFleetHeuristic {
 			List<Node> unplannedNodes,
 			Metric metric, 
 			XFVRPParameter parameter,
-			StatusManager statusManager) {
+			StatusManager statusManager) throws XFVRPException {
 
 		// Get unplanned or invalid nodes
 		List<Node> unplannedCustomers = unplannedNodes.stream()
@@ -141,7 +134,7 @@ public class FullRouteMixedFleetHeuristic {
 				.collect(Collectors.toList());
 
 		if(unplannedCustomers.size() == 0) {
-			statusManager.fireMessage(StatusCode.RUNNING, "Invalid or unplanned nodes are inserted in result. (nbr of invalid nodes = " + unplannedCustomers.size()+")");
+			statusManager.fireMessage(StatusCode.RUNNING, "Invalid or unplanned nodes are inserted in result. (nbr of invalid nodes = 0)");
 			return null;
 		}
 
@@ -179,10 +172,6 @@ public class FullRouteMixedFleetHeuristic {
 	 * the excluded customer nodes. 
 	 * For a given set of invalid nodes, a giant tour is created, where each invalid
 	 * node is on a single route.
-	 * 
-	 * @param unplannedNodes Nodes which can not be processed in optimization
-	 * @param depotList List of depot nodes. Only first depot node is used for invalid nodes.
-	 * @return Giant route with single routes for each invalid node.
 	 */
 	private Solution buildGiantRouteForInvalidNodes(List<Node> unplannedNodes, Node depot, StatusManager statusManager) {
 		if(unplannedNodes.size() == 0)
@@ -215,7 +204,7 @@ public class FullRouteMixedFleetHeuristic {
 		// Add invalid nodes with block preset
 		for (List<Node> block : unplannedBlocks.values()) {
 			// Right order of preset sequence positions
-			block.sort((o1, o2) -> o1.getPresetBlockPos() - o2.getPresetBlockPos());
+			block.sort(Comparator.comparingInt(Node::getPresetBlockPos));
 
 			// Add nodes of block in preset sequence ordering
 			for (Node node : block) {

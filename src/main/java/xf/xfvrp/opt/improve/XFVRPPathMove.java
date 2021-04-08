@@ -3,6 +3,7 @@ package xf.xfvrp.opt.improve;
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.Quality;
 import xf.xfvrp.base.SiteType;
+import xf.xfvrp.base.exception.XFVRPException;
 import xf.xfvrp.opt.Solution;
 
 import java.util.ArrayList;
@@ -44,7 +45,7 @@ public class XFVRPPathMove extends XFVRPOptImpBase {
 	 * @see de.fhg.iml.vlog.xftour.xfvrp.opt.improve.XFVRPOptImpBase#improve(de.fhg.iml.vlog.xftour.model.XFNode[], de.fhg.iml.vlog.xftour.model.Quality)
 	 */
 	@Override
-	public Quality improve(final Solution solution, Quality bestResult) {
+	public Quality improve(final Solution solution, Quality bestResult) throws XFVRPException {
 		Node[] giantTour = solution.getGiantRoute();
 
 		List<float[]> improvingStepList = search(giantTour);
@@ -68,7 +69,7 @@ public class XFVRPPathMove extends XFVRPOptImpBase {
 		return null;
 	}
 
-	public void change(Solution solution, float[] val) {
+	public void change(Solution solution, float[] val) throws XFVRPException {
 		int a = (int) val[0];
 		int b = (int) val[1];
 		int l = (int) val[2];
@@ -78,7 +79,7 @@ public class XFVRPPathMove extends XFVRPOptImpBase {
 		pathMove(solution, a, a + l, b);
 	}
 
-	public void reverseChange(Solution solution, float[] val) {
+	public void reverseChange(Solution solution, float[] val) throws XFVRPException {
 		int a = (int) val[0];
 		int b = (int) val[1];
 		int l = (int) val[2];
@@ -94,9 +95,6 @@ public class XFVRPPathMove extends XFVRPOptImpBase {
 	/**
 	 * Searches all improving valid steps in search space for
 	 * a VRP with multiple depots.
-	 *
-	 * @param giantRoute
-	 * @return improvingStepList
 	 */
 	private List<float[]> search(Node[] giantTour) {
 		List<float[]> improvingStepList = new ArrayList<>();
@@ -135,16 +133,6 @@ public class XFVRPPathMove extends XFVRPOptImpBase {
 		return improvingStepList;
 	}
 
-	/**
-	 *
-	 * @param giantRoute
-	 * @param depotMarkArr
-	 * @param tourIdMarker
-	 * @param a
-	 * @param b
-	 * @param l
-	 * @param impList
-	 */
 	private void findImprovements(Node[] giantRoute, int[] depotMarkArr, int[] tourIdMarker, int a, int b, int l, List<float[]> impList) {
 		if(a + l + 1 >= giantRoute.length)
 			return;

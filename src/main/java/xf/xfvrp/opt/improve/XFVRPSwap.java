@@ -3,6 +3,7 @@ package xf.xfvrp.opt.improve;
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.Quality;
 import xf.xfvrp.base.SiteType;
+import xf.xfvrp.base.exception.XFVRPException;
 import xf.xfvrp.opt.Solution;
 
 import java.util.ArrayList;
@@ -30,7 +31,7 @@ public class XFVRPSwap extends XFVRPOptImpBase {
 	 * @see de.fhg.iml.vlog.xftour.xfvrp.opt.improve.XFVRPOptImpBase#improve(de.fhg.iml.vlog.xftour.model.XFNode[], de.fhg.iml.vlog.xftour.model.Quality)
 	 */
 	@Override
-	public Quality improve(final Solution solution, Quality bestResult) {
+	public Quality improve(final Solution solution, Quality bestResult) throws XFVRPException {
 		Node[] giantTour = solution.getGiantRoute();
 		List<float[]> improvingStepList = new ArrayList<>();
 
@@ -62,9 +63,6 @@ public class XFVRPSwap extends XFVRPOptImpBase {
 	/**
 	 * Searches all improving valid steps in search space for
 	 * a VRP with one depot.
-	 * 
-	 * @param giantRoute
-	 * @param improvingStepList
 	 */
 	private void searchSingleDepot(Node[] giantTour, List<float[]> improvingStepList) {
 		// Suche alle verbessernden L�sungen
@@ -108,9 +106,6 @@ public class XFVRPSwap extends XFVRPOptImpBase {
 	/**
 	 * Searches all improving valid steps in search space for
 	 * a VRP with multiple depots.
-	 * 
-	 * @param giantRoute
-	 * @param improvingStepList
 	 */
 	private void searchMultiDepot(Node[] giantTour, List<float[]> improvingStepList) {
 		int[] depotMarkArr = new int[giantTour.length];

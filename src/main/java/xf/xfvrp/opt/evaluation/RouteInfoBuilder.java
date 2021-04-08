@@ -2,20 +2,15 @@ package xf.xfvrp.opt.evaluation;
 
 import xf.xfvrp.base.LoadType;
 import xf.xfvrp.base.Node;
-import xf.xfvrp.base.XFVRPModel;
+import xf.xfvrp.base.exception.XFVRPException;
+import xf.xfvrp.base.exception.XFVRPExceptionType;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class RouteInfoBuilder {
 
-	/**
-	 * 
-	 * @param route
-	 * @param model 
-	 * @return
-	 */
-	public static Map<Node, RouteInfo> build(Node[] route, XFVRPModel model) {
+	public static Map<Node, RouteInfo> build(Node[] route) throws XFVRPException {
 		Map<Node, RouteInfo> routeInfos = new HashMap<>();
 		RouteInfo routeInfo = null;
 		
@@ -28,26 +23,20 @@ public class RouteInfoBuilder {
 		return routeInfos;
 	}
 
-	private static RouteInfo createRouteInfo(Map<Node, RouteInfo> routeInfos, RouteInfo routeInfo, Node node) {
+	private static RouteInfo createRouteInfo(Map<Node, RouteInfo> routeInfos, RouteInfo routeInfo, Node node) throws XFVRPException {
 		switch(node.getSiteType()) {
-			case DEPOT : {
+			case DEPOT :
+			case REPLENISH :
 				if(routeInfo != null) {
 					routeInfos.put(routeInfo.getDepot(), routeInfo);
 				}
 				return new RouteInfo(node);
-			}
-			case REPLENISH : {
-				if(routeInfo != null) {
-					routeInfos.put(routeInfo.getDepot(), routeInfo);
-				}
-				return new RouteInfo(node);
-			}
 			case CUSTOMER : {
 				changeRouteInfo(node, routeInfo);
 				return routeInfo;
 			}
 			default : {
-				throw new IllegalStateException("Found unexpected site type ("+node.getSiteType().toString()+")");
+				throw new XFVRPException(XFVRPExceptionType.ILLEGAL_ARGUMENT, "Found unexpected site type ("+node.getSiteType().toString()+")");
 			}
 		}			
 	}

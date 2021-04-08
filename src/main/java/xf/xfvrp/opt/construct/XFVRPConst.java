@@ -5,6 +5,8 @@ import xf.xfvrp.base.Node;
 import xf.xfvrp.base.NormalizeSolutionService;
 import xf.xfvrp.base.SiteType;
 import xf.xfvrp.base.Util;
+import xf.xfvrp.base.exception.XFVRPException;
+import xf.xfvrp.base.exception.XFVRPExceptionType;
 import xf.xfvrp.base.preset.BlockNameConverter;
 import xf.xfvrp.opt.Solution;
 import xf.xfvrp.opt.XFVRPOptBase;
@@ -39,7 +41,7 @@ public class XFVRPConst extends XFVRPOptBase {
 	 * @see de.fhg.iml.vlog.xftour.model.XFBase#execute(de.fhg.iml.vlog.xftour.model.XFNode[])
 	 */
 	@Override
-	public Solution execute(Solution solution) {
+	public Solution execute(Solution solution) throws XFVRPException {
 		// Prepare: nearest allocation of customer to depots
 		ListMap<Integer, Node> allocMap = allocateNearestDepot(solution);
 
@@ -79,11 +81,7 @@ public class XFVRPConst extends XFVRPOptBase {
 		return NormalizeSolutionService.normalizeRoute(newSolution, model);
 	}
 
-	/**
-	 * @param giantRoute
-	 * @return
-	 */
-	private ListMap<Integer, Node> allocateNearestDepot(Solution solution) {
+	private ListMap<Integer, Node> allocateNearestDepot(Solution solution) throws XFVRPException {
 		ListMap<Integer, Node> allocMap = ListMap.create();
 
 		List<Node> depotList = Arrays.stream(model.getNodes())
@@ -125,7 +123,7 @@ public class XFVRPConst extends XFVRPOptBase {
 		return i;
 	}
 
-	private int findNearestDepot(List<Node> depotList, Node n) {
+	private int findNearestDepot(List<Node> depotList, Node n) throws XFVRPException {
 		int bestIdx = -1;
 		float bestDistance = Float.MAX_VALUE;
 		if(depotList.size() > 1) {
@@ -141,16 +139,11 @@ public class XFVRPConst extends XFVRPOptBase {
 		}
 
 		if(bestIdx == -1)
-			throw new IllegalStateException();
-		
+			throw new XFVRPException(XFVRPExceptionType.ILLEGAL_STATE, "No improvement found");
+
 		return bestIdx;
 	}
 
-	/**
-	 * @param dep
-	 * @param customers
-	 * @return
-	 */
 	private Solution buildGiantRouteForOptimization(Node dep, List<Node> customers) {
 		Node[] gT = new Node[customers.size() * 2 + 1];
 

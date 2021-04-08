@@ -2,6 +2,8 @@ package xf.xfvrp.base.metric.internal;
 
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.Vehicle;
+import xf.xfvrp.base.exception.XFVRPException;
+import xf.xfvrp.base.exception.XFVRPExceptionType;
 import xf.xfvrp.base.metric.InternalMetric;
 import xf.xfvrp.base.metric.Metric;
 
@@ -34,14 +36,14 @@ public class AcceleratedMetricTransformator {
 	 * @param veh Container object
 	 * @return Internal metric for use in optimization procedures
 	 */
-	public static InternalMetric transform(Metric metric, Node[] nodeArr, Vehicle veh) {
+	public static InternalMetric transform(Metric metric, Node[] nodeArr, Vehicle veh) throws XFVRPException {
 		AcceleratedMetric acceleratedMetric = new AcceleratedMetric(nodeArr.length);
 		for (int i = 0; i < nodeArr.length; i++)
 			for (int j = 0; j < nodeArr.length; j++) {
 				float[] v = metric.getDistanceAndTime(nodeArr[i], nodeArr[j], veh);
 
 				if(v == null)
-					throw new IllegalStateException("Missing distance information ("+nodeArr[i].getGeoId()+","+nodeArr[j].getGeoId()+")");
+					throw new XFVRPException(XFVRPExceptionType.ILLEGAL_INPUT, "Missing distance information ("+nodeArr[i].getGeoId()+","+nodeArr[j].getGeoId()+")");
 
 				acceleratedMetric.add(nodeArr[i].getIdx(), nodeArr[j].getIdx(), v[0], v[1]);
 			}

@@ -7,6 +7,7 @@ import xf.xfvrp.base.InvalidReason
 import xf.xfvrp.base.Node
 import xf.xfvrp.base.SiteType
 import xf.xfvrp.base.XFVRPModel
+import xf.xfvrp.base.exception.XFVRPException
 import xf.xfvrp.opt.init.solution.vrp.SolutionBuilderDataBag
 
 class CheckCustomerServiceSpec extends Specification {
@@ -47,7 +48,7 @@ class CheckCustomerServiceSpec extends Specification {
 		when:
 		def result = service.checkPresets(customer, dataBag)
 		then:
-		thrown IllegalArgumentException
+		thrown XFVRPException
 	}
 
 	def "Check presets - Rank not okay"() {
@@ -64,7 +65,7 @@ class CheckCustomerServiceSpec extends Specification {
 		when:
 		def result = service.checkPresets(customer, dataBag)
 		then:
-		thrown IllegalArgumentException
+		thrown XFVRPException
 	}
 
 	def "Check presets - Pos duplicate"() {
@@ -83,7 +84,7 @@ class CheckCustomerServiceSpec extends Specification {
 		def result = service.checkPresets(customer, dataBag)
 
 		then:
-		thrown IllegalArgumentException
+		thrown XFVRPException
 	}
 
 	def "Check demands - Okay"() {

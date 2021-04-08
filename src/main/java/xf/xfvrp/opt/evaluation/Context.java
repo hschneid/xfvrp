@@ -4,6 +4,8 @@ import xf.xfvrp.base.Node;
 import xf.xfvrp.base.SiteType;
 import xf.xfvrp.base.Vehicle;
 import xf.xfvrp.base.XFVRPModel;
+import xf.xfvrp.base.exception.XFVRPException;
+import xf.xfvrp.base.exception.XFVRPExceptionType;
 import xf.xfvrp.base.preset.BlockNameConverter;
 import xf.xfvrp.base.preset.BlockPositionConverter;
 
@@ -22,7 +24,7 @@ public class Context {
 
 	// Variables
 	private int maxGlobalNodeIdx;
-	private float[] routeVar;
+	private final float[] routeVar;
 	private float[] amountsOfRoute;
 
 	private int[] blockPresetArr;
@@ -36,7 +38,6 @@ public class Context {
 	private Map<Node, RouteInfo> routeInfos;
 
 	private Node currentDepot;
-	private Node lastReplenishNode;
 	private Node currentNode;
 	private Node lastNode;
 
@@ -83,7 +84,7 @@ public class Context {
 		routeVar[DURATION] += vehicle.waitingTimeBetweenShifts;
 	}
 
-	public int createNewRoute(Node newDepot) {
+	public int createNewRoute(Node newDepot) throws XFVRPException {
 		routeVar[ROUTE_IDX]++;
 
 		setCurrentDepot(newDepot);
@@ -111,11 +112,11 @@ public class Context {
 		routeVar[DURATION] = loadingTimeAtDepot;
 	}
 
-	public int resetAmountsOfRoute() {
+	public int resetAmountsOfRoute() throws XFVRPException {
 		Arrays.fill(amountsOfRoute, 0);
 		
 		if(!routeInfos.containsKey(currentNode))
-			throw new IllegalStateException("Could not find route infos for depot id " + currentNode.getDepotId());
+			throw new XFVRPException(XFVRPExceptionType.ILLEGAL_ARGUMENT, "Could not find route infos for depot id " + currentNode.getDepotId());
 
 		Amount deliveryOfRoute = routeInfos.get(currentNode).getDeliveryAmount();
 

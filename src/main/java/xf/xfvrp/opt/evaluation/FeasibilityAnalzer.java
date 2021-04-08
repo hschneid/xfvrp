@@ -2,21 +2,22 @@ package xf.xfvrp.opt.evaluation;
 
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.SiteType;
+import xf.xfvrp.base.exception.XFVRPException;
+import xf.xfvrp.base.exception.XFVRPExceptionType;
 
 import java.util.Arrays;
 import java.util.Objects;
 
 public class FeasibilityAnalzer {
 
-	public static void checkFeasibility(Node[] route) {
-		// Es kann hier leere Touren geben, weil es gelöschte Touren geben kann! :-(
-		if(route == null || route.length == 0)
-			throw new IllegalStateException("Empty route is not allowed to report");
+	public static void checkFeasibility(Node[] route) throws XFVRPException {
+		if(route == null)
+			throw new XFVRPException(XFVRPExceptionType.ILLEGAL_STATE, "Empty route is not allowed to report");
 		if(route[0].getSiteType() != SiteType.DEPOT)
-			throw new IllegalStateException("First node in giant route is not a depot.");
+			throw new XFVRPException(XFVRPExceptionType.ILLEGAL_STATE, "First node in giant route is not a depot.");
 		if(route[route.length - 1].getSiteType() != SiteType.DEPOT)
-			throw new IllegalStateException("Last node in giant route is not a depot.");
-		if(Arrays.stream(route).filter(Objects::isNull).count() > 0)
-			throw new IllegalStateException("Route contains NullPointer!");
+			throw new XFVRPException(XFVRPExceptionType.ILLEGAL_STATE, "Last node in giant route is not a depot.");
+		if(Arrays.stream(route).anyMatch(Objects::isNull))
+			throw new XFVRPException(XFVRPExceptionType.ILLEGAL_STATE, "Route contains null objects!");
 	}
 }

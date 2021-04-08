@@ -1,6 +1,6 @@
 package xf.xfvrp.base;
 
-/** 
+/**
  * Copyright (c) 2012-present Holger Schneider
  * All rights reserved.
  *
@@ -19,8 +19,8 @@ package xf.xfvrp.base;
  */
 public class Quality {
 
-	private float cost = 0;
-	private float penalty = 0;
+	protected float cost = 0;
+	protected float penalty = 0;
 
 	private static int[] reasons = new int[10];
 	
@@ -37,8 +37,6 @@ public class Quality {
 	/**
 	 * Initializes a new Quality object by cloneing the information
 	 * from an existing Quality object.
-	 * 
-	 * @param q
 	 */
 	public Quality(Quality q) {
 		if(q != null) {
@@ -66,10 +64,6 @@ public class Quality {
 		return cost + 1000 * penalty;
 	}
 
-	/**
-	 * 
-	 * @return
-	 */
 	public float getPenalty() {
 		return penalty;
 	}
@@ -77,8 +71,6 @@ public class Quality {
 	/**
 	 * Adds a given value to the penalty value of this
 	 * quality instance.
-	 * 
-	 * @param penalty
 	 */
 	public void addPenalty(float penalty, int reason) {
 		this.penalty += penalty;
@@ -86,14 +78,20 @@ public class Quality {
 			reasons[reason]++;
 	}
 	
-	/**
-	 * 
-	 * @param cost
-	 */
 	public void addCost(float cost) {
 		this.cost += cost;
 	}
-	
+
+	public void add(Quality q) {
+		this.cost += q.cost;
+		this.penalty += q.penalty;
+	}
+
+	public void sub(Quality q) {
+		this.cost -= q.cost;
+		this.penalty -= q.penalty;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * @see java.lang.Object#toString()
@@ -102,4 +100,5 @@ public class Quality {
 	public String toString() {
 		return cost+" "+penalty;
 	}
+
 }

@@ -1,5 +1,6 @@
 package xf.xfvrp.opt.improve.ils;
 
+import xf.xfvrp.base.exception.XFVRPException;
 import xf.xfvrp.opt.Solution;
 import xf.xfvrp.opt.XFVRPOptBase;
 import xf.xfvrp.opt.improve.XFVRPPathMove;
@@ -28,7 +29,7 @@ public class XFVRPILS extends XFILS {
 	 * @see xf.xfvrp.opt.improve.ils.XFILS#execute(xf.xfvrp.opt.Solution)
 	 */
 	@Override
-	public Solution execute(Solution solution) {
+	public Solution execute(Solution solution) throws XFVRPException {
 		optArr = new XFVRPOptBase[]{
 				new XFVRPRelocate(),
 				new XFVRPSwap(),

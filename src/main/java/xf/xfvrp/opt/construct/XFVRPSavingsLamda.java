@@ -1,6 +1,7 @@
 package xf.xfvrp.opt.construct;
 
 import xf.xfvrp.base.Quality;
+import xf.xfvrp.base.exception.XFVRPException;
 import xf.xfvrp.opt.Solution;
 
 
@@ -29,7 +30,7 @@ public class XFVRPSavingsLamda extends XFVRPSavings {
 	 * @see de.fhg.iml.vlog.xftour.xfvrp.opt.construct.XFVRPSavings#execute(de.fhg.iml.vlog.xftour.model.XFNode[])
 	 */
 	@Override
-	public Solution execute(Solution solution) {
+	public Solution execute(Solution solution) throws XFVRPException {
 		Solution best = super.execute(solution.copy());
 		Solution sol;
 		Quality quality, bestQuality;
