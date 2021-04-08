@@ -87,7 +87,7 @@ class XFVRPRelocateTest extends Specification {
         def newQuality = service.improve(sol, new Quality(cost: Float.MAX_VALUE))
         def result = sol.getGiantRoute()
         then:
-        newQuality != null
+        newQuality.cost < 7
         result[0].externID == "1"
         result[1].externID == "2"
         result[2].externID == "3"

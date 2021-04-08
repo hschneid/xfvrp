@@ -33,7 +33,7 @@ public class EvaluationService {
 
 		checkRoutes(solution, context);
 
-		return solution.getQuality();
+		return new Quality(solution.getQuality());
 	}
 
 	/**
@@ -44,11 +44,14 @@ public class EvaluationService {
 	public Quality check(Solution solution, XFVRPModel model, int routeIdxA, int routeIdxB) throws XFVRPException {
 		Context context = ContextBuilder.build(model);
 
+		solution.invalidateRouteQuality(routeIdxA);
 		checkAndUpdateRoutes(routeIdxA, solution, context);
-		if(routeIdxA != routeIdxB)
+		if(routeIdxA != routeIdxB) {
+			solution.invalidateRouteQuality(routeIdxB);
 			checkAndUpdateRoutes(routeIdxB, solution, context);
+		}
 
-		return solution.getQuality();
+		return new Quality(solution.getQuality());
 	}
 
 	private void checkRoutes(Solution solution, Context context) throws XFVRPException {

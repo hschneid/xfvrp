@@ -14,11 +14,11 @@ import java.util.List;
 public class Solution implements Iterable<Node[]> {
 
 	private Node[][] routes = new Node[1][0];
-	private Quality[] routeQualities = new Quality[1];
+	private Quality[] routeQualities = new Quality[] { new Quality(null) };
 	private Quality totalQuality = new Quality(null);
 
 	private List<RouteQuality> invalidatedRoutesQualities = new ArrayList<>();
-	
+
 	public Node[][] getRoutes() {
 		return routes;
 	}
@@ -37,7 +37,7 @@ public class Solution implements Iterable<Node[]> {
 		totalQuality.sub(routeQualities[routeIndex]);
 		routeQualities[routeIndex] = new Quality(null);
 	}
-	
+
 	public void addRoute(Node[] newRoute) {
 		for (int i = 0; i < routes.length; i++) {
 			if(routes[i].length == 0) {
@@ -45,14 +45,14 @@ public class Solution implements Iterable<Node[]> {
 				return;
 			}
 		}
-		
+
 		routes = Arrays.copyOf(routes, routes.length + 1);
 		routes[routes.length - 1] = newRoute;
 
 		routeQualities = Arrays.copyOf(routeQualities, routeQualities.length + 1);
 		routeQualities[routeQualities.length - 1] = new Quality(null);
 	}
-	
+
 	public void setRoute(int routeIndex, Node[] route) {
 		routes[routeIndex] = route;
 	}
@@ -64,8 +64,20 @@ public class Solution implements Iterable<Node[]> {
 	 */
 	public void setRouteQuality(int routeIndex, Quality quality) {
 		totalQuality.sub(routeQualities[routeIndex]);
+
 		routeQualities[routeIndex] = quality;
 		totalQuality.add(quality);
+	}
+
+	/**
+	 * This invalidates the quality of a certain route, so that
+	 * it can be overwritten.
+	 */
+	public void invalidateRouteQuality(int routeIdx) {
+		invalidatedRoutesQualities.add(new RouteQuality(
+				routeIdx,
+				routeQualities[routeIdx]
+		));
 	}
 
 	/**
@@ -74,21 +86,21 @@ public class Solution implements Iterable<Node[]> {
 	public Node[] getGiantRoute() {
 		if(routes.length == 0)
 			return new Node[0];
-		
+
 		List<Node> giantRoute = new ArrayList<>();
 		for (Node[] route : routes) {
 			for (int i = 0; i < route.length - 1; i++) {
 				giantRoute.add(route[i]);
 			}
 		}
-		
+
 		for (int i = routes.length - 1; i >= 0; i--) {
 			if(routes[i].length > 0) {
 				giantRoute.add(routes[i][routes[i].length - 1]);
 				break;
 			}
 		}
-		
+
 		return giantRoute.toArray(new Node[0]);
 	}
 
@@ -101,7 +113,7 @@ public class Solution implements Iterable<Node[]> {
 			routes = new Node[0][0];
 			return;
 		}
-		
+
 		List<List<Node>> list = new ArrayList<>();
 		List<Node> currentRoute = new ArrayList<>();
 		currentRoute.add(giantRoute[0]);
@@ -112,10 +124,10 @@ public class Solution implements Iterable<Node[]> {
 				currentRoute.add(lastDepot);
 				list.add(currentRoute);
 				currentRoute = new ArrayList<>();
-				
+
 				if(i < giantRoute.length - 1)
 					currentRoute.add(currentNode);
-				
+
 				lastDepot = currentNode;
 			} else {
 				currentRoute.add(currentNode);
@@ -123,7 +135,7 @@ public class Solution implements Iterable<Node[]> {
 		}
 		if(currentRoute.size() > 0)
 			list.add(currentRoute);
-		
+
 		routes = new Node[list.size()][];
 		routeQualities = new Quality[list.size()];
 		for (int i = 0; i < list.size(); i++) {
@@ -138,7 +150,7 @@ public class Solution implements Iterable<Node[]> {
 
 		Node[][] copyRoutes = new Node[routes.length][];
 		for (int i = 0; i < routes.length; i++)
-			copyRoutes[i] = Arrays.copyOf(routes[i], routes[i].length);		
+			copyRoutes[i] = Arrays.copyOf(routes[i], routes[i].length);
 		solution.routes = copyRoutes;
 
 		solution.routeQualities = new Quality[routeQualities.length];
@@ -170,5 +182,6 @@ public class Solution implements Iterable<Node[]> {
 		for (RouteQuality invalidatedQuality : invalidatedRoutesQualities) {
 			setRouteQuality(invalidatedQuality.getRouteIdx(), invalidatedQuality);
 		}
+		invalidatedRoutesQualities.clear();
 	}
 }

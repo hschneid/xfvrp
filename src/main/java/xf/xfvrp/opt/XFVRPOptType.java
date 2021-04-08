@@ -36,6 +36,7 @@ public enum XFVRPOptType {
 	SWAPSEGMENT_WITH_INVERT(XFVRPSwapSegmentWithInvert.class),
 	SWAPSEGMENT_EQ(XFVRPSwapSegmentEqual.class),
 	RELOCATE(XFVRPRelocate.class),
+	RELOCATE2(xf.xfvrp.opt.improve.routebased.XFVRPRelocate.class),
 	OR_OPT(XFVRPOrOpt.class),
 	PATH_RELOCATE(XFVRPPathMove.class),
 	OPT3(XFVRP3Opt.class),

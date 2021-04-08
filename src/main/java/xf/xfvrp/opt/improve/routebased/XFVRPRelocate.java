@@ -34,6 +34,8 @@ public class XFVRPRelocate extends XFVRPOptImpBase {
 	 */
 	@Override
 	public Quality improve(final Solution solution, Quality bestResult) throws XFVRPException {
+		checkIt(solution);
+
 		List<float[]> improvingStepList = new ArrayList<>();
 
 		search(solution.getRoutes(), improvingStepList);
