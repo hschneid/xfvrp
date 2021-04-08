@@ -1,5 +1,5 @@
 [![MIT License](https://img.shields.io/apm/l/atomic-design-ui.svg?)](https://github.com/tterb/atomic-design-ui/blob/master/LICENSEs)
-[![BCH compliance](https://bettercodehub.com/edge/badge/hschneid/xflp?branch=master)](https://bettercodehub.com/)
+[![BCH compliance](https://bettercodehub.com/edge/badge/hschneid/xfvrp?branch=master)](https://bettercodehub.com/)
 ![alt text](https://img.shields.io/static/v1?label=version&message=11.2.0&color=-)
 
 xfvrp
@@ -7,7 +7,7 @@ xfvrp
 
 There are a lot of solvers for the Vehicle Routing Problem (VRP) on github. Some are good at certain features (like CVRP or VRPTW) and some are quite complex.
 
-xfvrp is a fast and easy solver for Rich Vehicle Routing Problems like
+xfvrp is a fast and easy-to-use solver for Rich Vehicle Routing Problems like
 - Multi capacities
 - Multi time windows
 - Multi depots
@@ -52,6 +52,8 @@ As a general purpose solver, XFVRP is not fully compatable with single problem s
 - Added benchmark section in Readme
 - Added benchmark for VRPTW with large instances to repo (more will be added in future)
 - Minor cleanups in code
+- First route-based neighborhood search
+  - Increased performance by ca. 34% (tested on 60 large VRPTW instances)
 
 ### 11.1.0
 - Cleanup of repository
