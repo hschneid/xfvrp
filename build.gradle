@@ -117,11 +117,12 @@ signing {
 	sign publishing.publications.maven
 }
 
-spotbugsMain.onlyIf { false }
+spotbugsMain.onlyIf { t -> !t.name.equals("build") }
 spotbugsTest.onlyIf { false }
 
 // Example to configure HTML report
 spotbugsMain {
+	ignoreFailures = true
 	reports {
 		html {
 			enabled = true
