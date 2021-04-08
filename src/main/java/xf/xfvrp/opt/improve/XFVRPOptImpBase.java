@@ -66,25 +66,23 @@ public abstract class XFVRPOptImpBase extends XFVRPOptBase {
 	 * @see xf.xfvrp.base.XFVRPBase#execute(xf.xfvrp.opt.Solution)
 	 */
 	@Override
-	public Solution execute(Solution giantRoute) throws XFVRPException {
+	public Solution execute(Solution solution) throws XFVRPException {
 		// Evaluate current solution
-		Quality bestResult = check(giantRoute);
+		Quality bestResult = check(solution);
 
 		// Search for improvements and apply them as long as there are improvements or enough time left
 		long startTime = System.currentTimeMillis();
-		while((System.currentTimeMillis() - startTime)/1000.0 < model.getParameter().getMaxRunningTimeInSec()) {
-			Quality result = improve(giantRoute, bestResult);
+		while((System.currentTimeMillis() - startTime) / 1000.0 < model.getParameter().getMaxRunningTimeInSec()) {
+			Quality result = improve(solution, bestResult);
 
 			if (result == null)
 				break;
-
-			//			statusManager.fireMessage(StatusCode.RUNNING1, this.getClass().getName() + " - Found improve: " + result.getCost() + " (" + (bestResult.getCost() - result.getCost()) + ") Best: "+bestResult.getCost());
 
 			bestResult = result;
 		}
 
 		// Normalize resulting solution - Remove empty routes
-		return NormalizeSolutionService.normalizeRoute(giantRoute, model);
+		return NormalizeSolutionService.normalizeRoute(solution, model);
 	}
 
 	/**

@@ -181,13 +181,7 @@ public abstract class XFVRPOptBase extends XFVRPBase<XFVRPModel> {
 	 */
 	protected void sort(List<float[]> list, final int position) {
 		// Sort descending for potential
-		Collections.sort(list, 
-				(o1, o2) -> {
-					if(o1[position] > o2[position]) return -1;
-					if(o1[position] < o2[position]) return 1;
-					return 0;
-				}
-		);
+		list.sort((o1, o2) -> Float.compare(o2[position], o1[position]));
 	}
 
 	/**
@@ -206,5 +200,53 @@ public abstract class XFVRPOptBase extends XFVRPBase<XFVRPModel> {
 	 */
 	protected float getDistanceForOptimization(Node n1, Node n2) {
 		return model.getDistanceForOptimization(n1, n2);
+	}
+
+	/**
+	 * Moves the src-node from its position in src-route
+	 * before the dst-node in dst-route. src-route can be equal to dst-route.
+	 */
+	protected void move2(Solution solution, int srcRouteIdx, int dstRouteIdx, int srcPos, int dstPos) throws XFVRPException {
+		if(srcPos == 0)
+			throw new XFVRPException(XFVRPExceptionType.ILLEGAL_ARGUMENT, "First node in route cannot be moved");
+		if(dstPos == 0)
+			throw new XFVRPException(XFVRPExceptionType.ILLEGAL_ARGUMENT, "It is not possible to insert a node before first node of route");
+		if(srcRouteIdx == dstRouteIdx && (srcPos == dstPos || dstPos - srcPos == 1))
+			return;
+
+		if(srcRouteIdx != dstRouteIdx) {
+			Node[] srcRoute = solution.getRoutes()[srcRouteIdx];
+			Node[] dstRoute = solution.getRoutes()[dstRouteIdx];
+			solution.setRoute(srcRouteIdx, remove(srcRoute, srcPos));
+			solution.setRoute(dstRouteIdx, addBefore(dstRoute, srcRoute[srcPos], dstPos));
+		} else {
+			Node[] route = solution.getRoutes()[srcRouteIdx];
+			Node node = route[srcPos];
+			if(srcPos < dstPos) {
+				System.arraycopy(route,srcPos + 1, route, srcPos, dstPos - srcPos);
+				route[dstPos - 1] = node;
+			} else {
+				System.arraycopy(route, dstPos, route, dstPos + 1, srcPos - dstPos);
+				route[dstPos] = node;
+			}
+		}
+	}
+
+	private Node[] remove(Node[] orig, int pos) {
+		Node[] arr = new Node[orig.length - 1];
+		System.arraycopy(orig,0, arr, 0, pos);
+		System.arraycopy(orig,pos + 1, arr, pos, orig.length - pos - 1);
+
+		return arr;
+	}
+
+	private Node[] addBefore(Node[] orig, Node node, int pos) {
+		Node[] arr = new Node[orig.length + 1];
+
+		System.arraycopy(orig,0, arr, 0, pos);
+		arr[pos] = node;
+		System.arraycopy(orig, pos, arr, pos + 1, orig.length - pos);
+
+		return arr;
 	}
 }
