@@ -11,8 +11,7 @@ import java.util.Objects;
 public class FeasibilityAnalzer {
 
 	public static void checkFeasibility(Node[] route) throws XFVRPException {
-		// Es kann hier leere Touren geben, weil es gelöschte Touren geben kann! :-(
-		if(route == null || route.length == 0)
+		if(route == null)
 			throw new XFVRPException(XFVRPExceptionType.ILLEGAL_STATE, "Empty route is not allowed to report");
 		if(route[0].getSiteType() != SiteType.DEPOT)
 			throw new XFVRPException(XFVRPExceptionType.ILLEGAL_STATE, "First node in giant route is not a depot.");

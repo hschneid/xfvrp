@@ -2,7 +2,9 @@ package xf.xfvrp.opt;
 
 import com.sun.istack.NotNull;
 import xf.xfvrp.base.Node;
+import xf.xfvrp.base.Quality;
 import xf.xfvrp.base.SiteType;
+import xf.xfvrp.base.quality.RouteQuality;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,13 +14,28 @@ import java.util.List;
 public class Solution implements Iterable<Node[]> {
 
 	private Node[][] routes = new Node[1][0];
+	private Quality[] routeQualities = new Quality[1];
+	private Quality totalQuality = new Quality(null);
+
+	private List<RouteQuality> invalidatedRoutesQualities = new ArrayList<>();
 	
 	public Node[][] getRoutes() {
 		return routes;
 	}
-	
+
+	public Quality[] getRouteQualities() {
+		return routeQualities;
+	}
+
+	public Quality getQuality() {
+		return totalQuality;
+	}
+
 	public void deleteRoute(int routeIndex) {
 		routes[routeIndex] = new Node[0];
+
+		totalQuality.sub(routeQualities[routeIndex]);
+		routeQualities[routeIndex] = new Quality(null);
 	}
 	
 	public void addRoute(Node[] newRoute) {
@@ -31,12 +48,25 @@ public class Solution implements Iterable<Node[]> {
 		
 		routes = Arrays.copyOf(routes, routes.length + 1);
 		routes[routes.length - 1] = newRoute;
+
+		routeQualities = Arrays.copyOf(routeQualities, routeQualities.length + 1);
+		routeQualities[routeQualities.length - 1] = new Quality(null);
 	}
 	
 	public void setRoute(int routeIndex, Node[] route) {
 		routes[routeIndex] = route;
 	}
 
+	/**
+	 * Updates the quality of a certain route.
+	 *
+	 * This means, the sub the current quality and add the new one.
+	 */
+	public void setRouteQuality(int routeIndex, Quality quality) {
+		totalQuality.sub(routeQualities[routeIndex]);
+		routeQualities[routeIndex] = quality;
+		totalQuality.add(quality);
+	}
 
 	/**
 	 * @return the giantRoute
@@ -95,17 +125,27 @@ public class Solution implements Iterable<Node[]> {
 			list.add(currentRoute);
 		
 		routes = new Node[list.size()][];
-		for (int i = 0; i < list.size(); i++)
+		routeQualities = new Quality[list.size()];
+		for (int i = 0; i < list.size(); i++) {
 			routes[i] = list.get(i).toArray(new Node[0]);
+			routeQualities[i] = new Quality(null);
+		}
+		totalQuality = new Quality(null);
 	}
 
 	public Solution copy() {
 		Solution solution = new Solution();
+
 		Node[][] copyRoutes = new Node[routes.length][];
 		for (int i = 0; i < routes.length; i++)
 			copyRoutes[i] = Arrays.copyOf(routes[i], routes[i].length);		
 		solution.routes = copyRoutes;
-		
+
+		solution.routeQualities = new Quality[routeQualities.length];
+		for (int i = 0; i < routeQualities.length; i++)
+			solution.routeQualities[i] = new Quality(routeQualities[i]);
+		solution.totalQuality = new Quality(totalQuality);
+
 		return solution;
 	}
 
@@ -113,5 +153,22 @@ public class Solution implements Iterable<Node[]> {
 	@Override
 	public Iterator<Node[]> iterator() {
 		return new SolutionRoutesIterator(routes);
+	}
+
+	/**
+	 * Tells the solution, that the search is over and invalidated qualities can be purged.
+	 */
+	public void fixateQualities() {
+		invalidatedRoutesQualities.clear();
+	}
+
+	/**
+	 * Means, that the routes changed without reevaluation. The route qualities
+	 * must be reset to the old value.
+	 */
+	public void resetQualities() {
+		for (RouteQuality invalidatedQuality : invalidatedRoutesQualities) {
+			setRouteQuality(invalidatedQuality.getRouteIdx(), invalidatedQuality);
+		}
 	}
 }

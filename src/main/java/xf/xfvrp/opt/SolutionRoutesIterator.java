@@ -35,7 +35,7 @@ public class SolutionRoutesIterator implements Iterator<Node[]> {
 		
 		if(currentIndex == length)
 			return null;
-		
+
 		return routes[currentIndex];
 	}
 }

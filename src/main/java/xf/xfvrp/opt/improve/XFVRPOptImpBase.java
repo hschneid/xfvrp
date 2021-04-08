@@ -126,4 +126,19 @@ public abstract class XFVRPOptImpBase extends XFVRPOptBase {
 
 		return null;
 	}
+
+	/**
+	 * Check a solution for 2 routes
+	 */
+	protected Quality checkIt(Solution solution, int routeIdxA, int routeIdxB) throws XFVRPException {
+		// Evaluate the costs and restrictions (penalties) of a giant route
+		Quality result = check(solution, routeIdxA, routeIdxB);
+
+		// Only valid solutions are allowed.
+		if(result.getPenalty() == 0) {
+			return result;
+		}
+
+		return null;
+	}
 }

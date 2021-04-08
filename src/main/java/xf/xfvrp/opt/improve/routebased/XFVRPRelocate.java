@@ -45,11 +45,14 @@ public class XFVRPRelocate extends XFVRPOptImpBase {
 		for (float[] val : improvingStepList) {
 			changeSolution(solution, val);
 
-			Quality result = checkIt(solution);
-			if(result != null && result.getFitness() < bestResult.getFitness())
+			Quality result = checkIt(solution, (int)val[0], (int)val[1]);
+			if(result != null && result.getFitness() < bestResult.getFitness()) {
+				solution.fixateQualities();
 				return result;
+			}
 
 			resetSolution(solution, val);
+			solution.resetQualities();
 		}
 
 		return null;

@@ -76,7 +76,7 @@ class XFVRPILSSpec extends Specification {
 		when:
 		def result = service.checkTerminationCriteria(16)
 		then:
-		result == false
+		!result
 	}
 
 	def "Check termination - Time"() {
@@ -95,7 +95,7 @@ class XFVRPILSSpec extends Specification {
 		def result = service.checkTerminationCriteria(1)
 
 		then:
-		result == false
+		!result
 	}
 
 	def "Check termination - Okay"() {
@@ -112,7 +112,7 @@ class XFVRPILSSpec extends Specification {
 		def result = service.checkTerminationCriteria(1)
 
 		then:
-		result == true
+		result
 	}
 
 	def "Local search"() {

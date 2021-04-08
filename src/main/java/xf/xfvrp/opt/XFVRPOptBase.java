@@ -8,7 +8,6 @@ import xf.xfvrp.base.exception.XFVRPException;
 import xf.xfvrp.base.exception.XFVRPExceptionType;
 import xf.xfvrp.opt.evaluation.EvaluationService;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -190,7 +189,14 @@ public abstract class XFVRPOptBase extends XFVRPBase<XFVRPModel> {
 	public Quality check(Solution solution) throws XFVRPException {
 		return evaluationService.check(solution, model);
 	}
-	
+
+	/**
+	 * Processes a check evaluation for two routes.
+	 */
+	public Quality check(Solution solution, int routeIdxA, int routeIdxB) throws XFVRPException {
+		return evaluationService.check(solution, model, routeIdxA, routeIdxB);
+	}
+
 	public Random getRandom() {
 		return rand;
 	}
