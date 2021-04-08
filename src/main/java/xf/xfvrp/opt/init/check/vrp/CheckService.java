@@ -127,8 +127,12 @@ public class CheckService {
 		return true;
 	}
 
-	private void checkBlock(SolutionBuilderDataBag solutionBuilderDataBag, List<Node> invalidNodes, XFVRPModel model,
-			int blockIdx, List<Node> nodesOfBlock) {
+	private void checkBlock(
+			SolutionBuilderDataBag solutionBuilderDataBag,
+			List<Node> invalidNodes,
+			XFVRPModel model,
+			int blockIdx,
+			List<Node> nodesOfBlock) throws XFVRPException {
 		if(blockIdx != BlockNameConverter.DEFAULT_BLOCK_IDX) {
 			if(!checkBlock(nodesOfBlock, model)) {
 				solutionBuilderDataBag.getValidCustomers().removeAll(nodesOfBlock);
@@ -160,7 +164,7 @@ public class CheckService {
 	 * Checks the block constraints like
 	 * the block can be set into a single route without constraint violation
 	 */
-	private boolean checkBlock(List<Node> nodesOfBlock, XFVRPModel model) {
+	private boolean checkBlock(List<Node> nodesOfBlock, XFVRPModel model) throws XFVRPException {
 		// A block can be allocated to each depot in multi depot problems
 		for (int i = 0; i < model.getNbrOfDepots(); i++) {
 

@@ -1,5 +1,7 @@
 package xf.xfvrp.base.xfvrp;
 
+import xf.xfvrp.base.exception.XFVRPException;
+import xf.xfvrp.base.exception.XFVRPExceptionType;
 import xf.xfvrp.base.fleximport.*;
 import xf.xfvrp.base.metric.Metric;
 import xf.xfvrp.base.monitor.StatusCode;
@@ -111,10 +113,10 @@ public class XFVRP_Data extends XFVRP_Base {
 	 * 
 	 * @param capacity Upper bound of amount, which can be transported on a route.
 	 */
-	public void setCapactiy(float capacity) {
+	public void setCapactiy(float capacity) throws XFVRPException {
 		if(capacity <= 0) {
 			statusManager.fireMessage(StatusCode.ABORT, "Parameter for capacity must be greater than zero.");
-			throw new IllegalStateException("Parameter for capacity must be greater than zero.");
+			throw new XFVRPException(XFVRPExceptionType.ILLEGAL_INPUT, "Parameter for capacity must be greater than zero.");
 		}
 
 		// Zur Sicherheit erstmal alles entfernen
@@ -132,10 +134,10 @@ public class XFVRP_Data extends XFVRP_Base {
 	 * 
 	 * @param maxRouteDuration Upper bound of time, which can be traveled on a route.
 	 */
-	public void setMaxRouteDuration(int maxRouteDuration) {
+	public void setMaxRouteDuration(int maxRouteDuration) throws XFVRPException {
 		if(maxRouteDuration <= 0) {
 			statusManager.fireMessage(StatusCode.ABORT, "Parameter maxRouteDuration must be greater than zero.");
-			throw new IllegalStateException("Parameter maxRouteDuration must be greater than zero.");
+			throw new XFVRPException(XFVRPExceptionType.ILLEGAL_INPUT, "Parameter maxRouteDuration must be greater than zero.");
 		}
 		// Zur Sicherheit erstmal alles entfernen
 		importer.clearVehicles();
@@ -150,12 +152,11 @@ public class XFVRP_Data extends XFVRP_Base {
 	 * all already inserted vehicles will be removed and replaced
 	 * by a default value.
 	 * 
-	 * @param maxNumberOfRoutes
 	 */
-	public void setMaxNumberOfRoutes(int maxNumberOfRoutes) {
+	public void setMaxNumberOfRoutes(int maxNumberOfRoutes) throws XFVRPException {
 		if(maxNumberOfRoutes <= 0) {
 			statusManager.fireMessage(StatusCode.ABORT, "Parameter maxNumberOfRoutes must be greater than zero.");
-			throw new IllegalStateException("Parameter maxNumberOfRoutes must be greater than zero.");
+			throw new XFVRPException(XFVRPExceptionType.ILLEGAL_INPUT, "Parameter maxNumberOfRoutes must be greater than zero.");
 		}
 		// Zur Sicherheit erstmal alles entfernen
 		importer.clearVehicles();
@@ -170,12 +171,11 @@ public class XFVRP_Data extends XFVRP_Base {
 	 * all already inserted vehicles will be removed and replaced
 	 * by a default value.
 	 * 
-	 * @param maxNbrOfStops
 	 */
-	public void setMaxNumberOfStopsPerRoute(int maxNbrOfStops) {
+	public void setMaxNumberOfStopsPerRoute(int maxNbrOfStops) throws XFVRPException {
 		if(maxNbrOfStops <= 1) {
 			statusManager.fireMessage(StatusCode.ABORT, "Parameter maxNbrOfStops must be greater than zero.");
-			throw new IllegalStateException("Parameter maxNbrOfStops must be greater than zero.");
+			throw new XFVRPException(XFVRPExceptionType.ILLEGAL_INPUT, "Parameter maxNbrOfStops must be greater than zero.");
 		}
 		// Zur Sicherheit erstmal alles entfernen
 		importer.clearVehicles();

@@ -4,6 +4,7 @@ import xf.xfvrp.base.Node;
 import xf.xfvrp.base.Quality;
 import xf.xfvrp.base.SiteType;
 import xf.xfvrp.base.XFVRPModel;
+import xf.xfvrp.base.exception.XFVRPException;
 import xf.xfvrp.opt.Solution;
 import xf.xfvrp.opt.XFVRPOptBase;
 import xf.xfvrp.opt.improve.XFPDPRelocate;
@@ -13,10 +14,10 @@ import java.util.NoSuchElementException;
 public class XFPDPRandomChangeService extends XFVRPOptBase implements XFRandomChangeService {
 
 	private static final int MAX_TRIES_CHOOSING = 100;
-	private int NBR_ACCEPTED_INVALIDS = 100;
+	private final int NBR_ACCEPTED_INVALIDS = 100;
 	private int NBR_OF_VARIATIONS = 5;
 
-	private XFPDPRelocate operator = new XFPDPRelocate();
+	private final XFPDPRelocate operator = new XFPDPRelocate();
 
 	/*
 	 * (non-Javadoc)
@@ -32,9 +33,6 @@ public class XFPDPRandomChangeService extends XFVRPOptBase implements XFRandomCh
 	/**
 	 * This perturb routine relocates single nodes iterativly. The nodes are
 	 * selected randomly.
-	 * 
-	 * @param solution
-	 * @return changed solution
 	 */
 	@Override
 	protected Solution execute(Solution solution) {
@@ -63,7 +61,7 @@ public class XFPDPRandomChangeService extends XFVRPOptBase implements XFRandomCh
 
 					cnt++;
 				}
-			} catch (NoSuchElementException e) {
+			} catch (NoSuchElementException | XFVRPException e) {
 				// Means, that one of the choose methods could not find a valid variation parameter.
 			}
 		}
@@ -71,7 +69,7 @@ public class XFPDPRandomChangeService extends XFVRPOptBase implements XFRandomCh
 		return solution;
 	}
 
-	private boolean checkMove(Choice choice, Solution solution) {
+	private boolean checkMove(Choice choice, Solution solution) throws XFVRPException {
 		operator.change(solution, choice.toArray());
 
 		Quality q = check(solution);
@@ -126,11 +124,6 @@ public class XFPDPRandomChangeService extends XFVRPOptBase implements XFRandomCh
 		choice.dstPickupIdx = dstPickupIdx;
 	}
 
-	/**
-	 * 
-	 * @param choice
-	 * @param solution
-	 */
 	private void chooseDstDelivery(Choice choice, Solution solution) throws NoSuchElementException {
 		Node[] giantRoute = solution.getGiantRoute();
 

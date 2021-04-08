@@ -3,24 +3,25 @@ package xf.xfvrp.opt.improve;
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.Quality;
 import xf.xfvrp.base.SiteType;
+import xf.xfvrp.base.exception.XFVRPException;
 import xf.xfvrp.opt.Solution;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/** 
+/**
  * Copyright (c) 2012-present Holger Schneider
  * All rights reserved.
  *
  * This source code is licensed under the MIT License (MIT) found in the
  * LICENSE file in the root directory of this source tree.
  *
- * 
+ *
  * This neighborhood search produces improved solutions by
  * exchanging two segments of the giant tour. The size of each
  * segments may be between 1 and 4. All nodes of a segment must 
  * be placed on one route.
- * 
+ *
  * @author hschneid
  *
  */
@@ -39,7 +40,7 @@ public class XFVRPSwapSegmentWithInvert extends XFVRPOptImpBase {
 	 * @see de.fhg.iml.vlog.xftour.xfvrp.opt.improve.XFVRPOptImpBase#improve(de.fhg.iml.vlog.xftour.model.XFNode[], de.fhg.iml.vlog.xftour.model.Quality)
 	 */
 	@Override
-	public Quality improve(final Solution solution, Quality bestResult) {
+	public Quality improve(final Solution solution, Quality bestResult) throws XFVRPException {
 		Node[] giantRoute = solution.getGiantRoute();
 
 		List<float[]> improvingStepList = search(giantRoute);
@@ -64,9 +65,6 @@ public class XFVRPSwapSegmentWithInvert extends XFVRPOptImpBase {
 	/**
 	 * Searches all improving valid steps in search space for
 	 * a VRP with multiple depots.
-	 * 
-	 * @param giantRoute
-	 * @return improvingStepList
 	 */
 	private List<float[]> search(Node[] giantRoute) {
 		List<float[]> improvingStepList = new ArrayList<>();
@@ -112,16 +110,6 @@ public class XFVRPSwapSegmentWithInvert extends XFVRPOptImpBase {
 		return improvingStepList;
 	}
 
-	/**
-	 * 
-	 * @param giantRoute
-	 * @param depotMarkArr
-	 * @param a
-	 * @param b
-	 * @param la
-	 * @param lb
-	 * @param impList
-	 */
 	private void findImprovements(Node[] giantRoute, int[] depotMarkArr, int a, int b, int la, int lb, List<float[]> impList) {
 		int aa = a + la;
 		int bb = b + lb;
@@ -157,57 +145,57 @@ public class XFVRPSwapSegmentWithInvert extends XFVRPOptImpBase {
 						getDistance(giantRoute[b - 1], giantRoute[a], markB) +
 						getDistance(giantRoute[aa], giantRoute[bb + 1], markB));
 			}
-			if(val > epsilon) 
+			if(val > epsilon)
 				impList.add(new float[]{a, b, la, lb, NO_INVERT, val});
 		}
 		// BOTH INVERT
-		if(isInvertationActive) {	
+		if(isInvertationActive) {
 			if((b - aa) == 1) {
-				val = old - (getDistance(giantRoute[a - 1], giantRoute[bb], markA) + 
+				val = old - (getDistance(giantRoute[a - 1], giantRoute[bb], markA) +
 						getDistance(giantRoute[b], giantRoute[aa], markA) +
 						getDistance(giantRoute[a], giantRoute[bb + 1], markB));
 			} else {
-				val = old - (getDistance(giantRoute[a - 1], giantRoute[bb], markA) + 
+				val = old - (getDistance(giantRoute[a - 1], giantRoute[bb], markA) +
 						getDistance(giantRoute[b], giantRoute[aa + 1], markA) +
 						getDistance(giantRoute[b - 1], giantRoute[aa], markB) +
 						getDistance(giantRoute[a], giantRoute[bb + 1], markB));
 			}
-			if(val > epsilon) 
+			if(val > epsilon)
 				impList.add(new float[]{a, b, la, lb, BOTH_INVERT, val});
 		}
 		// A INVERT
 		if(isInvertationActive) {
 			if((b - aa) == 1) {
-				val = old - (getDistance(giantRoute[a - 1], giantRoute[b], markA) + 
+				val = old - (getDistance(giantRoute[a - 1], giantRoute[b], markA) +
 						getDistance(giantRoute[bb], giantRoute[aa],markA) +
 						getDistance(giantRoute[a], giantRoute[bb + 1], markB));
 			} else {
-				val = old - (getDistance(giantRoute[a - 1], giantRoute[b], markA) + 
+				val = old - (getDistance(giantRoute[a - 1], giantRoute[b], markA) +
 						getDistance(giantRoute[bb], giantRoute[aa + 1], markA) +
 						getDistance(giantRoute[b - 1], giantRoute[aa], markB) +
 						getDistance(giantRoute[a], giantRoute[bb + 1], markB));
 			}
-			if(val > epsilon) 
+			if(val > epsilon)
 				impList.add(new float[]{a, b, la, lb, A_INVERT, val});
 		}
 		// B INVERT
 		if(isInvertationActive) {
 			if((b - aa) == 1) {
-				val = old - (getDistance(giantRoute[a - 1], giantRoute[bb], markA) + 
+				val = old - (getDistance(giantRoute[a - 1], giantRoute[bb], markA) +
 						getDistance(giantRoute[b], giantRoute[a], markA) +
 						getDistance(giantRoute[aa], giantRoute[bb + 1], markB));
 			} else {
-				val = old - (getDistance(giantRoute[a - 1], giantRoute[bb], markA) + 
+				val = old - (getDistance(giantRoute[a - 1], giantRoute[bb], markA) +
 						getDistance(giantRoute[b], giantRoute[aa + 1], markA) +
 						getDistance(giantRoute[b - 1], giantRoute[a], markB) +
 						getDistance(giantRoute[aa], giantRoute[bb + 1], markB));
 			}
-			if(val > epsilon) 
+			if(val > epsilon)
 				impList.add(new float[]{a, b, la, lb, B_INVERT, val});
 		}
 	}
 
-	private void change(Solution solution, float[] val) {
+	private void change(Solution solution, float[] val) throws XFVRPException {
 		int a = (int) val[0];
 		int b = (int) val[1];
 		int l = (int) val[2];
@@ -218,7 +206,7 @@ public class XFVRPSwapSegmentWithInvert extends XFVRPOptImpBase {
 		exchange(solution, a, b, l, ll);
 	}
 
-	private void reverseChange(Solution solution, float[] val) {
+	private void reverseChange(Solution solution, float[] val) throws XFVRPException {
 		int a = (int) val[0];
 		int b = (int) val[1];
 		int l = (int) val[2];
@@ -229,40 +217,31 @@ public class XFVRPSwapSegmentWithInvert extends XFVRPOptImpBase {
 		invert(solution, a, b, l, ll, i);
 	}
 
-	/**
-	 * 
-	 * @param giantRoute
-	 * @param a
-	 * @param b
-	 * @param la
-	 * @param lb
-	 * @param i
-	 */
 	private void invert(Solution solution, int a, int b, int la, int lb, int i) {
 		switch (i) {
-		case A_INVERT: {
-			swap(solution, a, a + la);
-			break;
-		}
-		case B_INVERT: {
-			swap(solution, b, b + lb);
-			break;
-		}
-		case BOTH_INVERT: {
-			swap(solution, a, a + la);
-			swap(solution, b, b + lb);
-			break;
-		}
-		default:
-			// NO_INVERT
-			break;
+			case A_INVERT: {
+				swap(solution, a, a + la);
+				break;
+			}
+			case B_INVERT: {
+				swap(solution, b, b + lb);
+				break;
+			}
+			case BOTH_INVERT: {
+				swap(solution, a, a + la);
+				swap(solution, b, b + lb);
+				break;
+			}
+			default:
+				// NO_INVERT
+				break;
 		}
 	}
 
 	public void setInvertationMode(boolean isInvertationActive) {
 		this.isInvertationActive = isInvertationActive;
 	}
-	
+
 	public void setEqualSegmentLength(boolean isSegmentLengthEqual) {
 		this.isSegmentLengthEqual = isSegmentLengthEqual;
 	}

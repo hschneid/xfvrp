@@ -1,6 +1,8 @@
 package xf.xfvrp.opt.construct.insert;
 
 import xf.xfvrp.base.*;
+import xf.xfvrp.base.exception.XFVRPException;
+import xf.xfvrp.base.exception.XFVRPExceptionType;
 import xf.xfvrp.opt.Solution;
 import xf.xfvrp.opt.XFVRPOptBase;
 
@@ -36,7 +38,7 @@ public class XFVRPFirstBestInsert extends XFVRPOptBase {
 	 * @see de.fhg.iml.vlog.xftour.model.XFBase#execute(de.fhg.iml.vlog.xftour.model.XFNode[])
 	 */
 	@Override
-	public Solution execute(Solution solution) {
+	public Solution execute(Solution solution) throws XFVRPException {
 		List<Node> customers = getCustomers();
 
 		// Init with empty route (attention for multiple depots)
@@ -66,7 +68,7 @@ public class XFVRPFirstBestInsert extends XFVRPOptBase {
 	 * @param unplannedCustomers List of unplanned customers
 	 * @return Giant route with all customers inserted
 	 */
-	public Node[] execute(Node[] giantRoute, List<Node> unplannedCustomers) {
+	public Node[] execute(Node[] giantRoute, List<Node> unplannedCustomers) throws XFVRPException {
 		// Randomized ordering of customer insertion
 		Collections.shuffle(unplannedCustomers, rand);
 
@@ -87,13 +89,13 @@ public class XFVRPFirstBestInsert extends XFVRPOptBase {
 	 * @param customers List of unplanned customers
 	 * @return Giant route with all customers inserted
 	 */
-	private Node[] insertNodes(Node[] giantRoute, List<Node> customers) {
+	private Node[] insertNodes(Node[] giantRoute, List<Node> customers) throws XFVRPException {
 		for (Node customer : customers) {
 			// Get all feasable insertion points on current giant route
 			List<float[]> insertPoints = evaluate(giantRoute, customer);
 
 			// Sort for lowest insertion costs
-			insertPoints.sort( (a,b) -> {return (int) ((a[1] - b[1]) * 1000f);});
+			insertPoints.sort( (a,b) -> (int) ((a[1] - b[1]) * 1000f));
 
 			// Prepare new solution (additional space for new customer)
 			Node[] newGiantRoute = new Node[giantRoute.length + 1];
@@ -130,7 +132,7 @@ public class XFVRPFirstBestInsert extends XFVRPOptBase {
 	 * @param giantRoute Current solution of planned routes
 	 * @return New solution of planned routes
 	 */
-	private Node[] reinsertNodes(Node[] giantRoute, List<Node> customers) {
+	private Node[] reinsertNodes(Node[] giantRoute, List<Node> customers) throws XFVRPException {
 		// New solutions will contain in first step one customer less
 		Node[] reducedGiantRoute = new Node[giantRoute.length - 1];
 
@@ -178,13 +180,12 @@ public class XFVRPFirstBestInsert extends XFVRPOptBase {
 	 * @param customer The customer node which shall be inserted
 	 * @return List of evaluated insertion points (0 = index of position 1 = insertion cost)
 	 */
-	private List<float[]> evaluate(Node[] giantRoute, Node customer) {
+	private List<float[]> evaluate(Node[] giantRoute, Node customer) throws XFVRPException {
 		List<int[]> routes = getRoutes(giantRoute);
 
 		List<float[]> insertPoints = new ArrayList<>();
 
-		routes.forEach(routeStats -> {
-			// Create partial route with one additional empty slot
+		for (int[] routeStats : routes) {// Create partial route with one additional empty slot
 			Node[] route = createEvaluationRoute(giantRoute, routeStats);
 
 			// Check for feasibility
@@ -192,10 +193,10 @@ public class XFVRPFirstBestInsert extends XFVRPOptBase {
 			Solution ss = new Solution();
 			ss.setGiantRoute(route);
 			Quality currentRouteQuality = check(ss);
-			
+
 			// For all insert positions
 			int cnt = 1;
-			for(int p = routeStats[0] + 1; p <= routeStats[1]; p++) {
+			for (int p = routeStats[0] + 1; p <= routeStats[1]; p++) {
 				// Insert new node in empty slot
 				route[cnt] = customer;
 
@@ -203,7 +204,7 @@ public class XFVRPFirstBestInsert extends XFVRPOptBase {
 				Solution solution = new Solution();
 				solution.setGiantRoute(route);
 				Quality newRouteQuality = check(solution);
-				if(newRouteQuality != null && newRouteQuality.getPenalty() == 0) {
+				if (newRouteQuality != null && newRouteQuality.getPenalty() == 0) {
 					insertPoints.add(new float[]{p, newRouteQuality.getCost() - currentRouteQuality.getCost()});
 				}
 
@@ -211,7 +212,7 @@ public class XFVRPFirstBestInsert extends XFVRPOptBase {
 				route[cnt] = route[cnt + 1];
 				cnt++;
 			}
-		});
+		}
 
 		return insertPoints;
 	}
@@ -238,9 +239,11 @@ public class XFVRPFirstBestInsert extends XFVRPOptBase {
 	 * @param customer Removing customer node
 	 * @return Giant route without the customer node
 	 */
-	private Node[] removeCustomer(Node[] giantRoute, Node[] reducedGiantRoute, Node customer) {
-		OptionalInt posObj = IntStream.range(0, giantRoute.length).filter(i -> giantRoute[i] == customer).findFirst();
-		int pos = posObj.getAsInt();
+	private Node[] removeCustomer(Node[] giantRoute, Node[] reducedGiantRoute, Node customer) throws XFVRPException {
+		OptionalInt posObj = IntStream.range(0, giantRoute.length)
+				.filter(i -> giantRoute[i] == customer)
+				.findFirst();
+		int pos = posObj.orElseThrow(() -> new XFVRPException(XFVRPExceptionType.ILLEGAL_INPUT, "Could not find customer position."));
 
 		System.arraycopy(giantRoute, 0, reducedGiantRoute, 0, pos);
 		System.arraycopy(giantRoute, pos + 1, reducedGiantRoute, pos, giantRoute.length - pos - 1);

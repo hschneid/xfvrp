@@ -2,6 +2,7 @@ package xf.xfvrp.opt.improve.ils;
 
 import xf.xfvrp.base.NormalizeSolutionService;
 import xf.xfvrp.base.Quality;
+import xf.xfvrp.base.exception.XFVRPException;
 import xf.xfvrp.base.monitor.StatusCode;
 import xf.xfvrp.opt.Solution;
 import xf.xfvrp.opt.XFVRPOptBase;
@@ -14,7 +15,7 @@ public abstract class XFILS extends XFVRPOptBase {
 	protected double[] optPropArr;
 	protected XFRandomChangeService randomChangeService;
 	
-	public Solution execute(Solution solution) {
+	public Solution execute(Solution solution) throws XFVRPException {
 		Solution bestRoute = solution.copy(); 
 		Solution bestBestTour = solution.copy();
 		Quality bestBestQ = check(solution);
@@ -42,7 +43,7 @@ public abstract class XFILS extends XFVRPOptBase {
 				bestBestTour = gT;
 			} else {
 				statusManager.fireMessage(StatusCode.RUNNING, this.getClass().getSimpleName()+" loop "+i+"\t with cost : "+q.getCost());
-				bestRoute = NormalizeSolutionService.normalizeRoute(bestRoute, model);
+				NormalizeSolutionService.normalizeRoute(bestRoute, model);
 			}
 		}
 
@@ -62,17 +63,14 @@ public abstract class XFILS extends XFVRPOptBase {
 	protected boolean checkTerminationCriteria(int loopIdx) {
 		if(loopIdx >= model.getParameter().getILSLoops())
 			return false;
-		
-		if(statusManager.getDurationSinceStartInSec() >= model.getParameter().getMaxRunningTimeInSec())
-			return false;
-		
-		return true;
+
+		return statusManager.getDurationSinceStartInSec() < model.getParameter().getMaxRunningTimeInSec();
 	}
 	
-	protected Solution localSearch(Solution solution) {
+	protected Solution localSearch(Solution solution) throws XFVRPException {
 		boolean[] processedArr = new boolean[optArr.length];
 
-		Quality q = null;
+		Quality bestQuality = null;
 		int nbrOfProcessed = 0;
 		while(nbrOfProcessed < processedArr.length) {
 			// Choose
@@ -82,9 +80,9 @@ public abstract class XFILS extends XFVRPOptBase {
 			solution = optArr[optIdx].execute(solution, model, statusManager);
 
 			// Check
-			Quality qq = check(solution);
-			if(q == null || qq.getFitness() < q.getFitness()) {
-				q = qq;
+			Quality currentQuality = check(solution);
+			if(bestQuality == null || currentQuality.getFitness() < bestQuality.getFitness()) {
+				bestQuality = currentQuality;
 				Arrays.fill(processedArr, false);
 				nbrOfProcessed = 0;
 			}

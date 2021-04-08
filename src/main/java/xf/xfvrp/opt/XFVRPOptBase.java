@@ -4,6 +4,8 @@ import xf.xfvrp.base.Node;
 import xf.xfvrp.base.Quality;
 import xf.xfvrp.base.XFVRPBase;
 import xf.xfvrp.base.XFVRPModel;
+import xf.xfvrp.base.exception.XFVRPException;
+import xf.xfvrp.base.exception.XFVRPExceptionType;
 import xf.xfvrp.opt.evaluation.EvaluationService;
 
 import java.util.Collections;
@@ -92,9 +94,11 @@ public abstract class XFVRPOptBase extends XFVRPBase<XFVRPModel> {
 	 * Moves the nodes in the range from srcStart and srcEnd, both inclusive, 
 	 * before the position dst. 
 	 */
-	protected void pathMove(Solution solution, int srcStart, int srcEnd, int dst) {
+	protected void pathMove(Solution solution, int srcStart, int srcEnd, int dst) throws XFVRPException {
 		if(srcEnd < srcStart)
-			throw new IllegalStateException();
+			throw new XFVRPException(XFVRPExceptionType.ILLEGAL_ARGUMENT,
+					String.format("Range is defined in wrong way (end is bigger than start) start=%d, end=%d", srcStart, srcEnd)
+			);
 		
 		Node[] giantTour = solution.getGiantRoute();
 		
@@ -132,10 +136,10 @@ public abstract class XFVRPOptBase extends XFVRPBase<XFVRPModel> {
 	 * starts at position b and includes lb many nodes. The two
 	 * segments must not overlap each other.
 	 */
-	protected void exchange(Solution solution, int a, int b, int la, int lb) {
+	protected void exchange(Solution solution, int a, int b, int la, int lb) throws XFVRPException {
 		if(((a < b) && (a + la) >= b) || ((b < a) && (b + lb) >= a))
-			throw new IllegalStateException("Segements are overlapping.");
-		
+			throw new XFVRPException(XFVRPExceptionType.ILLEGAL_ARGUMENT, "Segments are overlapping");
+
 		if(la == lb) {
 			for (int i = 0; i <= la; i++)
 				exchange(solution, a+i, b+i);
@@ -189,7 +193,7 @@ public abstract class XFVRPOptBase extends XFVRPBase<XFVRPModel> {
 	/**
 	 * Processes a check evaluation.
 	 */
-	public Quality check(Solution solution) {	
+	public Quality check(Solution solution) throws XFVRPException {
 		return evaluationService.check(solution, model);
 	}
 	

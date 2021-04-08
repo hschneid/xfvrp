@@ -1,5 +1,6 @@
 package xf.xfvrp.base;
 
+import xf.xfvrp.base.exception.XFVRPException;
 import xf.xfvrp.base.monitor.StatusManager;
 import xf.xfvrp.opt.Solution;
 
@@ -24,18 +25,13 @@ public abstract class XFVRPBase<M extends XFVRPModel> {
 	/**
 	 * Executes the planning or optimization method
 	 */
-	protected abstract Solution execute(Solution giantTour);
+	protected abstract Solution execute(Solution giantTour) throws XFVRPException;
 
 	/**
 	 * Sets necessary variables and 
 	 * Executes afterwards the planning or optimization method
-	 * 
-	 * @param giantRoute
-	 * @param model
-	 * @param statusManager
-	 * @return
 	 */
-	public Solution execute(Solution giantRoute, M model, StatusManager statusManager) {
+	public Solution execute(Solution giantRoute, M model, StatusManager statusManager) throws XFVRPException {
 		this.model = model;
 		this.statusManager = statusManager;
 		
@@ -44,10 +40,6 @@ public abstract class XFVRPBase<M extends XFVRPModel> {
 
 	/**
 	 * Returns the traveltime between two given XFNodes
-	 * 
-	 * @param n1
-	 * @param n2
-	 * @return
 	 */
 	public float getTime(Node n1, Node n2) {
 		return model.getTime(n1, n2);
@@ -55,10 +47,6 @@ public abstract class XFVRPBase<M extends XFVRPModel> {
 
 	/**
 	 * Returns the distance between two given XFNodes
-	 * 
-	 * @param n1
-	 * @param n2
-	 * @return
 	 */
 	public float getDistance(Node n1, Node n2) {
 		return model.getDistance(n1, n2);
@@ -68,8 +56,6 @@ public abstract class XFVRPBase<M extends XFVRPModel> {
 	 * Sets the model for next optimization directly. 
 	 * 
 	 * For standard usage use method 'execute'
-	 * 
-	 * @param model
 	 */
 	public void setModel(M model) {
 		this.model = model;
@@ -79,8 +65,6 @@ public abstract class XFVRPBase<M extends XFVRPModel> {
 	 * Sets the status manager for next optimization directly. 
 	 * 
 	 * For standard usage use method 'execute'
-	 * 
-	 * @param statusManager
 	 */
 	public void setStatusManager(StatusManager statusManager) {
 		this.statusManager = statusManager;

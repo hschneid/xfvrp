@@ -1,6 +1,7 @@
 package xf.xfvrp.opt.improve;
 
 import xf.xfvrp.base.*;
+import xf.xfvrp.base.exception.XFVRPException;
 import xf.xfvrp.opt.Solution;
 import xf.xfvrp.opt.XFVRPOptBase;
 
@@ -45,7 +46,7 @@ public abstract class XFVRPOptImpBase extends XFVRPOptBase {
 	 * If the result is null, no improvement was found and giant tour
 	 * was not changed.
 	 */
-	protected abstract Quality improve(Solution giantTour, Quality bestResult);
+	protected abstract Quality improve(Solution giantTour, Quality bestResult) throws XFVRPException;
 
 	/**
 	 * This method calls the abstract improve method of this optimization class with
@@ -54,7 +55,7 @@ public abstract class XFVRPOptImpBase extends XFVRPOptBase {
 	 * 
 	 * Currently it is only used by the PathExchange operator.
 	 */
-	protected Quality improve(Solution giantTour, Quality bestResult, XFVRPModel model) {
+	protected Quality improve(Solution giantTour, Quality bestResult, XFVRPModel model) throws XFVRPException {
 		this.model = model;
 
 		return improve(giantTour, bestResult);
@@ -65,7 +66,7 @@ public abstract class XFVRPOptImpBase extends XFVRPOptBase {
 	 * @see xf.xfvrp.base.XFVRPBase#execute(xf.xfvrp.opt.Solution)
 	 */
 	@Override
-	public Solution execute(Solution giantRoute) {
+	public Solution execute(Solution giantRoute) throws XFVRPException {
 		// Evaluate current solution
 		Quality bestResult = check(giantRoute);
 
@@ -116,7 +117,7 @@ public abstract class XFVRPOptImpBase extends XFVRPOptBase {
 	 * the result of this method is not null, then the new solution is better. Otherwise not. The
 	 * check includes a possible check of the loading restrictions.
 	 */
-	protected Quality checkIt(Solution solution) {
+	protected Quality checkIt(Solution solution) throws XFVRPException {
 		// Evaluate the costs and restrictions (penalties) of a giant route
 		Quality result = check(solution);
 

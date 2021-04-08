@@ -3,6 +3,8 @@ package xf.xfvrp.opt.init;
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.SiteType;
 import xf.xfvrp.base.XFVRPModel;
+import xf.xfvrp.base.exception.XFVRPException;
+import xf.xfvrp.base.exception.XFVRPExceptionType;
 import xf.xfvrp.base.monitor.StatusCode;
 import xf.xfvrp.base.monitor.StatusManager;
 import xf.xfvrp.opt.Solution;
@@ -18,18 +20,12 @@ import java.util.stream.IntStream;
  *
  */
 public class PresetSolutionBuilder {
-	
-	/**
-	 * 
-	 * @param nodes
-	 * @param model
-	 * @return
-	 */
-	public Solution build(List<Node> nodes, XFVRPModel model, StatusManager statusManager) {
+
+	public Solution build(List<Node> nodes, XFVRPModel model, StatusManager statusManager) throws XFVRPException {
 		String predefinedSolutionString = model.getParameter().getPredefinedSolutionString();
 
 		if(!checkPredefinedSolutionString(predefinedSolutionString))
-			throw new IllegalStateException("The predefined solution string "+predefinedSolutionString+" is not valid.");
+			throw new XFVRPException(XFVRPExceptionType.ILLEGAL_INPUT, "The predefined solution string "+predefinedSolutionString+" is not valid.");
 
 		PresetSolutionBuilderDataBag dataBag = prepare(nodes, model);
 
@@ -111,12 +107,7 @@ public class PresetSolutionBuilder {
 		}
 	}
 
-	/**
-	 * 
-	 * @param predefinedSolutionString
-	 * @return
-	 */
 	private boolean checkPredefinedSolutionString(String predefinedSolutionString) {
-		return predefinedSolutionString.matches("\\{(\\([^\\(\\)]+\\),)*(\\([^\\(\\)]+\\))+\\}");
+		return predefinedSolutionString.matches("\\{(\\([^()]+\\),)*(\\([^()]+\\))+}");
 	}
 }

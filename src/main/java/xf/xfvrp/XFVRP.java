@@ -146,7 +146,7 @@ public class XFVRP extends XFVRP_Parameter {
 	 * 
 	 * @return A report data structure with detailed information about the route plan or null if no solution was calculated.
 	 */
-	public Report getReport() {
+	public Report getReport() throws XFVRPException {
 		if(vehicleSolutionList.size() > 0) {
 
 			Report rep = new Report(lastModel);

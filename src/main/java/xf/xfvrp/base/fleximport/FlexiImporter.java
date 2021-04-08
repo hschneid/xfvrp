@@ -3,6 +3,7 @@ package xf.xfvrp.base.fleximport;
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.ShipmentConverter;
 import xf.xfvrp.base.Vehicle;
+import xf.xfvrp.base.exception.XFVRPException;
 import xf.xfvrp.base.monitor.StatusManager;
 import xf.xfvrp.base.preset.*;
 
@@ -250,7 +251,7 @@ public class FlexiImporter {
 	 * 
 	 * @return the collected vehicles
 	 */
-	public Vehicle[] getVehicles() {
+	public Vehicle[] getVehicles() throws XFVRPException {
 		Vehicle[] vehicles = new Vehicle[vehicleList.size()];
 
 		int idx = 0;

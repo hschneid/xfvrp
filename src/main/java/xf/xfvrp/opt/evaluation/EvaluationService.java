@@ -1,6 +1,7 @@
 package xf.xfvrp.opt.evaluation;
 
 import xf.xfvrp.base.*;
+import xf.xfvrp.base.exception.XFVRPException;
 import xf.xfvrp.base.preset.BlockNameConverter;
 import xf.xfvrp.opt.Solution;
 
@@ -27,7 +28,7 @@ public class EvaluationService {
 	 * is evaluated always as closed route with same starting and ending depot. The
 	 * starting depot of a route stands also for the ending depot, in any case. 
 	 */
-	public Quality check(Solution solution, XFVRPModel model) {
+	public Quality check(Solution solution, XFVRPModel model) throws XFVRPException {
 		Quality q = new Quality(null);
 
 		Context context = ContextBuilder.build(model);
@@ -37,7 +38,7 @@ public class EvaluationService {
 		return q;
 	}
 	
-	private void checkRoutes(Solution solution, Context context, Quality q) {
+	private void checkRoutes(Solution solution, Context context, Quality q) throws XFVRPException {
 		for (Node[] route : solution) {
 			// Feasibility check
 			FeasibilityAnalzer.checkFeasibility(route);
@@ -46,9 +47,9 @@ public class EvaluationService {
 		}
 	}
 	
-	private void checkRoute(Node[] route, Context context, Quality q) {
+	private void checkRoute(Node[] route, Context context, Quality q) throws XFVRPException {
 		route = ActiveNodeAnalyzer.getActiveNodes(route);
-		context.setRouteInfos(RouteInfoBuilder.build(route, context.getModel()));
+		context.setRouteInfos(RouteInfoBuilder.build(route));
 		
 		context.setCurrentNode(route[0]);
 		beginRoute(route[0], findNextCustomer(route, 0), q, context);
@@ -216,7 +217,7 @@ public class EvaluationService {
 		q.addPenalty(penalty, Quality.PENALTY_REASON_BLACKLIST);
 	}
 
-	private void beginRoute(Node newDepot, Node nextNode, Quality q, Context context) {
+	private void beginRoute(Node newDepot, Node nextNode, Quality q, Context context) throws XFVRPException {
 		XFVRPModel model = context.getModel();
 
 		float penalty = context.createNewRoute(newDepot);
@@ -241,7 +242,7 @@ public class EvaluationService {
 		return null;
 	}
 
-	private void replenishAmount(Context context) {
+	private void replenishAmount(Context context) throws XFVRPException {
 		if(context.getCurrentNode().getSiteType() != SiteType.REPLENISH)
 			return;
 

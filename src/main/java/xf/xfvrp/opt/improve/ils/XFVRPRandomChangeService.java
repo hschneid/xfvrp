@@ -4,6 +4,7 @@ import xf.xfvrp.base.Node;
 import xf.xfvrp.base.Quality;
 import xf.xfvrp.base.SiteType;
 import xf.xfvrp.base.XFVRPModel;
+import xf.xfvrp.base.exception.XFVRPException;
 import xf.xfvrp.base.preset.BlockNameConverter;
 import xf.xfvrp.base.preset.BlockPositionConverter;
 import xf.xfvrp.opt.Solution;
@@ -15,14 +16,14 @@ public class XFVRPRandomChangeService extends XFVRPOptBase implements XFRandomCh
 	private int NBR_ACCEPTED_INVALIDS = 100;
 	private int NBR_OF_VARIATIONS = 5;
 	
-	private XFVRPPathMove operator = new XFVRPPathMove();
+	private final XFVRPPathMove operator = new XFVRPPathMove();
 
 	/*
 	 * (non-Javadoc)
 	 * @see xf.xfvrp.opt.improve.ils.XFRandomChangeService#change(xf.xfvrp.opt.Solution, xf.xfvrp.base.XFVRPModel)
 	 */
 	@Override
-	public Solution change(Solution solution, XFVRPModel model) {
+	public Solution change(Solution solution, XFVRPModel model) throws XFVRPException {
 		this.setModel(model);
 
 		return this.execute(solution);
@@ -33,7 +34,7 @@ public class XFVRPRandomChangeService extends XFVRPOptBase implements XFRandomCh
 	 * selected randomly.
 	 */
 	@Override
-	protected Solution execute(Solution solution) {
+	protected Solution execute(Solution solution) throws XFVRPException {
 		Choice choice = new Choice();
 
 		for (int i = 0; i < NBR_OF_VARIATIONS; i++) {
@@ -62,7 +63,7 @@ public class XFVRPRandomChangeService extends XFVRPOptBase implements XFRandomCh
 		return solution;
 	}
 
-	private boolean checkMove(Choice choice, Solution solution) {
+	private boolean checkMove(Choice choice, Solution solution) throws XFVRPException {
 		operator.change(solution, choice.toArray());
 
 		Quality q = check(solution);

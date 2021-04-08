@@ -4,6 +4,7 @@ import xf.xfvrp.base.Node;
 import xf.xfvrp.base.Quality;
 import xf.xfvrp.base.SiteType;
 import xf.xfvrp.base.XFVRPModel;
+import xf.xfvrp.base.exception.XFVRPException;
 import xf.xfvrp.base.monitor.StatusManager;
 
 import java.util.ArrayList;
@@ -39,24 +40,18 @@ import java.util.stream.Collectors;
  */
 public class XFVRPOptSplitter {
 
-	private static int ALLOWED_NBR_OF_CUSTOMERS_IN_BLOCK = 250;
+	private static final int ALLOWED_NBR_OF_CUSTOMERS_IN_BLOCK = 250;
 
-	private static int ALLOWED_NBR_OF_BLOCKS = 1;
-	private static int ALLOWED_NBR_OF_NON_IMPROVES = 2;
+	private static int allowedNbrOfBlocks = 1;
+	private static final int ALLOWED_NBR_OF_NON_IMPROVES = 2;
 
 	/**
 	 * Executes the optimization by splitting a big route plan into smaller
 	 * blocks with less routes and optimizes each block independently. Afterwards
 	 * the optimized blocks are joined back. This process is iterated until no further
 	 * improvement could be found.
-	 * 
-	 * @param solution Current route plan
-	 * @param model Model with nodes, distances and parameters
-	 * @param opt Optimization procedure
-	 * @param statusManager
-	 * @return Optimized route plan 
 	 */
-	public Solution execute(final Solution solution, XFVRPModel model, StatusManager statusManager, XFVRPOptBase opt) {
+	public Solution execute(final Solution solution, XFVRPModel model, StatusManager statusManager, XFVRPOptBase opt) throws XFVRPException {
 		init(model);
 
 		Solution best = solution.copy();
@@ -84,10 +79,10 @@ public class XFVRPOptSplitter {
 	}
 
 	private void init(XFVRPModel model) {
-		ALLOWED_NBR_OF_BLOCKS = (int)Math.max(1, model.getNbrOfNodes() / (float)ALLOWED_NBR_OF_CUSTOMERS_IN_BLOCK);
+		allowedNbrOfBlocks = (int)Math.max(1, model.getNbrOfNodes() / (float)ALLOWED_NBR_OF_CUSTOMERS_IN_BLOCK);
 	}
 
-	private Solution optimizeBlocks(XFVRPModel model, StatusManager statusManager, XFVRPOptBase opt, List<Solution> blocks) {
+	private Solution optimizeBlocks(XFVRPModel model, StatusManager statusManager, XFVRPOptBase opt, List<Solution> blocks) throws XFVRPException {
 		List<Node> resultGiantList = new ArrayList<>();
 		for (Solution partialSolution : blocks) {
 			opt.execute(partialSolution, model, statusManager);
@@ -103,9 +98,6 @@ public class XFVRPOptSplitter {
 	 * Splits a big route plan into smaller blocks. The number of
 	 * blocks is precalculated by the average number of customers
 	 * in a block. A route can not be split into two routes.
-	 * 
-	 * @param giantRoute Current route plan
-	 * @return List of blocks, where each block is a route plan (small giant tour)
 	 */
 	private static List<Solution> splitIntoBlocks(Solution solution, Random random) {
 		List<Node>[] blocks = initBlocks();
@@ -118,7 +110,7 @@ public class XFVRPOptSplitter {
 	}
 
 	private static List<Solution> convertToSolutions(Solution solution, List<Node>[] blocks) {
-		List<Solution> partialSolutions = Arrays.stream(blocks)
+		return Arrays.stream(blocks)
 				.filter(b -> b.size() > 0)
 				.map(b -> {
 					Solution sol = new Solution();
@@ -126,7 +118,6 @@ public class XFVRPOptSplitter {
 					return solution;
 				})
 				.collect(Collectors.toList());
-		return partialSolutions;
 	}
 
 	private static void addDepotsToBlocks(List<Node>[] blocks) {
@@ -140,7 +131,7 @@ public class XFVRPOptSplitter {
 		Node[] giantTour = solution.getGiantRoute();
 		for (int i = 1; i < giantTour.length; i++) {
 			if(giantTour[i].getSiteType() == SiteType.DEPOT) {
-				int blockIdx = random.nextInt(ALLOWED_NBR_OF_BLOCKS);
+				int blockIdx = random.nextInt(allowedNbrOfBlocks);
 				
 				for (int j = lastDepot; j < i; j++)
 					blocks[blockIdx].add(giantTour[j]);
@@ -150,9 +141,8 @@ public class XFVRPOptSplitter {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	private static List<Node>[] initBlocks() {
-		List<Node>[] blocks = new ArrayList[ALLOWED_NBR_OF_BLOCKS];
+		List<Node>[] blocks = new ArrayList[allowedNbrOfBlocks];
 		for (int i = 0; i < blocks.length; i++)
 			blocks[i] = new ArrayList<>();
 		return blocks;
@@ -160,12 +150,8 @@ public class XFVRPOptSplitter {
 
 	/**
 	 * Returns the cost of route plan by building up a report.
-	 * 
-	 * @param giantRoute Current route plan
-	 * @param optBase Current model with nodes, distances and parameters
-	 * @return Fitness of current solution
 	 */
-	private float getCost(Solution solution, XFVRPOptBase optBase) {
+	private float getCost(Solution solution, XFVRPOptBase optBase) throws XFVRPException {
 		Quality quality = optBase.check(solution);	
 		return quality.getCost();
 	}

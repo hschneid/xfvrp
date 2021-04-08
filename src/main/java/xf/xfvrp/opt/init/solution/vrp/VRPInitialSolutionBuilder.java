@@ -48,7 +48,7 @@ public class VRPInitialSolutionBuilder {
 	 * @param model Current model of nodes, distances and parameters
 	 * @return Current route plan of single trips per customer
 	 */
-	private Solution buildSolution(List<Node> nodes, XFVRPModel model, StatusManager statusManager) {
+	private Solution buildSolution(List<Node> nodes, XFVRPModel model, StatusManager statusManager) throws XFVRPException {
 		if(nodes == null) {
 			return new Solution();
 		}
