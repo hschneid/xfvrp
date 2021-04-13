@@ -10,6 +10,7 @@ import xf.xfvrp.opt.improve.*;
 import xf.xfvrp.opt.improve.ils.XFPDPILS;
 import xf.xfvrp.opt.improve.ils.XFVRPILS;
 import xf.xfvrp.opt.improve.routebased.XFVRPSegmentMove;
+import xf.xfvrp.opt.improve.routebased.XFVRPSegmentMove2;
 
 /** 
  * Copyright (c) 2012-present Holger Schneider
@@ -40,7 +41,7 @@ public enum XFVRPOptType {
 	RELOCATE2(xf.xfvrp.opt.improve.routebased.XFVRPRelocate.class),
 	OR_OPT(XFVRPOrOpt.class),
 	PATH_RELOCATE(XFVRPPathMove.class),
-	PATH_RELOCATE2(XFVRPSegmentMove.class),
+	PATH_RELOCATE2(XFVRPSegmentMove2.class),
 	OPT3(XFVRP3Opt.class),
 	OPT3_POINTMOVE(XFVRP3PointMove.class),
 	ILS(XFVRPILS.class),
