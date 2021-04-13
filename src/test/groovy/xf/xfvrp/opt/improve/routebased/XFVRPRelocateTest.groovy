@@ -26,8 +26,8 @@ class XFVRPRelocateTest extends Specification {
         def parameter = [0, 1, 1, 2] as float[]
 
         when:
-        service.changeSolution(sol, parameter)
-        service.resetSolution(sol, parameter)
+        service.change(sol, parameter)
+        service.reverseChange(sol, parameter)
         def result = sol.getGiantRoute()
         then:
         result[0].externID == "1"
@@ -45,8 +45,8 @@ class XFVRPRelocateTest extends Specification {
         def parameter = [0, 0, 1, 3] as float[]
 
         when:
-        service.changeSolution(sol, parameter)
-        service.resetSolution(sol, parameter)
+        service.change(sol, parameter)
+        service.reverseChange(sol, parameter)
         def result = sol.getGiantRoute()
         then:
         result[0].externID == "1"
@@ -63,8 +63,8 @@ class XFVRPRelocateTest extends Specification {
         def parameter = [0, 0, 4, 1] as float[]
 
         when:
-        service.changeSolution(sol, parameter)
-        service.resetSolution(sol, parameter)
+        service.change(sol, parameter)
+        service.reverseChange(sol, parameter)
         def result = sol.getGiantRoute()
         then:
         result[0].externID == "1"

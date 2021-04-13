@@ -36,16 +36,14 @@ public class XFVRPRelocate extends XFVRPOptImpBase {
 	public Quality improve(final Solution solution, Quality bestResult) throws XFVRPException {
 		checkIt(solution);
 
-		List<float[]> improvingStepList = new ArrayList<>();
-
-		search(solution.getRoutes(), improvingStepList);
+		List<float[]> improvingStepList = search(solution.getRoutes());
 
 		// Sort the potentials descending
 		sort(improvingStepList, 4);
 
 		// Find first valid improvement
 		for (float[] val : improvingStepList) {
-			changeSolution(solution, val);
+			change(solution, val);
 
 			Quality result = checkIt(solution, (int)val[0], (int)val[1]);
 			if(result != null && result.getFitness() < bestResult.getFitness()) {
@@ -53,14 +51,14 @@ public class XFVRPRelocate extends XFVRPOptImpBase {
 				return result;
 			}
 
-			resetSolution(solution, val);
+			reverseChange(solution, val);
 			solution.resetQualities();
 		}
 
 		return null;
 	}
 
-	private void changeSolution(Solution solution, float[] parameter) throws XFVRPException {
+	private void change(Solution solution, float[] parameter) throws XFVRPException {
 		int srcRouteIdx = (int) parameter[0];
 		int dstRouteIdx = (int) parameter[1];
 		int srcPos = (int) parameter[2];
@@ -69,7 +67,7 @@ public class XFVRPRelocate extends XFVRPOptImpBase {
 		move2(solution, srcRouteIdx, dstRouteIdx, srcPos, dstPos);
 	}
 
-	private void resetSolution(Solution solution, float[] parameter) throws XFVRPException {
+	private void reverseChange(Solution solution, float[] parameter) throws XFVRPException {
 		int srcRouteIdx = (int) parameter[0];
 		int dstRouteIdx = (int) parameter[1];
 		int srcPos = (int) parameter[2];
@@ -89,7 +87,9 @@ public class XFVRPRelocate extends XFVRPOptImpBase {
 	/**
 	 * Searches all improving valid steps in search space
 	 */
-	private void search(Node[][] routes, List<float[]> improvingStepList) {
+	private List<float[]> search(Node[][] routes) {
+		List<float[]> improvingStepList = new ArrayList<>();
+
 		int nbrOfRoutes = routes.length;
 		for (int srcRtIdx = 0; srcRtIdx < nbrOfRoutes; srcRtIdx++) {
 			Node[] srcRoute = routes[srcRtIdx];
@@ -132,5 +132,7 @@ public class XFVRPRelocate extends XFVRPOptImpBase {
 				}
 			}
 		}
+
+		return improvingStepList;
 	}
 }

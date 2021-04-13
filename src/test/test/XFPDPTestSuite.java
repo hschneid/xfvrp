@@ -1,19 +1,18 @@
 package test;
 
-import static org.junit.Assert.assertTrue;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
 import org.junit.Test;
-
 import xf.xfvrp.XFVRP;
 import xf.xfvrp.base.LoadType;
 import xf.xfvrp.base.metric.EucledianMetric;
 import xf.xfvrp.opt.XFVRPOptType;
 import xf.xfvrp.report.Report;
 import xf.xfvrp.report.StringWriter;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
+import static org.junit.Assert.assertTrue;
 
 /** 
  * Copyright (c) 2012-present Holger Schneider

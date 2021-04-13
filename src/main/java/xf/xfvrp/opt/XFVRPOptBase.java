@@ -50,6 +50,16 @@ public abstract class XFVRPOptBase extends XFVRPBase<XFVRPModel> {
 		
 		solution.setGiantRoute(giantTour);
 	}
+
+	/**
+	 * Inverts the node sequence for a certain route
+	 * in the range from start to end (both inclusive)
+	 */
+	protected void swap2(Solution solution, int routeIdx, int start, int end) {
+		Node[] route = solution.getRoutes()[routeIdx];
+
+		swap(route, start, end);
+	}
 	
 	protected void swap(Node[] nodes, int start, int end) {
 		int offset = 0;
@@ -223,7 +233,7 @@ public abstract class XFVRPOptBase extends XFVRPBase<XFVRPModel> {
 		if(srcRouteIdx != dstRouteIdx) {
 			Node[] srcRoute = solution.getRoutes()[srcRouteIdx];
 			Node[] dstRoute = solution.getRoutes()[dstRouteIdx];
-			solution.setRoute(srcRouteIdx, remove(srcRoute, srcPos));
+			solution.setRoute(srcRouteIdx, remove(srcRoute, srcPos, srcPos));
 			solution.setRoute(dstRouteIdx, addBefore(dstRoute, srcRoute[srcPos], dstPos));
 		} else {
 			Node[] route = solution.getRoutes()[srcRouteIdx];
@@ -238,10 +248,44 @@ public abstract class XFVRPOptBase extends XFVRPBase<XFVRPModel> {
 		}
 	}
 
-	private Node[] remove(Node[] orig, int pos) {
-		Node[] arr = new Node[orig.length - 1];
-		System.arraycopy(orig,0, arr, 0, pos);
-		System.arraycopy(orig,pos + 1, arr, pos, orig.length - pos - 1);
+	/**
+	 * Moves the nodes in the range from srcStart and srcEnd, both inclusive,
+	 * before the position dstPos from one route to another route.
+	 */
+	protected void pathMove2(Solution solution, int srcRouteIdx, int dstRouteIdx, int srcStart, int srcEnd, int dstPos) throws XFVRPException {
+		if(srcEnd < srcStart)
+			throw new XFVRPException(XFVRPExceptionType.ILLEGAL_ARGUMENT,
+					String.format("Range is defined in wrong way (end is bigger than start) start=%d, end=%d", srcStart, srcEnd)
+			);
+
+		Node[] srcRoute = solution.getRoutes()[srcRouteIdx];
+		Node[] dstRoute = solution.getRoutes()[dstRouteIdx];
+
+		Node[] nodes = new Node[srcEnd - srcStart + 1];
+		System.arraycopy(srcRoute, srcStart, nodes, 0, nodes.length);
+
+		if(srcRouteIdx != dstRouteIdx) {
+			solution.setRoute(srcRouteIdx, remove(srcRoute, srcStart, srcEnd));
+			solution.setRoute(dstRouteIdx, addBefore(dstRoute, nodes, dstPos));
+		} else {
+			if(srcStart < dstPos) {
+				System.arraycopy(srcRoute, srcEnd + 1, srcRoute, srcStart, dstPos - srcEnd);
+				System.arraycopy(nodes, 0, srcRoute, dstPos - ((srcEnd - srcStart) + 1), nodes.length);
+			} else {
+				System.arraycopy(srcRoute, dstPos, srcRoute, dstPos + (srcEnd - srcStart) + 1, srcStart - dstPos);
+				System.arraycopy(nodes, 0, srcRoute, dstPos, nodes.length);
+			}
+		}
+	}
+
+	/**
+	 * Removes nodes from a given route and returns the
+	 * cleaned route
+	 */
+	private Node[] remove(Node[] orig, int srcPosIncl, int dstPosIncl) {
+		Node[] arr = new Node[orig.length - ((dstPosIncl - srcPosIncl) + 1)];
+		System.arraycopy(orig,0, arr, 0, srcPosIncl);
+		System.arraycopy(orig,dstPosIncl + 1, arr, srcPosIncl, orig.length - dstPosIncl - 1);
 
 		return arr;
 	}
@@ -252,6 +296,16 @@ public abstract class XFVRPOptBase extends XFVRPBase<XFVRPModel> {
 		System.arraycopy(orig,0, arr, 0, pos);
 		arr[pos] = node;
 		System.arraycopy(orig, pos, arr, pos + 1, orig.length - pos);
+
+		return arr;
+	}
+
+	private Node[] addBefore(Node[] orig, Node[] nodes, int pos) {
+		Node[] arr = new Node[orig.length + nodes.length];
+
+		System.arraycopy(orig,0, arr, 0, pos);
+		System.arraycopy(nodes,0, arr, pos, nodes.length);
+		System.arraycopy(orig, pos, arr, pos + nodes.length, orig.length - pos);
 
 		return arr;
 	}
