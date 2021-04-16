@@ -1,4 +1,4 @@
-package xf.xfvrp.opt.improve.routebased;
+package xf.xfvrp.opt.improve.routebased.move;
 
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.Quality;
@@ -7,9 +7,6 @@ import xf.xfvrp.base.exception.XFVRPException;
 import xf.xfvrp.opt.Solution;
 import xf.xfvrp.opt.improve.XFVRPOptImpBase;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
 import java.util.PriorityQueue;
 
 /**
@@ -32,13 +29,18 @@ import java.util.PriorityQueue;
  * @author hschneid
  *
  */
-public class XFVRPSegmentMove2 extends XFVRPOptImpBase {
+abstract class XFVRPMoveBase extends XFVRPOptImpBase {
 
 	public static final int NO_INVERT = 0;
 	public static final int INVERT = 1;
-	private static final int MAX_SEGMENT_LENGTH = 3;
 
+	private int maxSegmentLength = 3;
 	private boolean isInvertationActive = true;
+
+	public XFVRPMoveBase(int maxSegmentLength, boolean isInvertationActive) {
+		this.maxSegmentLength = maxSegmentLength;
+		this.isInvertationActive = isInvertationActive;
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -103,7 +105,7 @@ public class XFVRPSegmentMove2 extends XFVRPOptImpBase {
 	/**
 	 * Searches all improving steps in search space for a VRP.
 	 */
-	private PriorityQueue<float[]> search(Node[][] routes) {
+	protected PriorityQueue<float[]> search(Node[][] routes) {
 		PriorityQueue<float[]> improvingStepList = new PriorityQueue<>(
 				(o1, o2) -> Float.compare(o2[6], o1[6])
 		);
@@ -122,7 +124,7 @@ public class XFVRPSegmentMove2 extends XFVRPOptImpBase {
 							continue;
 						}
 
-						for (int segmentLength = 0; segmentLength < MAX_SEGMENT_LENGTH; segmentLength++) {
+						for (int segmentLength = 0; segmentLength < maxSegmentLength; segmentLength++) {
 							// src segment must not too big for src route
 							if((srcPos + segmentLength) > srcRoute.length - 2) {
 								break;
@@ -165,7 +167,7 @@ public class XFVRPSegmentMove2 extends XFVRPOptImpBase {
 		if (val > epsilon) improvingStepList.add(new float[]{srcRtIdx, dstRtIdx, srcPos, dstPos, segmentLength, NO_INVERT, val});
 
 		// with invert
-		if (isInvertationActive) {
+		if (isInvertationActive && segmentLength > 0) {
 			val =
 					old -
 							(getDistanceForOptimization(srcRoute[srcPos - 1], srcRoute[srcPos + segmentLength + 1]) +
@@ -190,7 +192,7 @@ public class XFVRPSegmentMove2 extends XFVRPOptImpBase {
 		if (val > epsilon) improvingStepList.add(new float[]{srcRtIdx, dstRtIdx, srcPos, dstPos, segmentLength, NO_INVERT, val});
 
 		// with invert
-		if (isInvertationActive) {
+		if (isInvertationActive && segmentLength > 0) {
 			val =
 					old -
 							(getDistanceForOptimization(route[dstPos - 1], route[srcPos + segmentLength]) +

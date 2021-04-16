@@ -9,8 +9,8 @@ import xf.xfvrp.opt.construct.insert.XFVRPFirstBestInsert;
 import xf.xfvrp.opt.improve.*;
 import xf.xfvrp.opt.improve.ils.XFPDPILS;
 import xf.xfvrp.opt.improve.ils.XFVRPILS;
-import xf.xfvrp.opt.improve.routebased.XFVRPSegmentMove;
-import xf.xfvrp.opt.improve.routebased.XFVRPSegmentMove2;
+import xf.xfvrp.opt.improve.routebased.move.XFVRPNodeMove;
+import xf.xfvrp.opt.improve.routebased.move.XFVRPSegmentMove;
 
 /** 
  * Copyright (c) 2012-present Holger Schneider
@@ -37,11 +37,8 @@ public enum XFVRPOptType {
 	SWAPSEGMENT(XFVRPSwapSegment.class),
 	SWAPSEGMENT_WITH_INVERT(XFVRPSwapSegmentWithInvert.class),
 	SWAPSEGMENT_EQ(XFVRPSwapSegmentEqual.class),
-	RELOCATE(XFVRPRelocate.class),
-	RELOCATE2(xf.xfvrp.opt.improve.routebased.XFVRPRelocate.class),
-	OR_OPT(XFVRPOrOpt.class),
-	PATH_RELOCATE(XFVRPPathMove.class),
-	PATH_RELOCATE2(XFVRPSegmentMove2.class),
+	RELOCATE(XFVRPNodeMove.class),
+	PATH_RELOCATE(XFVRPSegmentMove.class),
 	OPT3(XFVRP3Opt.class),
 	OPT3_POINTMOVE(XFVRP3PointMove.class),
 	ILS(XFVRPILS.class),

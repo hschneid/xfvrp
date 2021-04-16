@@ -3,11 +3,11 @@ package xf.xfvrp.opt
 import spock.lang.Specification
 import xf.xfvrp.base.Node
 import xf.xfvrp.base.SiteType
-import xf.xfvrp.opt.improve.XFVRPRelocate
+import xf.xfvrp.opt.improve.routebased.move.XFVRPNodeMove
 
 class ExchangeSpec extends Specification {
 
-	def service = new XFVRPRelocate();
+	def service = new XFVRPNodeMove();
 	
 	def "Regular exchange - same position"() {
 		def n1 = new Node(externID: "1", siteType: SiteType.DEPOT);

@@ -1,4 +1,4 @@
-package xf.xfvrp.opt.improve
+package xf.xfvrp.opt.improve.routebased
 
 import spock.lang.Specification
 import util.instances.TestNode
@@ -8,10 +8,11 @@ import xf.xfvrp.base.metric.EucledianMetric
 import xf.xfvrp.base.metric.internal.AcceleratedMetricTransformator
 import xf.xfvrp.opt.Solution
 import xf.xfvrp.opt.evaluation.EvaluationService
+import xf.xfvrp.opt.improve.routebased.move.XFVRPSegmentMove
 
-class XFVRPPathMoveIntSpec extends Specification {
+class XFVRPSegmentMoveIntSpec extends Specification {
 
-	def service = new XFVRPPathMove();
+	def service = new XFVRPSegmentMove();
 	def evalService = new EvaluationService();
 
 	def nd = new TestNode(

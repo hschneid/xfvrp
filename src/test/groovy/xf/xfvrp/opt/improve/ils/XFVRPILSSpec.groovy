@@ -11,14 +11,14 @@ import xf.xfvrp.opt.Solution
 import xf.xfvrp.opt.XFVRPOptBase
 import xf.xfvrp.opt.evaluation.EvaluationService
 import xf.xfvrp.opt.improve.XFVRP2Opt
-import xf.xfvrp.opt.improve.XFVRPPathMove
-import xf.xfvrp.opt.improve.XFVRPRelocate
+import xf.xfvrp.opt.improve.routebased.move.XFVRPNodeMove
+import xf.xfvrp.opt.improve.routebased.move.XFVRPSegmentMove
 
 class XFVRPILSSpec extends Specification {
 
 	def opt1 = Stub XFVRP2Opt
-	def opt2 = Stub XFVRPRelocate
-	def opt3 = Stub XFVRPPathMove
+	def opt2 = Stub XFVRPNodeMove
+	def opt3 = Stub XFVRPSegmentMove
 	def evaluationService = Stub EvaluationService
 	def statusManager = Stub StatusManager
 	def service = new XFVRPILS(evaluationService: evaluationService);

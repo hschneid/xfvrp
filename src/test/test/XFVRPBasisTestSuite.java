@@ -12,8 +12,6 @@ import xf.xfvrp.report.Report;
 import xf.xfvrp.report.RouteReport;
 import xf.xfvrp.report.StringWriter;
 
-import java.util.*;
-
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 

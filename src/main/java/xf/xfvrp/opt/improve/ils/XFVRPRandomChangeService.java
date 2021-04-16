@@ -9,14 +9,14 @@ import xf.xfvrp.base.preset.BlockNameConverter;
 import xf.xfvrp.base.preset.BlockPositionConverter;
 import xf.xfvrp.opt.Solution;
 import xf.xfvrp.opt.XFVRPOptBase;
-import xf.xfvrp.opt.improve.XFVRPPathMove;
+import xf.xfvrp.opt.improve.routebased.move.XFVRPSegmentMove;
 
 public class XFVRPRandomChangeService extends XFVRPOptBase implements XFRandomChangeService {
 
 	private int NBR_ACCEPTED_INVALIDS = 100;
 	private int NBR_OF_VARIATIONS = 5;
-	
-	private final XFVRPPathMove operator = new XFVRPPathMove();
+
+	private final XFVRPSegmentMove operator = new XFVRPSegmentMove();
 
 	/*
 	 * (non-Javadoc)
@@ -76,35 +76,42 @@ public class XFVRPRandomChangeService extends XFVRPOptBase implements XFRandomCh
 	}
 
 	private void chooseSrc(Choice choice, Solution solution) {
-		Node[] giantRoute = solution.getGiantRoute();
+		Node[][] routes = solution.getRoutes();
 
-		// Choose a random source node (customer or replenish)
-		int src;
+		// Choose not empty route
+		int srcRouteIdx;
 		do {
-			src = rand.nextInt(giantRoute.length - 2) + 1;
-		} while (giantRoute[src].getSiteType() == SiteType.DEPOT);
+			srcRouteIdx = rand.nextInt(routes.length);
+		} while (routes[srcRouteIdx].length <= 2);
+
+		// Choose a source node (customer or replenish)
+		int srcPos;
+		do {
+			srcPos = rand.nextInt(routes[srcRouteIdx].length - 2) + 1;
+		} while (routes[srcRouteIdx][srcPos].getSiteType() == SiteType.DEPOT);
 
 		// Reset source node at the beginning of a block
-		src = adjustForBlockCriteria(giantRoute, src, 1);
+		srcPos = adjustForBlockCriteria(routes[srcRouteIdx], srcPos, 1);
 
-		choice.srcIdx = src;
-		choice.srcPathLength = 0;
+		choice.srcRouteIdx = srcRouteIdx;
+		choice.srcPos = srcPos;
+		choice.segmentLength = 0;
 
 		// Extend source node to source path if next nodes belongs to source node block
-		expandToBlock(choice, giantRoute);
+		expandToBlock(choice, routes[srcRouteIdx]);
 	}
 
-	private void expandToBlock(Choice choice, Node[] giantRoute) {
-		int src = choice.srcIdx;
-		int srcBlockIdx = giantRoute[src].getPresetBlockIdx();
-		int srcPosValue = giantRoute[src].getPresetBlockPos();
+	private void expandToBlock(Choice choice, Node[] route) {
+		int src = choice.srcPos;
+		int srcBlockIdx = route[src].getPresetBlockIdx();
+		int srcPosValue = route[src].getPresetBlockPos();
 
 		if(srcBlockIdx > BlockNameConverter.UNDEF_BLOCK_IDX && srcPosValue > BlockPositionConverter.UNDEF_POSITION) {
 
-			for (int i = src + 1; i < giantRoute.length; i++) {
-				Node n = giantRoute[i];
+			for (int i = src + 1; i < route.length; i++) {
+				Node n = route[i];
 				if(n.getPresetBlockIdx() == srcBlockIdx && n.getPresetBlockPos() > srcPosValue) {
-					choice.srcPathLength++;
+					choice.segmentLength++;
 					srcPosValue = n.getPresetBlockPos();
 				} else
 					break;
@@ -113,21 +120,28 @@ public class XFVRPRandomChangeService extends XFVRPOptBase implements XFRandomCh
 	}
 
 	private void chooseDst(Choice choice, Solution solution) {
-		Node[] giantRoute = solution.getGiantRoute();
+		Node[][] routes = solution.getRoutes();
 
-		int dst;
+		int dstRouteIdx = rand.nextInt(routes.length);
+
+		int dstPos;
 		do {
-			dst = rand.nextInt(giantRoute.length - 1) + 1;
-		} while (dst >= choice.srcIdx && dst <= choice.srcIdx + choice.srcPathLength);
+			dstPos = rand.nextInt(routes[dstRouteIdx].length - 1) + 1;
+		} while (
+				choice.srcRouteIdx == dstRouteIdx &&
+						dstPos >= choice.srcPos &&
+						dstPos <= choice.srcPos + choice.segmentLength
+		);
 
-		choice.dstIdx = adjustForBlockCriteria(giantRoute, dst, 0);
+		choice.dstRouteIdx = dstRouteIdx;
+		choice.dstPos = adjustForBlockCriteria(routes[dstRouteIdx], dstPos, 1);
 	}
 
-	private int adjustForBlockCriteria(Node[] giantRoute, int pos, int untilPos) {
-		if(giantRoute[pos].getPresetBlockIdx() > BlockNameConverter.DEFAULT_BLOCK_IDX) {
+	private int adjustForBlockCriteria(Node[] route, int pos, int untilPos) {
+		if(route[pos].getPresetBlockIdx() > BlockNameConverter.DEFAULT_BLOCK_IDX) {
 			while(pos > untilPos) {
-				Node thisNode = giantRoute[pos];
-				Node beforeNode = giantRoute[pos - 1];
+				Node thisNode = route[pos];
+				Node beforeNode = route[pos - 1];
 
 				if(thisNode.getSiteType() == SiteType.DEPOT || beforeNode.getSiteType() == SiteType.DEPOT)
 					break;
@@ -142,15 +156,17 @@ public class XFVRPRandomChangeService extends XFVRPOptBase implements XFRandomCh
 	}
 
 	private class Choice {
-		int srcIdx;
-		int srcPathLength;
-		int dstIdx;
+		int srcRouteIdx;
+		int dstRouteIdx;
+		int srcPos;
+		int segmentLength;
+		int dstPos;
 
 		public Choice() {
 		}
-		
+
 		public float[] toArray() {
-			return new float[] {srcIdx, dstIdx, srcPathLength, XFVRPPathMove.NO_INVERT};
+			return new float[] {srcRouteIdx, dstRouteIdx, srcPos, dstPos, segmentLength, XFVRPSegmentMove.NO_INVERT};
 		}
 	}
 }

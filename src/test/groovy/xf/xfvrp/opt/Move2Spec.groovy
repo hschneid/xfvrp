@@ -4,11 +4,11 @@ import spock.lang.Specification
 import xf.xfvrp.base.Node
 import xf.xfvrp.base.SiteType
 import xf.xfvrp.base.exception.XFVRPException
-import xf.xfvrp.opt.improve.XFVRPRelocate
+import xf.xfvrp.opt.improve.routebased.move.XFVRPNodeMove
 
 class Move2Spec extends Specification {
 
-	def service = new XFVRPRelocate();
+	def service = new XFVRPNodeMove()
 
 	def n1 = new Node(externID: "1", siteType: SiteType.DEPOT);
 	def n2 = new Node(externID: "2", siteType: SiteType.CUSTOMER);

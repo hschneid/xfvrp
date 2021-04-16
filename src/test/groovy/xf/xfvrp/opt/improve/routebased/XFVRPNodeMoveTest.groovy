@@ -7,10 +7,11 @@ import xf.xfvrp.base.*
 import xf.xfvrp.base.metric.EucledianMetric
 import xf.xfvrp.base.metric.internal.AcceleratedMetricTransformator
 import xf.xfvrp.opt.Solution
+import xf.xfvrp.opt.improve.routebased.move.XFVRPNodeMove
 
-class XFVRPRelocateTest extends Specification {
+class XFVRPNodeMoveTest extends Specification {
 
-    def service = new XFVRPRelocate()
+    def service = new XFVRPNodeMove()
 
     def n1 = new Node(externID: "1", siteType: SiteType.DEPOT);
     def n2 = new Node(externID: "2", siteType: SiteType.CUSTOMER);
@@ -23,7 +24,7 @@ class XFVRPRelocateTest extends Specification {
     def "change - reset - different routes"() {
         def sol = new Solution()
         sol.setGiantRoute([n1, n2, n3, n4, n5, n6, n7] as Node[])
-        def parameter = [0, 1, 1, 2] as float[]
+        def parameter = [0, 1, 1, 2, 0, 0] as float[]
 
         when:
         service.change(sol, parameter)
@@ -42,7 +43,7 @@ class XFVRPRelocateTest extends Specification {
     def "change - reset - same routes - src > dst"() {
         def sol = new Solution()
         sol.setGiantRoute([n1, n2, n3, n5, n6, n7] as Node[])
-        def parameter = [0, 0, 1, 3] as float[]
+        def parameter = [0, 0, 1, 3, 0, 0] as float[]
 
         when:
         service.change(sol, parameter)
@@ -60,7 +61,7 @@ class XFVRPRelocateTest extends Specification {
     def "change - reset - same routes - src < dst"() {
         def sol = new Solution()
         sol.setGiantRoute([n1, n2, n3, n5, n6, n7] as Node[])
-        def parameter = [0, 0, 4, 1] as float[]
+        def parameter = [0, 0, 4, 1, 0, 0] as float[]
 
         when:
         service.change(sol, parameter)

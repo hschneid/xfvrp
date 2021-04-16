@@ -2,6 +2,8 @@ package xf.xfvrp.opt.improve;
 
 import xf.xfvrp.base.Quality;
 import xf.xfvrp.opt.Solution;
+import xf.xfvrp.opt.improve.routebased.move.XFVRPNodeMove;
+import xf.xfvrp.opt.improve.routebased.move.XFVRPSegmentMove;
 
 /** 
  * Copyright (c) 2012-present Holger Schneider
@@ -12,10 +14,10 @@ import xf.xfvrp.opt.Solution;
  *
  *
  * Path Exchange neighborhood search is a union of several neighborhoods
- * - XFVRPRelocate
+ * - XFVRPNodeMove
  * - XFVRPSwap
- * - XFVRPOrOpt2
- * - XFVRPSwapBody2
+ * - XFVRPSegmentMove
+ * - XFVRPSwapSegmentBody
  * 
  * The neighborhoods are sequentially searched for the best improving step.
  * 
@@ -24,9 +26,9 @@ import xf.xfvrp.opt.Solution;
  */
 public class XFVRPPathExchange extends XFVRPOptImpBase {
 
-	private final XFVRPRelocate rel = new XFVRPRelocate();
+	private final XFVRPNodeMove rel = new XFVRPNodeMove();
 	private final XFVRPSwap swa = new XFVRPSwap();
-	private final XFVRPPathMove or = new XFVRPPathMove();
+	private final XFVRPSegmentMove or = new XFVRPSegmentMove();
 	private final XFVRPSwapSegmentWithInvert bod = new XFVRPSwapSegmentWithInvert();
 
 	/*
@@ -71,21 +73,15 @@ public class XFVRPPathExchange extends XFVRPOptImpBase {
 		return null;
 	}
 
-	/**
-	 * 
-	 * @param giantRoute
-	 * @param bestResult
-	 * @param bestQ
-	 * @param opt
-	 * @return
-	 */
 	private Object[] opt(Solution solution, Quality bestResult, Quality bestQ, XFVRPOptImpBase opt) {
 		try {
 			Solution newSolution = solution.copy(); 
 			Quality result = opt.improve(newSolution, bestResult, model);
 			if(result != null && result.getFitness() < bestQ.getFitness())
 				return new Object[]{newSolution, result};
-		} catch (Exception e) {}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		return null;
 	}
 
