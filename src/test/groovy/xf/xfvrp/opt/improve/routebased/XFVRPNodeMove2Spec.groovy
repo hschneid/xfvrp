@@ -7,6 +7,7 @@ import xf.xfvrp.base.*
 import xf.xfvrp.base.metric.EucledianMetric
 import xf.xfvrp.base.metric.internal.AcceleratedMetricTransformator
 import xf.xfvrp.opt.Solution
+import xf.xfvrp.opt.improve.routebased.move.XFVRPMoveSearchUtil
 import xf.xfvrp.opt.improve.routebased.move.XFVRPNodeMove
 
 class XFVRPNodeMove2Spec extends Specification {
@@ -37,6 +38,10 @@ class XFVRPNodeMove2Spec extends Specification {
 
 	def metric = new EucledianMetric()
 
+	def impList = new PriorityQueue<>(
+			(o1, o2) -> Float.compare(o2[6], o1[6])
+	)
+
 	def "Search multi depot - Find improve"() {
 		def model = initScenMultiDepot()
 		def n = model.getNodes()
@@ -44,9 +49,10 @@ class XFVRPNodeMove2Spec extends Specification {
 
 		sol = new Solution()
 		sol.setGiantRoute([nd, n[2], nd, n[3], nd2, n[4], nd2] as Node[])
-		
+		impList.clear()
+
 		when:
-		def impList = service.search(sol.getRoutes())
+		XFVRPMoveSearchUtil.search(model, sol.getRoutes(), impList, 1, false)
 
 		then:
 		impList.size() == 4
@@ -67,9 +73,10 @@ class XFVRPNodeMove2Spec extends Specification {
 
 		sol = new Solution()
 		sol.setGiantRoute([nd, n[2], nd2, n[4], nd2] as Node[])
+		impList.clear()
 
 		when:
-		def impList = service.search(sol.getRoutes())
+		XFVRPMoveSearchUtil.search(model, sol.getRoutes(), impList, 1, false)
 
 		then:
 		impList.size() == 0

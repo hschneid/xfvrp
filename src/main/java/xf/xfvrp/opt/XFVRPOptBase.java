@@ -51,16 +51,6 @@ public abstract class XFVRPOptBase extends XFVRPBase<XFVRPModel> {
 		solution.setGiantRoute(giantTour);
 	}
 
-	/**
-	 * Inverts the node sequence for a certain route
-	 * in the range from start to end (both inclusive)
-	 */
-	protected void swap2(Solution solution, int routeIdx, int start, int end) {
-		Node[] route = solution.getRoutes()[routeIdx];
-
-		swap(route, start, end);
-	}
-	
 	protected void swap(Node[] nodes, int start, int end) {
 		int offset = 0;
 		while (end - offset > start + offset) {

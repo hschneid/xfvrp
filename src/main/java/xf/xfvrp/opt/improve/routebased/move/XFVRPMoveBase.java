@@ -1,8 +1,6 @@
 package xf.xfvrp.opt.improve.routebased.move;
 
-import xf.xfvrp.base.Node;
 import xf.xfvrp.base.Quality;
-import xf.xfvrp.base.SiteType;
 import xf.xfvrp.base.exception.XFVRPException;
 import xf.xfvrp.opt.Solution;
 import xf.xfvrp.opt.improve.XFVRPOptImpBase;
@@ -31,11 +29,8 @@ import java.util.PriorityQueue;
  */
 abstract class XFVRPMoveBase extends XFVRPOptImpBase {
 
-	public static final int NO_INVERT = 0;
-	public static final int INVERT = 1;
-
-	private int maxSegmentLength = 3;
-	private boolean isInvertationActive = true;
+	private final int maxSegmentLength;
+	private final boolean isInvertationActive;
 
 	public XFVRPMoveBase(int maxSegmentLength, boolean isInvertationActive) {
 		this.maxSegmentLength = maxSegmentLength;
@@ -50,11 +45,14 @@ abstract class XFVRPMoveBase extends XFVRPOptImpBase {
 	public Quality improve(final Solution solution, Quality bestResult) throws XFVRPException {
 		checkIt(solution);
 
-		PriorityQueue<float[]> improvingStepList = search(solution.getRoutes());
+		PriorityQueue<float[]> improvingSteps = new PriorityQueue<>(
+                (o1, o2) -> Float.compare(o2[6], o1[6])
+        );
+		XFVRPMoveSearchUtil.search(model, solution.getRoutes(), improvingSteps, maxSegmentLength, isInvertationActive);
 
 		// Find first valid improving change
-		while(!improvingStepList.isEmpty()) {
-			float[] val = improvingStepList.remove();
+		while(!improvingSteps.isEmpty()) {
+			float[] val = improvingSteps.remove();
 
 			// Variation
 			XFVRPMoveUtil.change(solution, val);
@@ -71,105 +69,5 @@ abstract class XFVRPMoveBase extends XFVRPOptImpBase {
 		}
 
 		return null;
-	}
-
-	/**
-	 * Searches all improving steps in search space for a VRP.
-	 */
-	protected PriorityQueue<float[]> search(Node[][] routes) {
-		PriorityQueue<float[]> improvingStepList = new PriorityQueue<>(
-				(o1, o2) -> Float.compare(o2[6], o1[6])
-		);
-
-		int nbrOfRoutes = routes.length;
-		for (int srcRtIdx = 0; srcRtIdx < nbrOfRoutes; srcRtIdx++) {
-			Node[] srcRoute = routes[srcRtIdx];
-			for (int dstRtIdx = 0; dstRtIdx < nbrOfRoutes; dstRtIdx++) {
-				Node[] dstRoute = routes[dstRtIdx];
-				for (int srcPos = 1; srcPos < routes[srcRtIdx].length - 1; srcPos++) {
-					for (int dstPos = 1; dstPos < routes[dstRtIdx].length; dstPos++) {
-						// src node must not be a depot
-						if(routes[srcRtIdx][srcPos].getSiteType() == SiteType.DEPOT)
-							continue;
-						if(srcRtIdx == dstRtIdx && (srcPos == dstPos || dstPos - srcPos == 1)) {
-							continue;
-						}
-
-						for (int segmentLength = 0; segmentLength < maxSegmentLength; segmentLength++) {
-							// src segment must not too big for src route
-							if((srcPos + segmentLength) > srcRoute.length - 2) {
-								break;
-							}
-							// Dst must not lay in the segment or directly behind it (no-move)
-							if(srcRoute == dstRoute && dstPos <= srcPos + segmentLength + 1 && dstPos >= srcPos) {
-								break;
-							}
-
-							searchInRoutes(srcRoute, dstRoute, srcRtIdx, dstRtIdx, srcPos, dstPos, segmentLength, improvingStepList);
-						}
-					}
-				}
-			}
-		}
-
-		return improvingStepList;
-	}
-
-	private void searchInRoutes(Node[] srcRoute, Node[] dstRoute, int srcRtIdx, int dstRtIdx, int srcPos, int dstPos, int segmentLength, PriorityQueue<float[]> improvingStepList) {
-		// dstPos is directly before src
-		if(srcRtIdx == dstRtIdx && srcPos - dstPos == 1) {
-			searchWithDstBefore(srcRoute, srcRtIdx, dstRtIdx, srcPos, dstPos, segmentLength, improvingStepList);
-		} else {
-			searchNormal(srcRoute, dstRoute, srcRtIdx, dstRtIdx, srcPos, dstPos, segmentLength, improvingStepList);
-		}
-	}
-
-	private void searchNormal(Node[] srcRoute, Node[] dstRoute, int srcRtIdx, int dstRtIdx, int srcPos, int dstPos, int segmentLength, PriorityQueue<float[]> improvingStepList) {
-		float old = getDistanceForOptimization(srcRoute[srcPos - 1], srcRoute[srcPos]) +
-				getDistanceForOptimization(srcRoute[srcPos + segmentLength], srcRoute[srcPos + segmentLength + 1]) +
-				getDistanceForOptimization(dstRoute[dstPos - 1], dstRoute[dstPos]);
-
-		// No invert
-		float val =
-				old -
-						(getDistanceForOptimization(srcRoute[srcPos - 1], srcRoute[srcPos + segmentLength + 1]) +
-								getDistanceForOptimization(dstRoute[dstPos - 1], srcRoute[srcPos]) +
-								getDistanceForOptimization(srcRoute[srcPos + segmentLength], dstRoute[dstPos]));
-		if (val > epsilon) improvingStepList.add(new float[]{srcRtIdx, dstRtIdx, srcPos, dstPos, segmentLength, NO_INVERT, val});
-
-		// with invert
-		if (isInvertationActive && segmentLength > 0) {
-			val =
-					old -
-							(getDistanceForOptimization(srcRoute[srcPos - 1], srcRoute[srcPos + segmentLength + 1]) +
-									getDistanceForOptimization(dstRoute[dstPos - 1], srcRoute[srcPos + segmentLength]) +
-									getDistanceForOptimization(srcRoute[srcPos], dstRoute[dstPos]));
-			if (val > epsilon) improvingStepList.add(new float[]{srcRtIdx, dstRtIdx, srcPos, dstPos, segmentLength, INVERT, val});
-		}
-	}
-
-	private void searchWithDstBefore(Node[] route, int srcRtIdx, int dstRtIdx, int srcPos, int dstPos, int segmentLength, PriorityQueue<float[]> improvingStepList) {
-		float old =
-				getDistanceForOptimization(route[dstPos - 1], route[dstPos]) +
-						getDistanceForOptimization(route[dstPos], route[srcPos]) +
-						getDistanceForOptimization(route[srcPos + segmentLength], route[srcPos + segmentLength + 1]);
-
-		// No invert
-		float val =
-				old -
-						(getDistanceForOptimization(route[dstPos - 1], route[srcPos]) +
-								getDistanceForOptimization(route[srcPos + segmentLength], route[dstPos]) +
-								getDistanceForOptimization(route[dstPos], route[srcPos + segmentLength + 1]));
-		if (val > epsilon) improvingStepList.add(new float[]{srcRtIdx, dstRtIdx, srcPos, dstPos, segmentLength, NO_INVERT, val});
-
-		// with invert
-		if (isInvertationActive && segmentLength > 0) {
-			val =
-					old -
-							(getDistanceForOptimization(route[dstPos - 1], route[srcPos + segmentLength]) +
-									getDistanceForOptimization(route[srcPos], route[dstPos]) +
-									getDistanceForOptimization(route[dstPos], route[srcPos + segmentLength + 1]));
-			if (val > epsilon) improvingStepList.add(new float[]{srcRtIdx, dstRtIdx, srcPos, dstPos, segmentLength, INVERT, val});
-		}
 	}
 }

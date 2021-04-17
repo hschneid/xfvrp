@@ -7,6 +7,7 @@ import xf.xfvrp.base.*
 import xf.xfvrp.base.metric.EucledianMetric
 import xf.xfvrp.base.metric.internal.AcceleratedMetricTransformator
 import xf.xfvrp.opt.Solution
+import xf.xfvrp.opt.improve.routebased.move.XFVRPMoveSearchUtil
 import xf.xfvrp.opt.improve.routebased.move.XFVRPSegmentMove
 
 class XFVRPSegmentMove2Spec extends Specification {
@@ -37,6 +38,10 @@ class XFVRPSegmentMove2Spec extends Specification {
 
 	def metric = new EucledianMetric()
 
+	def impList = new PriorityQueue<>(
+			(o1, o2) -> Float.compare(o2[6], o1[6])
+	)
+
 	def "Search single depot - No invert - Find improve"() {
 		def model = initScen()
 		def n = model.getNodes()
@@ -44,9 +49,10 @@ class XFVRPSegmentMove2Spec extends Specification {
 
 		sol = new Solution()
 		sol.setGiantRoute([nd, n[2], n[3], nd, n[4], n[5], nd] as Node[])
+		impList.clear()
 
 		when:
-		def impList = service.search(sol.getRoutes())
+		XFVRPMoveSearchUtil.search(model, sol.getRoutes(), impList, 3, true)
 
 		then:
 		impList.size() > 0
@@ -63,9 +69,10 @@ class XFVRPSegmentMove2Spec extends Specification {
 
 		sol = new Solution()
 		sol.setGiantRoute([nd, n[2], n[3], nd, n[4], n[5], n[6], n[7], nd] as Node[])
+		impList.clear()
 
 		when:
-		def impList = service.search(sol.getRoutes())
+		XFVRPMoveSearchUtil.search(model, sol.getRoutes(), impList, 3, true)
 
 		then:
 		impList.size() > 0
@@ -78,25 +85,26 @@ class XFVRPSegmentMove2Spec extends Specification {
 
 		sol = new Solution()
 		sol.setGiantRoute([nd, n[4], n[2], n[3], n[5], nd] as Node[])
+		impList.clear()
 
 		when:
-		def impList = service.search(sol.getRoutes())
+		XFVRPMoveSearchUtil.search(model, sol.getRoutes(), impList, 3, true)
 
 		then:
 		impList.size() == 0
 	}
 
-	def "Search single depot - Deactived invert - Not the right improve"() {
+	def "Search single depot - Deactivated invert - Not the right improve"() {
 		def model = initScen()
 		def n = model.getNodes()
-		def service = new XFVRPSegmentMove(false)
 		service.setModel(model)
 
 		sol = new Solution()
 		sol.setGiantRoute([nd, n[2], n[3], nd, n[5], n[4], nd] as Node[])
+		impList.clear()
 
 		when:
-		def impList = service.search(sol.getRoutes())
+		XFVRPMoveSearchUtil.search(model, sol.getRoutes(), impList, 3, false)
 
 		then:
 		impList.size() > 0
@@ -111,9 +119,10 @@ class XFVRPSegmentMove2Spec extends Specification {
 
 		sol = new Solution()
 		sol.setGiantRoute([nd2, n[2], n[3], nd, n[5], n[4], nd] as Node[])
+		impList.clear()
 
 		when:
-		def impList = service.search(sol.getRoutes())
+		XFVRPMoveSearchUtil.search(model, sol.getRoutes(), impList, 3, true)
 
 		then:
 		impList.size() > 0
@@ -123,14 +132,14 @@ class XFVRPSegmentMove2Spec extends Specification {
 	def "Search - Deactivated invert - Not the right improve"() {
 		def model = initScen()
 		def n = model.getNodes()
-		def service = new XFVRPSegmentMove(false)
 		service.setModel(model)
 
 		sol = new Solution()
 		sol.setGiantRoute([nd2, n[2], n[3], nd, n[5], n[4], nd] as Node[])
+		impList.clear()
 
 		when:
-		def impList = service.search(sol.getRoutes())
+		XFVRPMoveSearchUtil.search(model, sol.getRoutes(), impList, 3, false)
 
 		then:
 		impList.size() > 0
