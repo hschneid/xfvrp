@@ -7,6 +7,7 @@ import xf.xfvrp.base.*
 import xf.xfvrp.base.metric.EucledianMetric
 import xf.xfvrp.base.metric.internal.AcceleratedMetricTransformator
 import xf.xfvrp.opt.Solution
+import xf.xfvrp.opt.improve.routebased.move.XFVRPMoveUtil
 import xf.xfvrp.opt.improve.routebased.move.XFVRPSegmentMove
 
 class XFVRPSegmentMoveTest extends Specification {
@@ -32,8 +33,8 @@ class XFVRPSegmentMoveTest extends Specification {
         def parameter = [0, 1, 1, 2, 2, 0] as float[]
 
         when:
-        service.change(sol, parameter)
-        service.reverseChange(sol, parameter)
+        XFVRPMoveUtil.change(sol, parameter)
+        XFVRPMoveUtil.reverseChange(sol, parameter)
         def result = sol.getGiantRoute()
 
         then:
@@ -52,8 +53,8 @@ class XFVRPSegmentMoveTest extends Specification {
         def parameter = [0, 0, 2, 6, 1, 0] as float[]
 
         when:
-        service.change(sol, parameter)
-        service.reverseChange(sol, parameter)
+        XFVRPMoveUtil.change(sol, parameter)
+        XFVRPMoveUtil.reverseChange(sol, parameter)
         def result = sol.getGiantRoute()
         then:
         result[0].externID == "1"
@@ -70,8 +71,8 @@ class XFVRPSegmentMoveTest extends Specification {
         def parameter = [0, 0, 3, 2, 1, 0] as float[]
 
         when:
-        service.change(sol, parameter)
-        service.reverseChange(sol, parameter)
+        XFVRPMoveUtil.change(sol, parameter)
+        XFVRPMoveUtil.reverseChange(sol, parameter)
         def result = sol.getGiantRoute()
         then:
         result[0].externID == "1"
@@ -88,8 +89,8 @@ class XFVRPSegmentMoveTest extends Specification {
         def parameter = [0, 1, 1, 2, 2, 1] as float[]
 
         when:
-        service.change(sol, parameter)
-        service.reverseChange(sol, parameter)
+        XFVRPMoveUtil.change(sol, parameter)
+        XFVRPMoveUtil.reverseChange(sol, parameter)
         def result = sol.getGiantRoute()
 
         then:
@@ -108,8 +109,8 @@ class XFVRPSegmentMoveTest extends Specification {
         def parameter = [0, 0, 2, 6, 1, 1] as float[]
 
         when:
-        service.change(sol, parameter)
-        service.reverseChange(sol, parameter)
+        XFVRPMoveUtil.change(sol, parameter)
+        XFVRPMoveUtil.reverseChange(sol, parameter)
         def result = sol.getGiantRoute()
         then:
         result[0].externID == "1"
@@ -126,8 +127,8 @@ class XFVRPSegmentMoveTest extends Specification {
         def parameter = [0, 0, 3, 2, 1, 1] as float[]
 
         when:
-        service.change(sol, parameter)
-        service.reverseChange(sol, parameter)
+        XFVRPMoveUtil.change(sol, parameter)
+        XFVRPMoveUtil.reverseChange(sol, parameter)
         def result = sol.getGiantRoute()
         then:
         result[0].externID == "1"

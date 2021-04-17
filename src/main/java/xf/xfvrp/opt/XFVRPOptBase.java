@@ -77,15 +77,15 @@ public abstract class XFVRPOptBase extends XFVRPBase<XFVRPModel> {
 	 */
 	protected void move(Solution solution, int src, int dst) {
 		Node[] giantTour = solution.getGiantRoute();
-		
+
 		// If src is equal to dst, than nothing can be done.
-		if(src == dst)
+		if (src == dst)
 			return;
 
 		Node[] arr = new Node[1];
 		arr[0] = giantTour[src];
 
-		if(dst < src) {
+		if (dst < src) {
 			System.arraycopy(giantTour, dst, giantTour, dst + 1, src - dst);
 			System.arraycopy(arr, 0, giantTour, dst, arr.length);
 		} else {
@@ -95,33 +95,7 @@ public abstract class XFVRPOptBase extends XFVRPBase<XFVRPModel> {
 			System.arraycopy(giantTour, src + 1, giantTour, src, dst - src);
 			System.arraycopy(arr, 0, giantTour, dst - 1, arr.length);
 		}
-		
-		solution.setGiantRoute(giantTour);
-	}
 
-	/**
-	 * Moves the nodes in the range from srcStart and srcEnd, both inclusive, 
-	 * before the position dst. 
-	 */
-	protected void pathMove(Solution solution, int srcStart, int srcEnd, int dst) throws XFVRPException {
-		if(srcEnd < srcStart)
-			throw new XFVRPException(XFVRPExceptionType.ILLEGAL_ARGUMENT,
-					String.format("Range is defined in wrong way (end is bigger than start) start=%d, end=%d", srcStart, srcEnd)
-			);
-		
-		Node[] giantTour = solution.getGiantRoute();
-		
-		Node[] arr = new Node[srcEnd - srcStart + 1];
-		System.arraycopy(giantTour, srcStart, arr, 0, arr.length);
-
-		if(srcStart < dst) {
-			System.arraycopy(giantTour, srcEnd + 1, giantTour, srcStart, dst - srcEnd);
-			System.arraycopy(arr, 0, giantTour, dst - ((srcEnd - srcStart) + 1), arr.length);
-		} else {
-			System.arraycopy(giantTour, dst, giantTour, dst + (srcEnd - srcStart) + 1, srcStart - dst);
-			System.arraycopy(arr, 0, giantTour, dst, arr.length);
-		}
-		
 		solution.setGiantRoute(giantTour);
 	}
 
@@ -216,97 +190,5 @@ public abstract class XFVRPOptBase extends XFVRPBase<XFVRPModel> {
 	 */
 	protected float getDistanceForOptimization(Node n1, Node n2) {
 		return model.getDistanceForOptimization(n1, n2);
-	}
-
-	/**
-	 * Moves the src-node from its position in src-route
-	 * before the dst-node in dst-route. src-route can be equal to dst-route.
-	 */
-	protected void move2(Solution solution, int srcRouteIdx, int dstRouteIdx, int srcPos, int dstPos) throws XFVRPException {
-		if(srcPos == 0)
-			throw new XFVRPException(XFVRPExceptionType.ILLEGAL_ARGUMENT, "First node in route cannot be moved");
-		if(dstPos == 0)
-			throw new XFVRPException(XFVRPExceptionType.ILLEGAL_ARGUMENT, "It is not possible to insert a node before first node of route");
-		if(srcRouteIdx == dstRouteIdx && (srcPos == dstPos || dstPos - srcPos == 1))
-			return;
-
-		if(srcRouteIdx != dstRouteIdx) {
-			Node[] srcRoute = solution.getRoutes()[srcRouteIdx];
-			Node[] dstRoute = solution.getRoutes()[dstRouteIdx];
-			solution.setRoute(srcRouteIdx, remove(srcRoute, srcPos, srcPos));
-			solution.setRoute(dstRouteIdx, addBefore(dstRoute, srcRoute[srcPos], dstPos));
-		} else {
-			Node[] route = solution.getRoutes()[srcRouteIdx];
-			Node node = route[srcPos];
-			if(srcPos < dstPos) {
-				System.arraycopy(route,srcPos + 1, route, srcPos, dstPos - srcPos);
-				route[dstPos - 1] = node;
-			} else {
-				System.arraycopy(route, dstPos, route, dstPos + 1, srcPos - dstPos);
-				route[dstPos] = node;
-			}
-		}
-	}
-
-	/**
-	 * Moves the nodes in the range from srcStart and srcEnd, both inclusive,
-	 * before the position dstPos from one route to another route.
-	 */
-	protected void pathMove2(Solution solution, int srcRouteIdx, int dstRouteIdx, int srcStart, int srcEnd, int dstPos) throws XFVRPException {
-		if(srcEnd < srcStart)
-			throw new XFVRPException(XFVRPExceptionType.ILLEGAL_ARGUMENT,
-					String.format("Range is defined in wrong way (end is bigger than start) start=%d, end=%d", srcStart, srcEnd)
-			);
-
-		Node[] srcRoute = solution.getRoutes()[srcRouteIdx];
-		Node[] dstRoute = solution.getRoutes()[dstRouteIdx];
-
-		Node[] nodes = new Node[srcEnd - srcStart + 1];
-		System.arraycopy(srcRoute, srcStart, nodes, 0, nodes.length);
-
-		if(srcRouteIdx != dstRouteIdx) {
-			solution.setRoute(srcRouteIdx, remove(srcRoute, srcStart, srcEnd));
-			solution.setRoute(dstRouteIdx, addBefore(dstRoute, nodes, dstPos));
-		} else {
-			if(srcStart < dstPos) {
-				System.arraycopy(srcRoute, srcEnd + 1, srcRoute, srcStart, dstPos - srcEnd);
-				System.arraycopy(nodes, 0, srcRoute, dstPos - ((srcEnd - srcStart) + 1), nodes.length);
-			} else {
-				System.arraycopy(srcRoute, dstPos, srcRoute, dstPos + (srcEnd - srcStart) + 1, srcStart - dstPos);
-				System.arraycopy(nodes, 0, srcRoute, dstPos, nodes.length);
-			}
-		}
-	}
-
-	/**
-	 * Removes nodes from a given route and returns the
-	 * cleaned route
-	 */
-	private Node[] remove(Node[] orig, int srcPosIncl, int dstPosIncl) {
-		Node[] arr = new Node[orig.length - ((dstPosIncl - srcPosIncl) + 1)];
-		System.arraycopy(orig,0, arr, 0, srcPosIncl);
-		System.arraycopy(orig,dstPosIncl + 1, arr, srcPosIncl, orig.length - dstPosIncl - 1);
-
-		return arr;
-	}
-
-	private Node[] addBefore(Node[] orig, Node node, int pos) {
-		Node[] arr = new Node[orig.length + 1];
-
-		System.arraycopy(orig,0, arr, 0, pos);
-		arr[pos] = node;
-		System.arraycopy(orig, pos, arr, pos + 1, orig.length - pos);
-
-		return arr;
-	}
-
-	private Node[] addBefore(Node[] orig, Node[] nodes, int pos) {
-		Node[] arr = new Node[orig.length + nodes.length];
-
-		System.arraycopy(orig,0, arr, 0, pos);
-		System.arraycopy(nodes,0, arr, pos, nodes.length);
-		System.arraycopy(orig, pos, arr, pos + nodes.length, orig.length - pos);
-
-		return arr;
 	}
 }

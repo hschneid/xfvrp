@@ -9,6 +9,7 @@ import xf.xfvrp.base.preset.BlockNameConverter;
 import xf.xfvrp.base.preset.BlockPositionConverter;
 import xf.xfvrp.opt.Solution;
 import xf.xfvrp.opt.XFVRPOptBase;
+import xf.xfvrp.opt.improve.routebased.move.XFVRPMoveUtil;
 import xf.xfvrp.opt.improve.routebased.move.XFVRPSegmentMove;
 
 public class XFVRPRandomChangeService extends XFVRPOptBase implements XFRandomChangeService {
@@ -64,14 +65,14 @@ public class XFVRPRandomChangeService extends XFVRPOptBase implements XFRandomCh
 	}
 
 	private boolean checkMove(Choice choice, Solution solution) throws XFVRPException {
-		operator.change(solution, choice.toArray());
+		XFVRPMoveUtil.change(solution, choice.toArray());
 
 		Quality q = check(solution);
 		if(q.getPenalty() == 0) {
 			return true;
 		}
 
-		operator.reverseChange(solution, choice.toArray());
+		XFVRPMoveUtil.reverseChange(solution, choice.toArray());
 		return false;
 	}
 

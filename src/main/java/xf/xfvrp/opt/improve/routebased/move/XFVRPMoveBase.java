@@ -57,7 +57,7 @@ abstract class XFVRPMoveBase extends XFVRPOptImpBase {
 			float[] val = improvingStepList.remove();
 
 			// Variation
-			change(solution, val);
+			XFVRPMoveUtil.change(solution, val);
 
 			Quality result = checkIt(solution, (int)val[0], (int)val[1]);
 			if(result != null && result.getFitness() < bestResult.getFitness()) {
@@ -66,40 +66,11 @@ abstract class XFVRPMoveBase extends XFVRPOptImpBase {
 			}
 
 			// Reverse-Variation
-			reverseChange(solution, val);
+			XFVRPMoveUtil.reverseChange(solution, val);
 			solution.resetQualities();
 		}
 
 		return null;
-	}
-
-	public void change(Solution solution, float[] val) throws XFVRPException {
-		int srcRouteIdx = (int) val[0];
-		int dstRouteIdx = (int) val[1];
-		int srcPos = (int) val[2];
-		int dstPos = (int) val[3];
-		int segmentLength = (int) val[4];
-		int isInverted = (int) val[5];
-
-		if(isInverted == INVERT) swap2(solution, srcRouteIdx, srcPos, srcPos + segmentLength);
-		pathMove2(solution, srcRouteIdx, dstRouteIdx, srcPos, srcPos + segmentLength, dstPos);
-	}
-
-	public void reverseChange(Solution solution, float[] val) throws XFVRPException {
-		int srcRouteIdx = (int) val[0];
-		int dstRouteIdx = (int) val[1];
-		int srcPos = (int) val[2];
-		int dstPos = (int) val[3];
-		int segmentLength = (int) val[4];
-		int isInverted = (int) val[5];
-
-		if(srcRouteIdx == dstRouteIdx && dstPos > srcPos)
-			pathMove2(solution, dstRouteIdx, srcRouteIdx, dstPos - segmentLength - 1, dstPos - 1, srcPos);
-		else if(srcRouteIdx == dstRouteIdx && dstPos < srcPos)
-			pathMove2(solution, dstRouteIdx, srcRouteIdx, dstPos, dstPos + segmentLength, srcPos + segmentLength + 1);
-		else
-			pathMove2(solution, dstRouteIdx, srcRouteIdx, dstPos, dstPos + segmentLength, srcPos);
-		if(isInverted == INVERT) swap2(solution, srcRouteIdx, srcPos, srcPos + segmentLength);
 	}
 
 	/**

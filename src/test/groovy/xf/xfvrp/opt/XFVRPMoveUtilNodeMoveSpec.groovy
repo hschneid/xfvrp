@@ -4,11 +4,9 @@ import spock.lang.Specification
 import xf.xfvrp.base.Node
 import xf.xfvrp.base.SiteType
 import xf.xfvrp.base.exception.XFVRPException
-import xf.xfvrp.opt.improve.routebased.move.XFVRPNodeMove
+import xf.xfvrp.opt.improve.routebased.move.XFVRPMoveUtil
 
-class Move2Spec extends Specification {
-
-	def service = new XFVRPNodeMove()
+class XFVRPMoveUtilNodeMoveSpec extends Specification {
 
 	def n1 = new Node(externID: "1", siteType: SiteType.DEPOT);
 	def n2 = new Node(externID: "2", siteType: SiteType.CUSTOMER);
@@ -23,7 +21,7 @@ class Move2Spec extends Specification {
 		sol.setGiantRoute([n1, n2, n3, n4, n5, n6, n7] as Node[])
 
 		when:
-		service.move2(sol, 0, 1, 1, 2);
+		XFVRPMoveUtil.move(sol, 0, 1, 1, 1, 2);
 		def result = sol.getGiantRoute()
 		
 		then:
@@ -41,7 +39,7 @@ class Move2Spec extends Specification {
 		sol.setGiantRoute([n1, n2, n3, n4, n5, n6, n7] as Node[])
 
 		when:
-		service.move2(sol, 0, 0, 1, 3);
+		XFVRPMoveUtil.move(sol, 0, 0, 1, 1, 3);
 		def result = sol.getGiantRoute()
 
 		then:
@@ -59,7 +57,7 @@ class Move2Spec extends Specification {
 		sol.setGiantRoute([n1, n2, n3, n5, n6, n7] as Node[])
 
 		when:
-		service.move2(sol, 0, 0, 3, 1);
+		XFVRPMoveUtil.move(sol, 0, 0, 3, 3, 1);
 		def result = sol.getGiantRoute()
 
 		then:
@@ -76,7 +74,7 @@ class Move2Spec extends Specification {
 		sol.setGiantRoute([n1, n2, n3, n4, n5, n6, n7] as Node[])
 
 		when:
-		service.move2(sol, 0, 0, 1, 1);
+		XFVRPMoveUtil.move(sol, 0, 0, 1, 1, 1);
 		def result = sol.getGiantRoute()
 
 		then:
@@ -94,7 +92,7 @@ class Move2Spec extends Specification {
 		sol.setGiantRoute([n1, n2, n3, n4, n5, n6, n7] as Node[])
 
 		when:
-		service.move2(sol, 0, 0, 1, 2);
+		XFVRPMoveUtil.move(sol, 0, 0, 1, 1, 2);
 		def result = sol.getGiantRoute()
 
 		then:
@@ -112,7 +110,7 @@ class Move2Spec extends Specification {
 		sol.setGiantRoute([n1, n2, n3, n4, n5, n6, n7] as Node[])
 
 		when:
-		service.move2(sol, 0, 1, 0, 2);
+		XFVRPMoveUtil.move(sol, 0, 1, 0, 0, 2);
 
 		then:
 		thrown(XFVRPException)
@@ -123,7 +121,7 @@ class Move2Spec extends Specification {
 		sol.setGiantRoute([n1, n2, n3, n4, n5, n6, n7] as Node[])
 
 		when:
-		service.move2(sol, 0, 1, 2, 0);
+		XFVRPMoveUtil.move(sol, 0, 1, 2, 2, 0);
 
 		then:
 		thrown(XFVRPException)

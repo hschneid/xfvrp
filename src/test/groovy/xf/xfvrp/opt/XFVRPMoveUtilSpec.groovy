@@ -4,11 +4,9 @@ import spock.lang.Specification
 import xf.xfvrp.base.Node
 import xf.xfvrp.base.SiteType
 import xf.xfvrp.base.exception.XFVRPException
-import xf.xfvrp.opt.improve.routebased.move.XFVRPNodeMove
+import xf.xfvrp.opt.improve.routebased.move.XFVRPMoveUtil
 
-class SegmentMoveSpec extends Specification {
-
-	def service = new XFVRPNodeMove()
+class XFVRPMoveUtilSpec extends Specification {
 
 	def n1 = new Node(externID: "1", siteType: SiteType.DEPOT)
 	def n2 = new Node(externID: "2", siteType: SiteType.CUSTOMER)
@@ -25,7 +23,7 @@ class SegmentMoveSpec extends Specification {
 		sol.setGiantRoute([n1, n2, n3, n4, n5, n6, n7, n8] as Node[])
 
 		when:
-		service.pathMove2(sol, 0, 1, 2, 3, 2)
+		XFVRPMoveUtil.move(sol, 0, 1, 2, 3, 2)
 
 		def result = sol.getGiantRoute()
 
@@ -44,7 +42,7 @@ class SegmentMoveSpec extends Specification {
 		sol.setGiantRoute([n1, n2, n3, n4, n5, n8] as Node[])
 
 		when:
-		service.pathMove2(sol, 0, 1, 1, 3, 1)
+		XFVRPMoveUtil.move(sol, 0, 1, 1, 3, 1)
 
 		def result = sol.getGiantRoute()
 
@@ -61,7 +59,7 @@ class SegmentMoveSpec extends Specification {
 		sol.setGiantRoute([n1, n2, n3, n4, n5, n6, n7, n8] as Node[])
 
 		when:
-		service.pathMove2(sol, 0, 0, 2, 3, 4)
+		XFVRPMoveUtil.move(sol, 0, 0, 2, 3, 4)
 
 		def result = sol.getGiantRoute()
 
@@ -80,7 +78,7 @@ class SegmentMoveSpec extends Specification {
 		sol.setGiantRoute([n1, n2, n3, n4, n5, n6, n7, n8] as Node[])
 
 		when:
-		service.pathMove2(sol, 0, 1,1, 1, 1)
+		XFVRPMoveUtil.move(sol, 0, 1,1, 1, 1)
 
 		def result = sol.getGiantRoute()
 
@@ -99,7 +97,7 @@ class SegmentMoveSpec extends Specification {
 		sol.setGiantRoute([n1, n2, n3, n4, n6, n7, n8] as Node[])
 
 		when:
-		service.pathMove2(sol, 0, 0,2, 3, 6)
+		XFVRPMoveUtil.move(sol, 0, 0,2, 3, 6)
 
 		def result = sol.getGiantRoute()
 
@@ -117,7 +115,7 @@ class SegmentMoveSpec extends Specification {
 		sol.setGiantRoute([n1, n2, n3, n4, n6, n7, n8] as Node[])
 
 		when:
-		service.pathMove2(sol, 0, 0,4, 5, 2)
+		XFVRPMoveUtil.move(sol, 0, 0,4, 5, 2)
 
 		def result = sol.getGiantRoute()
 
@@ -135,7 +133,7 @@ class SegmentMoveSpec extends Specification {
 		sol.setGiantRoute([n1, n2, n3, n4, n6, n7, n8] as Node[])
 
 		when:
-		service.pathMove2(sol, 0, 0,3, 5, 2)
+		XFVRPMoveUtil.move(sol, 0, 0,3, 5, 2)
 
 		def result = sol.getGiantRoute()
 
@@ -153,7 +151,7 @@ class SegmentMoveSpec extends Specification {
 		sol.setGiantRoute([n1, n2, n3, n4, n5, n6, n7, n8] as Node[])
 
 		when:
-		service.pathMove2(sol, 0, 1, 2, 1, 3)
+		XFVRPMoveUtil.move(sol, 0, 1, 2, 1, 3)
 
 		sol.getGiantRoute()
 		
