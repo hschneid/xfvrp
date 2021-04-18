@@ -78,7 +78,7 @@ public class XFVRPMoveUtil {
      * Inverts the node sequence for a certain route
      * in the range from start to end (both inclusive)
      */
-    private static void swap(Solution solution, int routeIdx, int start, int end) {
+    public static void swap(Solution solution, int routeIdx, int start, int end) {
         Node[] route = solution.getRoutes()[routeIdx];
 
         int offset = 0;
