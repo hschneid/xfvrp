@@ -17,26 +17,26 @@ public class XFVRPSwapUtil {
      * Changes a solution according to given parameter
      */
     public static void change(Solution solution, float[] val) throws XFVRPException {
-        int aRouteIndex = (int) val[0];
-        int bRouteIndex = (int) val[1];
-        int aPos = (int) val[2];
-        int bPos = (int) val[3];
-        int aSegmentLength = (int) val[4];
-        int bSegmentLength = (int) val[5];
-        int invertType = (int) val[6];
+        int aRouteIndex = (int) val[1];
+        int bRouteIndex = (int) val[2];
+        int aPos = (int) val[3];
+        int bPos = (int) val[4];
+        int aSegmentLength = (int) val[5];
+        int bSegmentLength = (int) val[6];
+        int invertType = (int) val[7];
 
         invert(solution, aRouteIndex, bRouteIndex, aPos, bPos, aSegmentLength, bSegmentLength, invertType);
         exchange(solution, aRouteIndex, bRouteIndex, aPos, bPos, aSegmentLength, bSegmentLength);
     }
 
     public static void reverseChange(Solution solution, float[] val) throws XFVRPException {
-        int aRouteIndex = (int) val[0];
-        int bRouteIndex = (int) val[1];
-        int aPos = (int) val[2];
-        int bPos = (int) val[3];
-        int aSegmentLength = (int) val[4];
-        int bSegmentLength = (int) val[5];
-        int invertType = (int) val[6];
+        int aRouteIndex = (int) val[1];
+        int bRouteIndex = (int) val[2];
+        int aPos = (int) val[3];
+        int bPos = (int) val[4];
+        int aSegmentLength = (int) val[5];
+        int bSegmentLength = (int) val[6];
+        int invertType = (int) val[7];
 
         // Swap segment parameter, that A is always before B
         if(aRouteIndex == bRouteIndex && bPos < aPos) {

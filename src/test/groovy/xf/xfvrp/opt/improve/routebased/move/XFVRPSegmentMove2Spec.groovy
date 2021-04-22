@@ -56,10 +56,10 @@ class XFVRPSegmentMove2Spec extends Specification {
 
 		then:
 		impList.size() > 0
-		impList.stream().filter({f -> f.toList().subList(0,6) == [0,1,1,2,1,0]}).count() == 1
-		impList.stream().filter({f -> f.toList().subList(0,6) == [1,0,1,2,1,0]}).count() == 1
-		Math.abs(impList.stream().find({f -> f.toList().subList(0,6) == [1,0,1,2,1,0]})[6] - 4) < 0.001f
-		Math.abs(impList.stream().find({f -> f.toList().subList(0,6) == [0,1,1,2,1,0]})[6] - 4.828) < 0.001f
+		impList.stream().filter({f -> f.toList().subList(1,7) == [0,1,1,2,1,0]}).count() == 1
+		impList.stream().filter({f -> f.toList().subList(1,7) == [1,0,1,2,1,0]}).count() == 1
+		Math.abs(impList.stream().find({f -> f.toList().subList(1,7) == [1,0,1,2,1,0]})[0] - 4) < 0.001f
+		Math.abs(impList.stream().find({f -> f.toList().subList(1,7) == [0,1,1,2,1,0]})[0] - 4.828) < 0.001f
 	}
 
 	def "Search single depot - Long scenario - Find improve"() {
@@ -109,7 +109,7 @@ class XFVRPSegmentMove2Spec extends Specification {
 		then:
 		impList.size() > 0
 		// Invertation flag is never 1
-		impList.stream().filter({f -> f[5] == 1}).count() == 0
+		impList.stream().filter({f -> f[6] == 1}).count() == 0
 	}
 
 	def "Search multi depot - With invert - Find improve"() {
@@ -126,7 +126,7 @@ class XFVRPSegmentMove2Spec extends Specification {
 
 		then:
 		impList.size() > 0
-		impList.stream().filter({f -> f[5] == 1}).count() > 0
+		impList.stream().filter({f -> f[6] == 1}).count() > 0
 	}
 
 	def "Search - Deactivated invert - Not the right improve"() {
@@ -143,7 +143,7 @@ class XFVRPSegmentMove2Spec extends Specification {
 
 		then:
 		impList.size() > 0
-		impList.stream().filter({f -> f[5] == 1}).count() == 0
+		impList.stream().filter({f -> f[6] == 1}).count() == 0
 	}
 
 	XFVRPModel initScen() {

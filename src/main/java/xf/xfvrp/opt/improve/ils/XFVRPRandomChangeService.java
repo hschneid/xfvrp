@@ -167,7 +167,7 @@ public class XFVRPRandomChangeService extends XFVRPOptBase implements XFRandomCh
 		}
 
 		public float[] toArray() {
-			return new float[] {srcRouteIdx, dstRouteIdx, srcPos, dstPos, segmentLength, XFVRPMoveUtil.NO_INVERT};
+			return new float[] {-1, srcRouteIdx, dstRouteIdx, srcPos, dstPos, segmentLength, XFVRPMoveUtil.NO_INVERT};
 		}
 	}
 }

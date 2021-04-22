@@ -11,24 +11,24 @@ public class XFVRPMoveUtil {
     public static final int INVERT = 1;
 
     public static void change(Solution solution, float[] val) throws XFVRPException {
-        int srcRouteIdx = (int) val[0];
-        int dstRouteIdx = (int) val[1];
-        int srcPos = (int) val[2];
-        int dstPos = (int) val[3];
-        int segmentLength = (int) val[4];
-        int isInverted = (int) val[5];
+        int srcRouteIdx = (int) val[1];
+        int dstRouteIdx = (int) val[2];
+        int srcPos = (int) val[3];
+        int dstPos = (int) val[4];
+        int segmentLength = (int) val[5];
+        int isInverted = (int) val[6];
 
         if(isInverted == INVERT) swap(solution, srcRouteIdx, srcPos, srcPos + segmentLength);
         move(solution, srcRouteIdx, dstRouteIdx, srcPos, srcPos + segmentLength, dstPos);
     }
 
     public static void reverseChange(Solution solution, float[] val) throws XFVRPException {
-        int srcRouteIdx = (int) val[0];
-        int dstRouteIdx = (int) val[1];
-        int srcPos = (int) val[2];
-        int dstPos = (int) val[3];
-        int segmentLength = (int) val[4];
-        int isInverted = (int) val[5];
+        int srcRouteIdx = (int) val[1];
+        int dstRouteIdx = (int) val[2];
+        int srcPos = (int) val[3];
+        int dstPos = (int) val[4];
+        int segmentLength = (int) val[5];
+        int isInverted = (int) val[6];
 
         if(srcRouteIdx == dstRouteIdx && dstPos > srcPos)
             move(solution, dstRouteIdx, srcRouteIdx, dstPos - segmentLength - 1, dstPos - 1, srcPos);

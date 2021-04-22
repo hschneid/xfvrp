@@ -17,19 +17,16 @@ import java.util.Queue;
  *
  *
  * This neighborhood search produces improved solutions by
- * exchanging two segments. The size of each segments may be
- * limited upto 3 nodes. The nodes of a segment can be inverted.
- *
- * Size of NS is O(k * n²), where k is segment size and nbr of invert types
+ * exchanging two nodes. Size of NS is O(n²)
  *
  * @author hschneid
  *
  */
-public class XFVRPSegmentSwap extends XFVRPOptImpBase {
+public class XFVRPSingleSwap extends XFVRPOptImpBase {
 
-	private boolean isInvertationActive = true;
+	private boolean isInvertationActive = false;
 	private boolean isSegmentLengthEqual = false;
-	private int maxSegmentLength = 3;
+	private int maxSegmentLength = 1;
 
 	@Override
 	protected Queue<float[]> search(Node[][] routes) {

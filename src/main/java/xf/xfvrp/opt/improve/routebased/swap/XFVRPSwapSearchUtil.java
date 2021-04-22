@@ -12,7 +12,7 @@ public class XFVRPSwapSearchUtil {
     /**
      * Searches all improving steps in search space for a VRP.
      */
-    public static void search(XFVRPModel model, Node[][] routes, Queue<float[]> improvingSteps, int maxSegmentLength, boolean isSegmentLengthEqual, boolean isInvertationActive) {
+    public static void search(XFVRPModel model, Node[][] routes, Queue<float[]> improvingSteps, int maxSegmentLength, boolean isSegmentLengthEqual, boolean isInvertActive) {
         int nbrOfRoutes = routes.length;
         for (int aRtIdx = 0; aRtIdx < nbrOfRoutes; aRtIdx++) {
             Node[] aRoute = routes[aRtIdx];
@@ -53,7 +53,7 @@ public class XFVRPSwapSearchUtil {
                                         aPos, aSegmentLength,
                                         bPos, bSegmentLength,
                                         improvingSteps,
-                                        isInvertationActive
+                                        isInvertActive
                                 );
                             }
                         }
@@ -74,7 +74,7 @@ public class XFVRPSwapSearchUtil {
             int bPos,
             int bSegmentLength,
             Queue<float[]> improvingSteps,
-            boolean isInvertationActive
+            boolean isInvertActive
     ) {
         // B-segment is directly before A-segment
         if(aRtIdx == bRtIdx && aPos - (bPos + bSegmentLength) == 1) {
@@ -85,7 +85,7 @@ public class XFVRPSwapSearchUtil {
                     aPos, aSegmentLength,
                     bPos, bSegmentLength,
                     improvingSteps,
-                    isInvertationActive
+                    isInvertActive
             );
         }
         // A-segment is directly before B-segment
@@ -98,7 +98,7 @@ public class XFVRPSwapSearchUtil {
                     bPos, bSegmentLength,
                     aPos, aSegmentLength,
                     improvingSteps,
-                    isInvertationActive
+                    isInvertActive
             );
         } else {
             searchInRoutesNormal(
@@ -108,12 +108,12 @@ public class XFVRPSwapSearchUtil {
                     aPos, aSegmentLength,
                     bPos, bSegmentLength,
                     improvingSteps,
-                    isInvertationActive
+                    isInvertActive
             );
         }
     }
 
-    private static void searchInRoutesNormal(XFVRPModel model, Node[] aRoute, Node[] bRoute, int aRtIdx, int bRtIdx, int aPos, int aSegmentLength, int bPos, int bSegmentLength, Queue<float[]> improvingSteps, boolean isInvertationActive) {
+    private static void searchInRoutesNormal(XFVRPModel model, Node[] aRoute, Node[] bRoute, int aRtIdx, int bRtIdx, int aPos, int aSegmentLength, int bPos, int bSegmentLength, Queue<float[]> improvingSteps, boolean isInvertActive) {
         int aa = aPos + aSegmentLength;
         int bb = bPos + bSegmentLength;
 
@@ -129,42 +129,42 @@ public class XFVRPSwapSearchUtil {
                 model.getDistance(bRoute[bPos - 1], aRoute[aPos]) +
                 model.getDistance(aRoute[aa], bRoute[bb + 1]));
         if(val > EPSILON) {
-            improvingSteps.add(new float[]{aRtIdx, bRtIdx, aPos, bPos, aSegmentLength, bSegmentLength, XFVRPSwapUtil.NO_INVERT, val});
+            improvingSteps.add(new float[]{val, aRtIdx, bRtIdx, aPos, bPos, aSegmentLength, bSegmentLength, XFVRPSwapUtil.NO_INVERT});
         }
 
         // BOTH INVERT
-        if(isInvertationActive && aSegmentLength > 0 && bSegmentLength > 0) {
+        if(isInvertActive && aSegmentLength > 0 && bSegmentLength > 0) {
             val = old - (model.getDistance(aRoute[aPos - 1], bRoute[bb]) +
                     model.getDistance(bRoute[bPos], aRoute[aa + 1]) +
                     model.getDistance(bRoute[bPos - 1], aRoute[aa]) +
                     model.getDistance(aRoute[aPos], bRoute[bb + 1]));
             if(val > EPSILON) {
-                improvingSteps.add(new float[]{aRtIdx, bRtIdx, aPos, bPos, aSegmentLength, bSegmentLength, XFVRPSwapUtil.BOTH_INVERT, val});
+                improvingSteps.add(new float[]{val, aRtIdx, bRtIdx, aPos, bPos, aSegmentLength, bSegmentLength, XFVRPSwapUtil.BOTH_INVERT});
             }
         }
         // A INVERT
-        if(isInvertationActive && aSegmentLength > 0) {
+        if(isInvertActive && aSegmentLength > 0) {
             val = old - (model.getDistance(aRoute[aPos - 1], bRoute[bPos]) +
                     model.getDistance(bRoute[bb], aRoute[aa + 1]) +
                     model.getDistance(bRoute[bPos - 1], aRoute[aa]) +
                     model.getDistance(aRoute[aPos], bRoute[bb + 1]));
             if(val > EPSILON) {
-                improvingSteps.add(new float[]{aRtIdx, bRtIdx, aPos, bPos, aSegmentLength, bSegmentLength, XFVRPSwapUtil.A_INVERT, val});
+                improvingSteps.add(new float[]{val, aRtIdx, bRtIdx, aPos, bPos, aSegmentLength, bSegmentLength, XFVRPSwapUtil.A_INVERT});
             }
         }
         // B INVERT
-        if(isInvertationActive && bSegmentLength > 0) {
+        if(isInvertActive && bSegmentLength > 0) {
             val = old - (model.getDistance(aRoute[aPos - 1], bRoute[bb]) +
                     model.getDistance(bRoute[bPos], aRoute[aa + 1]) +
                     model.getDistance(bRoute[bPos - 1], aRoute[aPos]) +
                     model.getDistance(aRoute[aa], bRoute[bb + 1]));
             if(val > EPSILON) {
-                improvingSteps.add(new float[]{aRtIdx, bRtIdx, aPos, bPos, aSegmentLength, bSegmentLength, XFVRPSwapUtil.B_INVERT, val});
+                improvingSteps.add(new float[]{val, aRtIdx, bRtIdx, aPos, bPos, aSegmentLength, bSegmentLength, XFVRPSwapUtil.B_INVERT});
             }
         }
     }
 
-    private static void searchInRoutesBbeforeA(XFVRPModel model, Node[] route, int rtIdx, int aPos, int aSegmentLength, int bPos, int bSegmentLength, Queue<float[]> improvingSteps, boolean isInvertationActive) {
+    private static void searchInRoutesBbeforeA(XFVRPModel model, Node[] route, int rtIdx, int aPos, int aSegmentLength, int bPos, int bSegmentLength, Queue<float[]> improvingSteps, boolean isInvertActive) {
         int aa = aPos + aSegmentLength;
         int bb = bPos + bSegmentLength;
 
@@ -181,40 +181,40 @@ public class XFVRPSwapSearchUtil {
                         model.getDistance(route[bb], route[aa + 1])
         );
         if(val > EPSILON) {
-            improvingSteps.add(new float[]{rtIdx, rtIdx, aPos, bPos, aSegmentLength, bSegmentLength, XFVRPSwapUtil.NO_INVERT, val});
+            improvingSteps.add(new float[]{val, rtIdx, rtIdx, aPos, bPos, aSegmentLength, bSegmentLength, XFVRPSwapUtil.NO_INVERT});
         }
 
         // BOTH INVERT
-        if(isInvertationActive && aSegmentLength > 0 && bSegmentLength > 0) {
+        if(isInvertActive && aSegmentLength > 0 && bSegmentLength > 0) {
             val = old - (
                     model.getDistance(route[bPos - 1], route[aa]) +
                             model.getDistance(route[aPos], route[bb]) +
                             model.getDistance(route[bPos], route[aa + 1])
             );
             if(val > EPSILON) {
-                improvingSteps.add(new float[]{rtIdx, rtIdx, aPos, bPos, aSegmentLength, bSegmentLength, XFVRPSwapUtil.BOTH_INVERT, val});
+                improvingSteps.add(new float[]{val, rtIdx, rtIdx, aPos, bPos, aSegmentLength, bSegmentLength, XFVRPSwapUtil.BOTH_INVERT});
             }
         }
         // A INVERT
-        if(isInvertationActive && aSegmentLength > 0) {
+        if(isInvertActive && aSegmentLength > 0) {
             val = old - (
                     model.getDistance(route[bPos - 1], route[aa]) +
                             model.getDistance(route[aPos], route[bPos]) +
                             model.getDistance(route[bb], route[aa + 1])
             );
             if(val > EPSILON) {
-                improvingSteps.add(new float[]{rtIdx, rtIdx, aPos, bPos, aSegmentLength, bSegmentLength, XFVRPSwapUtil.A_INVERT, val});
+                improvingSteps.add(new float[]{val, rtIdx, rtIdx, aPos, bPos, aSegmentLength, bSegmentLength, XFVRPSwapUtil.A_INVERT});
             }
         }
         // B INVERT
-        if(isInvertationActive && bSegmentLength > 0) {
+        if(isInvertActive && bSegmentLength > 0) {
             val = old - (
                     model.getDistance(route[bPos - 1], route[aPos]) +
                             model.getDistance(route[aa], route[bb]) +
                             model.getDistance(route[bPos], route[aa + 1])
             );
             if(val > EPSILON) {
-                improvingSteps.add(new float[]{rtIdx, rtIdx, aPos, bPos, aSegmentLength, bSegmentLength, XFVRPSwapUtil.B_INVERT, val});
+                improvingSteps.add(new float[]{val, rtIdx, rtIdx, aPos, bPos, aSegmentLength, bSegmentLength, XFVRPSwapUtil.B_INVERT});
             }
         }
     }

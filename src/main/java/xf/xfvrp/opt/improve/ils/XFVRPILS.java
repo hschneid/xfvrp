@@ -4,8 +4,8 @@ import xf.xfvrp.base.exception.XFVRPException;
 import xf.xfvrp.opt.Solution;
 import xf.xfvrp.opt.XFVRPOptBase;
 import xf.xfvrp.opt.improve.XFVRPSwap;
-import xf.xfvrp.opt.improve.routebased.move.XFVRPNodeMove;
 import xf.xfvrp.opt.improve.routebased.move.XFVRPSegmentMove;
+import xf.xfvrp.opt.improve.routebased.move.XFVRPSingleMove;
 
 /** 
  * Copyright (c) 2012-present Holger Schneider
@@ -31,7 +31,7 @@ public class XFVRPILS extends XFILS {
 	@Override
 	public Solution execute(Solution solution) throws XFVRPException {
 		optArr = new XFVRPOptBase[]{
-				new XFVRPNodeMove(),
+				new XFVRPSingleMove(),
 				new XFVRPSwap(),
 				new XFVRPSegmentMove()
 		};

@@ -3,11 +3,11 @@ package xf.xfvrp.opt
 import spock.lang.Specification
 import xf.xfvrp.base.Node
 import xf.xfvrp.base.SiteType
-import xf.xfvrp.opt.improve.routebased.move.XFVRPNodeMove
+import xf.xfvrp.opt.improve.routebased.move.XFVRPSingleMove
 
 class SwapSpec extends Specification {
 
-	def service = new XFVRPNodeMove();
+	def service = new XFVRPSingleMove();
 	
 	def "Regular swap - one node"() {
 		def n1 = new Node(externID: "1", siteType: SiteType.DEPOT);

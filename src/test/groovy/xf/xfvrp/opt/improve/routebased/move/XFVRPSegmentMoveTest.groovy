@@ -28,7 +28,7 @@ class XFVRPSegmentMoveTest extends Specification {
 
     def "change - reset - different routes"() {
         sol.setGiantRoute([n1, n2, n3, n4, n5, n6, n7, n8] as Node[])
-        def parameter = [0, 1, 1, 2, 2, 0] as float[]
+        def parameter = [-1, 0, 1, 1, 2, 2, 0] as float[]
 
         when:
         XFVRPMoveUtil.change(sol, parameter)
@@ -48,7 +48,7 @@ class XFVRPSegmentMoveTest extends Specification {
 
     def "change - reset - same routes - src < dst"() {
         sol.setGiantRoute([n1, n2, n3, n4, n6, n7, n8] as Node[])
-        def parameter = [0, 0, 2, 6, 1, 0] as float[]
+        def parameter = [-1, 0, 0, 2, 6, 1, 0] as float[]
 
         when:
         XFVRPMoveUtil.change(sol, parameter)
@@ -66,7 +66,7 @@ class XFVRPSegmentMoveTest extends Specification {
 
     def "change - reset - same routes - src > dst"() {
         sol.setGiantRoute([n1, n2, n3, n4, n6, n7, n8] as Node[])
-        def parameter = [0, 0, 3, 2, 1, 0] as float[]
+        def parameter = [-1, 0, 0, 3, 2, 1, 0] as float[]
 
         when:
         XFVRPMoveUtil.change(sol, parameter)
@@ -84,7 +84,7 @@ class XFVRPSegmentMoveTest extends Specification {
 
     def "change - reset - different routes - with invert"() {
         sol.setGiantRoute([n1, n2, n3, n4, n5, n6, n7, n8] as Node[])
-        def parameter = [0, 1, 1, 2, 2, 1] as float[]
+        def parameter = [-1, 0, 1, 1, 2, 2, 1] as float[]
 
         when:
         XFVRPMoveUtil.change(sol, parameter)
@@ -104,7 +104,7 @@ class XFVRPSegmentMoveTest extends Specification {
 
     def "change - reset - same routes - src < dst - with invert"() {
         sol.setGiantRoute([n1, n2, n3, n4, n6, n7, n8] as Node[])
-        def parameter = [0, 0, 2, 6, 1, 1] as float[]
+        def parameter = [-1, 0, 0, 2, 6, 1, 1] as float[]
 
         when:
         XFVRPMoveUtil.change(sol, parameter)
@@ -122,7 +122,7 @@ class XFVRPSegmentMoveTest extends Specification {
 
     def "change - reset - same routes - src > dst - with invert"() {
         sol.setGiantRoute([n1, n2, n3, n4, n6, n7, n8] as Node[])
-        def parameter = [0, 0, 3, 2, 1, 1] as float[]
+        def parameter = [-1, 0, 0, 3, 2, 1, 1] as float[]
 
         when:
         XFVRPMoveUtil.change(sol, parameter)

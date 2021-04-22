@@ -14,10 +14,6 @@ public class XFVRPMoveSearchUtil {
      * Searches all improving steps in search space for a VRP.
      */
     public static void search(XFVRPModel model, Node[][] routes, Queue<float[]> improvingSteps, int maxSegmentLength, boolean isInvertationActive) {
-        /*PriorityQueue<float[]> improvingSteps = new PriorityQueue<>(
-                (o1, o2) -> Float.compare(o2[6], o1[6])
-        );*/
-
         int nbrOfRoutes = routes.length;
         for (int srcRtIdx = 0; srcRtIdx < nbrOfRoutes; srcRtIdx++) {
             Node[] srcRoute = routes[srcRtIdx];
@@ -70,7 +66,9 @@ public class XFVRPMoveSearchUtil {
                         (model.getDistanceForOptimization(srcRoute[srcPos - 1], srcRoute[srcPos + segmentLength + 1]) +
                                 model.getDistanceForOptimization(dstRoute[dstPos - 1], srcRoute[srcPos]) +
                                 model.getDistanceForOptimization(srcRoute[srcPos + segmentLength], dstRoute[dstPos]));
-        if (val > EPSILON) improvingSteps.add(new float[]{srcRtIdx, dstRtIdx, srcPos, dstPos, segmentLength, XFVRPMoveUtil.NO_INVERT, val});
+        if (val > EPSILON) improvingSteps.add(new float[]
+                {val, srcRtIdx, dstRtIdx, srcPos, dstPos, segmentLength, XFVRPMoveUtil.NO_INVERT}
+                );
 
         // with invert
         if (isInvertationActive && segmentLength > 0) {
@@ -79,7 +77,9 @@ public class XFVRPMoveSearchUtil {
                             (model.getDistanceForOptimization(srcRoute[srcPos - 1], srcRoute[srcPos + segmentLength + 1]) +
                                     model.getDistanceForOptimization(dstRoute[dstPos - 1], srcRoute[srcPos + segmentLength]) +
                                     model.getDistanceForOptimization(srcRoute[srcPos], dstRoute[dstPos]));
-            if (val > EPSILON) improvingSteps.add(new float[]{srcRtIdx, dstRtIdx, srcPos, dstPos, segmentLength, XFVRPMoveUtil.INVERT, val});
+            if (val > EPSILON) improvingSteps.add(new float[]
+                    {val, srcRtIdx, dstRtIdx, srcPos, dstPos, segmentLength, XFVRPMoveUtil.INVERT}
+                    );
         }
     }
 
@@ -95,7 +95,9 @@ public class XFVRPMoveSearchUtil {
                         (model.getDistanceForOptimization(route[dstPos - 1], route[srcPos]) +
                                 model.getDistanceForOptimization(route[srcPos + segmentLength], route[dstPos]) +
                                 model.getDistanceForOptimization(route[dstPos], route[srcPos + segmentLength + 1]));
-        if (val > EPSILON) improvingSteps.add(new float[]{srcRtIdx, dstRtIdx, srcPos, dstPos, segmentLength, XFVRPMoveUtil.NO_INVERT, val});
+        if (val > EPSILON) improvingSteps.add(new float[]
+                {val, srcRtIdx, dstRtIdx, srcPos, dstPos, segmentLength, XFVRPMoveUtil.NO_INVERT}
+                );
 
         // with invert
         if (isInvertationActive && segmentLength > 0) {
@@ -104,7 +106,9 @@ public class XFVRPMoveSearchUtil {
                             (model.getDistanceForOptimization(route[dstPos - 1], route[srcPos + segmentLength]) +
                                     model.getDistanceForOptimization(route[srcPos], route[dstPos]) +
                                     model.getDistanceForOptimization(route[dstPos], route[srcPos + segmentLength + 1]));
-            if (val > EPSILON) improvingSteps.add(new float[]{srcRtIdx, dstRtIdx, srcPos, dstPos, segmentLength, XFVRPMoveUtil.INVERT, val});
+            if (val > EPSILON) improvingSteps.add(new float[]
+                    {val, srcRtIdx, dstRtIdx, srcPos, dstPos, segmentLength, XFVRPMoveUtil.INVERT}
+                    );
         }
     }
 }

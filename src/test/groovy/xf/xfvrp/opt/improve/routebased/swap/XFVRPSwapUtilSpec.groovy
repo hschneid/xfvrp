@@ -21,7 +21,7 @@ class XFVRPSwapUtilSpec extends Specification {
 		sol.setGiantRoute([nd, n1, n2, nd, n3, n4, nd] as Node[])
 		
 		when:
-		XFVRPSwapUtil.change(sol, [0, 1, 1, 2, 0, 0, 0] as float[])
+		XFVRPSwapUtil.change(sol, [-1, 0, 1, 1, 2, 0, 0, 0] as float[])
 		def result = sol.getGiantRoute()
 		
 		then:
@@ -39,7 +39,7 @@ class XFVRPSwapUtilSpec extends Specification {
 		sol.setGiantRoute([nd, n1, n2, n3, n4, nd] as Node[])
 
 		when:
-		XFVRPSwapUtil.change(sol, [0, 0, 2, 4, 0, 0, 0] as float[])
+		XFVRPSwapUtil.change(sol, [-1, 0, 0, 2, 4, 0, 0, 0] as float[])
 		def result = sol.getGiantRoute()
 
 		then:
@@ -56,7 +56,7 @@ class XFVRPSwapUtilSpec extends Specification {
 		sol.setGiantRoute([nd, n1, n2, n3, n4, nd] as Node[])
 
 		when:
-		XFVRPSwapUtil.change(sol, [0, 0, 4, 2, 0, 0, 0] as float[])
+		XFVRPSwapUtil.change(sol, [-1, 0, 0, 4, 2, 0, 0, 0] as float[])
 		def result = sol.getGiantRoute()
 
 		then:
@@ -73,7 +73,7 @@ class XFVRPSwapUtilSpec extends Specification {
 		sol.setGiantRoute([nd, n1, n2, n3, n4, nd] as Node[])
 
 		when:
-		XFVRPSwapUtil.change(sol, [0, 0, 2, 3, 0, 0, 0] as float[])
+		XFVRPSwapUtil.change(sol, [-1, 0, 0, 2, 3, 0, 0, 0] as float[])
 		def result = sol.getGiantRoute()
 
 		then:
@@ -90,7 +90,7 @@ class XFVRPSwapUtilSpec extends Specification {
 		sol.setGiantRoute([nd, n1, n2, n3, n4, nd] as Node[])
 
 		when:
-		XFVRPSwapUtil.change(sol, [0, 0, 3, 2, 0, 0, 0] as float[])
+		XFVRPSwapUtil.change(sol, [-1, 0, 0, 3, 2, 0, 0, 0] as float[])
 		def result = sol.getGiantRoute()
 
 		then:
@@ -109,7 +109,7 @@ class XFVRPSwapUtilSpec extends Specification {
 		sol.setGiantRoute([nd, n1, n2, n3, nd, n4, n5, n6, nd] as Node[])
 
 		when:
-		XFVRPSwapUtil.change(sol, [0, 1, 2, 1, 1, 1, 0] as float[])
+		XFVRPSwapUtil.change(sol, [-1, 0, 1, 2, 1, 1, 1, 0] as float[])
 		def result = sol.getGiantRoute()
 
 		then:
@@ -129,7 +129,7 @@ class XFVRPSwapUtilSpec extends Specification {
 		sol.setGiantRoute([nd, n1, n2, n3, nd, n4, n5, n6, nd] as Node[])
 
 		when:
-		XFVRPSwapUtil.change(sol, [0, 1, 1, 2, 2, 1, 0] as float[])
+		XFVRPSwapUtil.change(sol, [-1, 0, 1, 1, 2, 2, 1, 0] as float[])
 		def result = sol.getGiantRoute()
 
 		then:
@@ -149,7 +149,7 @@ class XFVRPSwapUtilSpec extends Specification {
 		sol.setGiantRoute([nd, n1, n2, n3, n4, n5, n6, nd] as Node[])
 
 		when:
-		XFVRPSwapUtil.change(sol, [0, 0, 1, 4, 1, 2, 0] as float[])
+		XFVRPSwapUtil.change(sol, [-1, 0, 0, 1, 4, 1, 2, 0] as float[])
 		def result = sol.getGiantRoute()
 
 		then:
@@ -168,7 +168,7 @@ class XFVRPSwapUtilSpec extends Specification {
 		sol.setGiantRoute([nd, n1, n2, n3, n4, n5, n6, nd] as Node[])
 
 		when:
-		XFVRPSwapUtil.change(sol, [0, 0, 4, 2, 2, 1, 0] as float[])
+		XFVRPSwapUtil.change(sol, [-1, 0, 0, 4, 2, 2, 1, 0] as float[])
 		def result = sol.getGiantRoute()
 
 		then:
@@ -187,7 +187,7 @@ class XFVRPSwapUtilSpec extends Specification {
 		sol.setGiantRoute([nd, n1, n2, n3, n4, n5, n6, nd] as Node[])
 
 		when:
-		XFVRPSwapUtil.change(sol, [0, 0, 1, 4, 1, 1, 0] as float[])
+		XFVRPSwapUtil.change(sol, [-1, 0, 0, 1, 4, 1, 1, 0] as float[])
 		def result = sol.getGiantRoute()
 
 		then:
@@ -206,7 +206,7 @@ class XFVRPSwapUtilSpec extends Specification {
 		sol.setGiantRoute([nd, n1, n2, n3, n4, n5, n6, nd] as Node[])
 
 		when:
-		XFVRPSwapUtil.change(sol, [0, 0, 1, 4, 1, 2, XFVRPSwapUtil.BOTH_INVERT] as float[])
+		XFVRPSwapUtil.change(sol, [-1, 0, 0, 1, 4, 1, 2, XFVRPSwapUtil.BOTH_INVERT] as float[])
 		def result = sol.getGiantRoute()
 
 		then:
@@ -225,7 +225,7 @@ class XFVRPSwapUtilSpec extends Specification {
 		sol.setGiantRoute([nd, n1, n2, n3, n4, n5, n6, nd] as Node[])
 
 		when:
-		XFVRPSwapUtil.change(sol, [0, 0, 1, 4, 1, 2, XFVRPSwapUtil.B_INVERT] as float[])
+		XFVRPSwapUtil.change(sol, [-1, 0, 0, 1, 4, 1, 2, XFVRPSwapUtil.B_INVERT] as float[])
 		def result = sol.getGiantRoute()
 
 		then:
@@ -245,7 +245,7 @@ class XFVRPSwapUtilSpec extends Specification {
 		def sol = new Solution()
 		sol.setGiantRoute([nd, n1, n2, n3, nd, n4, n5, n6, nd] as Node[])
 
-		def para = [0, 1, 1, 2, 2, 1, XFVRPSwapUtil.BOTH_INVERT] as float[]
+		def para = [-1, 0, 1, 1, 2, 2, 1, XFVRPSwapUtil.BOTH_INVERT] as float[]
 
 		when:
 		XFVRPSwapUtil.change(sol, para)
@@ -268,7 +268,7 @@ class XFVRPSwapUtilSpec extends Specification {
 		def sol = new Solution()
 		sol.setGiantRoute([nd, n1, n2, n3, n4, n5, n6, nd] as Node[])
 
-		def para = [0, 0, 6, 1, 0, 2, XFVRPSwapUtil.B_INVERT] as float[]
+		def para = [-1, 0, 0, 6, 1, 0, 2, XFVRPSwapUtil.B_INVERT] as float[]
 
 		when:
 		XFVRPSwapUtil.change(sol, para)
@@ -291,7 +291,7 @@ class XFVRPSwapUtilSpec extends Specification {
 		def sol = new Solution()
 		sol.setGiantRoute([nd, n1, n2, n3, nd, n4, n5, n6, nd] as Node[])
 
-		def para = [0, 1, 1, 0, 1, 1, 0] as float[]
+		def para = [-1, 0, 1, 1, 0, 1, 1, 0] as float[]
 
 		when:
 		XFVRPSwapUtil.change(sol, para)
@@ -303,7 +303,7 @@ class XFVRPSwapUtilSpec extends Specification {
 		def sol = new Solution()
 		sol.setGiantRoute([nd, n1, n2, n3, nd, n4, n5, n6, nd] as Node[])
 
-		def para = [0, 1, 3, 1, 1, 1, 0] as float[]
+		def para = [-1, 0, 1, 3, 1, 1, 1, 0] as float[]
 
 		when:
 		XFVRPSwapUtil.change(sol, para)
@@ -315,7 +315,7 @@ class XFVRPSwapUtilSpec extends Specification {
 		def sol = new Solution()
 		sol.setGiantRoute([nd, n1, n2, n3, n4, n5, n6, nd] as Node[])
 
-		def para = [0, 0, 2, 4, 2, 1, 0] as float[]
+		def para = [-1, 0, 0, 2, 4, 2, 1, 0] as float[]
 
 		when:
 		XFVRPSwapUtil.change(sol, para)

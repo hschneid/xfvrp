@@ -23,7 +23,7 @@ import java.util.Queue;
  * @author hschneid
  *
  */
-public class XFVRPNodeMove extends XFVRPOptImpBase {
+public class XFVRPSingleMove extends XFVRPOptImpBase {
 
 	private static final int MAX_SEGMENT_LENGTH = 1;
 	private static final boolean IS_INVERT_ACTIVE = false;
@@ -31,7 +31,7 @@ public class XFVRPNodeMove extends XFVRPOptImpBase {
 	@Override
 	protected Queue<float[]> search(Node[][] routes) {
 		PriorityQueue<float[]> improvingSteps = new PriorityQueue<>(
-				(o1, o2) -> Float.compare(o2[6], o1[6])
+				(o1, o2) -> Float.compare(o2[0], o1[0])
 		);
 		XFVRPMoveSearchUtil.search(model, routes, improvingSteps, MAX_SEGMENT_LENGTH, IS_INVERT_ACTIVE);
 

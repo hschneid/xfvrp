@@ -4,11 +4,11 @@ import spock.lang.Specification
 import xf.xfvrp.base.Node
 import xf.xfvrp.base.SiteType
 import xf.xfvrp.base.exception.XFVRPException
-import xf.xfvrp.opt.improve.routebased.move.XFVRPNodeMove
+import xf.xfvrp.opt.improve.routebased.move.XFVRPSingleMove
 
 class PathExchangeSpec extends Specification {
 
-	def service = new XFVRPNodeMove()
+	def service = new XFVRPSingleMove()
 	
 	def "Regular path exchange - simple exchange"() {
 		def n1 = new Node(externID: "1", siteType: SiteType.DEPOT);

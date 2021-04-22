@@ -4,8 +4,8 @@ import xf.xfvrp.base.Quality;
 import xf.xfvrp.opt.Solution;
 import xf.xfvrp.opt.improve.base.XFVRPImprovable;
 import xf.xfvrp.opt.improve.base.XFVRPOptImpBase;
-import xf.xfvrp.opt.improve.routebased.move.XFVRPNodeMove;
 import xf.xfvrp.opt.improve.routebased.move.XFVRPSegmentMove;
+import xf.xfvrp.opt.improve.routebased.move.XFVRPSingleMove;
 
 /** 
  * Copyright (c) 2012-present Holger Schneider
@@ -28,7 +28,7 @@ import xf.xfvrp.opt.improve.routebased.move.XFVRPSegmentMove;
  */
 public class XFVRPPathExchange extends XFVRPOptImpBase {
 
-	private final XFVRPNodeMove rel = new XFVRPNodeMove();
+	private final XFVRPSingleMove rel = new XFVRPSingleMove();
 	private final XFVRPSwap swa = new XFVRPSwap();
 	private final XFVRPSegmentMove or = new XFVRPSegmentMove();
 	private final XFVRPSwapSegmentWithInvert bod = new XFVRPSwapSegmentWithInvert();

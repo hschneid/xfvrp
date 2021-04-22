@@ -3,11 +3,11 @@ package xf.xfvrp.opt
 import spock.lang.Specification
 import xf.xfvrp.base.Node
 import xf.xfvrp.base.SiteType
-import xf.xfvrp.opt.improve.routebased.move.XFVRPNodeMove
+import xf.xfvrp.opt.improve.routebased.move.XFVRPSingleMove
 
 class ShipmentMoveSpec extends Specification {
 
-	def service = new XFVRPNodeMove();
+	def service = new XFVRPSingleMove();
 	
 	def "Regular move - all right"() {
 		def n0 = new Node(externID: "0", siteType: SiteType.DEPOT);

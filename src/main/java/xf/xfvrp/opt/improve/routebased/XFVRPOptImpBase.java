@@ -93,7 +93,7 @@ public abstract class XFVRPOptImpBase extends XFVRPOptBase implements XFVRPImpro
 			// Variation
 			change(solution, val);
 
-			Quality result = checkIt(solution, (int)val[0], (int)val[1]);
+			Quality result = checkIt(solution, (int)val[1], (int)val[2]);
 			if(result != null && result.getFitness() < bestResult.getFitness()) {
 				solution.fixateQualities();
 				return result;

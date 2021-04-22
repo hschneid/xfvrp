@@ -59,7 +59,7 @@ class XFVRPSwapSearchUtilSpec extends Specification {
 
 		then:
 		impList.size() == 142
-		Math.abs(impList.stream().find({f -> f.toList().subList(0,7) == [0,1,1,1,3,3,0]})[7] - 7.65) < 0.001f
+		Math.abs(impList.stream().find({f -> f.toList().subList(1,8) == [0,1,1,1,3,3,0]})[0] - 7.65) < 0.001f
 	}
 
 	def "Search - find all improving steps in 1 route - all allowed"() {
@@ -104,8 +104,8 @@ class XFVRPSwapSearchUtilSpec extends Specification {
 
 		then:
 		impList.size() == 51
-		impList.stream().filter({f -> f[6] != 0}).count() == 0
-		Math.abs(impList.stream().find({f -> f.toList().subList(0,7) == [0,1,1,1,3,3,0]})[7] - 7.65) < 0.001f
+		impList.stream().filter({f -> f[7] != 0}).count() == 0
+		Math.abs(impList.stream().find({f -> f.toList().subList(1,8) == [0,1,1,1,3,3,0]})[0] - 7.65) < 0.001f
 	}
 
 	def "Search - same segment length"() {
@@ -128,8 +128,8 @@ class XFVRPSwapSearchUtilSpec extends Specification {
 
 		then:
 		impList.size() == 38
-		impList.stream().filter({f -> f[4] != f[5]}).count() == 0
-		Math.abs(impList.stream().find({f -> f.toList().subList(0,7) == [0,1,1,1,3,3,0]})[7] - 7.65) < 0.001f
+		impList.stream().filter({f -> f[5] != f[6]}).count() == 0
+		Math.abs(impList.stream().find({f -> f.toList().subList(1,8) == [0,1,1,1,3,3,0]})[0] - 7.65) < 0.001f
 	}
 
 	def "Search - segment length = 2"() {
@@ -152,9 +152,9 @@ class XFVRPSwapSearchUtilSpec extends Specification {
 
 		then:
 		impList.size() == 36
-		impList.stream().filter({f -> f[4] > 1}).count() == 0
 		impList.stream().filter({f -> f[5] > 1}).count() == 0
-		impList.stream().find({f -> f.toList().subList(0,7) == [0,1,1,1,3,3,0]}) == null
+		impList.stream().filter({f -> f[6] > 1}).count() == 0
+		impList.stream().find({f -> f.toList().subList(1,8) == [0,1,1,1,3,3,0]}) == null
 	}
 
 	XFVRPModel initScen() {

@@ -44,7 +44,7 @@ public class XFVRPSegmentMove extends XFVRPOptImpBase {
 	@Override
 	protected Queue<float[]> search(Node[][] routes) {
 		PriorityQueue<float[]> improvingSteps = new PriorityQueue<>(
-				(o1, o2) -> Float.compare(o2[6], o1[6])
+				(o1, o2) -> Float.compare(o2[0], o1[0])
 		);
 		XFVRPMoveSearchUtil.search(model, routes, improvingSteps, MAX_SEGMENT_LENGTH, IS_INVERT_ACTIVE);
 

@@ -7,12 +7,10 @@ import xf.xfvrp.base.*
 import xf.xfvrp.base.metric.EucledianMetric
 import xf.xfvrp.base.metric.internal.AcceleratedMetricTransformator
 import xf.xfvrp.opt.Solution
-import xf.xfvrp.opt.improve.routebased.move.XFVRPMoveSearchUtil
-import xf.xfvrp.opt.improve.routebased.move.XFVRPNodeMove
 
-class XFVRPNodeMove2Spec extends Specification {
+class XFVRPSingleMove2Spec extends Specification {
 
-	def service = new XFVRPNodeMove();
+	def service = new XFVRPSingleMove();
 
 	def nd = new TestNode(
 	externID: "DEP",
@@ -56,14 +54,14 @@ class XFVRPNodeMove2Spec extends Specification {
 
 		then:
 		impList.size() == 4
-		impList.stream().filter({f -> f.toList().subList(0,6) == [0,1,1,1,0,0]}).count() == 1
-		impList.stream().filter({f -> f.toList().subList(0,6) == [1,0,1,1,0,0]}).count() == 1
-		impList.stream().filter({f -> f.toList().subList(0,6) == [0,1,1,2,0,0]}).count() == 1
-		impList.stream().filter({f -> f.toList().subList(0,6) == [1,0,1,2,0,0]}).count() == 1
-		Math.abs(impList.stream().find({f -> f.toList().subList(0,6) == [1,0,1,1,0,0]})[6] - 1.414f) < 0.001f
-		Math.abs(impList.stream().find({f -> f.toList().subList(0,6) == [0,1,1,1,0,0]})[6] - 1.414f) < 0.001f
-		Math.abs(impList.stream().find({f -> f.toList().subList(0,6) == [1,0,1,2,0,0]})[6] - 1.414f) < 0.001f
-		Math.abs(impList.stream().find({f -> f.toList().subList(0,6) == [0,1,1,2,0,0]})[6] - 1.414f) < 0.001f
+		impList.stream().filter({f -> f.toList().subList(1,7) == [0,1,1,1,0,0]}).count() == 1
+		impList.stream().filter({f -> f.toList().subList(1,7) == [1,0,1,1,0,0]}).count() == 1
+		impList.stream().filter({f -> f.toList().subList(1,7) == [0,1,1,2,0,0]}).count() == 1
+		impList.stream().filter({f -> f.toList().subList(1,7) == [1,0,1,2,0,0]}).count() == 1
+		Math.abs(impList.stream().find({f -> f.toList().subList(1,7) == [1,0,1,1,0,0]})[0] - 1.414f) < 0.001f
+		Math.abs(impList.stream().find({f -> f.toList().subList(1,7) == [0,1,1,1,0,0]})[0] - 1.414f) < 0.001f
+		Math.abs(impList.stream().find({f -> f.toList().subList(1,7) == [1,0,1,2,0,0]})[0] - 1.414f) < 0.001f
+		Math.abs(impList.stream().find({f -> f.toList().subList(1,7) == [0,1,1,2,0,0]})[0] - 1.414f) < 0.001f
 	}
 	
 	def "Search multi depot - Find No improve"() {
