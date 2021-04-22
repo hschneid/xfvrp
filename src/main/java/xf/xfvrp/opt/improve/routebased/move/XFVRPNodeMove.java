@@ -1,5 +1,13 @@
 package xf.xfvrp.opt.improve.routebased.move;
 
+import xf.xfvrp.base.Node;
+import xf.xfvrp.base.exception.XFVRPException;
+import xf.xfvrp.opt.Solution;
+import xf.xfvrp.opt.improve.routebased.XFVRPOptImpBase;
+
+import java.util.PriorityQueue;
+import java.util.Queue;
+
 /**
  * Copyright (c) 2012-present Holger Schneider
  * All rights reserved.
@@ -15,12 +23,28 @@ package xf.xfvrp.opt.improve.routebased.move;
  * @author hschneid
  *
  */
-public class XFVRPNodeMove extends XFVRPMoveBase {
+public class XFVRPNodeMove extends XFVRPOptImpBase {
 
 	private static final int MAX_SEGMENT_LENGTH = 1;
 	private static final boolean IS_INVERT_ACTIVE = false;
 
-	public XFVRPNodeMove() {
-		super(MAX_SEGMENT_LENGTH, IS_INVERT_ACTIVE);
+	@Override
+	protected Queue<float[]> search(Node[][] routes) {
+		PriorityQueue<float[]> improvingSteps = new PriorityQueue<>(
+				(o1, o2) -> Float.compare(o2[6], o1[6])
+		);
+		XFVRPMoveSearchUtil.search(model, routes, improvingSteps, MAX_SEGMENT_LENGTH, IS_INVERT_ACTIVE);
+
+		return improvingSteps;
+	}
+
+	@Override
+	protected void change(Solution solution, float[] changeParameter) throws XFVRPException {
+		XFVRPMoveUtil.change(solution, changeParameter);
+	}
+
+	@Override
+	protected void reverseChange(Solution solution, float[] changeParameter) throws XFVRPException {
+		XFVRPMoveUtil.reverseChange(solution, changeParameter);
 	}
 }

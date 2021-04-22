@@ -7,8 +7,6 @@ import xf.xfvrp.base.*
 import xf.xfvrp.base.metric.EucledianMetric
 import xf.xfvrp.base.metric.internal.AcceleratedMetricTransformator
 import xf.xfvrp.opt.Solution
-import xf.xfvrp.opt.improve.routebased.move.XFVRPMoveUtil
-import xf.xfvrp.opt.improve.routebased.move.XFVRPSegmentMove
 
 class XFVRPSegmentMoveTest extends Specification {
 
@@ -143,13 +141,12 @@ class XFVRPSegmentMoveTest extends Specification {
     def "find an improvement"() {
         def model = initScen()
         def n = model.getNodes()
-        service.setModel(model)
 
         def sol = new Solution()
         sol.setGiantRoute([n[0], n[1], n[2], n[5], n[6], n[3], n[4], n[7], n[0]] as Node[])
 
         when:
-        def newQuality = service.improve(sol, new Quality(cost: Float.MAX_VALUE))
+        def newQuality = service.improve(sol, new Quality(cost: Float.MAX_VALUE), model)
         def result = sol.getGiantRoute()
         then:
         newQuality.cost < 10
@@ -167,13 +164,12 @@ class XFVRPSegmentMoveTest extends Specification {
     def "find an improvement with invert"() {
         def model = initScen()
         def n = model.getNodes()
-        service.setModel(model)
 
         def sol = new Solution()
         sol.setGiantRoute([n[0], n[1], n[2], n[7], n[6], n[5], n[3], n[4], n[0]] as Node[])
 
         when:
-        def newQuality = service.improve(sol, new Quality(cost: Float.MAX_VALUE))
+        def newQuality = service.improve(sol, new Quality(cost: Float.MAX_VALUE), model)
         def result = sol.getGiantRoute()
         then:
         newQuality.cost < 10
@@ -191,13 +187,12 @@ class XFVRPSegmentMoveTest extends Specification {
     def "find no improvement anymore"() {
         def model = initScen()
         def n = model.getNodes()
-        service.setModel(model)
 
         def sol = new Solution()
         sol.setGiantRoute([n[0], n[1], n[2], n[3], n[4], n[5], n[6], n[7], n[0]] as Node[])
 
         when:
-        def newQuality = service.improve(sol, new Quality(cost: Float.MAX_VALUE))
+        def newQuality = service.improve(sol, new Quality(cost: Float.MAX_VALUE), model)
         def result = sol.getGiantRoute()
         then:
         newQuality == null

@@ -2,6 +2,8 @@ package xf.xfvrp.opt.improve;
 
 import xf.xfvrp.base.Quality;
 import xf.xfvrp.opt.Solution;
+import xf.xfvrp.opt.improve.base.XFVRPImprovable;
+import xf.xfvrp.opt.improve.base.XFVRPOptImpBase;
 import xf.xfvrp.opt.improve.routebased.move.XFVRPNodeMove;
 import xf.xfvrp.opt.improve.routebased.move.XFVRPSegmentMove;
 
@@ -73,7 +75,7 @@ public class XFVRPPathExchange extends XFVRPOptImpBase {
 		return null;
 	}
 
-	private Object[] opt(Solution solution, Quality bestResult, Quality bestQ, XFVRPOptImpBase opt) {
+	private Object[] opt(Solution solution, Quality bestResult, Quality bestQ, XFVRPImprovable opt) {
 		try {
 			Solution newSolution = solution.copy(); 
 			Quality result = opt.improve(newSolution, bestResult, model);

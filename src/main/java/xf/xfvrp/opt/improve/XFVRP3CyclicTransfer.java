@@ -4,6 +4,7 @@ import xf.xfvrp.base.Node;
 import xf.xfvrp.base.Quality;
 import xf.xfvrp.base.exception.XFVRPException;
 import xf.xfvrp.opt.Solution;
+import xf.xfvrp.opt.improve.base.XFVRPOptImpBase;
 
 import java.util.ArrayList;
 import java.util.HashSet;

@@ -1,11 +1,12 @@
 package xf.xfvrp.opt.improve.routebased.swap;
 
-import xf.xfvrp.base.Quality;
+import xf.xfvrp.base.Node;
 import xf.xfvrp.base.exception.XFVRPException;
 import xf.xfvrp.opt.Solution;
 import xf.xfvrp.opt.improve.routebased.XFVRPOptImpBase;
 
 import java.util.PriorityQueue;
+import java.util.Queue;
 
 /**
  * Copyright (c) 2012-present Holger Schneider
@@ -16,9 +17,8 @@ import java.util.PriorityQueue;
  *
  *
  * This neighborhood search produces improved solutions by
- * exchanging two segments of the giant tour. The size of each
- * segments may be between 1 and 4. All nodes of a segment must 
- * be placed on one route.
+ * exchanging two segments. The size of each segments may be
+ * limited upto 3 nodes. The nodes of a segment can be inverted.
  *
  * @author hschneid
  *
@@ -29,38 +29,24 @@ public class XFVRPSegmentSwap extends XFVRPOptImpBase {
 	private boolean isSegmentLengthEqual = false;
 	private int maxSegmentLength = 3;
 
-	/*
-	 * (non-Javadoc)
-	 * @see de.fhg.iml.vlog.xftour.xfvrp.opt.improve.XFVRPOptImpBase#improve(de.fhg.iml.vlog.xftour.model.XFNode[], de.fhg.iml.vlog.xftour.model.Quality)
-	 */
 	@Override
-	public Quality improve(final Solution solution, Quality bestResult) throws XFVRPException {
-		checkIt(solution);
-
+	protected Queue<float[]> search(Node[][] routes) {
 		PriorityQueue<float[]> improvingSteps = new PriorityQueue<>(
 				(o1, o2) -> Float.compare(o2[7], o1[7])
 		);
-		XFVRPSwapSearchUtil.search(model, solution.getRoutes(), improvingSteps, maxSegmentLength, isSegmentLengthEqual, isInvertationActive);
+		XFVRPSwapSearchUtil.search(model, routes, improvingSteps, maxSegmentLength, isSegmentLengthEqual, isInvertationActive);
 
-		// Find first valid improving change
-		while(!improvingSteps.isEmpty()) {
-			float[] val = improvingSteps.remove();
+		return improvingSteps;
+	}
 
-			// Variation
-			XFVRPSwapUtil.change(solution, val);
+	@Override
+	protected void change(Solution solution, float[] changeParameter) throws XFVRPException {
+		XFVRPSwapUtil.change(solution, changeParameter);
+	}
 
-			Quality result = checkIt(solution, (int)val[0], (int)val[1]);
-			if(result != null && result.getFitness() < bestResult.getFitness()) {
-				solution.fixateQualities();
-				return result;
-			}
-
-			// Reverse-Variation
-			XFVRPSwapUtil.reverseChange(solution, val);
-			solution.resetQualities();
-		}
-
-		return null;
+	@Override
+	protected void reverseChange(Solution solution, float[] changeParameter) throws XFVRPException {
+		XFVRPSwapUtil.reverseChange(solution, changeParameter);
 	}
 
 	public void setInvertationMode(boolean isInvertationActive) {

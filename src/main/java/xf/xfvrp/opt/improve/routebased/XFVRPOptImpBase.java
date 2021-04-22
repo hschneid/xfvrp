@@ -1,9 +1,15 @@
 package xf.xfvrp.opt.improve.routebased;
 
-import xf.xfvrp.base.*;
+import xf.xfvrp.base.Node;
+import xf.xfvrp.base.NormalizeSolutionService;
+import xf.xfvrp.base.Quality;
+import xf.xfvrp.base.XFVRPModel;
 import xf.xfvrp.base.exception.XFVRPException;
 import xf.xfvrp.opt.Solution;
 import xf.xfvrp.opt.XFVRPOptBase;
+import xf.xfvrp.opt.improve.base.XFVRPImprovable;
+
+import java.util.Queue;
 
 /** 
  * Copyright (c) 2012-present Holger Schneider
@@ -25,7 +31,7 @@ import xf.xfvrp.opt.XFVRPOptBase;
  * @author hschneid
  *
  */
-public abstract class XFVRPOptImpBase extends XFVRPOptBase {
+public abstract class XFVRPOptImpBase extends XFVRPOptBase implements XFVRPImprovable {
 
 	/**
 	 * Constructor for all improvement heuristics
@@ -34,18 +40,9 @@ public abstract class XFVRPOptImpBase extends XFVRPOptBase {
 		isSplittable = true;
 	}
 
-	/**
-	 * This abstract method is implemented by the explicit
-	 * neighborhood generating operators like 2-opt or 3-opt.
-	 * 
-	 * The giantRoute will be changed by the improve method, where as
-	 * the bestResult won't be changed. The resulting quality represents
-	 * the fitness of the changed and imrpoved giantRoute.
-	 * 
-	 * If the result is null, no improvement was found and giant tour
-	 * was not changed.
-	 */
-	protected abstract Quality improve(Solution giantTour, Quality bestResult) throws XFVRPException;
+	protected abstract Queue<float[]> search(Node[][] routes);
+	protected abstract void change(Solution solution, float[] changeParameter) throws XFVRPException;
+	protected abstract void reverseChange(Solution solution, float[] changeParameter) throws XFVRPException;
 
 	/**
 	 * This method calls the abstract improve method of this optimization class with
@@ -54,7 +51,7 @@ public abstract class XFVRPOptImpBase extends XFVRPOptBase {
 	 * 
 	 * Currently it is only used by the PathExchange operator.
 	 */
-	protected Quality improve(Solution giantTour, Quality bestResult, XFVRPModel model) throws XFVRPException {
+	public Quality improve(Solution giantTour, Quality bestResult, XFVRPModel model) throws XFVRPException {
 		this.model = model;
 
 		return improve(giantTour, bestResult);
@@ -84,31 +81,32 @@ public abstract class XFVRPOptImpBase extends XFVRPOptBase {
 		return NormalizeSolutionService.normalizeRoute(solution, model);
 	}
 
-	/**
-	 * Overwrites the getDistance method. If node b is a depot, then
-	 * b is replaced by the depot of node at index aa or if node a is a depot, then
-	 * a is replaced by the depot of node at index bb. 
-	 */
-	protected float getDistance(Node a, Node b, int aa, int bb) {
-		if(aa != bb) {
-			if(b.getSiteType() == SiteType.DEPOT)
-				b = model.getNodes()[aa];
-			else if(a.getSiteType() == SiteType.DEPOT)
-				a = model.getNodes()[bb];
+	private Quality improve(final Solution solution, Quality bestResult) throws XFVRPException {
+		checkIt(solution);
+
+		Queue<float[]> improvingSteps = search(solution.getRoutes());
+
+		// Find first valid improving change
+		while(!improvingSteps.isEmpty()) {
+			float[] val = improvingSteps.remove();
+
+			// Variation
+			change(solution, val);
+
+			Quality result = checkIt(solution, (int)val[0], (int)val[1]);
+			if(result != null && result.getFitness() < bestResult.getFitness()) {
+				solution.fixateQualities();
+				return result;
+			}
+
+			// Reverse-Variation
+			reverseChange(solution, val);
+			solution.resetQualities();
 		}
-		return model.getDistanceForOptimization(a, b);
+
+		return null;
 	}
 
-	/**
-	 * Overwrites the getDistance method. If node b is a depot, then
-	 * b is replaced by the allocated depot of node a.
-	 */
-	protected float getDistance(Node a, Node b, int depotAlloc) {
-		if(b.getSiteType() == SiteType.DEPOT)
-			b = model.getNodes()[depotAlloc];
-		return model.getDistanceForOptimization(a, b);
-	}
-	
 	/**
 	 * This method checks a new solution, if it is better than the current best solution. If
 	 * the result of this method is not null, then the new solution is better. Otherwise not. The
