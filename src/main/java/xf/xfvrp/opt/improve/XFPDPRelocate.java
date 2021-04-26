@@ -6,7 +6,7 @@ import xf.xfvrp.base.SiteType;
 import xf.xfvrp.base.exception.XFVRPException;
 import xf.xfvrp.base.exception.XFVRPExceptionType;
 import xf.xfvrp.opt.Solution;
-import xf.xfvrp.opt.improve.base.XFVRPOptImpBase;
+import xf.xfvrp.opt.improve.giantroute.XFVRPOptImpBase;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -104,9 +104,6 @@ public class XFPDPRelocate extends XFVRPOptImpBase {
 
 	/**
 	 * Searches all improving valid steps in search space for a VRP with one depot.
-	 * 
-	 * @param giantRoute
-	 * @param improvingStepList
 	 */
 	private List<float[]> search(Node[] route) {
 		List<float[]> improvements = new ArrayList<>();

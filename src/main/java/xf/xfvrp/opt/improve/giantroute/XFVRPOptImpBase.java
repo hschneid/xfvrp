@@ -1,4 +1,4 @@
-package xf.xfvrp.opt.improve.base;
+package xf.xfvrp.opt.improve.giantroute;
 
 import xf.xfvrp.base.*;
 import xf.xfvrp.base.exception.XFVRPException;
@@ -26,7 +26,7 @@ import xf.xfvrp.opt.XFVRPOptBase;
  * @author hschneid
  *
  */
-public abstract class XFVRPOptImpBase extends XFVRPOptBase implements XFVRPImprovable {
+public abstract class XFVRPOptImpBase extends XFVRPOptBase {
 
 	/**
 	 * Constructor for all improvement heuristics

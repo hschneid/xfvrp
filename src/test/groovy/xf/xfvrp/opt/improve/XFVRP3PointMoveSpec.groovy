@@ -7,6 +7,7 @@ import xf.xfvrp.base.*
 import xf.xfvrp.base.metric.EucledianMetric
 import xf.xfvrp.base.metric.internal.AcceleratedMetricTransformator
 import xf.xfvrp.opt.Solution
+import xf.xfvrp.opt.improve.giantroute.XFVRP3PointMove
 
 import java.util.stream.Collectors
 

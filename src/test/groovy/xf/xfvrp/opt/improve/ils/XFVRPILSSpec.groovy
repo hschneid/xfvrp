@@ -10,7 +10,7 @@ import xf.xfvrp.base.monitor.StatusManager
 import xf.xfvrp.opt.Solution
 import xf.xfvrp.opt.XFVRPOptBase
 import xf.xfvrp.opt.evaluation.EvaluationService
-import xf.xfvrp.opt.improve.XFVRP2Opt
+import xf.xfvrp.opt.improve.giantroute.XFVRP2Opt
 import xf.xfvrp.opt.improve.routebased.move.XFVRPSegmentMove
 import xf.xfvrp.opt.improve.routebased.move.XFVRPSingleMove
 

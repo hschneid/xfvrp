@@ -4,7 +4,9 @@ import spock.lang.Ignore
 import spock.lang.Specification
 import xf.xfvrp.XFVRP
 import xf.xfvrp.base.metric.EucledianMetric
+import xf.xfvrp.base.monitor.DefaultStatusMonitor
 import xf.xfvrp.opt.XFVRPOptType
+import xf.xfvrp.report.Report
 
 import java.nio.file.Files
 import java.nio.file.Path
@@ -25,6 +27,16 @@ class Homberger extends Specification {
         assert true
     }
 
+    def "do Homberger VRPTW test for certain instance" () {
+        when:
+        def report = executeInstance(Path.of("./src/test/resources/homberger/200/R2_2_1.TXT"))
+
+        println String.format("%.2f", report.getSummary().getDistance()) + " " +
+                String.format("%.0f", report.getSummary().getNbrOfUsedVehicles())
+        then:
+        assert true
+    }
+
     private void execute(String instanceSize) {
         def results = getResults(new File("./src/test/resources/homberger/"+instanceSize+"/RESULTS"))
 
@@ -36,14 +48,11 @@ class Homberger extends Specification {
 
         float[] deviation = new float[4]
         for (Path p : files) {
-            def instanceName = p.fileName.toString().replace(".TXT","").toLowerCase()
+            def instanceName = p.fileName.toString().replace(".TXT", "").toLowerCase()
             def bestResult = results.get(instanceName)
 
-            def xfvrp = build(p.toFile())
-
             long time = System.currentTimeMillis()
-            xfvrp.executeRoutePlanning()
-            def report = xfvrp.getReport()
+            def report = executeInstance(p)
             time = System.currentTimeMillis() - time
 
             deviation[0] += time
@@ -55,7 +64,7 @@ class Homberger extends Specification {
                     String.format("%.2f", report.getSummary().getDistance()) + " " +
                     String.format("%.0f", report.getSummary().getNbrOfUsedVehicles()) + " " +
                     String.format("%.2f", ((report.getSummary().getDistance() / bestResult[0] - 1) * 100)) + " " +
-                    String.format("%.2f", ((report.getSummary().getNbrOfUsedVehicles() / bestResult[1] - 1) * 100)) + " "+
+                    String.format("%.2f", ((report.getSummary().getNbrOfUsedVehicles() / bestResult[1] - 1) * 100)) + " " +
                     String.format("%.2f", time / 1000)
         }
         println instanceSize + " " +
@@ -65,8 +74,17 @@ class Homberger extends Specification {
                 String.format("%.2f", deviation[2] / deviation[3])
     }
 
+    private Report executeInstance(Path p) {
+        def xfvrp = build(p.toFile())
+
+        xfvrp.executeRoutePlanning()
+        return xfvrp.getReport()
+    }
+
     private XFVRP build(File file) {
         XFVRP xfvrp = new XFVRP()
+
+        xfvrp.setStatusMonitor(new DefaultStatusMonitor())
 
         List<String> lines = Files.readAllLines(file.toPath());
         String vehicleData = lines.get(4)
@@ -101,10 +119,17 @@ class Homberger extends Specification {
                     .setServiceTime(data[6])
         }
 
+        /*
         xfvrp.addOptType(XFVRPOptType.FIRST_BEST)
         xfvrp.setNbrOfLoopsForILS(10)
         xfvrp.addOptType(XFVRPOptType.RELOCATE)
         xfvrp.addOptType(XFVRPOptType.PATH_RELOCATE)
+        xfvrp.addOptType(XFVRPOptType.PATH_EXCHANGE)
+         */
+
+        // An Zukunftsholger: Warum kann der ILS nicht mal einen einfachen Relocate machen mit 5258 als Ergebnis?
+        xfvrp.addOptType(XFVRPOptType.ILS)
+        xfvrp.setNbrOfLoopsForILS(10)
 
         xfvrp.setMetric(new EucledianMetric())
 

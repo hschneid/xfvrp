@@ -48,7 +48,10 @@ As a general purpose solver, XFVRP is not fully compatable with single problem s
 ## Change log
 ### 11.3.0
 - Drastically increased performance for some neighborhood searches by changing to route-based change operators and improved result sorting
-    - NodeMove and SegmentMove 
+    - Single node Move and Segment Move
+    - Single node Swap and Segment Swap
+    - Segment Exchange (Swap & move)
+- Removed obsolete giant-route based neighborhoods, which are replaced by route-based neighborhoods 
 
 ### 11.2.0
 - Changed exception handling

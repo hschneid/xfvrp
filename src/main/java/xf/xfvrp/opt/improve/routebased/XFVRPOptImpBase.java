@@ -7,7 +7,6 @@ import xf.xfvrp.base.XFVRPModel;
 import xf.xfvrp.base.exception.XFVRPException;
 import xf.xfvrp.opt.Solution;
 import xf.xfvrp.opt.XFVRPOptBase;
-import xf.xfvrp.opt.improve.base.XFVRPImprovable;
 
 import java.util.Queue;
 
@@ -31,7 +30,7 @@ import java.util.Queue;
  * @author hschneid
  *
  */
-public abstract class XFVRPOptImpBase extends XFVRPOptBase implements XFVRPImprovable {
+public abstract class XFVRPOptImpBase extends XFVRPOptBase {
 
 	/**
 	 * Constructor for all improvement heuristics

@@ -68,13 +68,13 @@ public abstract class XFILS extends XFVRPOptBase {
 	}
 	
 	protected Solution localSearch(Solution solution) throws XFVRPException {
-		boolean[] processedArr = new boolean[optArr.length];
+		boolean[] processedNS = new boolean[optArr.length];
 
 		Quality bestQuality = null;
 		int nbrOfProcessed = 0;
-		while(nbrOfProcessed < processedArr.length) {
+		while(nbrOfProcessed < processedNS.length) {
 			// Choose
-			int optIdx = choose(processedArr);
+			int optIdx = choose(processedNS);
 
 			// Process
 			solution = optArr[optIdx].execute(solution, model, statusManager);
@@ -83,12 +83,12 @@ public abstract class XFILS extends XFVRPOptBase {
 			Quality currentQuality = check(solution);
 			if(bestQuality == null || currentQuality.getFitness() < bestQuality.getFitness()) {
 				bestQuality = currentQuality;
-				Arrays.fill(processedArr, false);
+				Arrays.fill(processedNS, false);
 				nbrOfProcessed = 0;
 			}
 
 			// Mark
-			processedArr[optIdx] = true;
+			processedNS[optIdx] = true;
 			nbrOfProcessed++;
 		}
 
