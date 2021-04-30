@@ -10,7 +10,7 @@ import xf.xfvrp.opt.XFVRPOptBase;
 
 import java.util.Queue;
 
-/** 
+/**
  * Copyright (c) 2012-present Holger Schneider
  * All rights reserved.
  *
@@ -20,13 +20,13 @@ import java.util.Queue;
  * This class provides the basis local search structure
  * of iteratively calling an improve-method and memorizing
  * the best solution.
- * 
+ *
  * The downhill search stops if no further improvement
  * can be found.
- * 
+ *
  * This class is abstract and will be implemented by the route-based neighborhood
  * generating operators itself.
- * 
+ *
  * @author hschneid
  *
  */
@@ -47,7 +47,7 @@ public abstract class XFVRPOptImpBase extends XFVRPOptBase {
 	 * This method calls the abstract improve method of this optimization class with
 	 * a given model. This method is useful if optimization operators are designed with
 	 * several lower optimization operators. The model may switch between the lower operators.
-	 * 
+	 *
 	 * Currently it is only used by the PathExchange operator.
 	 */
 	public Quality improve(Solution giantTour, Quality bestResult, XFVRPModel model) throws XFVRPException {
@@ -77,7 +77,9 @@ public abstract class XFVRPOptImpBase extends XFVRPOptBase {
 		}
 
 		// Normalize resulting solution - Remove empty routes
-		return NormalizeSolutionService.normalizeRoute(solution, model);
+		NormalizeSolutionService.normalizeRouteWithCleanup(solution, model);
+
+		return solution;
 	}
 
 	private Quality improve(final Solution solution, Quality bestResult) throws XFVRPException {

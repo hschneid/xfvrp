@@ -286,6 +286,28 @@ class XFVRPSwapUtilSpec extends Specification {
 		result[7].externID == "D"
 	}
 
+	def "Change/Reverse - 1 route - same lengths - A invert"() {
+		def sol = new Solution()
+		sol.setGiantRoute([nd, n1, n2, n3, n4, n5, n6, nd] as Node[])
+
+		def para = [-1, 0, 0, 5, 3, 1, 1, XFVRPSwapUtil.A_INVERT] as float[]
+
+		when:
+		XFVRPSwapUtil.change(sol, para)
+		XFVRPSwapUtil.reverseChange(sol, para)
+		def result = sol.getGiantRoute()
+
+		then:
+		result[0].externID == "D"
+		result[1].externID == "1"
+		result[2].externID == "2"
+		result[3].externID == "3"
+		result[4].externID == "4"
+		result[5].externID == "5"
+		result[6].externID == "6"
+		result[7].externID == "D"
+	}
+
 	///////////////////////////////////////////////////
 	def "Change - Segment contains leading depot"() {
 		def sol = new Solution()

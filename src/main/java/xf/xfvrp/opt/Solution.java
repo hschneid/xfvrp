@@ -1,6 +1,5 @@
 package xf.xfvrp.opt;
 
-import com.sun.istack.NotNull;
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.Quality;
 import xf.xfvrp.base.SiteType;
@@ -14,7 +13,7 @@ import java.util.List;
 public class Solution implements Iterable<Node[]> {
 
 	private Node[][] routes = new Node[1][0];
-	private Quality[] routeQualities = new Quality[] { new Quality(null) };
+	private RouteQuality[] routeQualities = new RouteQuality[] { new RouteQuality(0, null) };
 	private Quality totalQuality = new Quality(null);
 
 	private List<RouteQuality> invalidatedRoutesQualities = new ArrayList<>();
@@ -23,7 +22,7 @@ public class Solution implements Iterable<Node[]> {
 		return routes;
 	}
 
-	public Quality[] getRouteQualities() {
+	public RouteQuality[] getRouteQualities() {
 		return routeQualities;
 	}
 
@@ -35,7 +34,7 @@ public class Solution implements Iterable<Node[]> {
 		routes[routeIndex] = new Node[0];
 
 		totalQuality.sub(routeQualities[routeIndex]);
-		routeQualities[routeIndex] = new Quality(null);
+		routeQualities[routeIndex] = new RouteQuality(0, null);
 	}
 
 	public void addRoute(Node[] newRoute) {
@@ -50,7 +49,7 @@ public class Solution implements Iterable<Node[]> {
 		routes[routes.length - 1] = newRoute;
 
 		routeQualities = Arrays.copyOf(routeQualities, routeQualities.length + 1);
-		routeQualities[routeQualities.length - 1] = new Quality(null);
+		routeQualities[routeQualities.length - 1] = new RouteQuality(routeQualities.length - 1, null);
 	}
 
 	public void setRoute(int routeIndex, Node[] route) {
@@ -65,7 +64,7 @@ public class Solution implements Iterable<Node[]> {
 	public void setRouteQuality(int routeIndex, Quality quality) {
 		totalQuality.sub(routeQualities[routeIndex]);
 
-		routeQualities[routeIndex] = quality;
+		routeQualities[routeIndex] = (RouteQuality) quality;
 		totalQuality.add(quality);
 	}
 
@@ -137,10 +136,10 @@ public class Solution implements Iterable<Node[]> {
 			list.add(currentRoute);
 
 		routes = new Node[list.size()][];
-		routeQualities = new Quality[list.size()];
+		routeQualities = new RouteQuality[list.size()];
 		for (int i = 0; i < list.size(); i++) {
 			routes[i] = list.get(i).toArray(new Node[0]);
-			routeQualities[i] = new Quality(null);
+			routeQualities[i] = new RouteQuality(i, null);
 		}
 		totalQuality = new Quality(null);
 	}
@@ -153,15 +152,14 @@ public class Solution implements Iterable<Node[]> {
 			copyRoutes[i] = Arrays.copyOf(routes[i], routes[i].length);
 		solution.routes = copyRoutes;
 
-		solution.routeQualities = new Quality[routeQualities.length];
+		solution.routeQualities = new RouteQuality[routeQualities.length];
 		for (int i = 0; i < routeQualities.length; i++)
-			solution.routeQualities[i] = new Quality(routeQualities[i]);
+			solution.routeQualities[i] = new RouteQuality(i, routeQualities[i]);
 		solution.totalQuality = new Quality(totalQuality);
 
 		return solution;
 	}
 
-	@NotNull
 	@Override
 	public Iterator<Node[]> iterator() {
 		return new SolutionRoutesIterator(routes);
@@ -183,5 +181,22 @@ public class Solution implements Iterable<Node[]> {
 			setRouteQuality(invalidatedQuality.getRouteIdx(), invalidatedQuality);
 		}
 		invalidatedRoutesQualities.clear();
+	}
+
+	/**
+	 * This will purge all routes over the number of routes to retain.
+	 *
+	 * This function is called to shrink the number or routes, which makes
+	 * sense for the optimization. So for-loops will not test so often empty
+	 * routes.
+	 */
+	public void retainRoutes(int nbrOfRoutesToRetain) {
+		Node[][] newRoutes = new Node[nbrOfRoutesToRetain][];
+		RouteQuality[] newRouteQualities = new RouteQuality[nbrOfRoutesToRetain];
+		System.arraycopy(routes, 0, newRoutes, 0, nbrOfRoutesToRetain);
+		System.arraycopy(routeQualities, 0, newRouteQualities, 0, nbrOfRoutesToRetain);
+
+		this.routes = newRoutes;
+		this.routeQualities = newRouteQualities;
 	}
 }

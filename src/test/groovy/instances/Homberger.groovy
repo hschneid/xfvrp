@@ -4,7 +4,6 @@ import spock.lang.Ignore
 import spock.lang.Specification
 import xf.xfvrp.XFVRP
 import xf.xfvrp.base.metric.EucledianMetric
-import xf.xfvrp.base.monitor.DefaultStatusMonitor
 import xf.xfvrp.opt.XFVRPOptType
 import xf.xfvrp.report.Report
 
@@ -27,6 +26,7 @@ class Homberger extends Specification {
         assert true
     }
 
+    @Ignore
     def "do Homberger VRPTW test for certain instance" () {
         when:
         def report = executeInstance(Path.of("./src/test/resources/homberger/200/R2_2_1.TXT"))
@@ -84,7 +84,7 @@ class Homberger extends Specification {
     private XFVRP build(File file) {
         XFVRP xfvrp = new XFVRP()
 
-        xfvrp.setStatusMonitor(new DefaultStatusMonitor())
+        // xfvrp.setStatusMonitor(new DefaultStatusMonitor())
 
         List<String> lines = Files.readAllLines(file.toPath());
         String vehicleData = lines.get(4)
@@ -93,7 +93,7 @@ class Homberger extends Specification {
                 .setName("Vehicle")
                 .setCapacity(data[1])
                 .setCount(data[0])
-                .setFixCost(1000)
+                //.setFixCost(1000)
 
         String depotData = lines.get(9)
         data = split(depotData)
@@ -119,17 +119,11 @@ class Homberger extends Specification {
                     .setServiceTime(data[6])
         }
 
-        /*
         xfvrp.addOptType(XFVRPOptType.FIRST_BEST)
         xfvrp.setNbrOfLoopsForILS(10)
         xfvrp.addOptType(XFVRPOptType.RELOCATE)
         xfvrp.addOptType(XFVRPOptType.PATH_RELOCATE)
         xfvrp.addOptType(XFVRPOptType.PATH_EXCHANGE)
-         */
-
-        // An Zukunftsholger: Warum kann der ILS nicht mal einen einfachen Relocate machen mit 5258 als Ergebnis?
-        xfvrp.addOptType(XFVRPOptType.ILS)
-        xfvrp.setNbrOfLoopsForILS(10)
 
         xfvrp.setMetric(new EucledianMetric())
 

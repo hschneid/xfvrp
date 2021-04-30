@@ -44,7 +44,7 @@ public class XFVRPSwapUtil {
             tmp = aSegmentLength; aSegmentLength = bSegmentLength; bSegmentLength = tmp;
 
             if(invertType == A_INVERT) invertType = B_INVERT;
-            if(invertType == B_INVERT) invertType = A_INVERT;
+            else if(invertType == B_INVERT) invertType = A_INVERT;
         }
 
         if(aRouteIndex != bRouteIndex) {

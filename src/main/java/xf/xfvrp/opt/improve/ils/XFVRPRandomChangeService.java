@@ -10,14 +10,11 @@ import xf.xfvrp.base.preset.BlockPositionConverter;
 import xf.xfvrp.opt.Solution;
 import xf.xfvrp.opt.XFVRPOptBase;
 import xf.xfvrp.opt.improve.routebased.move.XFVRPMoveUtil;
-import xf.xfvrp.opt.improve.routebased.move.XFVRPSegmentMove;
 
 public class XFVRPRandomChangeService extends XFVRPOptBase implements XFRandomChangeService {
 
 	private int NBR_ACCEPTED_INVALIDS = 100;
 	private int NBR_OF_VARIATIONS = 5;
-
-	private final XFVRPSegmentMove operator = new XFVRPSegmentMove();
 
 	/*
 	 * (non-Javadoc)
