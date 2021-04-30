@@ -1,4 +1,4 @@
-package xf.xfvrp.opt.improve
+package xf.xfvrp.opt.improve.routebased.move
 
 import spock.lang.Specification
 import util.instances.TestNode
@@ -7,12 +7,12 @@ import xf.xfvrp.base.*
 import xf.xfvrp.base.metric.EucledianMetric
 import xf.xfvrp.base.metric.internal.AcceleratedMetricTransformator
 import xf.xfvrp.opt.Solution
+import xf.xfvrp.opt.improve.routebased.move.XFVRPMoveSearchUtil
+import xf.xfvrp.opt.improve.routebased.move.XFVRPSegmentMove
 
-import java.util.stream.Collectors
+class XFVRPSegmentMove2Spec extends Specification {
 
-class XFVRPPathMoveSpec extends Specification {
-
-	def service = new XFVRPPathMove();
+	def service = new XFVRPSegmentMove()
 
 	def nd = new TestNode(
 	externID: "DEP",
@@ -32,11 +32,15 @@ class XFVRPPathMoveSpec extends Specification {
 	timeWindow: [[0,99],[2,99]]
 	).getNode()
 
-	def sol;
+	def sol
 
 	def parameter = new XFVRPParameter()
 
 	def metric = new EucledianMetric()
+
+	def impList = new PriorityQueue<>(
+			(o1, o2) -> Float.compare(o2[6], o1[6])
+	)
 
 	def "Search single depot - No invert - Find improve"() {
 		def model = initScen()
@@ -45,16 +49,17 @@ class XFVRPPathMoveSpec extends Specification {
 
 		sol = new Solution()
 		sol.setGiantRoute([nd, n[2], n[3], nd, n[4], n[5], nd] as Node[])
+		impList.clear()
 
 		when:
-		def impList = service.search(sol.getGiantRoute())
+		XFVRPMoveSearchUtil.search(model, sol.getRoutes(), impList, 3, true)
 
 		then:
 		impList.size() > 0
-		impList.stream().filter({f -> f[0] == 4 && f[1] == 2 && f[2] == 1 && f[3] == 0}).count() == 1
-		impList.stream().filter({f -> f[0] == 1 && f[1] == 5 && f[2] == 1 && f[3] == 0}).count() == 1
-		Math.abs(impList.stream().filter({f -> f[0] == 4 && f[1] == 2 && f[2] == 1 && f[3] == 0}).collect(Collectors.toList()).get(0)[4] - 4) < 0.001f
-		Math.abs(impList.stream().filter({f -> f[0] == 1 && f[1] == 5 && f[2] == 1 && f[3] == 0}).collect(Collectors.toList()).get(0)[4] - 4.828) < 0.001f
+		impList.stream().filter({f -> f.toList().subList(1,7) == [0,1,1,2,1,0]}).count() == 1
+		impList.stream().filter({f -> f.toList().subList(1,7) == [1,0,1,2,1,0]}).count() == 1
+		Math.abs(impList.stream().find({f -> f.toList().subList(1,7) == [1,0,1,2,1,0]})[0] - 4) < 0.001f
+		Math.abs(impList.stream().find({f -> f.toList().subList(1,7) == [0,1,1,2,1,0]})[0] - 4.828) < 0.001f
 	}
 
 	def "Search single depot - Long scenario - Find improve"() {
@@ -64,9 +69,10 @@ class XFVRPPathMoveSpec extends Specification {
 
 		sol = new Solution()
 		sol.setGiantRoute([nd, n[2], n[3], nd, n[4], n[5], n[6], n[7], nd] as Node[])
+		impList.clear()
 
 		when:
-		def impList = service.search(sol.getGiantRoute())
+		XFVRPMoveSearchUtil.search(model, sol.getRoutes(), impList, 3, true)
 
 		then:
 		impList.size() > 0
@@ -79,29 +85,31 @@ class XFVRPPathMoveSpec extends Specification {
 
 		sol = new Solution()
 		sol.setGiantRoute([nd, n[4], n[2], n[3], n[5], nd] as Node[])
+		impList.clear()
 
 		when:
-		def impList = service.search(sol.getGiantRoute())
+		XFVRPMoveSearchUtil.search(model, sol.getRoutes(), impList, 3, true)
 
 		then:
 		impList.size() == 0
 	}
 
-	def "Search single depot - Deactived invert - Not the right improve"() {
+	def "Search single depot - Deactivated invert - Not the right improve"() {
 		def model = initScen()
 		def n = model.getNodes()
 		service.setModel(model)
-		service.setInvertationMode(false);
 
 		sol = new Solution()
 		sol.setGiantRoute([nd, n[2], n[3], nd, n[5], n[4], nd] as Node[])
+		impList.clear()
 
 		when:
-		def impList = service.search(sol.getGiantRoute())
+		XFVRPMoveSearchUtil.search(model, sol.getRoutes(), impList, 3, false)
 
 		then:
 		impList.size() > 0
-		impList.stream().filter({f -> f[3] == 1}).count() == 0
+		// Invertation flag is never 1
+		impList.stream().filter({f -> f[6] == 1}).count() == 0
 	}
 
 	def "Search multi depot - With invert - Find improve"() {
@@ -111,134 +119,31 @@ class XFVRPPathMoveSpec extends Specification {
 
 		sol = new Solution()
 		sol.setGiantRoute([nd2, n[2], n[3], nd, n[5], n[4], nd] as Node[])
+		impList.clear()
 
 		when:
-		def impList = service.search(sol.getGiantRoute())
+		XFVRPMoveSearchUtil.search(model, sol.getRoutes(), impList, 3, true)
 
 		then:
 		impList.size() > 0
-		impList.stream().filter({f -> f[3] == 1}).count() > 0
+		impList.stream().filter({f -> f[6] == 1}).count() > 0
 	}
 
-	def "Search - Deactivated invert - Not the rigth improve"() {
+	def "Search - Deactivated invert - Not the right improve"() {
 		def model = initScen()
 		def n = model.getNodes()
 		service.setModel(model)
-		service.setInvertationMode(false)
 
 		sol = new Solution()
 		sol.setGiantRoute([nd2, n[2], n[3], nd, n[5], n[4], nd] as Node[])
+		impList.clear()
 
 		when:
-		def impList = service.search(sol.getGiantRoute())
+		XFVRPMoveSearchUtil.search(model, sol.getRoutes(), impList, 3, false)
 
 		then:
 		impList.size() > 0
-		impList.stream().filter({f -> f[3] == 1}).count() == 0
-	}
-
-	def "Change with Invert"() {
-		def model = initScen()
-		def n = model.getNodes()
-		service.setModel(model)
-		service.setInvertationMode(false)
-
-		sol = new Solution()
-		sol.setGiantRoute([nd, n[2], n[3], nd, n[5], n[4], nd] as Node[])
-
-		def changeMove = [4, 2, 1, 1] as float[]
-
-		when:
-		service.change(sol, changeMove)
-
-		def newGiantRoute = sol.getGiantRoute()
-
-		then:
-		newGiantRoute[0] == nd
-		newGiantRoute[1] == n[2]
-		newGiantRoute[2] == n[4]
-		newGiantRoute[3] == n[5]
-		newGiantRoute[4] == n[3]
-		newGiantRoute[5] == nd
-		newGiantRoute[6] == nd
-	}
-	
-	def "Change without Invert"() {
-		def model = initScen()
-		def n = model.getNodes()
-		service.setModel(model)
-		service.setInvertationMode(false)
-
-		sol = new Solution()
-		sol.setGiantRoute([nd, n[2], n[3], nd, n[4], n[5], nd] as Node[])
-
-		def changeMove = [4, 2, 1, 0] as float[]
-
-		when:
-		service.change(sol, changeMove)
-
-		def newGiantRoute = sol.getGiantRoute()
-
-		then:
-		newGiantRoute[0] == nd
-		newGiantRoute[1] == n[2]
-		newGiantRoute[2] == n[4]
-		newGiantRoute[3] == n[5]
-		newGiantRoute[4] == n[3]
-		newGiantRoute[5] == nd
-		newGiantRoute[6] == nd
-	}
-
-	def "Reverse Change - move to left"() {
-		def model = initScen()
-		def n = model.getNodes()
-		service.setModel(model)
-		service.setInvertationMode(false)
-
-		sol = new Solution()
-		sol.setGiantRoute([nd, n[2], n[4], n[5], n[3], nd, nd] as Node[])
-
-		def changeMove = [4, 2, 1, 1] as float[]
-
-		when:
-		service.reverseChange(sol, changeMove)
-
-		def newGiantRoute = sol.getGiantRoute()
-
-		then:
-		newGiantRoute[0] == nd
-		newGiantRoute[1] == n[2]
-		newGiantRoute[2] == n[3]
-		newGiantRoute[3] == nd
-		newGiantRoute[4] == n[5]
-		newGiantRoute[5] == n[4]
-		newGiantRoute[6] == nd
-	}
-	
-	def "Reverse Change - move to right"() {
-		def model = initScen()
-		def n = model.getNodes()
-		service.setModel(model)
-		service.setInvertationMode(false)
-
-		sol = new Solution()
-		sol.setGiantRoute([nd, nd, n[5], n[2], n[3], n[4], nd] as Node[])
-
-		def changeMove = [1, 5, 1, 0] as float[]
-
-		when:
-		service.reverseChange(sol, changeMove)
-
-		def newGiantRoute = sol.getGiantRoute()
-
-		then:
-		newGiantRoute[0] == nd
-		newGiantRoute[1] == n[2]
-		newGiantRoute[2] == n[3]
-		newGiantRoute[3] == nd
-		newGiantRoute[4] == n[5]
-		newGiantRoute[5] == n[4]
-		newGiantRoute[6] == nd
+		impList.stream().filter({f -> f[6] == 1}).count() == 0
 	}
 
 	XFVRPModel initScen() {

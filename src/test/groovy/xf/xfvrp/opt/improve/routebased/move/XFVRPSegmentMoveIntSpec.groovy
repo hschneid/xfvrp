@@ -1,4 +1,4 @@
-package xf.xfvrp.opt.improve
+package xf.xfvrp.opt.improve.routebased.move
 
 import spock.lang.Specification
 import util.instances.TestNode
@@ -9,10 +9,10 @@ import xf.xfvrp.base.metric.internal.AcceleratedMetricTransformator
 import xf.xfvrp.opt.Solution
 import xf.xfvrp.opt.evaluation.EvaluationService
 
-class XFVRPPathMoveIntSpec extends Specification {
+class XFVRPSegmentMoveIntSpec extends Specification {
 
-	def service = new XFVRPPathMove();
-	def evalService = new EvaluationService();
+	def service = new XFVRPSegmentMove()
+	def evalService = new EvaluationService()
 
 	def nd = new TestNode(
 	externID: "DEP",
@@ -32,7 +32,7 @@ class XFVRPPathMoveIntSpec extends Specification {
 	timeWindow: [[0,99],[2,99]]
 	).getNode()
 
-	def sol;
+	def sol
 
 	def parameter = new XFVRPParameter()
 
@@ -41,7 +41,6 @@ class XFVRPPathMoveIntSpec extends Specification {
 	def "Find improvement for single depot"() {
 		def model = initSDScen()
 		def n = model.getNodes()
-		service.setModel(model)
 
 		sol = new Solution()
 		sol.setGiantRoute([nd, n[2], n[1], nd, n[3], n[4], nd] as Node[])
@@ -49,7 +48,7 @@ class XFVRPPathMoveIntSpec extends Specification {
 		def currentQuality = evalService.check(sol, model)
 		
 		when:
-		def newQuality = service.improve(sol, currentQuality)
+		def newQuality = service.improve(sol, currentQuality, model)
 		sol = NormalizeSolutionService.normalizeRoute(sol, model)
 		def checkedQuality = evalService.check(sol, model)
 		def newGiantRoute = sol.getGiantRoute()
@@ -72,7 +71,6 @@ class XFVRPPathMoveIntSpec extends Specification {
 	def "Find improvement for multi depot"() {
 		def model = initMDScen()
 		def n = model.getNodes()
-		service.setModel(model)
 
 		sol = new Solution()
 		sol.setGiantRoute([nd, n[3], n[2], nd, n[4], n[5], nd] as Node[])
@@ -80,7 +78,7 @@ class XFVRPPathMoveIntSpec extends Specification {
 		def currentQuality = evalService.check(sol, model)
 
 		when:
-		def newQuality = service.improve(sol, currentQuality)
+		def newQuality = service.improve(sol, currentQuality, model)
 		sol = NormalizeSolutionService.normalizeRoute(sol, model)
 		def checkedQuality = evalService.check(sol, model)
 		def newGiantRoute = sol.getGiantRoute()
@@ -104,7 +102,6 @@ class XFVRPPathMoveIntSpec extends Specification {
 	def "Find no improvement"() {
 		def model = initMDScen()
 		def n = model.getNodes()
-		service.setModel(model)
 
 		sol = new Solution()
 		sol.setGiantRoute([nd, n[4], n[2], n[3], n[5], nd, nd] as Node[])
@@ -112,7 +109,7 @@ class XFVRPPathMoveIntSpec extends Specification {
 		def currentQuality = evalService.check(sol, model)
 
 		when:
-		def newQuality = service.improve(sol, currentQuality)
+		def newQuality = service.improve(sol, currentQuality, model)
 		def newGiantRoute = sol.getGiantRoute()
 		
 		then:
@@ -190,18 +187,18 @@ class XFVRPPathMoveIntSpec extends Specification {
 				loadType: LoadType.DELIVERY)
 				.getNode()
 
-		nd.setIdx(0);
-		nd2.setIdx(1);
-		n1.setIdx(2);
-		n2.setIdx(3);
-		n3.setIdx(4);
-		n4.setIdx(5);
-		n5.setIdx(6);
-		n6.setIdx(7);
+		nd.setIdx(0)
+		nd2.setIdx(1)
+		n1.setIdx(2)
+		n2.setIdx(3)
+		n3.setIdx(4)
+		n4.setIdx(5)
+		n5.setIdx(6)
+		n6.setIdx(7)
 
-		def nodes = [nd, nd2, n1, n2, n3, n4, n5, n6] as Node[];
+		def nodes = [nd, nd2, n1, n2, n3, n4, n5, n6] as Node[]
 
-		def iMetric = new AcceleratedMetricTransformator().transform(metric, nodes, v);
+		def iMetric = new AcceleratedMetricTransformator().transform(metric, nodes, v)
 
 		return new XFVRPModel(nodes, iMetric, iMetric, v, parameter)
 	}
@@ -270,17 +267,17 @@ class XFVRPPathMoveIntSpec extends Specification {
 				loadType: LoadType.DELIVERY)
 				.getNode()
 
-		nd.setIdx(0);
-		n1.setIdx(1);
-		n2.setIdx(2);
-		n3.setIdx(3);
-		n4.setIdx(4);
-		n5.setIdx(5);
-		n6.setIdx(6);
+		nd.setIdx(0)
+		n1.setIdx(1)
+		n2.setIdx(2)
+		n3.setIdx(3)
+		n4.setIdx(4)
+		n5.setIdx(5)
+		n6.setIdx(6)
 
-		def nodes = [nd, n1, n2, n3, n4, n5, n6] as Node[];
+		def nodes = [nd, n1, n2, n3, n4, n5, n6] as Node[]
 
-		def iMetric = new AcceleratedMetricTransformator().transform(metric, nodes, v);
+		def iMetric = new AcceleratedMetricTransformator().transform(metric, nodes, v)
 
 		return new XFVRPModel(nodes, iMetric, iMetric, v, parameter)
 	}

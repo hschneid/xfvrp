@@ -6,9 +6,18 @@ import xf.xfvrp.opt.construct.XFVRPConst;
 import xf.xfvrp.opt.construct.XFVRPSavings;
 import xf.xfvrp.opt.construct.insert.XFPDPFirstBestInsert;
 import xf.xfvrp.opt.construct.insert.XFVRPFirstBestInsert;
-import xf.xfvrp.opt.improve.*;
+import xf.xfvrp.opt.improve.XFPDPRelocate;
+import xf.xfvrp.opt.improve.giantroute.XFVRP2Opt;
+import xf.xfvrp.opt.improve.giantroute.XFVRP2OptIntra;
+import xf.xfvrp.opt.improve.giantroute.XFVRP3Opt;
+import xf.xfvrp.opt.improve.giantroute.XFVRP3PointMove;
 import xf.xfvrp.opt.improve.ils.XFPDPILS;
 import xf.xfvrp.opt.improve.ils.XFVRPILS;
+import xf.xfvrp.opt.improve.routebased.move.XFVRPSegmentMove;
+import xf.xfvrp.opt.improve.routebased.move.XFVRPSingleMove;
+import xf.xfvrp.opt.improve.routebased.swap.XFVRPSegmentExchange;
+import xf.xfvrp.opt.improve.routebased.swap.XFVRPSegmentSwap;
+import xf.xfvrp.opt.improve.routebased.swap.XFVRPSingleSwap;
 
 /** 
  * Copyright (c) 2012-present Holger Schneider
@@ -25,25 +34,29 @@ import xf.xfvrp.opt.improve.ils.XFVRPILS;
  *
  */
 public enum XFVRPOptType {
-	
+
+	// Construction
 	SAVINGS(XFVRPSavings.class),
 	CONST(XFVRPConst.class),
 	FIRST_BEST(XFVRPFirstBestInsert.class),
+
+	// Giant route based
 	OPT2(XFVRP2Opt.class),
 	OPT2_INTRA(XFVRP2OptIntra.class),
-	SWAP(XFVRPSwap.class),
-	SWAPSEGMENT(XFVRPSwapSegment.class),
-	SWAPSEGMENT_WITH_INVERT(XFVRPSwapSegmentWithInvert.class),
-	SWAPSEGMENT_EQ(XFVRPSwapSegmentEqual.class),
-	RELOCATE(XFVRPRelocate.class),
-	RELOCATE2(xf.xfvrp.opt.improve.routebased.XFVRPRelocate.class),
-	OR_OPT(XFVRPOrOpt.class),
-	PATH_RELOCATE(XFVRPPathMove.class),
 	OPT3(XFVRP3Opt.class),
 	OPT3_POINTMOVE(XFVRP3PointMove.class),
+
+	// Route based
+	RELOCATE(XFVRPSingleMove.class),
+	PATH_RELOCATE(XFVRPSegmentMove.class),
+	SWAP(XFVRPSingleSwap.class),
+	SWAPSEGMENT(XFVRPSegmentSwap.class),
+	PATH_EXCHANGE(XFVRPSegmentExchange.class),
+
+	// Iterated local search
 	ILS(XFVRPILS.class),
-	PATH_EXCHANGE(XFVRPPathExchange.class),
-	
+
+	// Pickup & Delivery
 	PDP_CHEAPEST_INSERT(XFPDPFirstBestInsert.class),
 	PDP_RELOCATE(XFPDPRelocate.class),
 	PDP_ILS(XFPDPILS.class);

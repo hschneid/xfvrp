@@ -1,4 +1,4 @@
-package xf.xfvrp.opt.improve.routebased
+package xf.xfvrp.opt.improve.routebased.move
 
 import spock.lang.Specification
 import util.instances.TestNode
@@ -8,26 +8,26 @@ import xf.xfvrp.base.metric.EucledianMetric
 import xf.xfvrp.base.metric.internal.AcceleratedMetricTransformator
 import xf.xfvrp.opt.Solution
 
-class XFVRPRelocateTest extends Specification {
+class XFVRPSingleMoveTest extends Specification {
 
-    def service = new XFVRPRelocate()
+    def service = new XFVRPSingleMove()
 
-    def n1 = new Node(externID: "1", siteType: SiteType.DEPOT);
-    def n2 = new Node(externID: "2", siteType: SiteType.CUSTOMER);
-    def n3 = new Node(externID: "3", siteType: SiteType.CUSTOMER);
-    def n4 = new Node(externID: "4", siteType: SiteType.DEPOT);
-    def n5 = new Node(externID: "5", siteType: SiteType.CUSTOMER);
-    def n6 = new Node(externID: "6", siteType: SiteType.CUSTOMER);
-    def n7 = new Node(externID: "7", siteType: SiteType.DEPOT);
+    def n1 = new Node(externID: "1", siteType: SiteType.DEPOT)
+    def n2 = new Node(externID: "2", siteType: SiteType.CUSTOMER)
+    def n3 = new Node(externID: "3", siteType: SiteType.CUSTOMER)
+    def n4 = new Node(externID: "4", siteType: SiteType.DEPOT)
+    def n5 = new Node(externID: "5", siteType: SiteType.CUSTOMER)
+    def n6 = new Node(externID: "6", siteType: SiteType.CUSTOMER)
+    def n7 = new Node(externID: "7", siteType: SiteType.DEPOT)
 
     def "change - reset - different routes"() {
         def sol = new Solution()
         sol.setGiantRoute([n1, n2, n3, n4, n5, n6, n7] as Node[])
-        def parameter = [0, 1, 1, 2] as float[]
+        def parameter = [-1, 0, 1, 1, 2, 0, 0] as float[]
 
         when:
-        service.changeSolution(sol, parameter)
-        service.resetSolution(sol, parameter)
+        XFVRPMoveUtil.change(sol, parameter)
+        XFVRPMoveUtil.reverseChange(sol, parameter)
         def result = sol.getGiantRoute()
         then:
         result[0].externID == "1"
@@ -42,11 +42,11 @@ class XFVRPRelocateTest extends Specification {
     def "change - reset - same routes - src > dst"() {
         def sol = new Solution()
         sol.setGiantRoute([n1, n2, n3, n5, n6, n7] as Node[])
-        def parameter = [0, 0, 1, 3] as float[]
+        def parameter = [-1, 0, 0, 1, 3, 0, 0] as float[]
 
         when:
-        service.changeSolution(sol, parameter)
-        service.resetSolution(sol, parameter)
+        XFVRPMoveUtil.change(sol, parameter)
+        XFVRPMoveUtil.reverseChange(sol, parameter)
         def result = sol.getGiantRoute()
         then:
         result[0].externID == "1"
@@ -60,11 +60,11 @@ class XFVRPRelocateTest extends Specification {
     def "change - reset - same routes - src < dst"() {
         def sol = new Solution()
         sol.setGiantRoute([n1, n2, n3, n5, n6, n7] as Node[])
-        def parameter = [0, 0, 4, 1] as float[]
+        def parameter = [-1, 0, 0, 4, 1, 0, 0] as float[]
 
         when:
-        service.changeSolution(sol, parameter)
-        service.resetSolution(sol, parameter)
+        XFVRPMoveUtil.change(sol, parameter)
+        XFVRPMoveUtil.reverseChange(sol, parameter)
         def result = sol.getGiantRoute()
         then:
         result[0].externID == "1"
@@ -78,13 +78,12 @@ class XFVRPRelocateTest extends Specification {
     def "find an improvement"() {
         def model = initScen()
         def n = model.getNodes()
-        service.setModel(model)
 
         def sol = new Solution()
         sol.setGiantRoute([n[0], n[3], n[1], n[2], n[4], n[0]] as Node[])
 
         when:
-        def newQuality = service.improve(sol, new Quality(cost: Float.MAX_VALUE))
+        def newQuality = service.improve(sol, new Quality(cost: Float.MAX_VALUE), model)
         def result = sol.getGiantRoute()
         then:
         newQuality.cost < 7
@@ -99,13 +98,12 @@ class XFVRPRelocateTest extends Specification {
     def "find no improvement anymore"() {
         def model = initScen()
         def n = model.getNodes()
-        service.setModel(model)
 
         def sol = new Solution()
         sol.setGiantRoute([n[0], n[1], n[2], n[3], n[4], n[0]] as Node[])
 
         when:
-        def newQuality = service.improve(sol, new Quality(cost: 6.236067))
+        def newQuality = service.improve(sol, new Quality(cost: 6.236067), model)
         def result = sol.getGiantRoute()
         then:
         newQuality == null
@@ -200,9 +198,9 @@ class XFVRPRelocateTest extends Specification {
         n5.setIdx(3)
         n6.setIdx(4)
 
-        def nodes = [n1, n2, n3, n5, n6] as Node[];
+        def nodes = [n1, n2, n3, n5, n6] as Node[]
 
-        def iMetric = new AcceleratedMetricTransformator().transform(new EucledianMetric(), nodes, v);
+        def iMetric = new AcceleratedMetricTransformator().transform(new EucledianMetric(), nodes, v)
 
         return new XFVRPModel(nodes, iMetric, iMetric, v, new XFVRPParameter())
     }

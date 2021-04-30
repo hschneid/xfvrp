@@ -3,6 +3,7 @@ package xf.xfvrp.opt.evaluation;
 import xf.xfvrp.base.*;
 import xf.xfvrp.base.exception.XFVRPException;
 import xf.xfvrp.base.preset.BlockNameConverter;
+import xf.xfvrp.base.quality.RouteQuality;
 import xf.xfvrp.opt.Solution;
 
 /**
@@ -72,13 +73,13 @@ public class EvaluationService {
 		// Feasibility check
 		FeasibilityAnalzer.checkFeasibility(route);
 
-		Quality routeQuality = checkRoute(route, context);
+		Quality routeQuality = checkRoute(routeIdx, route, context);
 
 		solution.setRouteQuality(routeIdx, routeQuality);
 	}
 
-	private Quality checkRoute(Node[] route, Context context) throws XFVRPException {
-		Quality q = new Quality(null);
+	private Quality checkRoute(int routeIdx, Node[] route, Context context) throws XFVRPException {
+		RouteQuality q = new RouteQuality(routeIdx, null);
 
 		route = ActiveNodeAnalyzer.getActiveNodes(route);
 		context.setRouteInfos(RouteInfoBuilder.build(route));

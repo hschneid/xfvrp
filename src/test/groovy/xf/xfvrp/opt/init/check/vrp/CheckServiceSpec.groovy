@@ -7,12 +7,12 @@ import xf.xfvrp.base.*
 import xf.xfvrp.base.metric.EucledianMetric
 import xf.xfvrp.base.metric.internal.AcceleratedMetricTransformator
 import xf.xfvrp.base.preset.BlockNameConverter
-import xf.xfvrp.opt.improve.XFVRPRelocate
+import xf.xfvrp.opt.improve.routebased.move.XFVRPSingleMove
 import xf.xfvrp.opt.init.solution.vrp.SolutionBuilderDataBag
 
 class CheckServiceSpec extends Specification {
 
-	def opt = Stub XFVRPRelocate
+	def opt = Stub XFVRPSingleMove
 	def checkCustomerService = Stub CheckCustomerService
 
 	def service = new CheckService(

@@ -14,48 +14,47 @@ public abstract class XFILS extends XFVRPOptBase {
 	protected XFVRPOptBase[] optArr;
 	protected double[] optPropArr;
 	protected XFRandomChangeService randomChangeService;
-	
+
 	public Solution execute(Solution solution) throws XFVRPException {
-		Solution bestRoute = solution.copy(); 
-		Solution bestBestTour = solution.copy();
-		Quality bestBestQ = check(solution);
-		
-		statusManager.fireMessage(StatusCode.RUNNING, this.getClass().getSimpleName()+" is starting with "+model.getParameter().getILSLoops()+" loops.");
+		Solution currentSolution = solution.copy();
+		Solution bestSolution = solution.copy();
+		Quality bestQuality = check(bestSolution);
+
+		statusManager.fireMessage(StatusCode.RUNNING, this.getClass().getSimpleName()+" is starting with "+model.getParameter().getILSLoops()+" loops. Start quality " + bestQuality.getCost());
 
 		for (int i = 0; checkTerminationCriteria(i); i++) {
-			Solution gT = bestRoute.copy();
+			Solution newSolution = currentSolution.copy();
 
 			// Variation
-			gT = randomChangeService.change(gT, model);
-			
+			newSolution = randomChangeService.change(newSolution, model);
+
 			// Intensification
-			gT = localSearch(gT);
+			newSolution = localSearch(newSolution);
 
 			// Evaluation
-			Quality q = check(gT);
+			Quality newQuality = check(newSolution);
 
 			// Selection
-			if(q.getFitness() < bestBestQ.getFitness()) {
-				statusManager.fireMessage(StatusCode.RUNNING, this.getClass().getSimpleName()+" loop "+i+"\t last cost : "+bestBestQ.getCost()+"\t new cost : "+q.getCost());
+			if(newQuality.getFitness() < bestQuality.getFitness()) {
+				statusManager.fireMessage(StatusCode.RUNNING, this.getClass().getSimpleName()+" loop "+i+"\t last cost : "+bestQuality.getCost()+"\t new cost : "+newQuality.getCost());
 
-				bestRoute = gT;
-				bestBestQ = q;
-				bestBestTour = gT;
+				currentSolution = newSolution;
+				bestQuality = newQuality;
+				bestSolution = newSolution;
 			} else {
-				statusManager.fireMessage(StatusCode.RUNNING, this.getClass().getSimpleName()+" loop "+i+"\t with cost : "+q.getCost());
-				NormalizeSolutionService.normalizeRoute(bestRoute, model);
+				statusManager.fireMessage(StatusCode.RUNNING, this.getClass().getSimpleName()+" loop "+i+"\t with cost : "+newQuality.getCost()+"\t best cost : "+bestQuality.getCost());
 			}
 		}
 
-		return NormalizeSolutionService.normalizeRoute(bestBestTour, model);
+		return NormalizeSolutionService.normalizeRoute(bestSolution, model);
 	}
-	
+
 	/**
 	 * Checks if a certain termination criteria is reached.
-	 * 
+	 *
 	 * True - Loop can go on
 	 * False - Terminate loop
-	 * 
+	 *
 	 * Criteria are:
 	 *  - Max number of loops
 	 *  - Max running time
@@ -66,15 +65,15 @@ public abstract class XFILS extends XFVRPOptBase {
 
 		return statusManager.getDurationSinceStartInSec() < model.getParameter().getMaxRunningTimeInSec();
 	}
-	
+
 	protected Solution localSearch(Solution solution) throws XFVRPException {
-		boolean[] processedArr = new boolean[optArr.length];
+		boolean[] processedNS = new boolean[optArr.length];
 
 		Quality bestQuality = null;
 		int nbrOfProcessed = 0;
-		while(nbrOfProcessed < processedArr.length) {
+		while(nbrOfProcessed < processedNS.length) {
 			// Choose
-			int optIdx = choose(processedArr);
+			int optIdx = choose(processedNS);
 
 			// Process
 			solution = optArr[optIdx].execute(solution, model, statusManager);
@@ -83,18 +82,18 @@ public abstract class XFILS extends XFVRPOptBase {
 			Quality currentQuality = check(solution);
 			if(bestQuality == null || currentQuality.getFitness() < bestQuality.getFitness()) {
 				bestQuality = currentQuality;
-				Arrays.fill(processedArr, false);
+				Arrays.fill(processedNS, false);
 				nbrOfProcessed = 0;
 			}
 
 			// Mark
-			processedArr[optIdx] = true;
+			processedNS[optIdx] = true;
 			nbrOfProcessed++;
 		}
 
 		return solution;
 	}
-	
+
 	protected int choose(boolean[] processedArr) {
 		int idx = -1;
 		do {

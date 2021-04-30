@@ -1,4 +1,4 @@
-package xf.xfvrp.opt.improve;
+package xf.xfvrp.opt.improve.giantroute;
 
 import xf.xfvrp.base.*;
 import xf.xfvrp.base.exception.XFVRPException;
@@ -55,7 +55,7 @@ public abstract class XFVRPOptImpBase extends XFVRPOptBase {
 	 * 
 	 * Currently it is only used by the PathExchange operator.
 	 */
-	protected Quality improve(Solution giantTour, Quality bestResult, XFVRPModel model) throws XFVRPException {
+	public Quality improve(Solution giantTour, Quality bestResult, XFVRPModel model) throws XFVRPException {
 		this.model = model;
 
 		return improve(giantTour, bestResult);
@@ -82,7 +82,9 @@ public abstract class XFVRPOptImpBase extends XFVRPOptBase {
 		}
 
 		// Normalize resulting solution - Remove empty routes
-		return NormalizeSolutionService.normalizeRoute(solution, model);
+		NormalizeSolutionService.normalizeRouteWithCleanup(solution, model);
+
+		return solution;
 	}
 
 	/**
@@ -118,21 +120,6 @@ public abstract class XFVRPOptImpBase extends XFVRPOptBase {
 	protected Quality checkIt(Solution solution) throws XFVRPException {
 		// Evaluate the costs and restrictions (penalties) of a giant route
 		Quality result = check(solution);
-
-		// Only valid solutions are allowed.
-		if(result.getPenalty() == 0) {
-			return result;
-		}
-
-		return null;
-	}
-
-	/**
-	 * Check a solution for 2 routes
-	 */
-	protected Quality checkIt(Solution solution, int routeIdxA, int routeIdxB) throws XFVRPException {
-		// Evaluate the costs and restrictions (penalties) of a giant route
-		Quality result = check(solution, routeIdxA, routeIdxB);
 
 		// Only valid solutions are allowed.
 		if(result.getPenalty() == 0) {

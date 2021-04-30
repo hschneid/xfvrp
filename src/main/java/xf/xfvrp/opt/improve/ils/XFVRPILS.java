@@ -3,9 +3,10 @@ package xf.xfvrp.opt.improve.ils;
 import xf.xfvrp.base.exception.XFVRPException;
 import xf.xfvrp.opt.Solution;
 import xf.xfvrp.opt.XFVRPOptBase;
-import xf.xfvrp.opt.improve.XFVRPPathMove;
-import xf.xfvrp.opt.improve.XFVRPRelocate;
-import xf.xfvrp.opt.improve.XFVRPSwap;
+import xf.xfvrp.opt.improve.routebased.move.XFVRPSegmentMove;
+import xf.xfvrp.opt.improve.routebased.move.XFVRPSingleMove;
+import xf.xfvrp.opt.improve.routebased.swap.XFVRPSegmentExchange;
+import xf.xfvrp.opt.improve.routebased.swap.XFVRPSingleSwap;
 
 /** 
  * Copyright (c) 2012-present Holger Schneider
@@ -17,7 +18,7 @@ import xf.xfvrp.opt.improve.XFVRPSwap;
  *
  * Optimization procedure for iterative local search
  * 
- * Three local search procedures with adaptive randomized variable neighborhood selection.
+ * Four local search procedures with adaptive randomized variable neighborhood selection.
  * 
  * @author hschneid
  *
@@ -31,13 +32,14 @@ public class XFVRPILS extends XFILS {
 	@Override
 	public Solution execute(Solution solution) throws XFVRPException {
 		optArr = new XFVRPOptBase[]{
-				new XFVRPRelocate(),
-				new XFVRPSwap(),
-				new XFVRPPathMove()
+				new XFVRPSingleMove(),
+				new XFVRPSingleSwap(),
+				new XFVRPSegmentMove(),
+				new XFVRPSegmentExchange()
 		};
 		
 		optPropArr = new double[] {
-				0.4, 0.4, 0.2
+				0.4, 0.3, 0.2, 0.1
 		};
 		
 		randomChangeService = new XFVRPRandomChangeService();

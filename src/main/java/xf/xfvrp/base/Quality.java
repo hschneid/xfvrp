@@ -19,8 +19,8 @@ package xf.xfvrp.base;
  */
 public class Quality {
 
-	protected float cost = 0;
-	protected float penalty = 0;
+	protected int cost = 0;
+	protected int penalty = 0;
 
 	private static int[] reasons = new int[10];
 	
@@ -40,8 +40,8 @@ public class Quality {
 	 */
 	public Quality(Quality q) {
 		if(q != null) {
-			cost = q.getCost();
-			penalty = q.getPenalty();
+			cost = q.cost;
+			penalty = q.penalty;
 		}
 	}
 
@@ -50,7 +50,7 @@ public class Quality {
 	 * @return cost of solution (mostly the distance)
 	 */
 	public float getCost() {
-		return cost;
+		return cost / 100f;
 	}
 
 	/**
@@ -61,11 +61,11 @@ public class Quality {
 	 * @return fitness (weighted factor of cost and 1000 * fitness)
 	 */
 	public float getFitness() {
-		return cost + 1000 * penalty;
+		return getCost() + 1000 * getPenalty();
 	}
 
 	public float getPenalty() {
-		return penalty;
+		return penalty / 100f;
 	}
 	
 	/**
@@ -73,13 +73,13 @@ public class Quality {
 	 * quality instance.
 	 */
 	public void addPenalty(float penalty, int reason) {
-		this.penalty += penalty;
+		this.penalty += (int)(penalty * 100);
 		if(penalty != 0)
 			reasons[reason]++;
 	}
 	
 	public void addCost(float cost) {
-		this.cost += cost;
+		this.cost += ((int)cost * 100);
 	}
 
 	public void add(Quality q) {
@@ -98,7 +98,7 @@ public class Quality {
 	 */
 	@Override
 	public String toString() {
-		return cost+" "+penalty;
+		return getCost()+" "+getPenalty();
 	}
 
 }

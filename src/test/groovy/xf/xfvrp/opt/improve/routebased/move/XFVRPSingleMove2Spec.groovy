@@ -1,4 +1,4 @@
-package xf.xfvrp.opt.improve
+package xf.xfvrp.opt.improve.routebased.move
 
 import spock.lang.Specification
 import util.instances.TestNode
@@ -8,11 +8,9 @@ import xf.xfvrp.base.metric.EucledianMetric
 import xf.xfvrp.base.metric.internal.AcceleratedMetricTransformator
 import xf.xfvrp.opt.Solution
 
-import java.util.stream.Collectors
+class XFVRPSingleMove2Spec extends Specification {
 
-class XFVRPRelocateSpec extends Specification {
-
-	def service = new XFVRPRelocate();
+	def service = new XFVRPSingleMove();
 
 	def nd = new TestNode(
 	externID: "DEP",
@@ -32,54 +30,16 @@ class XFVRPRelocateSpec extends Specification {
 		timeWindow: [[0,99],[2,99]]
 		).getNode()
 
-	def sol;
+	def sol
 
 	def parameter = new XFVRPParameter()
 
 	def metric = new EucledianMetric()
 
-	def "Search single depot - Find improve"() {
-		def model = initScen()
-		def n = model.getNodes()
-		service.setModel(model)
+	def impList = new PriorityQueue<>(
+			(o1, o2) -> Float.compare(o2[6], o1[6])
+	)
 
-		sol = new Solution()
-		sol.setGiantRoute([nd, n[2], nd, n[3], nd] as Node[])
-		
-		def impList = [] as List<float[]>
-
-		when:
-		service.searchSingleDepot(sol.getGiantRoute(), impList)
-
-		then:
-		impList.size() > 0
-		impList.stream().filter({f -> f[0] == 3 && f[1] == 1}).count() == 1
-		impList.stream().filter({f -> f[0] == 1 && f[1] == 3}).count() == 1
-		impList.stream().filter({f -> f[0] == 3 && f[1] == 2}).count() == 1
-		impList.stream().filter({f -> f[0] == 1 && f[1] == 4}).count() == 1
-		Math.abs(impList.stream().filter({f -> f[0] == 3 && f[1] == 1}).collect(Collectors.toList()).get(0)[2] - 1.618) < 0.001f
-		Math.abs(impList.stream().filter({f -> f[0] == 1 && f[1] == 3}).collect(Collectors.toList()).get(0)[2] - 1.618) < 0.001f
-		Math.abs(impList.stream().filter({f -> f[0] == 3 && f[1] == 2}).collect(Collectors.toList()).get(0)[2] - 1.618) < 0.001f
-		Math.abs(impList.stream().filter({f -> f[0] == 1 && f[1] == 4}).collect(Collectors.toList()).get(0)[2] - 1.618) < 0.001f
-	}
-	
-	def "Search single depot - Find No improve"() {
-		def model = initScen()
-		def n = model.getNodes()
-		service.setModel(model)
-
-		sol = new Solution()
-		sol.setGiantRoute([nd, n[2], nd, n[4], nd] as Node[])
-		
-		def impList = [] as List<float[]>
-
-		when:
-		service.searchSingleDepot(sol.getGiantRoute(), impList)
-
-		then:
-		impList.size() == 0
-	}
-	
 	def "Search multi depot - Find improve"() {
 		def model = initScenMultiDepot()
 		def n = model.getNodes()
@@ -87,22 +47,21 @@ class XFVRPRelocateSpec extends Specification {
 
 		sol = new Solution()
 		sol.setGiantRoute([nd, n[2], nd, n[3], nd2, n[4], nd2] as Node[])
-		
-		def impList = [] as List<float[]>
+		impList.clear()
 
 		when:
-		service.searchMultiDepot(sol.getGiantRoute(), impList)
+		XFVRPMoveSearchUtil.search(model, sol.getRoutes(), impList, 1, false)
 
 		then:
-		impList.size() > 0
-		impList.stream().filter({f -> f[0] == 3 && f[1] == 1}).count() == 1
-		impList.stream().filter({f -> f[0] == 1 && f[1] == 3}).count() == 1
-		impList.stream().filter({f -> f[0] == 3 && f[1] == 2}).count() == 1
-		impList.stream().filter({f -> f[0] == 1 && f[1] == 4}).count() == 1
-		Math.abs(impList.stream().filter({f -> f[0] == 3 && f[1] == 1}).collect(Collectors.toList()).get(0)[2] - 1.414f) < 0.001f
-		Math.abs(impList.stream().filter({f -> f[0] == 1 && f[1] == 3}).collect(Collectors.toList()).get(0)[2] - 1.414f) < 0.001f
-		Math.abs(impList.stream().filter({f -> f[0] == 3 && f[1] == 2}).collect(Collectors.toList()).get(0)[2] - 1.414f) < 0.001f
-		Math.abs(impList.stream().filter({f -> f[0] == 1 && f[1] == 4}).collect(Collectors.toList()).get(0)[2] - 1.414f) < 0.001f
+		impList.size() == 4
+		impList.stream().filter({f -> f.toList().subList(1,7) == [0,1,1,1,0,0]}).count() == 1
+		impList.stream().filter({f -> f.toList().subList(1,7) == [1,0,1,1,0,0]}).count() == 1
+		impList.stream().filter({f -> f.toList().subList(1,7) == [0,1,1,2,0,0]}).count() == 1
+		impList.stream().filter({f -> f.toList().subList(1,7) == [1,0,1,2,0,0]}).count() == 1
+		Math.abs(impList.stream().find({f -> f.toList().subList(1,7) == [1,0,1,1,0,0]})[0] - 1.414f) < 0.001f
+		Math.abs(impList.stream().find({f -> f.toList().subList(1,7) == [0,1,1,1,0,0]})[0] - 1.414f) < 0.001f
+		Math.abs(impList.stream().find({f -> f.toList().subList(1,7) == [1,0,1,2,0,0]})[0] - 1.414f) < 0.001f
+		Math.abs(impList.stream().find({f -> f.toList().subList(1,7) == [0,1,1,2,0,0]})[0] - 1.414f) < 0.001f
 	}
 	
 	def "Search multi depot - Find No improve"() {
@@ -112,11 +71,10 @@ class XFVRPRelocateSpec extends Specification {
 
 		sol = new Solution()
 		sol.setGiantRoute([nd, n[2], nd2, n[4], nd2] as Node[])
-		
-		def impList = [] as List<float[]>
+		impList.clear()
 
 		when:
-		service.searchMultiDepot(sol.getGiantRoute(), impList)
+		XFVRPMoveSearchUtil.search(model, sol.getRoutes(), impList, 1, false)
 
 		then:
 		impList.size() == 0

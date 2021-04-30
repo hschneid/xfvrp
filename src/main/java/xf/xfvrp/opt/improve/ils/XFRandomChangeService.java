@@ -6,6 +6,6 @@ import xf.xfvrp.opt.Solution;
 
 public interface XFRandomChangeService {
 
-	public Solution change(Solution solution, XFVRPModel model) throws XFVRPException;
+	Solution change(Solution solution, XFVRPModel model) throws XFVRPException;
 	
 }

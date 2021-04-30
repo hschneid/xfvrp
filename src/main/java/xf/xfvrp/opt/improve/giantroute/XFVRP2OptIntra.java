@@ -1,4 +1,4 @@
-package xf.xfvrp.opt.improve;
+package xf.xfvrp.opt.improve.giantroute;
 
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.Quality;
