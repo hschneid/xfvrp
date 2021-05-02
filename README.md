@@ -31,7 +31,8 @@ This software is released under [MIT License] (https://opensource.org/licenses/M
 Load xfvrp from github, append it to your project and use the API.
 
 A simple example for a capacitated vehicle route planning:
-``` XFVRP xfvrp = new XFVRP();
+``` 
+XFVRP xfvrp = new XFVRP();
 xfvrp.addDepot().setXlong(5.667);
 xfvrp.addCustomer().setXlong(1.002).setDemand(new float[]{1.5, 0, 2.3});
 xfvrp.setVehicle().setCapacity(new float[]{3, 2, 5});
@@ -46,11 +47,19 @@ report.getSummary().getDistance();
 As a general purpose solver, XFVRP is not fully compatable with single problem solvers. But even though it can prove its relevance by [benchmarks](BENCHMARKS.md).
 
 ## Change log
+### 11.4.0
+- Add more multi-compartment constraints
+  - Considering more than 3 compartments (no limitation)
+  - Vehicle capacity can be defined separately per compartment for PICKUP, DELIVERY or MIXED.
+  - Replenishment nodes must not replenish (reset capacity) for every compartment.
+- Add instance checks for MDVRPTW (of Vidal et al.)
+- Internal restructuring to reduce complexity for data-import classes
+
 ### 11.3.0
 - Drastically increased performance for some neighborhood searches by changing to route-based change operators and improved result sorting
-    - Single node Move and Segment Move
-    - Single node Swap and Segment Swap
-    - Segment Exchange (Swap & move)
+  - Single node Move and Segment Move
+  - Single node Swap and Segment Swap
+  - Segment Exchange (Swap & move)
 - Removed obsolete giant-route based neighborhoods, which are replaced by route-based neighborhoods 
 
 ### 11.2.0
