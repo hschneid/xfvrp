@@ -42,7 +42,7 @@ public class FullRouteMixedFleetSelector {
 
 		Vehicle veh = route.getVehicle();
 		float time = summary.getDuration();
-		float amount = summary.getPickup() + summary.getDelivery();
+		float amount = sum(summary.getPickups()) + sum(summary.getDeliveries());
 		float quality = (veh.fixCost + (veh.varCost * time)) / amount;
 		
 		if(summary.getDelay() > 0)
@@ -55,6 +55,15 @@ public class FullRouteMixedFleetSelector {
 		routeQuality.quality = quality;
 
 		return routeQuality;
+	}
+
+	private float sum(float[] arr) {
+		float sum = 0;
+		for (int i = arr.length - 1; i >= 0; i--) {
+			sum += arr[i];
+		}
+
+		return sum;
 	}
 
 	private class RouteQuality {

@@ -19,8 +19,10 @@ package xf.xfvrp.base;
  */
 public class Quality {
 
-	protected int cost = 0;
+	protected long cost = 0;
 	protected int penalty = 0;
+
+	private static final float DECIMAL_CORRECTOR = 1000;
 
 	private static int[] reasons = new int[10];
 	
@@ -50,7 +52,7 @@ public class Quality {
 	 * @return cost of solution (mostly the distance)
 	 */
 	public float getCost() {
-		return cost / 100f;
+		return cost / DECIMAL_CORRECTOR;
 	}
 
 	/**
@@ -65,7 +67,7 @@ public class Quality {
 	}
 
 	public float getPenalty() {
-		return penalty / 100f;
+		return penalty / DECIMAL_CORRECTOR;
 	}
 	
 	/**
@@ -73,13 +75,13 @@ public class Quality {
 	 * quality instance.
 	 */
 	public void addPenalty(float penalty, int reason) {
-		this.penalty += (int)(penalty * 100);
+		this.penalty += (int)(penalty * DECIMAL_CORRECTOR);
 		if(penalty != 0)
 			reasons[reason]++;
 	}
 	
 	public void addCost(float cost) {
-		this.cost += ((int)cost * 100);
+		this.cost += (int)(cost * DECIMAL_CORRECTOR);
 	}
 
 	public void add(Quality q) {

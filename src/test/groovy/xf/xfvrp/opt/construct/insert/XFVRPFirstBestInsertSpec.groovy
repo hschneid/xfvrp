@@ -179,9 +179,9 @@ class XFVRPFirstBestInsertSpec extends Specification {
 		result[4][0] == 5
 		Math.abs(result[0][1] - 4) <= 0.001
 		Math.abs(result[1][1] - 6) <= 0.001
-		Math.abs(result[2][1] - 3.821) <= 0.001
-		Math.abs(result[3][1] - 1.821) <= 0.001
-		Math.abs(result[4][1] - 1.821) <= 0.001
+		Math.abs(result[2][1] - 3.822) <= 0.001
+		Math.abs(result[3][1] - 1.822) <= 0.001
+		Math.abs(result[4][1] - 1.822) <= 0.001
 	}
 
 	XFVRPModel initScen() {

@@ -1,8 +1,6 @@
 package xf.xfvrp.opt.init.check.vrp;
 
-import xf.xfvrp.base.InvalidReason;
-import xf.xfvrp.base.Node;
-import xf.xfvrp.base.XFVRPModel;
+import xf.xfvrp.base.*;
 import xf.xfvrp.base.exception.XFVRPException;
 import xf.xfvrp.base.exception.XFVRPExceptionType;
 import xf.xfvrp.base.preset.BlockPositionConverter;
@@ -89,12 +87,16 @@ public class CheckCustomerService {
 		float[] demands = cust.getDemand();
 		float[] capacities = model.getVehicle().capacity;
 
-		int length = Math.min(demands.length, capacities.length);
-		for (int i = 0; i < length; i++) {
-			if(	demands[i] > capacities[i]) {
+		int length = Math.min(demands.length, (capacities.length / CompartmentLoadType.NBR_OF_LOAD_TYPES));
+		for (int compartment = 0; compartment < length; compartment++) {
+			int loadType = (cust.getLoadType() == LoadType.DELIVERY) ? CompartmentLoadType.DELIVERY.index() :
+					(cust.getLoadType() == LoadType.PICKUP) ? CompartmentLoadType.PICKUP.index() : -1;
+			float capacity = capacities[compartment * CompartmentLoadType.NBR_OF_LOAD_TYPES + loadType];
+			if(demands[compartment] > capacity) {
 				cust.setInvalidReason(
 						InvalidReason.CAPACITY,
-						"Customer " + cust.getExternID() + " - Capacity " + (i + 1) + " demand: " +capacities[i]+" required: "+demands[i]
+						String.format("Demand of single customer is too big for vehicle. Customer %s - Compartment id = %d demand = %f available capacity = %f",
+								cust.getExternID(), compartment, demands[compartment], capacity)
 				);
 				return false;
 			}

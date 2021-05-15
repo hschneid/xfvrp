@@ -3,6 +3,8 @@ package xf.xfvrp.base.fleximport;
 import xf.xfvrp.base.Vehicle;
 import xf.xfvrp.base.exception.XFVRPException;
 
+import java.util.List;
+
 /** 
  * Copyright (c) 2012-present Holger Schneider
  * All rights reserved.
@@ -45,8 +47,8 @@ public class InternalVehicleData extends VehicleData {
 	/**
 	 * @return the capacity
 	 */
-	public float[] getCapacity() {
-		return capacity;
+	public List<CompartmentCapacity> getCapacity() {
+		return capacityPerCompartment;
 	}
 
 	/**
@@ -105,7 +107,7 @@ public class InternalVehicleData extends VehicleData {
 				idx,
 				name,
 				count,
-				capacity,
+				capacityPerCompartment,
 				maxRouteDuration,
 				maxStopCount,
 				maxWaitingTime,

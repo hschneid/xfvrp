@@ -1,10 +1,13 @@
 package xf.xfvrp.report;
 
+import xf.xfvrp.base.CompartmentLoadType;
 import xf.xfvrp.base.LoadType;
 import xf.xfvrp.base.SiteType;
 import xf.xfvrp.base.Vehicle;
 
-/** 
+import java.util.Arrays;
+
+/**
  * Copyright (c) 2012-present Holger Schneider
  * All rights reserved.
  *
@@ -13,14 +16,14 @@ import xf.xfvrp.base.Vehicle;
  *
  *
  * Summary of a values for a route.
- * 
+ *
  * Events can be added, where the values are updated directly.
- * 
+ *
  * @author hschneid
  *
  */
 public class RouteReportSummary {
-	
+
 	private Vehicle vehicle;
 
 	private int nbrOfEvents = 0;
@@ -28,34 +31,34 @@ public class RouteReportSummary {
 	private float distance = 0;
 	private float duration = 0;
 	private float waitingTime = 0;
-
-	private float pickupLoad = 0;
-	private float delivery = 0;
-	private float pickup2 = 0;
-	private float delivery2 = 0;
-	private float pickup3 = 0;
-	private float delivery3 = 0;
-
 	private float delay = 0;
-	private float overload1 = 0;
-	private float overload2 = 0;
-	private float overload3 = 0;
-	private float[] maxCommonLoad = new float[3];
 
-	/**
-	 * 
-	 * @param vehicle
-	 */
+	// Capacity values per compartment
+	private float[] pickups;
+	private float[] deliveries;
+
+	private final float[] pickupLoads;
+	private final float[] deliveryLoads;
+	private final float[] commonLoads;
+	private final float[] overloads;
+
 	public RouteReportSummary(Vehicle vehicle) {
 		this.vehicle = vehicle;
+
+		int nbrOfCompartments = (vehicle.capacity.length / CompartmentLoadType.NBR_OF_LOAD_TYPES);
+		pickups = new float[nbrOfCompartments];
+		deliveries = new float[nbrOfCompartments];
+
+		pickupLoads = new float[nbrOfCompartments];
+		deliveryLoads = new float[nbrOfCompartments];
+		commonLoads = new float[nbrOfCompartments];
+		overloads = new float[nbrOfCompartments];
 	}
 
 	/**
 	 * Adds a event to the summary object.
-	 * 
+	 * <p>
 	 * The aggregation of KPIs is done in this method.
-	 * 
-	 * @param e
 	 */
 	public void add(Event e) {
 		distance += e.getDistance();
@@ -63,58 +66,58 @@ public class RouteReportSummary {
 		delay += e.getDelay();
 		waitingTime += e.getWaiting();
 		nbrOfEvents++;
-		
-		if(e.getSiteType() == SiteType.REPLENISH)
-			maxCommonLoad = new float[3];
 
+		if (e.getSiteType() == SiteType.REPLENISH) {
+			Arrays.fill(pickupLoads, 0);
+			Arrays.fill(deliveryLoads, 0);
+			Arrays.fill(commonLoads, 0);
+		}
 
-		if(e.getLoadType() == LoadType.PICKUP) {
+		if (e.getLoadType() == LoadType.PICKUP) {
 			setPickupLoad(e);
-			if(e.getSiteType() == SiteType.CUSTOMER)
-				checkOverload(e);
-		} else if(e.getLoadType() == LoadType.DELIVERY) {
-			if(e.getSiteType() == SiteType.CUSTOMER)
-				checkOverload(e);
+		} else if (e.getLoadType() == LoadType.DELIVERY) {
 			setDeliveryLoad(e);
 		}
-		
-		
+		checkOverload(e);
+
 		setNbrOfStops(e);
 	}
 
 	private void setDeliveryLoad(Event e) {
-		if(e.getSiteType() == SiteType.CUSTOMER) {
-			delivery += e.getAmount();
-			delivery2 += e.getAmount2();
-			delivery3 += e.getAmount3();
-		}
+		for (int compartment = 0; compartment < deliveries.length; compartment++) {
+			deliveries[compartment] += e.getAmounts()[compartment];
 
-		maxCommonLoad[0] -= e.getAmount();
-		maxCommonLoad[1] -= e.getAmount2();
-		maxCommonLoad[2] -= e.getAmount3();
+			deliveryLoads[compartment] += e.getAmounts()[compartment];
+			commonLoads[compartment] -= e.getAmounts()[compartment];
+		}
 	}
 
 	private void setPickupLoad(Event e) {
-		if(e.getSiteType() == SiteType.CUSTOMER) {
-			pickupLoad += e.getAmount();
-			pickup2 += e.getAmount2();
-			pickup3 += e.getAmount3();
-		}
+		for (int compartment = 0; compartment < pickups.length; compartment++) {
+			if(e.getSiteType() == SiteType.CUSTOMER) {
+				pickups[compartment] += e.getAmounts()[compartment];
+				pickupLoads[compartment] += e.getAmounts()[compartment];
+			}
 
-		maxCommonLoad[0] += e.getAmount();
-		maxCommonLoad[1] += e.getAmount2();
-		maxCommonLoad[2] += e.getAmount3();
+			commonLoads[compartment] += e.getAmounts()[compartment];
+		}
 	}
 
 	private void setNbrOfStops(Event e) {
-		if(e.getSiteType().equals(SiteType.CUSTOMER) && e.getDistance() > 0)
+		if (e.getSiteType().equals(SiteType.CUSTOMER) && e.getDistance() > 0)
 			nbrOfStops++;
 	}
 
 	private void checkOverload(Event e) {
-		overload1 += (maxCommonLoad[0] > vehicle.capacity[0]) ? e.getAmount() : 0;
-		overload2 += (vehicle.capacity.length >= 2 && maxCommonLoad[1] > vehicle.capacity[1]) ? e.getAmount2() : 0;
-		overload3 += (vehicle.capacity.length >= 3 && maxCommonLoad[2] > vehicle.capacity[2]) ? e.getAmount3() : 0;
+		for (int compartment = 0; compartment < overloads.length; compartment++) {
+			if (deliveryLoads[compartment] > 0 && pickupLoads[compartment] == 0) {
+				overloads[compartment] += deliveryLoads[compartment] > vehicle.capacity[compartment * CompartmentLoadType.NBR_OF_LOAD_TYPES + CompartmentLoadType.DELIVERY.index()] ? e.getAmounts()[compartment] : 0;
+			} else if (deliveryLoads[compartment] == 0 && pickupLoads[compartment] > 0) {
+				overloads[compartment] += pickupLoads[compartment] > vehicle.capacity[compartment * CompartmentLoadType.NBR_OF_LOAD_TYPES + CompartmentLoadType.PICKUP.index()] ? e.getAmounts()[compartment] : 0;
+			} else if (deliveryLoads[compartment] > 0 && pickupLoads[compartment] > 0) {
+				overloads[compartment] += commonLoads[compartment] > vehicle.capacity[compartment * CompartmentLoadType.NBR_OF_LOAD_TYPES + CompartmentLoadType.MIXED.index()] ? e.getAmounts()[compartment] : 0;
+			}
+		}
 	}
 
 	/**
@@ -123,34 +126,32 @@ public class RouteReportSummary {
 	public int getNbrOfEvents() {
 		return nbrOfEvents;
 	}
+
 	/**
 	 * @return the distance
 	 */
 	public float getDistance() {
 		return distance;
 	}
+
 	/**
 	 * @return the delay
 	 */
 	public float getDelay() {
 		return delay;
 	}
-	/**
-	 * @return the pickup
-	 */
-	public float getPickup() {
-		return pickupLoad;
+
+	public float[] getPickups() {
+		return pickups;
 	}
-	/**
-	 * @return the delivery
-	 */
-	public float getDelivery() {
-		return delivery;
+
+	public float[] getDeliveries() {
+		return deliveries;
 	}
 
 	/**
 	 * Cost function: fix + var * distance
-	 * 
+	 *
 	 * @return
 	 */
 	public float getCost() {
@@ -158,7 +159,6 @@ public class RouteReportSummary {
 	}
 
 	/**
-	 * 
 	 * @return
 	 */
 	public float getDuration() {
@@ -173,39 +173,6 @@ public class RouteReportSummary {
 	}
 
 	/**
-	 * 
-	 * @return
-	 */
-	public float getPickup2() {
-		return pickup2;
-	}
-
-	/**
-	 * 
-	 * @return
-	 */
-	public float getDelivery2() {
-		return delivery2;
-	}
-
-	/**
-	 * 
-	 * @return
-	 */
-	public float getPickup3() {
-		return pickup3;
-	}
-
-	/**
-	 * 
-	 * @return
-	 */
-	public float getDelivery3() {
-		return delivery3;
-	}
-
-	/**
-	 * 
 	 * @return
 	 */
 	public float getWaitingTime() {
@@ -213,41 +180,21 @@ public class RouteReportSummary {
 	}
 
 	/**
-	 * 
 	 * @return
 	 */
 	public int getNbrOfStops() {
 		return nbrOfStops;
 	}
 
-	public float getOverload1() {
-		return overload1;
-	}
-
-	public float getOverload2() {
-		return overload2;
-	}
-
-	public float getOverload3() {
-		return overload3;
+	public float[] getOverloads() {
+		return overloads;
 	}
 
 	public void setDuration(float duration) {
 		this.duration = duration;
 	}
 
-	public void setPickupLoad(float pickupLoad) {
-		this.pickupLoad = pickupLoad;
-	}
-
-	public void setDelivery(float delivery) {
-		this.delivery = delivery;
-	}
-
 	public void setDelay(float delay) {
 		this.delay = delay;
 	}
-
-
-	
 }

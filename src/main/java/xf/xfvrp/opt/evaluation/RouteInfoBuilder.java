@@ -41,7 +41,7 @@ public class RouteInfoBuilder {
 		}			
 	}
 
-	private static void changeRouteInfo(Node node, RouteInfo routeInfo) {
+	private static void changeRouteInfo(Node node, RouteInfo routeInfo) throws XFVRPException {
 		LoadType loadType = node.getLoadType();
 		
 		if(loadType == LoadType.PICKUP) {
@@ -51,7 +51,7 @@ public class RouteInfoBuilder {
 			routeInfo.addLoadingServiceTime(node.getServiceTime());
 			routeInfo.addDeliveryAmount(node.getDemand());
 		} else
-			throw new IllegalStateException("Found unexpected load type ("+loadType.toString()+")");
+			throw new XFVRPException(XFVRPExceptionType.ILLEGAL_STATE ,"Found unexpected load type ("+loadType.toString()+")");
 	}
 	
 }

@@ -46,7 +46,7 @@ class EvaluationServiceCapacitySpec extends Specification {
 		then:
 		result != null
 		result.getPenalty() == 0
-		Math.abs(result.getCost() - 4.828) < 0.001
+		Math.abs(result.getCost() - 4.828) < 0.01
 	}
 
 	def "Delivery - 2 capacity, first fail"() {
@@ -63,7 +63,7 @@ class EvaluationServiceCapacitySpec extends Specification {
 		then:
 		result != null
 		result.getPenalty() > 0
-		Math.abs(result.getCost() - 4.828) < 0.001
+		Math.abs(result.getCost() - 4.828) < 0.01
 	}
 
 	def "Delivery - 2 capacity, second fail"() {
@@ -80,7 +80,7 @@ class EvaluationServiceCapacitySpec extends Specification {
 		then:
 		result != null
 		result.getPenalty() > 0
-		Math.abs(result.getCost() - 4.828) < 0.001
+		Math.abs(result.getCost() - 4.828) < 0.01
 
 	}
 
@@ -98,7 +98,7 @@ class EvaluationServiceCapacitySpec extends Specification {
 		then:
 		result != null
 		result.getPenalty() == 0
-		Math.abs(result.getCost() - 4.828) < 0.001
+		Math.abs(result.getCost() - 4.828) < 0.01
 	}
 
 	def "Pickup - 2 capacity, first fail"() {
@@ -115,7 +115,7 @@ class EvaluationServiceCapacitySpec extends Specification {
 		then:
 		result != null
 		result.getPenalty() > 0
-		Math.abs(result.getCost() - 4.828) < 0.001
+		Math.abs(result.getCost() - 4.828) < 0.01
 	}
 
 	def "Pickup - 2 capacity, second fail"() {
@@ -132,7 +132,7 @@ class EvaluationServiceCapacitySpec extends Specification {
 		then:
 		result != null
 		result.getPenalty() > 0
-		Math.abs(result.getCost() - 4.828) < 0.001
+		Math.abs(result.getCost() - 4.828) < 0.01
 	}
 
 	def "Pickup/Delivery - all clear"() {
@@ -149,7 +149,7 @@ class EvaluationServiceCapacitySpec extends Specification {
 		then:
 		result != null
 		result.getPenalty() == 0
-		Math.abs(result.getCost() - 4.828) < 0.001
+		Math.abs(result.getCost() - 4.828) < 0.01
 	}
 
 	def "Pickup/Delivery - wrong route order"() {
@@ -166,7 +166,7 @@ class EvaluationServiceCapacitySpec extends Specification {
 		then:
 		result != null
 		result.getPenalty() > 0
-		Math.abs(result.getCost() - 4.828) < 0.001
+		Math.abs(result.getCost() - 4.828) < 0.01
 	}
 
 	def "Replenish - homogenus - all clear"() {
@@ -183,7 +183,7 @@ class EvaluationServiceCapacitySpec extends Specification {
 		then:
 		result != null
 		result.getPenalty() == 0
-		Math.abs(result.getCost() - 6.828) < 0.001
+		Math.abs(result.getCost() - 6.828) < 0.01
 	}
 
 	def "Replenish - homogenus - pickup fail"() {
@@ -200,7 +200,7 @@ class EvaluationServiceCapacitySpec extends Specification {
 		then:
 		result != null
 		result.getPenalty() > 0
-		Math.abs(result.getCost() - 7.414) < 0.001
+		Math.abs(result.getCost() - 7.414) < 0.01
 	}
 
 	def "Replenish - homogenus - delivery fail"() {
@@ -217,7 +217,7 @@ class EvaluationServiceCapacitySpec extends Specification {
 		then:
 		result != null
 		result.getPenalty() > 0
-		Math.abs(result.getCost() - 7.414) < 0.001
+		Math.abs(result.getCost() - 7.414) < 0.01
 	}
 	
 	def "Replenish - hetero - all clear"() {
@@ -234,7 +234,7 @@ class EvaluationServiceCapacitySpec extends Specification {
 		then:
 		result != null
 		result.getPenalty() == 0
-		Math.abs(result.getCost() - 9.478) < 0.001
+		Math.abs(result.getCost() - 9.478) < 0.01
 	}
 
 

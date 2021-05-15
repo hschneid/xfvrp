@@ -138,12 +138,15 @@ public class EvaluationService {
 	private void checkCapacities(Quality q, Context context) {
 		float[] amounts = context.getAmountsOfRoute();
 
-		for (int i = 0; i < amounts.length / 2; i++) {
-			float delivery = (context.getCurrentNode().getLoadType() == LoadType.DELIVERY) ? context.getCurrentNode().getDemand()[i] : 0;
-			float pickup = (context.getCurrentNode().getLoadType() == LoadType.PICKUP) ? context.getCurrentNode().getDemand()[i] : 0;
+		for (int compartment = 0; compartment < context.getNbrOfCompartments(); compartment++) {
+			float delivery = (context.getCurrentNode().getLoadType() == LoadType.DELIVERY) ? context.getCurrentNode().getDemand()[compartment] : 0;
+			float pickup = (context.getCurrentNode().getLoadType() == LoadType.PICKUP) ? context.getCurrentNode().getDemand()[compartment] : 0;
 
-			amounts[i * 2 + 0] -= delivery;
-			amounts[i * 2 + 1] += pickup;
+			int compartmentIdx = compartment * CompartmentLoadType.NBR_OF_LOAD_TYPES;
+			amounts[compartmentIdx + CompartmentLoadType.PICKUP.index()] += pickup;
+			amounts[compartmentIdx + CompartmentLoadType.DELIVERY.index()] += delivery;
+			amounts[compartmentIdx + CompartmentLoadType.MIXED.index()] -= delivery;
+			amounts[compartmentIdx + CompartmentLoadType.MIXED.index()] += pickup;
 		}
 
 		int penalty = context.checkCapacities();

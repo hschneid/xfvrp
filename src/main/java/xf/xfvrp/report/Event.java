@@ -23,18 +23,15 @@ import xf.xfvrp.base.SiteType;
  *
  */
 public class Event {
-//	private Node node;
-	
+
 	private String id;
 	private String shipId;
 	
 	private float distance = 0;
 	private float travelTime = 0;
 	private float duration = 0;
-	private float amount = 0;
-	private float amount2 = 0;
-	private float amount3 = 0;
-	
+	private float[] amounts;
+
 	private LoadType loadType = LoadType.UNDEF;
 	private SiteType siteType;
 	
@@ -51,6 +48,8 @@ public class Event {
 		this.shipId = node.getShipID();
 		
 		this.siteType = node.getSiteType();
+
+		amounts = node.getDemand();
 	}
 	
 	/**
@@ -75,14 +74,8 @@ public class Event {
 	/**
 	 * @return the amount
 	 */
-	public float getAmount() {
-		return amount;
-	}
-	/**
-	 * @param amount the amount to set
-	 */
-	public void setAmount(float amount) {
-		this.amount = amount;
+	public float[] getAmounts() {
+		return amounts;
 	}
 
 	/**
@@ -205,43 +198,15 @@ public class Event {
 	public float getDuration() {
 		return duration;
 	}
-	
-	/**
-	 * 
-	 * @return
-	 */
-	public float getAmount2() {
-		return amount2;
-	}
-	
-	/**
-	 * 
-	 * @param amount2
-	 */
-	public void setAmount2(float amount2) {
-		this.amount2 = amount2;
-	}
-	
-	/**
-	 * 
-	 * @return
-	 */
-	public float getAmount3() {
-		return amount3;
-	}
-	
-	/**
-	 * 
-	 * @param amount3
-	 */
-	public void setAmount3(float amount3) {
-		this.amount3 = amount3;
-	}
 
 	/**
 	 * @return the shipId
 	 */
 	public String getShipID() {
 		return shipId;
+	}
+
+	public void setAmounts(float[] amounts) {
+		this.amounts = amounts;
 	}
 }

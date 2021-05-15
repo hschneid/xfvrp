@@ -1,9 +1,6 @@
 package xf.xfvrp.opt.evaluation;
 
-import xf.xfvrp.base.Node;
-import xf.xfvrp.base.SiteType;
-import xf.xfvrp.base.Vehicle;
-import xf.xfvrp.base.XFVRPModel;
+import xf.xfvrp.base.*;
 import xf.xfvrp.base.exception.XFVRPException;
 import xf.xfvrp.base.exception.XFVRPExceptionType;
 import xf.xfvrp.base.preset.BlockNameConverter;
@@ -118,11 +115,11 @@ public class Context {
 		if(!routeInfos.containsKey(currentNode))
 			throw new XFVRPException(XFVRPExceptionType.ILLEGAL_ARGUMENT, "Could not find route infos for depot id " + currentNode.getDepotId());
 
+		// Init delivery amount on the route
 		Amount deliveryOfRoute = routeInfos.get(currentNode).getDeliveryAmount();
-
 		if(deliveryOfRoute.hasAmount()) {
-			for (int i = 0; i < amountsOfRoute.length / 2; i++)
-				amountsOfRoute[i * 2 + 0] = deliveryOfRoute.getAmounts()[i];
+			for (int compartment = 0; compartment < getNbrOfCompartments(); compartment++)
+				amountsOfRoute[compartment * CompartmentLoadType.NBR_OF_LOAD_TYPES + CompartmentLoadType.MIXED.index()] = deliveryOfRoute.getAmounts()[compartment];
 
 			return checkCapacities();
 		}
@@ -243,9 +240,11 @@ public class Context {
 		Vehicle vehicle = model.getVehicle();
 		
 		int sum = 0;
-		for (int i = 0; i < amountsOfRoute.length / 2; i++) {
-			// Common Load of Pickups and Deliveries
-			sum += (int)Math.ceil(Math.max(0, (amountsOfRoute[i * 2 + 0] + amountsOfRoute[i * 2 + 1]) - vehicle.capacity[i]));
+		for (int compartment = 0; compartment < getNbrOfCompartments(); compartment++) {
+			int compartmentIdx = compartment * CompartmentLoadType.NBR_OF_LOAD_TYPES;
+			for (int loadType = 0; loadType < CompartmentLoadType.NBR_OF_LOAD_TYPES; loadType++) {
+				sum += (int) Math.ceil(Math.max(0, amountsOfRoute[compartmentIdx + loadType] - vehicle.capacity[compartmentIdx + loadType]));
+			}
 		}
 
 		return sum;
@@ -346,5 +345,9 @@ public class Context {
 
 	public RouteInfo getRouteInfo() {
 		return routeInfos.get(currentNode);
+	}
+
+	public int getNbrOfCompartments() {
+		return amountsOfRoute.length / CompartmentLoadType.NBR_OF_LOAD_TYPES;
 	}
 }

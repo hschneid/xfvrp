@@ -200,9 +200,7 @@ public class ReportBuilder {
         e.setLoadType(loadType);
 
         if(amounts != null) {
-            if (amounts.length > 0) e.setAmount(amounts[0]);
-            if (amounts.length > 1) e.setAmount2(amounts[1]);
-            if (amounts.length > 2) e.setAmount3(amounts[2]);
+            e.setAmounts(amounts);
         }
     }
 }

@@ -2,6 +2,7 @@ package xf.xfvrp.report;
 
 import xf.xfvrp.base.Node;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,18 +42,18 @@ public class StringWriter {
 		
 		ReportSummary sum = report.getSummary();
 		sb.append("#; DISTANCE; TOUR_COUNT; DELAY; OVERLOAD\n");
-		sb.append("-; "+sum.getDistance()+"; "+sum.getNbrOfUsedVehicles()+"; "+sum.getDelay()+"; "+sum.getOverload1()+"\n");
+		sb.append("-; "+sum.getDistance()+"; "+sum.getNbrOfUsedVehicles()+"; "+sum.getDelay()+"; "+Arrays.toString(sum.getOverloads())+"\n");
 		for (int i = 0; i < report.getRoutes().size(); i++) {
 			RouteReport tRep = report.getRoutes().get(i);
 			RouteReportSummary tSum = tRep.getSummary();
 			sb.append("#; TOUR_ID; VEHICLE; CUSTOMER_COUNT; DISTANCE; DELAY; PICKUP; DELIVERY\n");
-			sb.append("=; "+(i+1)+"; "+tRep.getVehicle().name+"; "+tSum.getNbrOfEvents()+"; "+tSum.getDistance()+"; "+tSum.getDelay()+"; "+tSum.getPickup()+"; "+tSum.getDelivery()+"\n");
+			sb.append("=; "+(i+1)+"; "+tRep.getVehicle().name+"; "+tSum.getNbrOfEvents()+"; "+tSum.getDistance()+"; "+tSum.getDelay()+"; "+Arrays.toString(tSum.getPickups())+"; "+Arrays.toString(tSum.getDeliveries())+"\n");
 			sb.append("# STOP_ID; ID; DISTANCE; AMOUNT; ARRIVAL; DEPARTURE; SERVICE; WAITING; TYPE\n");
 
 			for (int j = 0; j < tRep.getEvents().size(); j++) {
 				Event e = tRep.getEvents().get(j);
 				sb.append(
-						"+; "+(j+1)+"; "+e.getID()+"; "+e.getDistance()+"; "+e.getAmount()+"; "+
+						"+; "+(j+1)+"; "+e.getID()+"; "+e.getDistance()+"; "+ Arrays.toString(e.getAmounts())+"; "+
 								e.getArrival()+"; "+e.getDeparture()+"; "+e.getService()+"; "+e.getWaiting()+"; "+e.getLoadType()+"; "+blockMap.get(e.getID())+"; "+posMap.get(e.getID())+"\n"
 				);
 			}

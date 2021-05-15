@@ -1,14 +1,8 @@
 package xf.xfvrp.opt.init.precheck.pdp;
 
-import xf.xfvrp.base.InvalidReason;
-import xf.xfvrp.base.Node;
-import xf.xfvrp.base.SiteType;
-import xf.xfvrp.base.Vehicle;
+import xf.xfvrp.base.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class PDPPreCheckService {
@@ -32,43 +26,39 @@ public class PDPPreCheckService {
 	}
 
 	private Map<SiteType, List<Node>> getNodesPerType(Node[] nodes) {
-		return Arrays.stream(nodes).collect(Collectors.groupingBy(k -> k.getSiteType()));
+		return Arrays.stream(nodes).collect(Collectors.groupingBy(Node::getSiteType));
 	}
 
 	private List<Node> getCustomers(Map<SiteType, List<Node>> nodesPerType) {
-		return nodesPerType.get(SiteType.CUSTOMER)
-				.stream()
-				.collect(Collectors.toList());
+		return new ArrayList<>(nodesPerType.get(SiteType.CUSTOMER));
 	}
 
 	private void removeUncompleteShipments(List<Node> customers) {
 		// No shipment id
 		new ArrayList<>(customers).stream()
-		.filter(c -> {
-			return (c.getShipID() == null || c.getShipID().length() == 0);
-		})
+		.filter(c -> (c.getShipID() == null || c.getShipID().length() == 0))
 		.forEach(c -> {
 			c.setInvalidReason(InvalidReason.PDP_INCOMPLETE);
 			customers.remove(c);
 		});
 
 		// Incomplete shipment
-		new ArrayList<>(customers).stream().collect(Collectors.groupingBy(k -> k.getShipmentIdx()))
+		new ArrayList<>(customers).stream().collect(Collectors.groupingBy(Node::getShipmentIdx))
 		.values()
 		.stream()
 		.filter(list -> list.size() < 2)
-		.flatMap(list -> list.stream())
+		.flatMap(Collection::stream)
 		.forEach(c -> {
 			c.setInvalidReason(InvalidReason.PDP_INCOMPLETE);
 			customers.remove(c);
 		});
 
 		// Too much nodes on shipment
-		new ArrayList<>(customers).stream().collect(Collectors.groupingBy(k -> k.getShipmentIdx()))
+		new ArrayList<>(customers).stream().collect(Collectors.groupingBy(Node::getShipmentIdx))
 		.values()
 		.stream()
 		.filter(list -> list.size() > 2)
-		.flatMap(list -> list.stream())
+		.flatMap(Collection::stream)
 		.forEach(c -> {
 			c.setInvalidReason(InvalidReason.PDP_ILLEGAL_NUMBER_OF_CUSTOMERS_PER_SHIPMENT);
 			customers.remove(c);
@@ -78,7 +68,7 @@ public class PDPPreCheckService {
 	private Map<Integer, Node[]> getShipments(List<Node> customers) {
 		// Collect pairs of nodes of pickup and delivery (i.e. shipments)
 		return customers.stream()
-				.collect(Collectors.groupingBy(k -> k.getShipmentIdx()))
+				.collect(Collectors.groupingBy(Node::getShipmentIdx))
 				.values()
 				.stream()
 				.filter(list -> list.size() == 2)
@@ -116,11 +106,29 @@ public class PDPPreCheckService {
 
 	private void checkCapacity(List<Node> customers, Vehicle vehicle) {
 		for (Node customer : customers) {
-			for (int j = 0; j < customer.getDemand().length; j++)
-				if(customer.getDemand()[j] > vehicle.capacity[j]) {
-					customer.setInvalidReason(InvalidReason.PDP_IMPROPER_AMOUNTS);
-					break;
-				}
+			checkCapacityOfCustomer(customer, vehicle);
+		}
+	}
+
+	private void checkCapacityOfCustomer(Node cust, Vehicle vehicle) {
+		float[] demands = cust.getDemand();
+		float[] capacities = vehicle.capacity;
+
+		int length = Math.min(demands.length, (capacities.length / CompartmentLoadType.NBR_OF_LOAD_TYPES));
+		for (int compartment = 0; compartment < length; compartment++) {
+
+			int loadType = (cust.getLoadType() == LoadType.DELIVERY) ? CompartmentLoadType.DELIVERY.index() :
+					(cust.getLoadType() == LoadType.PICKUP) ? CompartmentLoadType.PICKUP.index() : -1;
+
+			float capacity = capacities[compartment * CompartmentLoadType.NBR_OF_LOAD_TYPES + loadType];
+			if(demands[compartment] > capacity) {
+				cust.setInvalidReason(
+						InvalidReason.PDP_IMPROPER_AMOUNTS,
+						String.format("Demand of single customer is too big for vehicle. Customer %s - Compartment id = %d demand = %f available capacity = %f",
+								cust.getExternID(), compartment, demands[compartment], capacity)
+				);
+				return;
+			}
 		}
 	}
 

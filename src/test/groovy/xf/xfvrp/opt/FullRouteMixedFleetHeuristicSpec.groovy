@@ -27,8 +27,8 @@ class FullRouteMixedFleetHeuristicSpec extends Specification {
 				)
 		routeReport = new RouteReport(testVehicle.getVehicle())
 		routeReport.getSummary().duration = 1234
-		routeReport.getSummary().pickupLoad = 555
-		routeReport.getSummary().delivery = 666
+		routeReport.getSummary().pickups = [555]
+		routeReport.getSummary().deliveries = [666]
 		routeReport.getSummary().delay = 0
 
 	}
