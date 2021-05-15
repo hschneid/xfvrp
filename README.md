@@ -1,6 +1,6 @@
 [![MIT License](https://img.shields.io/apm/l/atomic-design-ui.svg?)](https://github.com/tterb/atomic-design-ui/blob/master/LICENSEs)
 [![BCH compliance](https://bettercodehub.com/edge/badge/hschneid/xfvrp?branch=master)](https://bettercodehub.com/)
-![alt text](https://img.shields.io/static/v1?label=version&message=11.3.0&color=-)
+![alt text](https://img.shields.io/static/v1?label=version&message=11.4.0&color=-)
 
 xfvrp
 ======
@@ -8,9 +8,10 @@ xfvrp
 There are a lot of solvers for the Vehicle Routing Problem (VRP) on github. Some are good at certain features (like CVRP or VRPTW) and some are quite complex.
 
 xfvrp is a fast and easy-to-use solver for Rich Vehicle Routing Problems like
-- Multi capacities
-- Multi time windows
-- Multi depots
+- Multiple compartments
+  - Separate capacities for routes with only pickup, only delivery or mixed pickup and delivery 
+- Multiple time windows
+- Multiple depots
 - Heterogeneous fleet
 - Pick and delivery or backhauls
 - Replenishment sites
@@ -35,7 +36,7 @@ A simple example for a capacitated vehicle route planning:
 XFVRP xfvrp = new XFVRP();
 xfvrp.addDepot().setXlong(5.667);
 xfvrp.addCustomer().setXlong(1.002).setDemand(new float[]{1.5, 0, 2.3});
-xfvrp.setVehicle().setCapacity(new float[]{3, 2, 5});
+xfvrp.setVehicle().setName("Truck").setCapacity(new float[]{3, 2, 5});
 xfvrp.setMetric(new EucledianMetric());
 xfvrp.setOptType(XFVRPOptType.RELOCATE);
 

@@ -242,8 +242,15 @@ public class Context {
 		int sum = 0;
 		for (int compartment = 0; compartment < getNbrOfCompartments(); compartment++) {
 			int compartmentIdx = compartment * CompartmentLoadType.NBR_OF_LOAD_TYPES;
-			for (int loadType = 0; loadType < CompartmentLoadType.NBR_OF_LOAD_TYPES; loadType++) {
-				sum += (int) Math.ceil(Math.max(0, amountsOfRoute[compartmentIdx + loadType] - vehicle.capacity[compartmentIdx + loadType]));
+
+			int pickupIdx = compartmentIdx + CompartmentLoadType.PICKUP.index();
+			int deliveryIdx = compartmentIdx + CompartmentLoadType.DELIVERY.index();
+			if(amountsOfRoute[pickupIdx] == 0 && amountsOfRoute[deliveryIdx] > 0) {
+				sum += (int) Math.ceil(Math.max(0, amountsOfRoute[deliveryIdx] - vehicle.capacity[deliveryIdx]));
+			} else if(amountsOfRoute[pickupIdx] > 0 && amountsOfRoute[deliveryIdx] == 0) {
+				sum += (int) Math.ceil(Math.max(0, amountsOfRoute[pickupIdx] - vehicle.capacity[pickupIdx]));
+			} else if(amountsOfRoute[pickupIdx] > 0 && amountsOfRoute[deliveryIdx] > 0) {
+				sum += (int) Math.ceil(Math.max(0, amountsOfRoute[compartmentIdx + CompartmentLoadType.MIXED.index()] - vehicle.capacity[compartmentIdx + CompartmentLoadType.MIXED.index()]));
 			}
 		}
 

@@ -9,6 +9,12 @@ public class CompartmentCapacity {
     public CompartmentCapacity() {
     }
 
+    public CompartmentCapacity(float onlyPickupCapacity, float onlyDeliveryCapacity, float deliveryAndPickupCapacity) {
+        this.onlyPickupCapacity = onlyPickupCapacity;
+        this.onlyDeliveryCapacity = onlyDeliveryCapacity;
+        this.deliveryAndPickupCapacity = deliveryAndPickupCapacity;
+    }
+
     public CompartmentCapacity(float simpleCapacityValue) {
         this.onlyPickupCapacity = simpleCapacityValue;
         this.onlyDeliveryCapacity = simpleCapacityValue;

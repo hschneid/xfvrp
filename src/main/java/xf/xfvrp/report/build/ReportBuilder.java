@@ -37,8 +37,7 @@ public class ReportBuilder {
                 continue;
             }
 
-            RouteReport routeReport = getRouteReport(route, context);
-            rep.add(routeReport);
+            rep.add(getRouteReport(route, context));
         }
 
         return rep;
