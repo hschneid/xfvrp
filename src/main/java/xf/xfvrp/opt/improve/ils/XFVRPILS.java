@@ -4,9 +4,6 @@ import xf.xfvrp.base.exception.XFVRPException;
 import xf.xfvrp.opt.Solution;
 import xf.xfvrp.opt.XFVRPOptBase;
 import xf.xfvrp.opt.improve.routebased.move.XFVRPSegmentMove;
-import xf.xfvrp.opt.improve.routebased.move.XFVRPSingleMove;
-import xf.xfvrp.opt.improve.routebased.swap.XFVRPSegmentExchange;
-import xf.xfvrp.opt.improve.routebased.swap.XFVRPSingleSwap;
 
 /** 
  * Copyright (c) 2012-2020 Holger Schneider

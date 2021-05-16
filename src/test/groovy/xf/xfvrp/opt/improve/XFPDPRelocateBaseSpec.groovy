@@ -4,7 +4,7 @@ import spock.lang.Specification
 import util.instances.TestNode
 import util.instances.TestVehicle
 import xf.xfvrp.base.*
-import xf.xfvrp.base.fleximport.InternalCustomerData
+import xf.xfvrp.base.fleximport.CustomerData
 import xf.xfvrp.base.metric.EucledianMetric
 import xf.xfvrp.base.metric.internal.AcceleratedMetricTransformator
 import xf.xfvrp.opt.Solution
@@ -335,13 +335,13 @@ class XFPDPRelocateBaseSpec extends Specification {
 				.getNode()
 
 		def customers =	[
-			new InternalCustomerData(externID: "1", shipID: "A"),
-			new InternalCustomerData(externID: "2", shipID: "A"),
-			new InternalCustomerData(externID: "3", shipID: "B"),
-			new InternalCustomerData(externID: "4", shipID: "B"),
-			new InternalCustomerData(externID: "5", shipID: "C"),
-			new InternalCustomerData(externID: "6", shipID: "C")
-		] as List<InternalCustomerData>
+				new CustomerData(externID: "1", shipID: "A"),
+				new CustomerData(externID: "2", shipID: "A"),
+				new CustomerData(externID: "3", shipID: "B"),
+				new CustomerData(externID: "4", shipID: "B"),
+				new CustomerData(externID: "5", shipID: "C"),
+				new CustomerData(externID: "6", shipID: "C")
+		] as List<CustomerData>
 
 		nd.setIdx(0);
 		n1.setIdx(1);

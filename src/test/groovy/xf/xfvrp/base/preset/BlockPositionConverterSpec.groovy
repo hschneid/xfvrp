@@ -4,7 +4,7 @@ import spock.lang.Specification
 import util.instances.TestNode
 import xf.xfvrp.base.Node
 import xf.xfvrp.base.SiteType
-import xf.xfvrp.base.fleximport.InternalCustomerData
+import xf.xfvrp.base.fleximport.CustomerData
 
 class BlockPositionConverterSpec extends Specification {
 
@@ -12,18 +12,17 @@ class BlockPositionConverterSpec extends Specification {
 	
 	def "Set blocked positions"() {
 		def customers = [
-			new InternalCustomerData(externID: "AA", presetBlockName: "A", presetBlockPos: 66),
-			new InternalCustomerData(externID: "AB", presetBlockName: "A", presetBlockPos: 7),
-			new InternalCustomerData(externID: "BA", presetBlockName: "B", presetBlockPos: -1),
-			new InternalCustomerData(externID: "BB", presetBlockName: "B", presetBlockPos: 57),
-			new InternalCustomerData(externID: "EA", presetBlockName: "", presetBlockPos: 1),
-			new InternalCustomerData(externID: "EB", presetBlockName: "", presetBlockPos: 6),
-			new InternalCustomerData(externID: "EC", presetBlockName: "", presetBlockPos: 89),
-			new InternalCustomerData(externID: "CC", presetBlockName: "A", presetBlockPos: 1),
-			new InternalCustomerData(externID: "DA", presetBlockName: "C", presetBlockPos: 1),
-			new InternalCustomerData(externID: "DB", presetBlockName: "C", presetBlockPos: 0)
-
-			] as List<InternalCustomerData>
+				new CustomerData(externID: "AA", presetBlockName: "A", presetBlockPos: 66),
+				new CustomerData(externID: "AB", presetBlockName: "A", presetBlockPos: 7),
+				new CustomerData(externID: "BA", presetBlockName: "B", presetBlockPos: -1),
+				new CustomerData(externID: "BB", presetBlockName: "B", presetBlockPos: 57),
+				new CustomerData(externID: "EA", presetBlockName: "", presetBlockPos: 1),
+				new CustomerData(externID: "EB", presetBlockName: "", presetBlockPos: 6),
+				new CustomerData(externID: "EC", presetBlockName: "", presetBlockPos: 89),
+				new CustomerData(externID: "CC", presetBlockName: "A", presetBlockPos: 1),
+				new CustomerData(externID: "DA", presetBlockName: "C", presetBlockPos: 1),
+				new CustomerData(externID: "DB", presetBlockName: "C", presetBlockPos: 0)
+			] as List<CustomerData>
 		
 		def nodes = [
 			new TestNode(externID: "DEP1", siteType: SiteType.DEPOT).getNode(),

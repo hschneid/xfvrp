@@ -1,9 +1,10 @@
 package xf.xfvrp.base.preset;
 
 import xf.xfvrp.base.Node;
-import xf.xfvrp.base.fleximport.InternalCustomerData;
+import xf.xfvrp.base.fleximport.CustomerData;
 
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -26,30 +27,27 @@ public class BlockPositionConverter {
 	/**
 	 * Converts the user block positions into an indexed numbers.
 	 */
-	public static void convert(Node[] nodes, List<InternalCustomerData> list) {
+	public static void convert(Node[] nodes, List<CustomerData> list) {
 		Map<String, Node> nodeMap = getMapping(nodes);
 
 		normBlockPositions(list, nodeMap);
 	}
 
 	private static Map<String, Node> getMapping(Node[] nodes) {
-		return Arrays.stream(nodes).collect(Collectors.toMap(k -> k.getExternID(), v -> v, (v1, v2) -> v1));
+		return Arrays.stream(nodes).collect(Collectors.toMap(Node::getExternID, v -> v, (v1, v2) -> v1));
 	}
 
-	private static void normBlockPositions(List<InternalCustomerData> list, Map<String, Node> nodeMap) {
+	private static void normBlockPositions(List<CustomerData> list, Map<String, Node> nodeMap) {
 		list.stream()
 		.filter(f -> f.getPresetBlockName() != null && f.getPresetBlockName().length() > 0)
 		.filter(f -> f.getPresetBlockPosition() >= 0)
 		.collect(Collectors.groupingBy(k -> k.getPresetBlockName()))
 		.values().stream()
 		.filter(presets -> presets.size() > 1)
-		.map(m -> {
-			m.sort((c1, c2) -> c1.getPresetBlockPosition() - c2.getPresetBlockPosition());
-			return m;
-		})
+		.peek(m -> m.sort(Comparator.comparingInt(c -> c.getPresetBlockPosition())))
 		.forEach(f -> {
 			int posIdx = UNDEF_POSITION + 1;
-			for (InternalCustomerData cust : f) {
+			for (CustomerData cust : f) {
 				Node node = nodeMap.get(cust.getExternID());
 				node.setPresetBlockPos(posIdx++);
 			}

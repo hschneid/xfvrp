@@ -4,7 +4,7 @@ import spock.lang.Specification
 import util.instances.TestNode
 import xf.xfvrp.base.Node
 import xf.xfvrp.base.SiteType
-import xf.xfvrp.base.fleximport.InternalCustomerData
+import xf.xfvrp.base.fleximport.CustomerData
 import xf.xfvrp.base.monitor.StatusCode
 import xf.xfvrp.base.monitor.StatusManager
 
@@ -15,11 +15,11 @@ class PresetDepotConverterSpec extends Specification {
 	
 	def "Set blocked depot index"() {
 		def customers = [
-			new InternalCustomerData(externID: "AA", presetDepotList: ["DEP1", "DEP2"]),
-			new InternalCustomerData(externID: "AB", presetDepotList: ["DEP3"]),
-			new InternalCustomerData(externID: "BA", presetDepotList: []),
-			new InternalCustomerData(externID: "BB", presetDepotList: [])
-			] as List<InternalCustomerData>
+				new CustomerData(externID: "AA", presetDepotList: ["DEP1", "DEP2"]),
+				new CustomerData(externID: "AB", presetDepotList: ["DEP3"]),
+				new CustomerData(externID: "BA", presetDepotList: []),
+				new CustomerData(externID: "BB", presetDepotList: [])
+			] as List<CustomerData>
 		
 		def nodes = [
 			new TestNode(globalIdx: 66, externID: "DEP1", siteType: SiteType.DEPOT).getNode(),
@@ -52,8 +52,8 @@ class PresetDepotConverterSpec extends Specification {
 	
 	def "Set blocked depot index wih wrong depot name"() {
 		def customers = [
-			new InternalCustomerData(externID: "AA", presetDepotList: ["DEP99"]),
-			] as List<InternalCustomerData>
+			new CustomerData(externID: "AA", presetDepotList: ["DEP99"]),
+			] as List<CustomerData>
 		
 		def nodes = [
 			new TestNode(globalIdx: 66, externID: "DEP1", siteType: SiteType.DEPOT).getNode(),

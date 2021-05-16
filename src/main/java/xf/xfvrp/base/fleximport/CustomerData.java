@@ -1,6 +1,8 @@
 package xf.xfvrp.base.fleximport;
 
 import xf.xfvrp.base.LoadType;
+import xf.xfvrp.base.Node;
+import xf.xfvrp.base.SiteType;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -25,7 +27,7 @@ import java.util.Set;
  * @author hschneid
  *
  */
-public abstract class CustomerData extends NodeData {
+public class CustomerData extends NodeData {
 	
 	/** Basic XFVRP - parameter **/
 	protected LoadType loadType = LoadType.PICKUP;
@@ -238,5 +240,81 @@ public abstract class CustomerData extends NodeData {
 	public CustomerData setPresetDepotList(Set<String> depotSet) {
 		presetDepotList.addAll(depotSet);
 		return this;
+	}
+
+	///////////////////////////////////////
+
+	/**
+	 * @return the serviceTime
+	 */
+	float getServiceTime() {
+		return serviceTime;
+	}
+
+	/**
+	 * @return the shipID
+	 */
+	public String getShipID() {
+		return shipID;
+	}
+
+	/**
+	 * @return the presetBlockName
+	 */
+	public String getPresetBlockName() {
+		return presetBlockName;
+	}
+
+	/**
+	 * @return the presetBlockVehicleList
+	 */
+	public Set<String> getPresetBlockVehicleList() {
+		return presetBlockVehicleList;
+	}
+
+	/**
+	 * @return the serviceTimeForSite
+	 */
+	float getServiceTimeForSite() {
+		return serviceTimeForSite;
+	}
+
+	/**
+	 * @return the presetRoutingBlackList
+	 */
+	public Set<String> getPresetRoutingBlackList() {
+		return presetRoutingBlackList;
+	}
+
+	/**
+	 * @return the presetDepotList
+	 */
+	public Set<String> getPresetDepotList() {
+		return presetDepotList;
+	}
+
+	public int getPresetBlockPosition() {
+		return presetBlockPos;
+	}
+
+	Node createCustomer(int idx) {
+		checkTimeWindows();
+
+		return new Node(
+				idx,
+				externID,
+				SiteType.CUSTOMER,
+				xlong,
+				ylat,
+				geoId,
+				demand,
+				timeWindowList.toArray(new float[0][]),
+				serviceTime,
+				serviceTimeForSite,
+				loadType,
+				presetBlockRank,
+				shipID,
+				null
+		);
 	}
 }
