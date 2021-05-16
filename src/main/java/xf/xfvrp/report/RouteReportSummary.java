@@ -4,6 +4,7 @@ import xf.xfvrp.base.CompartmentLoadType;
 import xf.xfvrp.base.LoadType;
 import xf.xfvrp.base.SiteType;
 import xf.xfvrp.base.Vehicle;
+import xf.xfvrp.opt.evaluation.Context;
 
 import java.util.Arrays;
 
@@ -60,7 +61,7 @@ public class RouteReportSummary {
 	 * <p>
 	 * The aggregation of KPIs is done in this method.
 	 */
-	public void add(Event e) {
+	public void add(Event e, Context context) {
 		distance += e.getDistance();
 		duration += e.getDuration();
 		delay += e.getDelay();
@@ -68,9 +69,19 @@ public class RouteReportSummary {
 		nbrOfEvents++;
 
 		if (e.getSiteType() == SiteType.REPLENISH) {
-			Arrays.fill(pickupLoads, 0);
-			Arrays.fill(deliveryLoads, 0);
-			Arrays.fill(commonLoads, 0);
+			if(context.getCurrentNode().isCompartmentReplenished() != null) {
+				for (int i = 0; i < context.getNbrOfCompartments(); i++) {
+					if(context.getCurrentNode().isCompartmentReplenished()[i]) {
+						pickupLoads[i] = 0;
+						deliveryLoads[i] = 0;
+						commonLoads[i] = 0;
+					}
+				}
+			} else {
+				Arrays.fill(pickupLoads, 0);
+				Arrays.fill(deliveryLoads, 0);
+				Arrays.fill(commonLoads, 0);
+			}
 		}
 
 		if (e.getLoadType() == LoadType.PICKUP) {
@@ -151,16 +162,11 @@ public class RouteReportSummary {
 
 	/**
 	 * Cost function: fix + var * distance
-	 *
-	 * @return
 	 */
 	public float getCost() {
 		return vehicle.fixCost + distance * vehicle.varCost;
 	}
 
-	/**
-	 * @return
-	 */
 	public float getDuration() {
 		return duration;
 	}
@@ -172,16 +178,10 @@ public class RouteReportSummary {
 		this.vehicle = vehicle;
 	}
 
-	/**
-	 * @return
-	 */
 	public float getWaitingTime() {
 		return waitingTime;
 	}
 
-	/**
-	 * @return
-	 */
 	public int getNbrOfStops() {
 		return nbrOfStops;
 	}

@@ -51,7 +51,8 @@ public class ReportBuilder {
 
         context.setCurrentNode(route[0]);
         routeReport.add(
-                beginRoute(route, context)
+                beginRoute(route, context),
+                context
         );
         context.setNextNode(route[0]);
         for (int i = 1; i < route.length; i++) {
@@ -63,7 +64,7 @@ public class ReportBuilder {
 
             fillEvent(event, context);
 
-            routeReport.add(event);
+            routeReport.add(event, context);
         }
 
         return routeReport;
@@ -121,7 +122,7 @@ public class ReportBuilder {
             e.setDuration(context.getModel().getVehicle().waitingTimeBetweenShifts);
             e.setLoadType(LoadType.PAUSE);
 
-            report.add(e);
+            report.add(e, context);
         }
     }
 
