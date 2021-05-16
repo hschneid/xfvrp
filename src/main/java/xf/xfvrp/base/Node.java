@@ -8,7 +8,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /** 
- * Copyright (c) 2012-present Holger Schneider
+ * Copyright (c) 2012-2020 Holger Schneider
  * All rights reserved.
  *
  * This source code is licensed under the MIT License (MIT) found in the
@@ -64,9 +64,15 @@ public class Node implements Cloneable {
 	/** If customer is invalid for whole route plan, the reason is written to invalid states **/
 	private InvalidReason invalidReason = InvalidReason.NONE;
 
+	/** For Replenishment nodes: Trigger, if a certain compartment is replenished (true) or not (false). **/
+	private final boolean[] isCompartmentReplenished;
+
 	private String invalidArguments = "";
 
-	public Node() {
+	/**
+	 * Constructor, which is used manly for testing
+	 */
+	Node() {
 		externID = "";
 		globalIdx = 0;
 		
@@ -80,12 +86,12 @@ public class Node implements Cloneable {
 		serviceTimeForSite = 0;
 
 		shipID = "";
+		isCompartmentReplenished = null;
 	}
 
 	/**
-	 * Node constructor for use within Efficient Load
+	 * Node constructor
 	 * All external data of a node are set here.
-	 * Except for internal index, depotId and geoId.	
 	 */
 	public Node(
 			int globalIdx,
@@ -100,7 +106,8 @@ public class Node implements Cloneable {
 			float serviceTimeForSite,
 			LoadType loadType,
 			int presetBlockRank,
-			String shipID			
+			String shipID,
+			boolean[] isCompartmentReplenished
 			) {
 		this.globalIdx = globalIdx;
 		this.externID = externID;
@@ -115,6 +122,7 @@ public class Node implements Cloneable {
 		this.geoId = geoId;
 		this.presetBlockRank = presetBlockRank;
 		this.shipID = shipID;
+		this.isCompartmentReplenished = isCompartmentReplenished;
 	}
 
 	/**
@@ -356,5 +364,9 @@ public class Node implements Cloneable {
 
 	public void setDemand(float val) {
 		this.demand[0] = val;
+	}
+
+	public boolean[] isCompartmentReplenished() {
+		return isCompartmentReplenished;
 	}
 }

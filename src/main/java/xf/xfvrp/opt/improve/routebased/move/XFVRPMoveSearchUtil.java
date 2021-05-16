@@ -6,6 +6,13 @@ import xf.xfvrp.base.XFVRPModel;
 
 import java.util.Queue;
 
+/**
+ * Copyright (c) 2012-2020 Holger Schneider
+ * All rights reserved.
+ *
+ * This source code is licensed under the MIT License (MIT) found in the
+ * LICENSE file in the root directory of this source tree.
+ **/
 public class XFVRPMoveSearchUtil {
 
     private static final float EPSILON = 0.001f;

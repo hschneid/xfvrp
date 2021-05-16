@@ -8,15 +8,20 @@ import java.util.List;
 import static xf.xfvrp.base.SiteType.DEPOT;
 import static xf.xfvrp.base.SiteType.REPLENISH;
 
+/**
+ * Copyright (c) 2012-2020 Holger Schneider
+ * All rights reserved.
+ *
+ * This source code is licensed under the MIT License (MIT) found in the
+ * LICENSE file in the root directory of this source tree.
+ **/
 public class ActiveNodeAnalyzer {
-
 
 	/**
 	 * Searches in the giant route for nodes which can be ignored during
 	 * evalution. This can be the case for empty routes or unnecessary
 	 * replenishments.
-	 * 
-	 * @param route
+	 *
 	 * @return list of active (true) or disabled (false) nodes in giant route
 	 */
 	public static Node[] getActiveNodes(Node[] route) {

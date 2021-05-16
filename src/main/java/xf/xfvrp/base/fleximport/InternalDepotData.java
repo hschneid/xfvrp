@@ -4,7 +4,7 @@ import xf.xfvrp.base.Node;
 import xf.xfvrp.base.SiteType;
 
 /** 
- * Copyright (c) 2012-present Holger Schneider
+ * Copyright (c) 2012-2020 Holger Schneider
  * All rights reserved.
  *
  * This source code is licensed under the MIT License (MIT) found in the
@@ -23,14 +23,10 @@ import xf.xfvrp.base.SiteType;
  */
 public class InternalDepotData extends DepotData {
 
-	/**
-	 * 
-	 * @param idx
-	 * @return
-	 */
 	public Node createDepot(int idx) {
 		checkTimeWindows();
-		Node n = new Node(
+
+		return new Node(
 				idx,
 				externID,
 				SiteType.DEPOT,
@@ -42,9 +38,8 @@ public class InternalDepotData extends DepotData {
 				0,
 				0,
 				null, 0,
-				""
+				"",
+				null
 				);
-		
-		return n;
 	}
 }

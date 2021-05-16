@@ -8,6 +8,13 @@ import xf.xfvrp.base.exception.XFVRPExceptionType;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Copyright (c) 2012-2020 Holger Schneider
+ * All rights reserved.
+ *
+ * This source code is licensed under the MIT License (MIT) found in the
+ * LICENSE file in the root directory of this source tree.
+ **/
 public class RouteInfoBuilder {
 
 	public static Map<Node, RouteInfo> build(Node[] route) throws XFVRPException {

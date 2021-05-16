@@ -1,7 +1,7 @@
 package xf.xfvrp.base.fleximport;
 
 /** 
- * Copyright (c) 2012-present Holger Schneider
+ * Copyright (c) 2012-2020 Holger Schneider
  * All rights reserved.
  *
  * This source code is licensed under the MIT License (MIT) found in the
@@ -27,6 +27,8 @@ package xf.xfvrp.base.fleximport;
  *
  */
 public abstract class ReplenishData extends NodeData {
+
+	protected boolean[] isCompartmentReplenished;
 
 	/**
 	 * @param externID the externID to set
@@ -60,12 +62,6 @@ public abstract class ReplenishData extends NodeData {
 		return this;
 	}
 
-	/**
-	 * 
-	 * @param open
-	 * @param close
-	 * @return
-	 */
 	public ReplenishData setTimeWindow(float open, float close) {
 		this.timeWindowList.add(new float[]{open, close});
 		return this;
@@ -103,4 +99,7 @@ public abstract class ReplenishData extends NodeData {
 		return this;
 	}
 
+	public void setIsCompartmentReplenished(boolean[] isCompartmentReplenished) {
+		this.isCompartmentReplenished = isCompartmentReplenished;
+	}
 }

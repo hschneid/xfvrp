@@ -5,7 +5,7 @@ import xf.xfvrp.base.Node;
 import xf.xfvrp.base.SiteType;
 
 /** 
- * Copyright (c) 2012-present Holger Schneider
+ * Copyright (c) 2012-2020 Holger Schneider
  * All rights reserved.
  *
  * This source code is licensed under the MIT License (MIT) found in the
@@ -24,15 +24,10 @@ import xf.xfvrp.base.SiteType;
  */
 public class InternalReplenishData extends ReplenishData {
 
-	/**
-	 * 
-	 * @param idx
-	 * @return
-	 */
 	public Node createReplenishment(int idx) {
 		checkTimeWindows();
-				
-		Node n = new Node(
+
+		return new Node(
 				idx,
 				externID,
 				SiteType.REPLENISH,
@@ -45,9 +40,8 @@ public class InternalReplenishData extends ReplenishData {
 				0,
 				LoadType.REPLENISH,
 				0,
-				""
+				"",
+				isCompartmentReplenished
 				);
-		
-		return n;
 	}
 }

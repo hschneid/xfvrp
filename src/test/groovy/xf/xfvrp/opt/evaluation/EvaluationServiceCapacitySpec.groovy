@@ -81,7 +81,6 @@ class EvaluationServiceCapacitySpec extends Specification {
 		result != null
 		result.getPenalty() > 0
 		Math.abs(result.getCost() - 4.828) < 0.01
-
 	}
 
 	def "Pickup - 2 capacity, all clear"() {

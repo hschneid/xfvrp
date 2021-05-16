@@ -8,6 +8,13 @@ import xf.xfvrp.base.exception.XFVRPExceptionType;
 import java.util.Arrays;
 import java.util.Objects;
 
+/**
+ * Copyright (c) 2012-2020 Holger Schneider
+ * All rights reserved.
+ *
+ * This source code is licensed under the MIT License (MIT) found in the
+ * LICENSE file in the root directory of this source tree.
+ **/
 public class FeasibilityAnalzer {
 
 	public static void checkFeasibility(Node[] route) throws XFVRPException {

@@ -19,6 +19,13 @@ import java.nio.file.Paths;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * Copyright (c) 2012-2020 Holger Schneider
+ * All rights reserved.
+ *
+ * This source code is licensed under the MIT License (MIT) found in the
+ * LICENSE file in the root directory of this source tree.
+ **/
 public class XFVRPInstanceBridge {
 
 	public XFVRP build(String pathName) throws JAXBException {

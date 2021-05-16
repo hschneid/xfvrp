@@ -6,6 +6,13 @@ import xf.xfvrp.base.exception.XFVRPExceptionType;
 import xf.xfvrp.base.preset.BlockPositionConverter;
 import xf.xfvrp.opt.init.solution.vrp.SolutionBuilderDataBag;
 
+/**
+ * Copyright (c) 2012-2020 Holger Schneider
+ * All rights reserved.
+ *
+ * This source code is licensed under the MIT License (MIT) found in the
+ * LICENSE file in the root directory of this source tree.
+ **/
 public class CheckCustomerService {
 
 	/**

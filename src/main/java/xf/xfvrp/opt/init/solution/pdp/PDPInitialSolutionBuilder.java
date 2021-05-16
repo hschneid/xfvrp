@@ -13,6 +13,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * Copyright (c) 2012-2020 Holger Schneider
+ * All rights reserved.
+ *
+ * This source code is licensed under the MIT License (MIT) found in the
+ * LICENSE file in the root directory of this source tree.
+ **/
 public class PDPInitialSolutionBuilder {
 
 	public Solution build(XFVRPModel model) {
@@ -20,9 +27,7 @@ public class PDPInitialSolutionBuilder {
 
 		Solution solution = buildSolution(shipments, model);
 
-		solution = NormalizeSolutionService.normalizeRoute(solution, model);
-
-		return solution;
+		return NormalizeSolutionService.normalizeRoute(solution, model);
 	}
 
 	private Solution buildSolution(Map<Integer, Node[]> shipments, XFVRPModel model) {
@@ -48,8 +53,6 @@ public class PDPInitialSolutionBuilder {
 			gL.add(shipment[1]);
 
 			depotIdx[0] = ((depotIdx[0] + 1) % model.getNbrOfDepots());
-
-			return;
 		});
 
 		if (gL.size() > 0) 
@@ -63,7 +66,7 @@ public class PDPInitialSolutionBuilder {
 	private Map<Integer, Node[]> getValidNodes(XFVRPModel model) {
 		// Collect pairs of nodes of pickup and delivery (i.e. shipments)
 		return Arrays.stream(model.getNodes())
-				.collect(Collectors.groupingBy(k -> k.getShipmentIdx()))
+				.collect(Collectors.groupingBy(Node::getShipmentIdx))
 				.values()
 				.stream()
 				.filter(list -> list.size() == 2)
