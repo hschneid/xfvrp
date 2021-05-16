@@ -14,7 +14,7 @@ import xf.xfvrp.opt.init.check.vrp.CheckService;
 import java.util.*;
 
 /**
- * Copyright (c) 2012-2020 Holger Schneider
+ * Copyright (c) 2012-2021 Holger Schneider
  * All rights reserved.
  *
  * This source code is licensed under the MIT License (MIT) found in the

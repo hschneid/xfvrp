@@ -3,7 +3,7 @@ package xf.xfvrp.opt;
 import xf.xfvrp.base.XFVRPModel;
 
 /** 
- * Copyright (c) 2012-2020 Holger Schneider
+ * Copyright (c) 2012-2021 Holger Schneider
  * All rights reserved.
  *
  * This source code is licensed under the MIT License (MIT) found in the
