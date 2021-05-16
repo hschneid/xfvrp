@@ -35,14 +35,14 @@ public class FlexiImporter {
 
 	private final List<DepotData> depotList = new ArrayList<>();
 	private final List<CustomerData> customerList = new ArrayList<>();
-	private final List<InternalReplenishData> replenishList = new ArrayList<>();
+	private final List<ReplenishData> replenishList = new ArrayList<>();
 	private final List<VehicleData> vehicleList = new ArrayList<>();
 
 	public final VehicleData defaultVehicle = VehicleData.createDefault();
 
 	private DepotData lastDepotData = null;
 	private CustomerData lastCustomerData = null;
-	private InternalReplenishData lastReplenishData = null;
+	private ReplenishData lastReplenishData = null;
 	private VehicleData lastVehicleData = null;
 
 	/**
@@ -70,7 +70,7 @@ public class FlexiImporter {
 		}
 		
 		// Replenishing depots
-		for (InternalReplenishData rep : replenishList) {
+		for (ReplenishData rep : replenishList) {
 			nodes[idx] = rep.createReplenishment(idx);
 			idx++;
 		}
@@ -156,7 +156,7 @@ public class FlexiImporter {
 		if(lastReplenishData != null)
 			replenishList.add(lastReplenishData);
 
-		lastReplenishData = new InternalReplenishData();
+		lastReplenishData = new ReplenishData();
 
 		return lastReplenishData;
 	}
@@ -242,7 +242,7 @@ public class FlexiImporter {
 	 * 
 	 * @return the collected customers
 	 */
-	public List<InternalReplenishData> getReplenishList() {
+	public List<ReplenishData> getReplenishList() {
 		return replenishList;
 	}
 

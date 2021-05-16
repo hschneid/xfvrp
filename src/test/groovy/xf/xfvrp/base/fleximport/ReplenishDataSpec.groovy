@@ -7,7 +7,7 @@ import xf.xfvrp.base.SiteType
 class ReplenishDataSpec extends Specification {
 	
 	def "Check sets 1"() {
-		def data = new InternalReplenishData()
+		def data = new ReplenishData()
 				
 		when:
 		data.setExternID("A")
@@ -26,7 +26,7 @@ class ReplenishDataSpec extends Specification {
 	}
 	
 	def "Create node"() {
-		def data = new InternalReplenishData()
+		def data = new ReplenishData()
 				
 				data.setExternID("A")
 				data.setGeoId(15)
@@ -50,7 +50,7 @@ class ReplenishDataSpec extends Specification {
 	}
 	
 	def "Check time window 1"() {
-		def data = new InternalReplenishData()
+		def data = new ReplenishData()
 		data.setOpen1(400)
 		data.setClose1(405)
 		data.setTimeWindow(200, 500)
@@ -68,7 +68,7 @@ class ReplenishDataSpec extends Specification {
 	}
 
 	def "Check time window 2"() {
-		def data = new InternalReplenishData()
+		def data = new ReplenishData()
 		data.setTimeWindow(200, 500)
 		data.setTimeWindow(400, 405)
 
@@ -85,7 +85,7 @@ class ReplenishDataSpec extends Specification {
 	}
 
 	def "Check time window 3"() {
-		def data = new InternalReplenishData()
+		def data = new ReplenishData()
 		data.setOpen1(400)
 		data.setClose1(405)
 		data.setOpen2(200)
@@ -104,7 +104,7 @@ class ReplenishDataSpec extends Specification {
 	}
 
 	def "Check time window 4"() {
-		def data = new InternalReplenishData()
+		def data = new ReplenishData ()
 
 		when:
 		data.checkTimeWindows()
