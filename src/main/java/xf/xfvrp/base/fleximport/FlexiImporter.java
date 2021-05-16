@@ -33,14 +33,14 @@ import java.util.List;
  */
 public class FlexiImporter {
 
-	private final List<InternalDepotData> depotList = new ArrayList<>();
+	private final List<DepotData> depotList = new ArrayList<>();
 	private final List<CustomerData> customerList = new ArrayList<>();
 	private final List<InternalReplenishData> replenishList = new ArrayList<>();
 	private final List<VehicleData> vehicleList = new ArrayList<>();
 
 	public final VehicleData defaultVehicle = VehicleData.createDefault();
 
-	private InternalDepotData lastDepotData = null;
+	private DepotData lastDepotData = null;
 	private CustomerData lastCustomerData = null;
 	private InternalReplenishData lastReplenishData = null;
 	private VehicleData lastVehicleData = null;
@@ -64,7 +64,7 @@ public class FlexiImporter {
 		Node[] nodes = new Node[depotList.size() + replenishList.size() + customerList.size()];
 	
 		// Depots
-		for (InternalDepotData dep : depotList) {
+		for (DepotData dep : depotList) {
 			nodes[idx] = dep.createDepot(idx);
 			idx++;
 		}
@@ -125,7 +125,7 @@ public class FlexiImporter {
 		if(lastDepotData != null)
 			depotList.add(lastDepotData);
 
-		lastDepotData = new InternalDepotData();
+		lastDepotData = new DepotData();
 
 		return lastDepotData;
 	}
@@ -226,7 +226,7 @@ public class FlexiImporter {
 	 * 
 	 * @return the collected depots
 	 */
-	public List<InternalDepotData> getDepotList() {
+	public List<DepotData> getDepotList() {
 		return depotList;
 	}
 
