@@ -6,7 +6,7 @@ import util.instances.TestVehicle
 import xf.xfvrp.base.Node
 import xf.xfvrp.base.SiteType
 import xf.xfvrp.base.Vehicle
-import xf.xfvrp.base.fleximport.InternalCustomerData
+import xf.xfvrp.base.fleximport.CustomerData
 import xf.xfvrp.base.monitor.StatusManager
 
 class BlockedVehicleListConverterSpec extends Specification {
@@ -16,11 +16,11 @@ class BlockedVehicleListConverterSpec extends Specification {
 	
 	def "Set blocked vehicle index"() {
 		def customers = [
-			new InternalCustomerData(externID: "AA", presetBlockVehicleList: ["V2", "V4"]),
-			new InternalCustomerData(externID: "AB", presetBlockVehicleList: ["V3"]),
-			new InternalCustomerData(externID: "BA", presetBlockVehicleList: []),
-			new InternalCustomerData(externID: "BB", presetBlockVehicleList: null)
-			] as List<InternalCustomerData>
+				new CustomerData(externID: "AA", presetBlockVehicleList: ["V2", "V4"]),
+				new CustomerData(externID: "AB", presetBlockVehicleList: ["V3"]),
+				new CustomerData(externID: "BA", presetBlockVehicleList: []),
+				new CustomerData(externID: "BB", presetBlockVehicleList: null)
+			] as List<CustomerData>
 		
 		def nodes = [
 			new TestNode(externID: "DEP", siteType: SiteType.DEPOT).getNode(),
@@ -58,8 +58,8 @@ class BlockedVehicleListConverterSpec extends Specification {
 	
 	def "Set blocked vehicle index wih wrong vehicle name"() {
 		def customers = [
-			new InternalCustomerData(externID: "AB", presetBlockVehicleList: ["V99"]),
-			] as List<InternalCustomerData>
+			new CustomerData(externID: "AB", presetBlockVehicleList: ["V99"]),
+			] as List<CustomerData>
 		
 		def nodes = [
 			new TestNode(externID: "DEP", siteType: SiteType.DEPOT).getNode(),

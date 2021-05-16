@@ -4,11 +4,18 @@ import xf.xfvrp.base.Node;
 
 import java.util.Iterator;
 
+/**
+ * Copyright (c) 2012-2020 Holger Schneider
+ * All rights reserved.
+ *
+ * This source code is licensed under the MIT License (MIT) found in the
+ * LICENSE file in the root directory of this source tree.
+ **/
 public class SolutionRoutesIterator implements Iterator<Node[]> {
 
 	private final Node[][] routes;
 	private int currentIndex = -1;
-	private int length;
+	private final int length;
 	
 	public SolutionRoutesIterator(Node[][] routes) {
 		this.routes = routes;

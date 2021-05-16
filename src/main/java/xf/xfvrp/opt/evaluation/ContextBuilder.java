@@ -4,6 +4,13 @@ import xf.xfvrp.base.XFVRPModel;
 
 import java.util.Arrays;
 
+/**
+ * Copyright (c) 2012-2020 Holger Schneider
+ * All rights reserved.
+ *
+ * This source code is licensed under the MIT License (MIT) found in the
+ * LICENSE file in the root directory of this source tree.
+ **/
 public class ContextBuilder {
 
 	public static Context build(XFVRPModel model) {
@@ -13,7 +20,9 @@ public class ContextBuilder {
 
 		// Variables
 		context.setMaxGlobalNodeIdx(model.getMaxGlobalNodeIdx() + 1);
-		context.setAmountArr(new float[model.getVehicle().capacity.length * 2]);
+
+		// Amounts - Which amounts must be stored during checking - Each compartment and each load type - So same like vehicle capacities
+		context.setAmountArr(new float[model.getVehicle().capacity.length]);
 
 		context.setBlockPresetArr(new int[model.getNbrOfBlocks()]);
 		Arrays.fill(context.getBlockPresetArr(), -1);

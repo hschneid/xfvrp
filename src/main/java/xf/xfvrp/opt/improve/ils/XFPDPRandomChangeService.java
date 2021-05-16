@@ -11,6 +11,13 @@ import xf.xfvrp.opt.improve.XFPDPRelocate;
 
 import java.util.NoSuchElementException;
 
+/**
+ * Copyright (c) 2012-2020 Holger Schneider
+ * All rights reserved.
+ *
+ * This source code is licensed under the MIT License (MIT) found in the
+ * LICENSE file in the root directory of this source tree.
+ **/
 public class XFPDPRandomChangeService extends XFVRPOptBase implements XFRandomChangeService {
 
 	private static final int MAX_TRIES_CHOOSING = 100;

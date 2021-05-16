@@ -4,7 +4,7 @@ import spock.lang.Specification
 import util.instances.TestNode
 import xf.xfvrp.base.Node
 import xf.xfvrp.base.SiteType
-import xf.xfvrp.base.fleximport.InternalCustomerData
+import xf.xfvrp.base.fleximport.CustomerData
 
 class PresetBlacklistedNodeConverterSpec extends Specification {
 
@@ -12,11 +12,11 @@ class PresetBlacklistedNodeConverterSpec extends Specification {
 	
 	def "Set blacklisted node index"() {
 		def customers = [
-			new InternalCustomerData(externID: "AA", presetRoutingBlackList: ["AB", "BB"]),
-			new InternalCustomerData(externID: "AB", presetRoutingBlackList: ["BA"]),
-			new InternalCustomerData(externID: "BA", presetRoutingBlackList: []),
-			new InternalCustomerData(externID: "BB", presetRoutingBlackList: [])
-			] as List<InternalCustomerData>
+				new CustomerData(externID: "AA", presetRoutingBlackList: ["AB", "BB"]),
+				new CustomerData(externID: "AB", presetRoutingBlackList: ["BA"]),
+				new CustomerData(externID: "BA", presetRoutingBlackList: []),
+				new CustomerData(externID: "BB", presetRoutingBlackList: [])
+			] as List<CustomerData>
 		
 		def nodes = [
 			new TestNode(externID: "DEP", siteType: SiteType.DEPOT).getNode(),
@@ -47,9 +47,9 @@ class PresetBlacklistedNodeConverterSpec extends Specification {
 	
 	def "Set blacklisted node index with wrong name"() {
 		def customers = [
-			new InternalCustomerData(externID: "AB", presetRoutingBlackList: ["CC"]),
-			new InternalCustomerData(externID: "BB", presetRoutingBlackList: []),
-			] as List<InternalCustomerData>
+			new CustomerData(externID: "AB", presetRoutingBlackList: ["CC"]),
+			new CustomerData(externID: "BB", presetRoutingBlackList: []),
+			] as List<CustomerData>
 		
 		def nodes = [
 			new TestNode(externID: "DEP", siteType: SiteType.DEPOT).getNode(),

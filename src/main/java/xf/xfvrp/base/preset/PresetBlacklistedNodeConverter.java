@@ -2,7 +2,7 @@ package xf.xfvrp.base.preset;
 
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.SiteType;
-import xf.xfvrp.base.fleximport.InternalCustomerData;
+import xf.xfvrp.base.fleximport.CustomerData;
 
 import java.util.Arrays;
 import java.util.List;
@@ -11,7 +11,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /** 
- * Copyright (c) 2012-present Holger Schneider
+ * Copyright (c) 2012-2020 Holger Schneider
  * All rights reserved.
  *
  * This source code is licensed under the MIT License (MIT) found in the
@@ -33,7 +33,7 @@ public class PresetBlacklistedNodeConverter {
 	 * @param nodes List of internal node objects
 	 * @param customerList List of external customer informations
 	 */
-	public static void convert(Node[] nodes, List<InternalCustomerData> customerList) {
+	public static void convert(Node[] nodes, List<CustomerData> customerList) {
 		Map<String, Integer> indexes = allocateNodeIndexByExternID(nodes);
 
 		Map<String, Set<String>> blacklistedNodes = allocateBlacklistedNodesByExternID(customerList);
@@ -48,18 +48,18 @@ public class PresetBlacklistedNodeConverter {
 				// Translate black listed node name to node idx
 				blacklistedNodes.get(n.getExternID())
 					.stream()
-					.filter(blackName -> indexes.containsKey(blackName))
-					.map(blackName -> indexes.get(blackName))
-					.forEach(f -> n.addToBlacklist(f));
+					.filter(indexes::containsKey)
+					.map(indexes::get)
+					.forEach(n::addToBlacklist);
 			}
 		}
 	}
 
-	private static Map<String, Set<String>> allocateBlacklistedNodesByExternID(List<InternalCustomerData> customerList) {
-		return customerList.stream().collect(Collectors.toMap(InternalCustomerData::getExternID, InternalCustomerData::getPresetRoutingBlackList, (v1, v2) -> v1));
+	private static Map<String, Set<String>> allocateBlacklistedNodesByExternID(List<CustomerData> customerList) {
+		return customerList.stream().collect(Collectors.toMap(CustomerData::getExternID, CustomerData::getPresetRoutingBlackList, (v1, v2) -> v1));
 	}
 
 	private static Map<String, Integer> allocateNodeIndexByExternID(Node[] nodes) {
-		return Arrays.stream(nodes).filter(f -> f.getSiteType() == SiteType.CUSTOMER).collect(Collectors.toMap(k -> k.getExternID(), v -> v.getGlobalIdx(), (v1, v2) -> v1));
+		return Arrays.stream(nodes).filter(f -> f.getSiteType() == SiteType.CUSTOMER).collect(Collectors.toMap(Node::getExternID, Node::getGlobalIdx, (v1, v2) -> v1));
 	}
 }

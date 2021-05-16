@@ -4,7 +4,7 @@ import spock.lang.Specification
 import util.instances.TestNode
 import xf.xfvrp.base.Node
 import xf.xfvrp.base.SiteType
-import xf.xfvrp.base.fleximport.InternalCustomerData
+import xf.xfvrp.base.fleximport.CustomerData
 
 class BlockNameConverterSpec extends Specification {
 
@@ -12,13 +12,13 @@ class BlockNameConverterSpec extends Specification {
 	
 	def "Set block index mixed"() {
 		def customers = [
-			new InternalCustomerData(externID: "AA", presetBlockName: "BlockA"),
-			new InternalCustomerData(externID: "AB", presetBlockName: "BlockA"),
-			new InternalCustomerData(externID: "BA", presetBlockName: "BlockB"),
-			new InternalCustomerData(externID: "BB", presetBlockName: "BlockB"),
-			new InternalCustomerData(externID: "C", presetBlockName: ""),
-			new InternalCustomerData(externID: "D", presetBlockName: null)
-			] as List<InternalCustomerData>
+				new CustomerData(externID: "AA", presetBlockName: "BlockA"),
+				new CustomerData(externID: "AB", presetBlockName: "BlockA"),
+				new CustomerData(externID: "BA", presetBlockName: "BlockB"),
+				new CustomerData(externID: "BB", presetBlockName: "BlockB"),
+				new CustomerData(externID: "C", presetBlockName: ""),
+				new CustomerData(externID: "D", presetBlockName: null)
+			] as List<CustomerData>
 		
 		def nodes = [
 			new TestNode(externID: "DEP", siteType: SiteType.DEPOT).getNode(),
@@ -45,13 +45,13 @@ class BlockNameConverterSpec extends Specification {
 	
 	def "Set block index only blocks"() {
 		def customers = [
-			new InternalCustomerData(externID: "AA", presetBlockName: "BlockA"),
-			new InternalCustomerData(externID: "AB", presetBlockName: "BlockA"),
-			new InternalCustomerData(externID: "BA", presetBlockName: "BlockB"),
-			new InternalCustomerData(externID: "BB", presetBlockName: "BlockB"),
-			new InternalCustomerData(externID: "CA", presetBlockName: "BlockC"),
-			new InternalCustomerData(externID: "CB", presetBlockName: "BlockC")
-			] as List<InternalCustomerData>
+			new CustomerData(externID: "AA", presetBlockName: "BlockA"),
+			new CustomerData(externID: "AB", presetBlockName: "BlockA"),
+			new CustomerData(externID: "BA", presetBlockName: "BlockB"),
+			new CustomerData(externID: "BB", presetBlockName: "BlockB"),
+			new CustomerData(externID: "CA", presetBlockName: "BlockC"),
+			new CustomerData(externID: "CB", presetBlockName: "BlockC")
+			] as List<CustomerData>
 		
 		def nodes = [
 			new TestNode(externID: "DEP", siteType: SiteType.DEPOT).getNode(),
@@ -78,13 +78,13 @@ class BlockNameConverterSpec extends Specification {
 	
 	def "Set block index only undef"() {
 		def customers = [
-			new InternalCustomerData(externID: "AA", presetBlockName: ""),
-			new InternalCustomerData(externID: "AB", presetBlockName: " "),
-			new InternalCustomerData(externID: "BA", presetBlockName: "  "),
-			new InternalCustomerData(externID: "BB", presetBlockName: null),
-			new InternalCustomerData(externID: "CA", presetBlockName: ""),
-			new InternalCustomerData(externID: "CB", presetBlockName: null)
-			] as List<InternalCustomerData>
+			new CustomerData(externID: "AA", presetBlockName: ""),
+			new CustomerData(externID: "AB", presetBlockName: " "),
+			new CustomerData(externID: "BA", presetBlockName: "  "),
+			new CustomerData(externID: "BB", presetBlockName: null),
+			new CustomerData(externID: "CA", presetBlockName: ""),
+			new CustomerData(externID: "CB", presetBlockName: null)
+			] as List<CustomerData>
 		
 		def nodes = [
 			new TestNode(externID: "DEP", siteType: SiteType.DEPOT).getNode(),

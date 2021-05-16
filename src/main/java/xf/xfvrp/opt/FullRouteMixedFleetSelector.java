@@ -8,6 +8,13 @@ import xf.xfvrp.report.RouteReportSummary;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Copyright (c) 2012-2020 Holger Schneider
+ * All rights reserved.
+ *
+ * This source code is licensed under the MIT License (MIT) found in the
+ * LICENSE file in the root directory of this source tree.
+ **/
 public class FullRouteMixedFleetSelector {
 
 	/**
@@ -42,7 +49,7 @@ public class FullRouteMixedFleetSelector {
 
 		Vehicle veh = route.getVehicle();
 		float time = summary.getDuration();
-		float amount = summary.getPickup() + summary.getDelivery();
+		float amount = sum(summary.getPickups()) + sum(summary.getDeliveries());
 		float quality = (veh.fixCost + (veh.varCost * time)) / amount;
 		
 		if(summary.getDelay() > 0)
@@ -55,6 +62,15 @@ public class FullRouteMixedFleetSelector {
 		routeQuality.quality = quality;
 
 		return routeQuality;
+	}
+
+	private float sum(float[] arr) {
+		float sum = 0;
+		for (int i = arr.length - 1; i >= 0; i--) {
+			sum += arr[i];
+		}
+
+		return sum;
 	}
 
 	private class RouteQuality {

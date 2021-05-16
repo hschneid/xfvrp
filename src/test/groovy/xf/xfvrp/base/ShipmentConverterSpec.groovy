@@ -2,7 +2,7 @@ package xf.xfvrp.base
 
 import spock.lang.Specification
 import util.instances.TestNode
-import xf.xfvrp.base.fleximport.InternalCustomerData
+import xf.xfvrp.base.fleximport.CustomerData
 
 class ShipmentConverterSpec extends Specification {
 
@@ -31,13 +31,13 @@ class ShipmentConverterSpec extends Specification {
 	
 	private XFVRPModel createModel() {
 		customers =	[
-			new InternalCustomerData(externID: "2", shipID: "A"),
-			new InternalCustomerData(externID: "3", shipID: "A"),
-			new InternalCustomerData(externID: "5", shipID: "B"),
-			new InternalCustomerData(externID: "6", shipID: "B"),
-			new InternalCustomerData(externID: "7", shipID: "C"),
-			new InternalCustomerData(externID: "8")
-			] as List<InternalCustomerData>
+			new CustomerData(externID: "2", shipID: "A"),
+			new CustomerData(externID: "3", shipID: "A"),
+			new CustomerData(externID: "5", shipID: "B"),
+			new CustomerData(externID: "6", shipID: "B"),
+			new CustomerData(externID: "7", shipID: "C"),
+			new CustomerData(externID: "8")
+			] as List<CustomerData>
 		
 		def n1 = new TestNode(externID: "1", siteType: SiteType.DEPOT).getNode();
 		def n2 = new TestNode(externID: "2", siteType: SiteType.CUSTOMER, shipID: "A").getNode();

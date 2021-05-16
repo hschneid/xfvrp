@@ -6,6 +6,13 @@ import xf.xfvrp.base.XFVRPParameter;
 import xf.xfvrp.opt.init.precheck.pdp.PDPPreCheckService;
 import xf.xfvrp.opt.init.precheck.vrp.VRPPreCheckService;
 
+/**
+ * Copyright (c) 2012-2020 Holger Schneider
+ * All rights reserved.
+ *
+ * This source code is licensed under the MIT License (MIT) found in the
+ * LICENSE file in the root directory of this source tree.
+ **/
 public class PreCheckService {
 
 	public Node[] precheck(Node[] nodes, Vehicle vehicle, XFVRPParameter parameter) throws PreCheckException {

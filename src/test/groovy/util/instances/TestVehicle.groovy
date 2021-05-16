@@ -1,6 +1,8 @@
 package util.instances
 
+
 import xf.xfvrp.base.Vehicle
+import xf.xfvrp.base.fleximport.CompartmentCapacity
 
 class TestVehicle {
 
@@ -8,6 +10,7 @@ class TestVehicle {
 	String name = "";
 	int nbrOfAvailableVehicles = 9999;
 	float[] capacity = [10];
+	List<CompartmentCapacity> compartmentCapacity;
 	float maxRouteDuration = 999999;
 	int maxStopCount = 999999;
 	float maxWaitingTime = 999999;
@@ -19,9 +22,15 @@ class TestVehicle {
 	int priority = Vehicle.PRIORITY_UNDEF;
 	
 	Vehicle getVehicle() {
+		if(compartmentCapacity == null) {
+			compartmentCapacity = new ArrayList<>();
+			for (float v : capacity)
+				compartmentCapacity.add(new CompartmentCapacity(v))
+		}
+
 		return new Vehicle(
 			idx, name,
-			nbrOfAvailableVehicles, capacity,
+			nbrOfAvailableVehicles, compartmentCapacity,
 			maxRouteDuration, maxStopCount, maxWaitingTime,	fixCost, varCost, vehicleMetricId,
 			maxDrivingTimePerShift, waitingTimeBetweenShifts, priority
 		);

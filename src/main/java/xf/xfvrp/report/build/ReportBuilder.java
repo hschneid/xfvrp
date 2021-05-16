@@ -12,7 +12,7 @@ import xf.xfvrp.report.Report;
 import xf.xfvrp.report.RouteReport;
 
 /**
- * Copyright (c) 2012-present Holger Schneider
+ * Copyright (c) 2012-2020 Holger Schneider
  * All rights reserved.
  *
  * This source code is licensed under the MIT License (MIT) found in the
@@ -37,8 +37,7 @@ public class ReportBuilder {
                 continue;
             }
 
-            RouteReport routeReport = getRouteReport(route, context);
-            rep.add(routeReport);
+            rep.add(getRouteReport(route, context));
         }
 
         return rep;
@@ -52,7 +51,8 @@ public class ReportBuilder {
 
         context.setCurrentNode(route[0]);
         routeReport.add(
-                beginRoute(route, context)
+                beginRoute(route, context),
+                context
         );
         context.setNextNode(route[0]);
         for (int i = 1; i < route.length; i++) {
@@ -64,7 +64,7 @@ public class ReportBuilder {
 
             fillEvent(event, context);
 
-            routeReport.add(event);
+            routeReport.add(event, context);
         }
 
         return routeReport;
@@ -122,7 +122,7 @@ public class ReportBuilder {
             e.setDuration(context.getModel().getVehicle().waitingTimeBetweenShifts);
             e.setLoadType(LoadType.PAUSE);
 
-            report.add(e);
+            report.add(e, context);
         }
     }
 
@@ -200,9 +200,7 @@ public class ReportBuilder {
         e.setLoadType(loadType);
 
         if(amounts != null) {
-            if (amounts.length > 0) e.setAmount(amounts[0]);
-            if (amounts.length > 1) e.setAmount2(amounts[1]);
-            if (amounts.length > 2) e.setAmount3(amounts[2]);
+            e.setAmounts(amounts);
         }
     }
 }

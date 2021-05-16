@@ -49,7 +49,7 @@ class ReportBuilderCapacitySpec extends Specification {
 
 		then:
 		result != null
-		result.getSummary().getOverload1() == 0
+		result.getSummary().getOverloads()[0] == 0
 		result.getRoutes().size() == 1
 		result.getRoutes().get(0).getSummary().getNbrOfEvents() == 5
 		result.getRoutes().get(0).getEvents().size() == 5
@@ -76,21 +76,21 @@ class ReportBuilderCapacitySpec extends Specification {
 
 		then:
 		result != null
-		result.getSummary().getOverload1() == 0
+		result.getSummary().getOverloads()[0] == 0
 		result.getRoutes().size() == 1
-		result.getRoutes().get(0).getSummary().getDelivery() == 3
-		result.getRoutes().get(0).getSummary().getDelivery2() == 3
-		result.getRoutes().get(0).getSummary().getPickup() == 0
-		result.getRoutes().get(0).getSummary().getPickup2() == 0
-		Math.abs(result.getRoutes().get(0).getEvents().get(0).getAmount() - 3) < 0.001
+		result.getRoutes().get(0).getSummary().getDeliveries()[0] == 3
+		result.getRoutes().get(0).getSummary().getDeliveries()[1] == 3
+		result.getRoutes().get(0).getSummary().getPickups()[0] == 0
+		result.getRoutes().get(0).getSummary().getPickups()[1] == 0
+		Math.abs(result.getRoutes().get(0).getEvents().get(0).getAmounts()[0] - 3) < 0.001
 		result.getRoutes().get(0).getEvents().get(0).getLoadType() == LoadType.PICKUP
-		Math.abs(result.getRoutes().get(0).getEvents().get(1).getAmount() - 1) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(1).getAmounts()[0] - 1) < 0.001
 		result.getRoutes().get(0).getEvents().get(1).getLoadType() == LoadType.DELIVERY
-		Math.abs(result.getRoutes().get(0).getEvents().get(2).getAmount() - 1) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(2).getAmounts()[0] - 1) < 0.001
 		result.getRoutes().get(0).getEvents().get(2).getLoadType() == LoadType.DELIVERY
-		Math.abs(result.getRoutes().get(0).getEvents().get(3).getAmount() - 1) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(3).getAmounts()[0] - 1) < 0.001
 		result.getRoutes().get(0).getEvents().get(3).getLoadType() == LoadType.DELIVERY
-		Math.abs(result.getRoutes().get(0).getEvents().get(4).getAmount() - 0) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(4).getAmounts()[0] - 0) < 0.001
 		result.getRoutes().get(0).getEvents().get(4).getLoadType() == LoadType.UNDEF
 	}
 
@@ -110,23 +110,22 @@ class ReportBuilderCapacitySpec extends Specification {
 		then:
 		result != null
 		result.getSummary().getOverload(v) == 2
-		result.getSummary().getOverload1() == 2
-		result.getSummary().getOverload2() == 0
-		result.getSummary().getOverload3() == 0
+		result.getSummary().getOverloads()[0] == 2
+		result.getSummary().getOverloads()[1] == 0
 		result.getRoutes().size() == 1
-		result.getRoutes().get(0).getSummary().getDelivery() == 3
-		result.getRoutes().get(0).getSummary().getDelivery2() == 3
-		result.getRoutes().get(0).getSummary().getPickup() == 0
-		result.getRoutes().get(0).getSummary().getPickup2() == 0
-		Math.abs(result.getRoutes().get(0).getEvents().get(0).getAmount() - 3) < 0.001
+		result.getRoutes().get(0).getSummary().getDeliveries()[0] == 3
+		result.getRoutes().get(0).getSummary().getDeliveries()[1] == 3
+		result.getRoutes().get(0).getSummary().getPickups()[0] == 0
+		result.getRoutes().get(0).getSummary().getPickups()[1] == 0
+		Math.abs(result.getRoutes().get(0).getEvents().get(0).getAmounts()[0] - 3) < 0.001
 		result.getRoutes().get(0).getEvents().get(0).getLoadType() == LoadType.PICKUP
-		Math.abs(result.getRoutes().get(0).getEvents().get(1).getAmount() - 1) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(1).getAmounts()[0] - 1) < 0.001
 		result.getRoutes().get(0).getEvents().get(1).getLoadType() == LoadType.DELIVERY
-		Math.abs(result.getRoutes().get(0).getEvents().get(2).getAmount() - 1) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(2).getAmounts()[0] - 1) < 0.001
 		result.getRoutes().get(0).getEvents().get(2).getLoadType() == LoadType.DELIVERY
-		Math.abs(result.getRoutes().get(0).getEvents().get(3).getAmount() - 1) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(3).getAmounts()[0] - 1) < 0.001
 		result.getRoutes().get(0).getEvents().get(3).getLoadType() == LoadType.DELIVERY
-		Math.abs(result.getRoutes().get(0).getEvents().get(4).getAmount() - 0) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(4).getAmounts()[0] - 0) < 0.001
 		result.getRoutes().get(0).getEvents().get(4).getLoadType() == LoadType.UNDEF
 	}
 
@@ -146,23 +145,22 @@ class ReportBuilderCapacitySpec extends Specification {
 		then:
 		result != null
 		result.getSummary().getOverload(v) == 0
-		result.getSummary().getOverload1() == 0
-		result.getSummary().getOverload2() == 1
-		result.getSummary().getOverload3() == 0
+		result.getSummary().getOverloads()[0] == 0
+		result.getSummary().getOverloads()[1] == 1
 		result.getRoutes().size() == 1
-		result.getRoutes().get(0).getSummary().getDelivery() == 3
-		result.getRoutes().get(0).getSummary().getDelivery2() == 3
-		result.getRoutes().get(0).getSummary().getPickup() == 0
-		result.getRoutes().get(0).getSummary().getPickup2() == 0
-		Math.abs(result.getRoutes().get(0).getEvents().get(0).getAmount() - 3) < 0.001
+		result.getRoutes().get(0).getSummary().getDeliveries()[0] == 3
+		result.getRoutes().get(0).getSummary().getDeliveries()[1] == 3
+		result.getRoutes().get(0).getSummary().getPickups()[0] == 0
+		result.getRoutes().get(0).getSummary().getPickups()[1] == 0
+		Math.abs(result.getRoutes().get(0).getEvents().get(0).getAmounts()[0] - 3) < 0.001
 		result.getRoutes().get(0).getEvents().get(0).getLoadType() == LoadType.PICKUP
-		Math.abs(result.getRoutes().get(0).getEvents().get(1).getAmount() - 1) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(1).getAmounts()[0] - 1) < 0.001
 		result.getRoutes().get(0).getEvents().get(1).getLoadType() == LoadType.DELIVERY
-		Math.abs(result.getRoutes().get(0).getEvents().get(2).getAmount() - 1) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(2).getAmounts()[0] - 1) < 0.001
 		result.getRoutes().get(0).getEvents().get(2).getLoadType() == LoadType.DELIVERY
-		Math.abs(result.getRoutes().get(0).getEvents().get(3).getAmount() - 1) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(3).getAmounts()[0] - 1) < 0.001
 		result.getRoutes().get(0).getEvents().get(3).getLoadType() == LoadType.DELIVERY
-		Math.abs(result.getRoutes().get(0).getEvents().get(4).getAmount() - 0) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(4).getAmounts()[0] - 0) < 0.001
 		result.getRoutes().get(0).getEvents().get(4).getLoadType() == LoadType.UNDEF
 
 	}
@@ -182,23 +180,22 @@ class ReportBuilderCapacitySpec extends Specification {
 
 		then:
 		result != null
-		result.getSummary().getOverload1() == 0
-		result.getSummary().getOverload2() == 0
-		result.getSummary().getOverload3() == 0
+		result.getSummary().getOverloads()[0] == 0
+		result.getSummary().getOverloads()[1] == 0
 		result.getRoutes().size() == 1
-		result.getRoutes().get(0).getSummary().getDelivery() == 0
-		result.getRoutes().get(0).getSummary().getDelivery2() == 0
-		result.getRoutes().get(0).getSummary().getPickup() == 3
-		result.getRoutes().get(0).getSummary().getPickup2() == 3
-		Math.abs(result.getRoutes().get(0).getEvents().get(0).getAmount() - 0) < 0.001
+		result.getRoutes().get(0).getSummary().getDeliveries()[0] == 0
+		result.getRoutes().get(0).getSummary().getDeliveries()[1] == 0
+		result.getRoutes().get(0).getSummary().getPickups()[0] == 3
+		result.getRoutes().get(0).getSummary().getPickups()[1] == 3
+		Math.abs(result.getRoutes().get(0).getEvents().get(0).getAmounts()[0] - 0) < 0.001
 		result.getRoutes().get(0).getEvents().get(0).getLoadType() == LoadType.PICKUP
-		Math.abs(result.getRoutes().get(0).getEvents().get(1).getAmount() - 1) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(1).getAmounts()[0] - 1) < 0.001
 		result.getRoutes().get(0).getEvents().get(1).getLoadType() == LoadType.PICKUP
-		Math.abs(result.getRoutes().get(0).getEvents().get(2).getAmount() - 1) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(2).getAmounts()[0] - 1) < 0.001
 		result.getRoutes().get(0).getEvents().get(2).getLoadType() == LoadType.PICKUP
-		Math.abs(result.getRoutes().get(0).getEvents().get(3).getAmount() - 1) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(3).getAmounts()[0] - 1) < 0.001
 		result.getRoutes().get(0).getEvents().get(3).getLoadType() == LoadType.PICKUP
-		Math.abs(result.getRoutes().get(0).getEvents().get(4).getAmount() - 0) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(4).getAmounts()[0] - 0) < 0.001
 		result.getRoutes().get(0).getEvents().get(4).getLoadType() == LoadType.UNDEF
 	}
 
@@ -217,23 +214,22 @@ class ReportBuilderCapacitySpec extends Specification {
 
 		then:
 		result != null
-		result.getSummary().getOverload1() == 2
-		result.getSummary().getOverload2() == 0
-		result.getSummary().getOverload3() == 0
+		result.getSummary().getOverloads()[0] == 2
+		result.getSummary().getOverloads()[1] == 0
 		result.getRoutes().size() == 1
-		result.getRoutes().get(0).getSummary().getDelivery() == 0
-		result.getRoutes().get(0).getSummary().getDelivery2() == 0
-		result.getRoutes().get(0).getSummary().getPickup() == 3
-		result.getRoutes().get(0).getSummary().getPickup2() == 3
-		Math.abs(result.getRoutes().get(0).getEvents().get(0).getAmount() - 0) < 0.001
+		result.getRoutes().get(0).getSummary().getDeliveries()[0] == 0
+		result.getRoutes().get(0).getSummary().getDeliveries()[1] == 0
+		result.getRoutes().get(0).getSummary().getPickups()[0] == 3
+		result.getRoutes().get(0).getSummary().getPickups()[1] == 3
+		Math.abs(result.getRoutes().get(0).getEvents().get(0).getAmounts()[0] - 0) < 0.001
 		result.getRoutes().get(0).getEvents().get(0).getLoadType() == LoadType.PICKUP
-		Math.abs(result.getRoutes().get(0).getEvents().get(1).getAmount() - 1) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(1).getAmounts()[0] - 1) < 0.001
 		result.getRoutes().get(0).getEvents().get(1).getLoadType() == LoadType.PICKUP
-		Math.abs(result.getRoutes().get(0).getEvents().get(2).getAmount() - 1) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(2).getAmounts()[0] - 1) < 0.001
 		result.getRoutes().get(0).getEvents().get(2).getLoadType() == LoadType.PICKUP
-		Math.abs(result.getRoutes().get(0).getEvents().get(3).getAmount() - 1) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(3).getAmounts()[0] - 1) < 0.001
 		result.getRoutes().get(0).getEvents().get(3).getLoadType() == LoadType.PICKUP
-		Math.abs(result.getRoutes().get(0).getEvents().get(4).getAmount() - 0) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(4).getAmounts()[0] - 0) < 0.001
 		result.getRoutes().get(0).getEvents().get(4).getLoadType() == LoadType.UNDEF
 	}
 
@@ -252,23 +248,22 @@ class ReportBuilderCapacitySpec extends Specification {
 
 		then:
 		result != null
-		result.getSummary().getOverload1() == 0
-		result.getSummary().getOverload2() == 1
-		result.getSummary().getOverload3() == 0
+		result.getSummary().getOverloads()[0] == 0
+		result.getSummary().getOverloads()[1] == 1
 		result.getRoutes().size() == 1
-		result.getRoutes().get(0).getSummary().getDelivery() == 0
-		result.getRoutes().get(0).getSummary().getDelivery2() == 0
-		result.getRoutes().get(0).getSummary().getPickup() == 3
-		result.getRoutes().get(0).getSummary().getPickup2() == 3
-		Math.abs(result.getRoutes().get(0).getEvents().get(0).getAmount() - 0) < 0.001
+		result.getRoutes().get(0).getSummary().getDeliveries()[0] == 0
+		result.getRoutes().get(0).getSummary().getDeliveries()[1] == 0
+		result.getRoutes().get(0).getSummary().getPickups()[0] == 3
+		result.getRoutes().get(0).getSummary().getPickups()[1] == 3
+		Math.abs(result.getRoutes().get(0).getEvents().get(0).getAmounts()[0] - 0) < 0.001
 		result.getRoutes().get(0).getEvents().get(0).getLoadType() == LoadType.PICKUP
-		Math.abs(result.getRoutes().get(0).getEvents().get(1).getAmount() - 1) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(1).getAmounts()[0] - 1) < 0.001
 		result.getRoutes().get(0).getEvents().get(1).getLoadType() == LoadType.PICKUP
-		Math.abs(result.getRoutes().get(0).getEvents().get(2).getAmount() - 1) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(2).getAmounts()[0] - 1) < 0.001
 		result.getRoutes().get(0).getEvents().get(2).getLoadType() == LoadType.PICKUP
-		Math.abs(result.getRoutes().get(0).getEvents().get(3).getAmount() - 1) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(3).getAmounts()[0] - 1) < 0.001
 		result.getRoutes().get(0).getEvents().get(3).getLoadType() == LoadType.PICKUP
-		Math.abs(result.getRoutes().get(0).getEvents().get(4).getAmount() - 0) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(4).getAmounts()[0] - 0) < 0.001
 		result.getRoutes().get(0).getEvents().get(4).getLoadType() == LoadType.UNDEF
 	}
 
@@ -287,34 +282,33 @@ class ReportBuilderCapacitySpec extends Specification {
 
 		then:
 		result != null
-		result.getSummary().getOverload1() == 0
-		result.getSummary().getOverload2() == 0
-		result.getSummary().getOverload3() == 0
+		result.getSummary().getOverloads()[0] == 0
+		result.getSummary().getOverloads()[1] == 0
 		result.getRoutes().size() == 1
-		result.getRoutes().get(0).getSummary().getDelivery() == 3
-		result.getRoutes().get(0).getSummary().getDelivery2() == 2
-		result.getRoutes().get(0).getSummary().getPickup() == 3
-		result.getRoutes().get(0).getSummary().getPickup2() == 1
-		Math.abs(result.getRoutes().get(0).getEvents().get(0).getAmount() - 3) < 0.001
+		result.getRoutes().get(0).getSummary().getDeliveries()[0] == 3
+		result.getRoutes().get(0).getSummary().getDeliveries()[1] == 2
+		result.getRoutes().get(0).getSummary().getPickups()[0] == 3
+		result.getRoutes().get(0).getSummary().getPickups()[1] == 1
+		Math.abs(result.getRoutes().get(0).getEvents().get(0).getAmounts()[0] - 3) < 0.001
 		result.getRoutes().get(0).getEvents().get(0).getLoadType() == LoadType.PICKUP
-		Math.abs(result.getRoutes().get(0).getEvents().get(1).getAmount() - 1) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(1).getAmounts()[0] - 1) < 0.001
 		result.getRoutes().get(0).getEvents().get(1).getLoadType() == LoadType.DELIVERY
-		Math.abs(result.getRoutes().get(0).getEvents().get(2).getAmount() - 2) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(2).getAmounts()[0] - 2) < 0.001
 		result.getRoutes().get(0).getEvents().get(2).getLoadType() == LoadType.DELIVERY
-		Math.abs(result.getRoutes().get(0).getEvents().get(3).getAmount() - 3) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(3).getAmounts()[0] - 3) < 0.001
 		result.getRoutes().get(0).getEvents().get(3).getLoadType() == LoadType.PICKUP
-		Math.abs(result.getRoutes().get(0).getEvents().get(4).getAmount() - 0) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(4).getAmounts()[0] - 0) < 0.001
 		result.getRoutes().get(0).getEvents().get(4).getLoadType() == LoadType.UNDEF
 
-		Math.abs(result.getRoutes().get(0).getEvents().get(0).getAmount2() - 2) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(0).getAmounts()[1] - 2) < 0.001
 		result.getRoutes().get(0).getEvents().get(0).getLoadType() == LoadType.PICKUP
-		Math.abs(result.getRoutes().get(0).getEvents().get(1).getAmount2() - 1) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(1).getAmounts()[1] - 1) < 0.001
 		result.getRoutes().get(0).getEvents().get(1).getLoadType() == LoadType.DELIVERY
-		Math.abs(result.getRoutes().get(0).getEvents().get(2).getAmount2() - 1) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(2).getAmounts()[1] - 1) < 0.001
 		result.getRoutes().get(0).getEvents().get(2).getLoadType() == LoadType.DELIVERY
-		Math.abs(result.getRoutes().get(0).getEvents().get(3).getAmount2() - 1) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(3).getAmounts()[1] - 1) < 0.001
 		result.getRoutes().get(0).getEvents().get(3).getLoadType() == LoadType.PICKUP
-		Math.abs(result.getRoutes().get(0).getEvents().get(4).getAmount2() - 0) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(4).getAmounts()[1] - 0) < 0.001
 		result.getRoutes().get(0).getEvents().get(4).getLoadType() == LoadType.UNDEF
 	}
 
@@ -333,27 +327,28 @@ class ReportBuilderCapacitySpec extends Specification {
 
 		then:
 		result != null
-		result.getSummary().getOverload1() == 5
-		result.getSummary().getOverload2() == 0
-		result.getSummary().getOverload3() == 0
+
+		result.getSummary().getOverloads()[0] == 3
+		result.getSummary().getOverloads()[1] == 0
 		result.getRoutes().size() == 1
-		result.getRoutes().get(0).getSummary().getDelivery() == 3
-		result.getRoutes().get(0).getSummary().getDelivery2() == 2
-		result.getRoutes().get(0).getSummary().getPickup() == 3
-		result.getRoutes().get(0).getSummary().getPickup2() == 1
-		Math.abs(result.getRoutes().get(0).getEvents().get(0).getAmount() - 3) < 0.001
+		result.getRoutes().get(0).getSummary().getDeliveries()[0] == 3
+		result.getRoutes().get(0).getSummary().getDeliveries()[1] == 2
+		result.getRoutes().get(0).getSummary().getPickups()[0] == 3
+		result.getRoutes().get(0).getSummary().getPickups()[1] == 1
+
+		Math.abs(result.getRoutes().get(0).getEvents().get(0).getAmounts()[0] - 3) < 0.001
 		result.getRoutes().get(0).getEvents().get(0).getLoadType() == LoadType.PICKUP
-		Math.abs(result.getRoutes().get(0).getEvents().get(1).getAmount() - 1) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(1).getAmounts()[0] - 1) < 0.001
 		result.getRoutes().get(0).getEvents().get(1).getLoadType() == LoadType.DELIVERY
-		Math.abs(result.getRoutes().get(0).getEvents().get(2).getAmount() - 3) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(2).getAmounts()[0] - 3) < 0.001
 		result.getRoutes().get(0).getEvents().get(2).getLoadType() == LoadType.PICKUP
-		Math.abs(result.getRoutes().get(0).getEvents().get(3).getAmount() - 2) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(3).getAmounts()[0] - 2) < 0.001
 		result.getRoutes().get(0).getEvents().get(3).getLoadType() == LoadType.DELIVERY
-		Math.abs(result.getRoutes().get(0).getEvents().get(4).getAmount() - 0) < 0.001
+		Math.abs(result.getRoutes().get(0).getEvents().get(4).getAmounts()[0] - 0) < 0.001
 		result.getRoutes().get(0).getEvents().get(4).getLoadType() == LoadType.UNDEF
 	}
 
-	def "Replenish - homogenus - all clear"() {
+	def "Replenish - homogeneous - all clear"() {
 		def v = new TestVehicle(name: "V1", capacity: [3, 3]).getVehicle()
 		def model = initScen3(v)
 		def n = model.getNodes()
@@ -368,33 +363,24 @@ class ReportBuilderCapacitySpec extends Specification {
 
 		then:
 		result != null
-		result.getSummary().getOverload1() == 0
-		result.getSummary().getOverload2() == 0
-		result.getSummary().getOverload3() == 0
+		result.getSummary().getOverloads()[0] == 0
+		result.getSummary().getOverloads()[1] == 0
 		result.getRoutes().size() == 1
-		result.getRoutes().get(0).getSummary().getDelivery() == 4
-		result.getRoutes().get(0).getSummary().getDelivery2() == 3
-		result.getRoutes().get(0).getSummary().getPickup() == 3
-		result.getRoutes().get(0).getSummary().getPickup2() == 1
-		Math.abs(result.getRoutes().get(0).getEvents().get(0).getAmount() - 3) < 0.001
-		result.getRoutes().get(0).getEvents().get(0).getLoadType() == LoadType.PICKUP
-		Math.abs(result.getRoutes().get(0).getEvents().get(1).getAmount() - 1) < 0.001
-		result.getRoutes().get(0).getEvents().get(1).getLoadType() == LoadType.DELIVERY
-		Math.abs(result.getRoutes().get(0).getEvents().get(2).getAmount() - 2) < 0.001
-		result.getRoutes().get(0).getEvents().get(2).getLoadType() == LoadType.DELIVERY
-		// Replenishment Point
-		Math.abs(result.getRoutes().get(0).getEvents().get(3).getAmount() - 1) < 0.001
-		result.getRoutes().get(0).getEvents().get(3).getLoadType() == LoadType.PICKUP
+		result.getRoutes().get(0).getSummary().getDeliveries()[0] == 4
+		result.getRoutes().get(0).getSummary().getDeliveries()[1] == 3
+		result.getRoutes().get(0).getSummary().getPickups()[0] == 3
+		result.getRoutes().get(0).getSummary().getPickups()[1] == 1
 
-		Math.abs(result.getRoutes().get(0).getEvents().get(4).getAmount() - 1) < 0.001
-		result.getRoutes().get(0).getEvents().get(4).getLoadType() == LoadType.DELIVERY
-		Math.abs(result.getRoutes().get(0).getEvents().get(5).getAmount() - 3) < 0.001
-		result.getRoutes().get(0).getEvents().get(5).getLoadType() == LoadType.PICKUP
-		Math.abs(result.getRoutes().get(0).getEvents().get(6).getAmount() - 0) < 0.001
-		result.getRoutes().get(0).getEvents().get(6).getLoadType() == LoadType.UNDEF
+		checkAmount(result, 0, 3, LoadType.PICKUP)
+		checkAmount(result, 1, 1, LoadType.DELIVERY)
+		checkAmount(result, 2, 2, LoadType.DELIVERY)
+		checkAmount(result, 3, 1, LoadType.PICKUP)
+		checkAmount(result, 4, 1, LoadType.DELIVERY)
+		checkAmount(result, 5, 3, LoadType.PICKUP)
+		checkAmount(result, 6, 0, LoadType.UNDEF)
 	}
 
-	def "Replenish - homogenus - pickup fail"() {
+	def "Replenish - homogeneous - pickup fail"() {
 		def v = new TestVehicle(name: "V1", capacity: [3, 3]).getVehicle()
 		def model = initScen3(v)
 		def n = model.getNodes()
@@ -409,31 +395,25 @@ class ReportBuilderCapacitySpec extends Specification {
 
 		then:
 		result != null
-		result.getSummary().getOverload1() == 2
-		result.getSummary().getOverload2() == 0
-		result.getSummary().getOverload3() == 0
+
+		result.getSummary().getOverloads()[0] == 2
+		result.getSummary().getOverloads()[1] == 0
 		result.getRoutes().size() == 1
-		result.getRoutes().get(0).getSummary().getDelivery() == 3
-		result.getRoutes().get(0).getSummary().getDelivery2() == 2
-		result.getRoutes().get(0).getSummary().getPickup() == 5
-		result.getRoutes().get(0).getSummary().getPickup2() == 2
-		Math.abs(result.getRoutes().get(0).getEvents().get(0).getAmount() - 3) < 0.001
-		result.getRoutes().get(0).getEvents().get(0).getLoadType() == LoadType.PICKUP
-		Math.abs(result.getRoutes().get(0).getEvents().get(1).getAmount() - 1) < 0.001
-		result.getRoutes().get(0).getEvents().get(1).getLoadType() == LoadType.DELIVERY
-		Math.abs(result.getRoutes().get(0).getEvents().get(2).getAmount() - 2) < 0.001
-		result.getRoutes().get(0).getEvents().get(2).getLoadType() == LoadType.DELIVERY
-		Math.abs(result.getRoutes().get(0).getEvents().get(3).getAmount() - 0) < 0.001
-		result.getRoutes().get(0).getEvents().get(3).getLoadType() == LoadType.PICKUP
-		Math.abs(result.getRoutes().get(0).getEvents().get(4).getAmount() - 3) < 0.001
-		result.getRoutes().get(0).getEvents().get(4).getLoadType() == LoadType.PICKUP
-		Math.abs(result.getRoutes().get(0).getEvents().get(5).getAmount() - 2) < 0.001
-		result.getRoutes().get(0).getEvents().get(5).getLoadType() == LoadType.PICKUP
-		Math.abs(result.getRoutes().get(0).getEvents().get(6).getAmount() - 0) < 0.001
-		result.getRoutes().get(0).getEvents().get(6).getLoadType() == LoadType.UNDEF
+		result.getRoutes().get(0).getSummary().getDeliveries()[0] == 3
+		result.getRoutes().get(0).getSummary().getDeliveries()[1] == 2
+		result.getRoutes().get(0).getSummary().getPickups()[0] == 5
+		result.getRoutes().get(0).getSummary().getPickups()[1] == 2
+
+		checkAmount(result, 0, 3, LoadType.PICKUP)
+		checkAmount(result, 1, 1, LoadType.DELIVERY)
+		checkAmount(result, 2, 2, LoadType.DELIVERY)
+		checkAmount(result, 3, 0, LoadType.PICKUP)
+		checkAmount(result, 4, 3, LoadType.PICKUP)
+		checkAmount(result, 5, 2, LoadType.PICKUP)
+		checkAmount(result, 6, 0, LoadType.UNDEF)
 	}
 
-	def "Replenish - homogenus - delivery fail"() {
+	def "Replenish - homogeneous - delivery fail"() {
 		def v = new TestVehicle(name: "V1", capacity: [3, 3]).getVehicle()
 		def model = initScen3(v)
 		def n = model.getNodes()
@@ -448,28 +428,22 @@ class ReportBuilderCapacitySpec extends Specification {
 
 		then:
 		result != null
-		result.getSummary().getOverload1() == 1
-		result.getSummary().getOverload2() == 0
-		result.getSummary().getOverload3() == 0
+
+		result.getSummary().getOverloads()[0] == 1
+		result.getSummary().getOverloads()[1] == 0
 		result.getRoutes().size() == 1
-		result.getRoutes().get(0).getSummary().getDelivery() == 4
-		result.getRoutes().get(0).getSummary().getDelivery2() == 3
-		result.getRoutes().get(0).getSummary().getPickup() == 3
-		result.getRoutes().get(0).getSummary().getPickup2() == 1
-		Math.abs(result.getRoutes().get(0).getEvents().get(0).getAmount() - 4) < 0.001
-		result.getRoutes().get(0).getEvents().get(0).getLoadType() == LoadType.PICKUP
-		Math.abs(result.getRoutes().get(0).getEvents().get(1).getAmount() - 1) < 0.001
-		result.getRoutes().get(0).getEvents().get(1).getLoadType() == LoadType.DELIVERY
-		Math.abs(result.getRoutes().get(0).getEvents().get(2).getAmount() - 2) < 0.001
-		result.getRoutes().get(0).getEvents().get(2).getLoadType() == LoadType.DELIVERY
-		Math.abs(result.getRoutes().get(0).getEvents().get(3).getAmount() - 1) < 0.001
-		result.getRoutes().get(0).getEvents().get(3).getLoadType() == LoadType.DELIVERY
-		Math.abs(result.getRoutes().get(0).getEvents().get(4).getAmount() - 0) < 0.001
-		result.getRoutes().get(0).getEvents().get(4).getLoadType() == LoadType.PICKUP
-		Math.abs(result.getRoutes().get(0).getEvents().get(5).getAmount() - 3) < 0.001
-		result.getRoutes().get(0).getEvents().get(5).getLoadType() == LoadType.PICKUP
-		Math.abs(result.getRoutes().get(0).getEvents().get(6).getAmount() - 0) < 0.001
-		result.getRoutes().get(0).getEvents().get(6).getLoadType() == LoadType.UNDEF
+		result.getRoutes().get(0).getSummary().getDeliveries()[0] == 4
+		result.getRoutes().get(0).getSummary().getDeliveries()[1] == 3
+		result.getRoutes().get(0).getSummary().getPickups()[0] == 3
+		result.getRoutes().get(0).getSummary().getPickups()[1] == 1
+
+		checkAmount(result, 0, 4, LoadType.PICKUP)
+		checkAmount(result, 1, 1, LoadType.DELIVERY)
+		checkAmount(result, 2, 2, LoadType.DELIVERY)
+		checkAmount(result, 3, 1, LoadType.DELIVERY)
+		checkAmount(result, 4, 0, LoadType.PICKUP)
+		checkAmount(result, 5, 3, LoadType.PICKUP)
+		checkAmount(result, 6, 0, LoadType.UNDEF)
 	}
 
 	def "Replenish - hetero - all clear"() {
@@ -487,30 +461,27 @@ class ReportBuilderCapacitySpec extends Specification {
 
 		then:
 		result != null
-		result.getSummary().getOverload1() == 0
-		result.getSummary().getOverload2() == 0
-		result.getSummary().getOverload3() == 0
+		result.getSummary().getOverloads()[0] == 0
+		result.getSummary().getOverloads()[1] == 0
 		result.getRoutes().size() == 1
-		result.getRoutes().get(0).getSummary().getDelivery() == 4
-		result.getRoutes().get(0).getSummary().getDelivery2() == 3
-		result.getRoutes().get(0).getSummary().getPickup() == 5
-		result.getRoutes().get(0).getSummary().getPickup2() == 2
-		Math.abs(result.getRoutes().get(0).getEvents().get(0).getAmount() - 3) < 0.001
-		result.getRoutes().get(0).getEvents().get(0).getLoadType() == LoadType.PICKUP
-		Math.abs(result.getRoutes().get(0).getEvents().get(1).getAmount() - 2) < 0.001
-		result.getRoutes().get(0).getEvents().get(1).getLoadType() == LoadType.DELIVERY
-		Math.abs(result.getRoutes().get(0).getEvents().get(2).getAmount() - 2) < 0.001
-		result.getRoutes().get(0).getEvents().get(2).getLoadType() == LoadType.PICKUP
-		Math.abs(result.getRoutes().get(0).getEvents().get(3).getAmount() - 1) < 0.001
-		result.getRoutes().get(0).getEvents().get(3).getLoadType() == LoadType.DELIVERY
-		Math.abs(result.getRoutes().get(0).getEvents().get(4).getAmount() - 1) < 0.001
-		result.getRoutes().get(0).getEvents().get(4).getLoadType() == LoadType.PICKUP
-		Math.abs(result.getRoutes().get(0).getEvents().get(5).getAmount() - 1) < 0.001
-		result.getRoutes().get(0).getEvents().get(5).getLoadType() == LoadType.DELIVERY
-		Math.abs(result.getRoutes().get(0).getEvents().get(6).getAmount() - 3) < 0.001
-		result.getRoutes().get(0).getEvents().get(6).getLoadType() == LoadType.PICKUP
-		Math.abs(result.getRoutes().get(0).getEvents().get(7).getAmount() - 0) < 0.001
-		result.getRoutes().get(0).getEvents().get(7).getLoadType() == LoadType.UNDEF
+		result.getRoutes().get(0).getSummary().getDeliveries()[0] == 4
+		result.getRoutes().get(0).getSummary().getDeliveries()[1] == 3
+		result.getRoutes().get(0).getSummary().getPickups()[0] == 5
+		result.getRoutes().get(0).getSummary().getPickups()[1] == 2
+
+		checkAmount(result, 0, 3, LoadType.PICKUP)
+		checkAmount(result, 1, 2, LoadType.DELIVERY)
+		checkAmount(result, 2, 2, LoadType.PICKUP)
+		checkAmount(result, 3, 1, LoadType.DELIVERY)
+		checkAmount(result, 4, 1, LoadType.PICKUP)
+		checkAmount(result, 5, 1, LoadType.DELIVERY)
+		checkAmount(result, 6, 3, LoadType.PICKUP)
+		checkAmount(result, 7, 0, LoadType.UNDEF)
+	}
+
+	private static void checkAmount(Report result, int eventIdx, float amountVal, LoadType type) {
+		assert Math.abs(result.getRoutes().get(0).getEvents().get(eventIdx).getAmounts()[0] - amountVal) < 0.001
+		assert result.getRoutes().get(0).getEvents().get(eventIdx).getLoadType() == type
 	}
 
 

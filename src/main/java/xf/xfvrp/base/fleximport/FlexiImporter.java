@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** 
- * Copyright (c) 2012-present Holger Schneider
+ * Copyright (c) 2012-2020 Holger Schneider
  * All rights reserved.
  *
  * This source code is licensed under the MIT License (MIT) found in the
@@ -33,18 +33,17 @@ import java.util.List;
  */
 public class FlexiImporter {
 
-	private final List<InternalDepotData> depotList = new ArrayList<>();
-	private final List<InternalCustomerData> customerList = new ArrayList<>();
-	private final List<InternalReplenishData> replenishList = new ArrayList<>();
-	private final List<InternalVehicleData> vehicleList = new ArrayList<>();
+	private final List<DepotData> depotList = new ArrayList<>();
+	private final List<CustomerData> customerList = new ArrayList<>();
+	private final List<ReplenishData> replenishList = new ArrayList<>();
+	private final List<VehicleData> vehicleList = new ArrayList<>();
 
-	public final InternalVehicleData defaultVehicle = InternalVehicleData.createDefault();
-	public final InternalVehicleData invalidVehicle = InternalVehicleData.createInvalid();
+	public final VehicleData defaultVehicle = VehicleData.createDefault();
 
-	private InternalDepotData lastDepotData = null;
-	private InternalCustomerData lastCustomerData = null;
-	private InternalReplenishData lastReplenishData = null;
-	private InternalVehicleData lastVehicleData = null;
+	private DepotData lastDepotData = null;
+	private CustomerData lastCustomerData = null;
+	private ReplenishData lastReplenishData = null;
+	private VehicleData lastVehicleData = null;
 
 	/**
 	 * Standard constructor
@@ -65,19 +64,19 @@ public class FlexiImporter {
 		Node[] nodes = new Node[depotList.size() + replenishList.size() + customerList.size()];
 	
 		// Depots
-		for (InternalDepotData dep : depotList) {
+		for (DepotData dep : depotList) {
 			nodes[idx] = dep.createDepot(idx);
 			idx++;
 		}
 		
 		// Replenishing depots
-		for (InternalReplenishData rep : replenishList) {
+		for (ReplenishData rep : replenishList) {
 			nodes[idx] = rep.createReplenishment(idx);
 			idx++;
 		}
 	
 		// Customers
-		for (InternalCustomerData cust : customerList) {
+		for (CustomerData cust : customerList) {
 			nodes[idx] = cust.createCustomer(idx);
 			idx++;
 		}
@@ -126,7 +125,7 @@ public class FlexiImporter {
 		if(lastDepotData != null)
 			depotList.add(lastDepotData);
 
-		lastDepotData = new InternalDepotData();
+		lastDepotData = new DepotData();
 
 		return lastDepotData;
 	}
@@ -142,7 +141,7 @@ public class FlexiImporter {
 		if(lastCustomerData != null)
 			customerList.add(lastCustomerData);
 
-		lastCustomerData = new InternalCustomerData();
+		lastCustomerData = new CustomerData();
 
 		return lastCustomerData;
 	}
@@ -157,7 +156,7 @@ public class FlexiImporter {
 		if(lastReplenishData != null)
 			replenishList.add(lastReplenishData);
 
-		lastReplenishData = new InternalReplenishData();
+		lastReplenishData = new ReplenishData();
 
 		return lastReplenishData;
 	}
@@ -182,7 +181,7 @@ public class FlexiImporter {
 			vehicleList.add(lastVehicleData);
 		}
 
-		lastVehicleData = new InternalVehicleData();
+		lastVehicleData = new VehicleData();
 
 		return lastVehicleData;
 	}
@@ -227,7 +226,7 @@ public class FlexiImporter {
 	 * 
 	 * @return the collected depots
 	 */
-	public List<InternalDepotData> getDepotList() {
+	public List<DepotData> getDepotList() {
 		return depotList;
 	}
 
@@ -235,7 +234,7 @@ public class FlexiImporter {
 	 * 
 	 * @return the collected customers
 	 */
-	public List<InternalCustomerData> getCustomerList() {
+	public List<CustomerData> getCustomerList() {
 		return customerList;
 	}
 
@@ -243,7 +242,7 @@ public class FlexiImporter {
 	 * 
 	 * @return the collected customers
 	 */
-	public List<InternalReplenishData> getReplenishList() {
+	public List<ReplenishData> getReplenishList() {
 		return replenishList;
 	}
 
@@ -255,7 +254,7 @@ public class FlexiImporter {
 		Vehicle[] vehicles = new Vehicle[vehicleList.size()];
 
 		int idx = 0;
-		for (InternalVehicleData veh : vehicleList) {
+		for (VehicleData veh : vehicleList) {
 			vehicles[idx] = veh.createVehicle(idx);
 			idx++;
 		}

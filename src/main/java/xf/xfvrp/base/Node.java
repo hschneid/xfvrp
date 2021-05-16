@@ -8,7 +8,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /** 
- * Copyright (c) 2012-present Holger Schneider
+ * Copyright (c) 2012-2020 Holger Schneider
  * All rights reserved.
  *
  * This source code is licensed under the MIT License (MIT) found in the
@@ -64,9 +64,15 @@ public class Node implements Cloneable {
 	/** If customer is invalid for whole route plan, the reason is written to invalid states **/
 	private InvalidReason invalidReason = InvalidReason.NONE;
 
+	/** For Replenishment nodes: Trigger, if a certain compartment is replenished (true) or not (false). **/
+	private final boolean[] isCompartmentReplenished;
+
 	private String invalidArguments = "";
 
-	public Node() {
+	/**
+	 * Constructor, which is used manly for testing
+	 */
+	Node() {
 		externID = "";
 		globalIdx = 0;
 		
@@ -80,12 +86,12 @@ public class Node implements Cloneable {
 		serviceTimeForSite = 0;
 
 		shipID = "";
+		isCompartmentReplenished = null;
 	}
 
 	/**
-	 * Node constructor for use within Efficient Load
+	 * Node constructor
 	 * All external data of a node are set here.
-	 * Except for internal index, depotId and geoId.	
 	 */
 	public Node(
 			int globalIdx,
@@ -100,7 +106,8 @@ public class Node implements Cloneable {
 			float serviceTimeForSite,
 			LoadType loadType,
 			int presetBlockRank,
-			String shipID			
+			String shipID,
+			boolean[] isCompartmentReplenished
 			) {
 		this.globalIdx = globalIdx;
 		this.externID = externID;
@@ -115,12 +122,11 @@ public class Node implements Cloneable {
 		this.geoId = geoId;
 		this.presetBlockRank = presetBlockRank;
 		this.shipID = shipID;
+		this.isCompartmentReplenished = isCompartmentReplenished;
 	}
 
 	/**
 	 * Deep copy of this node
-	 * 
-	 * @return
 	 */
 	public Node copy() {
 		Node c = null;
@@ -165,9 +171,6 @@ public class Node implements Cloneable {
 		return demand;
 	}
 
-	/**
-	 * @return
-	 */
 	public int getIdx() {
 		return idx;
 	}
@@ -178,57 +181,41 @@ public class Node implements Cloneable {
 	}
 
 	/**
-	 * 
-	 * @param idx
+	 * @param idx - index in node array of current execution
 	 */
 	public void setIdx(int idx) {
 		this.idx = idx;
 	}
 
 	/**
-	 * 
-	 * @return
+	 * @return global index of node - mostly used for meta-heuristics or distance matrix
 	 */
 	public int getGlobalIdx() {
 		return globalIdx;
 	}
 
 	/**
-	 * 
-	 * @param geoId
+	 * @param geoId - id in distance metrix
 	 */
 	public void setGeoId(int geoId) {
 		this.geoId = geoId;
 	}
 
 	/**
-	 * 
-	 * @return
+	 * @return business id
 	 */
 	public String getExternID() {
 		return externID;
 	}
 
-	/**
-	 * 
-	 * @return
-	 */
 	public float getServiceTime() {
 		return serviceTime;
 	}
 
-	/**
-	 * 
-	 * @return
-	 */
 	public LoadType getLoadType() {
 		return loadType;
 	}
 
-	/**
-	 * 
-	 * @return
-	 */
 	public int getGeoId() {
 		return geoId;
 	}
@@ -238,7 +225,6 @@ public class Node implements Cloneable {
 	 * time window is searched and returned. If the given time is beyond the last
 	 * valid time, the last time of the window is returned.
 	 * 
-	 * @param time 
 	 * @return time window that holds the given time
 	 */
 	public float[] getTimeWindow(float time) {
@@ -254,18 +240,10 @@ public class Node implements Cloneable {
 		return timeWindowArr[timeWindowArr.length - 1];
 	}
 
-	/**
-	 * 
-	 * @return
-	 */
 	public int getDepotId() {
 		return depotId ;
 	}
 
-	/**
-	 * 
-	 * @param depotId
-	 */
 	public void setDepotId(int depotId) {
 		this.depotId = depotId;
 	}
@@ -276,11 +254,7 @@ public class Node implements Cloneable {
 	public final String getShipID() {
 		return shipID;
 	}
-	
-	/**
-	 * 
-	 * @param blockIdx
-	 */
+
 	public void setPresetBlockIdx(int blockIdx) {
 		this.presetBlockIdx = blockIdx;
 	}
@@ -322,10 +296,6 @@ public class Node implements Cloneable {
 		presetBlockVehicleList.add(vehicleIdx);
 	}
 
-	/**
-	 * 
-	 * @return
-	 */
 	public float getServiceTimeForSite() {
 		return serviceTimeForSite;
 	}
@@ -340,26 +310,14 @@ public class Node implements Cloneable {
 		return presetRoutingBlackList;
 	}
 
-	/**
-	 * 
-	 * @param globalIdx
-	 */
 	public void addToBlacklist(int globalIdx){
 		presetRoutingBlackList.add(globalIdx);
 	}
 
-	/**
-	 * 
-	 * @return
-	 */
 	public int getShipmentIdx() {
 		return shipmentIdx;
 	}
 
-	/**
-	 * 
-	 * @param shipmentIdx
-	 */
 	public void setShipmentIdx(int shipmentIdx) {
 		this.shipmentIdx = shipmentIdx;
 	}
@@ -378,57 +336,37 @@ public class Node implements Cloneable {
 
 	/**
 	 * 
-	 * @param r The reason why this customer leads to a invalid route plan
+	 * @param reason The reason why this customer leads to a invalid route plan
 	 */
-	public void setInvalidReason(InvalidReason r) {
-		setInvalidReason(r, "");
+	public void setInvalidReason(InvalidReason reason) {
+		setInvalidReason(reason, "");
 	}
 
-	/**
-	 * 
-	 * @return
-	 */
 	public String getInvalidArguments() {
 		return invalidArguments;
 	}
 
-	/**
-	 * 
-	 * @return
-	 */
 	public InvalidReason getInvalidReason() {
 		return invalidReason;
 	}
 
-	/**
-	 * @return
-	 */
 	public Set<Integer> getPresetDepotList() {
 		return presetDepotList;
 	}
 
-	/**
-	 * 
-	 * @param globalIdx
-	 * @return
-	 */
 	public boolean isInPresetDepotList(int globalIdx){
 		return presetDepotList.contains(globalIdx);
 	}
 
-	/**
-	 * 
-	 * @param globalIdx
-	 */
 	public void addPresetDepot(int globalIdx) {
 		presetDepotList.add(globalIdx);
 	}
 
-	/**
-	 * 
-	 * @param val
-	 */
 	public void setDemand(float val) {
 		this.demand[0] = val;
+	}
+
+	public boolean[] isCompartmentReplenished() {
+		return isCompartmentReplenished;
 	}
 }

@@ -15,10 +15,12 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 /**
- * 
- * @author hschneid
+ * Copyright (c) 2012-2020 Holger Schneider
+ * All rights reserved.
  *
- */
+ * This source code is licensed under the MIT License (MIT) found in the
+ * LICENSE file in the root directory of this source tree.
+ **/
 public class PresetSolutionBuilder {
 
 	public Solution build(List<Node> nodes, XFVRPModel model, StatusManager statusManager) throws XFVRPException {

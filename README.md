@@ -1,6 +1,6 @@
 [![MIT License](https://img.shields.io/apm/l/atomic-design-ui.svg?)](https://github.com/tterb/atomic-design-ui/blob/master/LICENSEs)
 [![BCH compliance](https://bettercodehub.com/edge/badge/hschneid/xfvrp?branch=master)](https://bettercodehub.com/)
-![alt text](https://img.shields.io/static/v1?label=version&message=11.3.0&color=-)
+![alt text](https://img.shields.io/static/v1?label=version&message=11.4.0&color=-)
 
 xfvrp
 ======
@@ -8,9 +8,10 @@ xfvrp
 There are a lot of solvers for the Vehicle Routing Problem (VRP) on github. Some are good at certain features (like CVRP or VRPTW) and some are quite complex.
 
 xfvrp is a fast and easy-to-use solver for Rich Vehicle Routing Problems like
-- Multi capacities
-- Multi time windows
-- Multi depots
+- Multiple compartments
+  - Separate capacities for routes with only pickup, only delivery or mixed pickup and delivery 
+- Multiple time windows
+- Multiple depots
 - Heterogeneous fleet
 - Pick and delivery or backhauls
 - Replenishment sites
@@ -25,16 +26,29 @@ Additional requirements are the useage and maintainability of the API like
 - No free lunch: Good results with good performance.
 
 ## License
-This software is released under [MIT License] (https://opensource.org/licenses/MIT)
+This software is licenced under [MIT License] (https://opensource.org/licenses/MIT).
 
 ## Getting started
-Load xfvrp from github, append it to your project and use the API.
+* Add dependency to your project
+  * Maven: 
+    ```
+    <dependency>
+      <groupId>com.github.hschneid</groupId>
+      <artifactId>xfvrp</artifactId>
+      <version>11.3.0-RELEASE</version>
+    </dependency>
+    ```
+  * Gradle:
+    ```
+    implementation 'com.github.hschneid:xfvrp:11.3.0-RELEASE'
+    ```
 
 A simple example for a capacitated vehicle route planning:
-``` XFVRP xfvrp = new XFVRP();
+``` 
+XFVRP xfvrp = new XFVRP();
 xfvrp.addDepot().setXlong(5.667);
 xfvrp.addCustomer().setXlong(1.002).setDemand(new float[]{1.5, 0, 2.3});
-xfvrp.setVehicle().setCapacity(new float[]{3, 2, 5});
+xfvrp.setVehicle().setName("Truck").setCapacity(new float[]{3, 2, 5});
 xfvrp.setMetric(new EucledianMetric());
 xfvrp.setOptType(XFVRPOptType.RELOCATE);
 
@@ -46,11 +60,19 @@ report.getSummary().getDistance();
 As a general purpose solver, XFVRP is not fully compatable with single problem solvers. But even though it can prove its relevance by [benchmarks](BENCHMARKS.md).
 
 ## Change log
+### 11.4.0
+- Add more multi-compartment constraints
+  - Considering more than 3 compartments (no limitation)
+  - Vehicle capacity can be defined separately per compartment for PICKUP, DELIVERY or MIXED.
+  - Replenishment nodes must not replenish (reset capacity) for every compartment.
+- Add instance checks for MDVRPTW (of Vidal et al.)
+- Internal restructuring to reduce complexity for data-import classes
+
 ### 11.3.0
 - Drastically increased performance for some neighborhood searches by changing to route-based change operators and improved result sorting
-    - Single node Move and Segment Move
-    - Single node Swap and Segment Swap
-    - Segment Exchange (Swap & move)
+  - Single node Move and Segment Move
+  - Single node Swap and Segment Swap
+  - Segment Exchange (Swap & move)
 - Removed obsolete giant-route based neighborhoods, which are replaced by route-based neighborhoods 
 
 ### 11.2.0

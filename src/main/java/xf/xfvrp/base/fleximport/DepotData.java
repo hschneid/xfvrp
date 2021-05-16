@@ -1,7 +1,10 @@
 package xf.xfvrp.base.fleximport;
 
-/** 
- * Copyright (c) 2012-present Holger Schneider
+import xf.xfvrp.base.Node;
+import xf.xfvrp.base.SiteType;
+
+/**
+ * Copyright (c) 2012-2020 Holger Schneider
  * All rights reserved.
  *
  * This source code is licensed under the MIT License (MIT) found in the
@@ -26,7 +29,7 @@ package xf.xfvrp.base.fleximport;
  * @author hschneid
  *
  */
-public abstract class DepotData extends NodeData {
+public class DepotData extends NodeData {
 
 	/**
 	 * @param externID the externID to set
@@ -60,12 +63,6 @@ public abstract class DepotData extends NodeData {
 		return this;
 	}
 
-	/**
-	 * 
-	 * @param open
-	 * @param close
-	 * @return
-	 */
 	public DepotData setTimeWindow(float open, float close) {
 		this.timeWindowList.add(new float[]{open, close});
 		return this;
@@ -101,5 +98,27 @@ public abstract class DepotData extends NodeData {
 	public DepotData setClose2(float close2) {
 		this.close2 = close2;
 		return this;
+	}
+
+	/////////////////////////////////////
+
+	Node createDepot(int idx) {
+		checkTimeWindows();
+
+		return new Node(
+				idx,
+				externID,
+				SiteType.DEPOT,
+				xlong,
+				ylat,
+				geoId,
+				new float[]{0,0,0},
+				timeWindowList.toArray(new float[0][]),
+				0,
+				0,
+				null, 0,
+				"",
+				null
+		);
 	}
 }

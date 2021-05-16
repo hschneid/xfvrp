@@ -1,12 +1,13 @@
 package xf.xfvrp.report;
 
 import xf.xfvrp.base.Vehicle;
+import xf.xfvrp.opt.evaluation.Context;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /** 
- * Copyright (c) 2012-present Holger Schneider
+ * Copyright (c) 2012-2020 Holger Schneider
  * All rights reserved.
  *
  * This source code is licensed under the MIT License (MIT) found in the
@@ -41,8 +42,8 @@ public class RouteReport {
 	 * 
 	 * @param e
 	 */
-	public void add(Event e) {
-		summary.add(e);
+	public void add(Event e, Context context) {
+		summary.add(e, context);
 		eventList.add(e);
 	}
 		

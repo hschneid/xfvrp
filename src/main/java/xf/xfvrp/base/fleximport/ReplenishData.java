@@ -1,7 +1,11 @@
 package xf.xfvrp.base.fleximport;
 
-/** 
- * Copyright (c) 2012-present Holger Schneider
+import xf.xfvrp.base.LoadType;
+import xf.xfvrp.base.Node;
+import xf.xfvrp.base.SiteType;
+
+/**
+ * Copyright (c) 2012-2020 Holger Schneider
  * All rights reserved.
  *
  * This source code is licensed under the MIT License (MIT) found in the
@@ -26,7 +30,9 @@ package xf.xfvrp.base.fleximport;
  * @author hschneid
  *
  */
-public abstract class ReplenishData extends NodeData {
+public class ReplenishData extends NodeData {
+
+	protected boolean[] isCompartmentReplenished;
 
 	/**
 	 * @param externID the externID to set
@@ -60,12 +66,6 @@ public abstract class ReplenishData extends NodeData {
 		return this;
 	}
 
-	/**
-	 * 
-	 * @param open
-	 * @param close
-	 * @return
-	 */
 	public ReplenishData setTimeWindow(float open, float close) {
 		this.timeWindowList.add(new float[]{open, close});
 		return this;
@@ -103,4 +103,30 @@ public abstract class ReplenishData extends NodeData {
 		return this;
 	}
 
+	public void setIsCompartmentReplenished(boolean[] isCompartmentReplenished) {
+		this.isCompartmentReplenished = isCompartmentReplenished;
+	}
+
+	///////////////////////////////////
+
+	Node createReplenishment(int idx) {
+		checkTimeWindows();
+
+		return new Node(
+				idx,
+				externID,
+				SiteType.REPLENISH,
+				xlong,
+				ylat,
+				geoId,
+				new float[]{0, 0, 0},
+				timeWindowList.toArray(new float[0][]),
+				0,
+				0,
+				LoadType.REPLENISH,
+				0,
+				"",
+				isCompartmentReplenished
+		);
+	}
 }

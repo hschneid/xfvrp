@@ -4,11 +4,12 @@ import xf.xfvrp.base.Vehicle;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
 /** 
- * Copyright (c) 2012-present Holger Schneider
+ * Copyright (c) 2012-2020 Holger Schneider
  * All rights reserved.
  *
  * This source code is licensed under the MIT License (MIT) found in the
@@ -32,7 +33,7 @@ public class VehiclePriorityInitialiser {
 		List<Vehicle> withPrios = Arrays
 			.stream(vehicles)
 			.filter(v -> (v.priority != Vehicle.PRIORITY_UNDEF))
-			.sorted((a, b) -> (a.priority - b.priority))
+			.sorted(Comparator.comparingInt(a -> a.priority))
 			.collect(Collectors.toList());
 		// Get the highest given priority value from user
 		// ( all automatically filled priorities must be greater than this value) 
@@ -47,10 +48,12 @@ public class VehiclePriorityInitialiser {
 				.sorted((a, b) -> {
 					int c = 0;
 					for (int i = 0; i < b.capacity.length; i++)
-						c += b.capacity[i] - a.capacity[i];
+						c += ((b.capacity[i] == Float.MAX_VALUE) ? 0 : b.capacity[i]) -
+								((a.capacity[i] == Float.MAX_VALUE) ? 0 : a.capacity[i]);
 					return c * 1000;	
 				})
 				.collect(Collectors.toList());
+
 		// Set the automatically filled priority
 		for (Vehicle v : withoutPrios)
 			v.priority = maxPresetPriority++;

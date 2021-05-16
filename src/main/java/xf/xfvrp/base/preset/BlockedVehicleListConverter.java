@@ -2,7 +2,7 @@ package xf.xfvrp.base.preset;
 
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.Vehicle;
-import xf.xfvrp.base.fleximport.InternalCustomerData;
+import xf.xfvrp.base.fleximport.CustomerData;
 import xf.xfvrp.base.monitor.StatusCode;
 import xf.xfvrp.base.monitor.StatusManager;
 
@@ -13,7 +13,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /** 
- * Copyright (c) 2012-present Holger Schneider
+ * Copyright (c) 2012-2020 Holger Schneider
  * All rights reserved.
  *
  * This source code is licensed under the MIT License (MIT) found in the
@@ -29,7 +29,7 @@ public class BlockedVehicleListConverter {
 	 * Sets for a node the blocked vehicle object which was given in
 	 * the input data
 	 */
-	public static void convert(Node[] nodes, List<InternalCustomerData> customerList, Vehicle[] vehicles, StatusManager mon) {
+	public static void convert(Node[] nodes, List<CustomerData> customerList, Vehicle[] vehicles, StatusManager mon) {
 		Map<String, Integer> vehMap = getVehicleMapping(vehicles);
 
 		Map<String, Node> nodeMap = getNodeMapping(nodes);
@@ -37,8 +37,8 @@ public class BlockedVehicleListConverter {
 		addPreset(customerList, vehMap, nodeMap, mon);
 	}
 
-	private static void addPreset(List<InternalCustomerData> customerList, Map<String, Integer> vehMap, Map<String, Node> nodeMap, StatusManager mon) {
-		for (InternalCustomerData cust : customerList) {
+	private static void addPreset(List<CustomerData> customerList, Map<String, Integer> vehMap, Map<String, Node> nodeMap, StatusManager mon) {
+		for (CustomerData cust : customerList) {
 			Node node = nodeMap.get(cust.getExternID());
 			
 			Set<String> presetBlockedVehicles = cust.getPresetBlockVehicleList();
@@ -62,6 +62,6 @@ public class BlockedVehicleListConverter {
 	}
 
 	private static Map<String, Node> getNodeMapping(Node[] nodes) {
-		return Arrays.stream(nodes).collect(Collectors.toMap(k -> k.getExternID(), v -> v, (v1, v2) -> v1));
+		return Arrays.stream(nodes).collect(Collectors.toMap(Node::getExternID, v -> v, (v1, v2) -> v1));
 	}
 }

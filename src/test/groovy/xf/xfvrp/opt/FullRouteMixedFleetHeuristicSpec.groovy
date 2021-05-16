@@ -8,6 +8,7 @@ import xf.xfvrp.base.metric.Metric
 import xf.xfvrp.base.metric.internal.AcceleratedMetric
 import xf.xfvrp.base.monitor.StatusManager
 import xf.xfvrp.base.preset.BlockNameConverter
+import xf.xfvrp.opt.evaluation.Context
 import xf.xfvrp.report.Event
 import xf.xfvrp.report.RouteReport
 
@@ -27,8 +28,8 @@ class FullRouteMixedFleetHeuristicSpec extends Specification {
 				)
 		routeReport = new RouteReport(testVehicle.getVehicle())
 		routeReport.getSummary().duration = 1234
-		routeReport.getSummary().pickupLoad = 555
-		routeReport.getSummary().delivery = 666
+		routeReport.getSummary().pickups = [555]
+		routeReport.getSummary().deliveries = [666]
 		routeReport.getSummary().delay = 0
 
 	}
@@ -43,13 +44,15 @@ class FullRouteMixedFleetHeuristicSpec extends Specification {
 			new TestNode(externID: 'n5', siteType: SiteType.CUSTOMER).getNode()
 		] as List<Node>
 
+		def context = new Context()
+
 		def routeReport1 = new RouteReport(testVehicle.getVehicle())
-		routeReport1.add(new Event(nodes[1]))
-		routeReport1.add(new Event(nodes[2]))
+		routeReport1.add(new Event(nodes[1]), context)
+		routeReport1.add(new Event(nodes[2]), context)
 
 		def routeReport2 = new RouteReport(testVehicle.getVehicle())
-		routeReport2.add(new Event(nodes[3]))
-		routeReport2.add(new Event(nodes[4]))
+		routeReport2.add(new Event(nodes[3]), context)
+		routeReport2.add(new Event(nodes[4]), context)
 
 		def routes = [routeReport1, routeReport2] as List<RouteReport>
 
@@ -99,7 +102,6 @@ class FullRouteMixedFleetHeuristicSpec extends Specification {
 	}
 
 	def "Reconstruct giant route - normal"() {
-		//List<RouteReport> routes, XFVRPModel model
 		def nodes = [
 			new TestNode(externID: 'n0', siteType: SiteType.CUSTOMER).getNode(),
 			new TestNode(externID: 'n1', siteType: SiteType.CUSTOMER).getNode(),
@@ -112,22 +114,23 @@ class FullRouteMixedFleetHeuristicSpec extends Specification {
 		def model = Stub XFVRPModel
 		model.getNodes() >> nodes
 		model.getVehicle() >> testVehicle.getVehicle()
+		def context = new Context()
 
 		def routeReport1 = new RouteReport(testVehicle.getVehicle())
-		routeReport1.add(new Event(nodes[6]))
-		routeReport1.add(new Event(nodes[1]))
-		routeReport1.add(new Event(nodes[2]))
-		routeReport1.add(new Event(nodes[6]))
+		routeReport1.add(new Event(nodes[6]), context)
+		routeReport1.add(new Event(nodes[1]), context)
+		routeReport1.add(new Event(nodes[2]), context)
+		routeReport1.add(new Event(nodes[6]), context)
 
 		def routeReport2 = new RouteReport(testVehicle.getVehicle())
-		routeReport2.add(new Event(nodes[6]))
-		routeReport2.add(new Event(nodes[3]))
-		routeReport2.add(new Event(nodes[4]))
-		routeReport2.add(new Event(nodes[6]))
+		routeReport2.add(new Event(nodes[6]), context)
+		routeReport2.add(new Event(nodes[3]), context)
+		routeReport2.add(new Event(nodes[4]), context)
+		routeReport2.add(new Event(nodes[6]), context)
 
 		def routeReport3 = new RouteReport(testVehicle.getVehicle())
-		routeReport3.add(new Event(nodes[6]))
-		routeReport3.add(new Event(nodes[6]))
+		routeReport3.add(new Event(nodes[6]), context)
+		routeReport3.add(new Event(nodes[6]), context)
 
 		def routes = [routeReport1, routeReport3, routeReport2] as List<RouteReport>
 
@@ -149,7 +152,6 @@ class FullRouteMixedFleetHeuristicSpec extends Specification {
 	}
 
 	def "Reconstruct giant route - empty routes"() {
-		//List<RouteReport> routes, XFVRPModel model
 		def nodes = [
 			new TestNode(externID: 'n0', siteType: SiteType.CUSTOMER).getNode(),
 			new TestNode(externID: 'n1', siteType: SiteType.CUSTOMER).getNode(),
@@ -307,23 +309,24 @@ class FullRouteMixedFleetHeuristicSpec extends Specification {
 			new TestVehicle(name: 'V2', fixCost: 11, varCost: 5).getVehicle(),
 			new TestVehicle(name: 'V3', fixCost: 14, varCost: 6).getVehicle()
 		] as Vehicle[]
+		def context = new Context()
 
 		def routeReport1 = new RouteReport(vehicles[0])
-		routeReport1.add(new Event(nodes[0]))
-		routeReport1.add(new Event(nodes[1]))
-		routeReport1.add(new Event(nodes[2]))
-		routeReport1.add(new Event(nodes[0]))
+		routeReport1.add(new Event(nodes[0]), context)
+		routeReport1.add(new Event(nodes[1]), context)
+		routeReport1.add(new Event(nodes[2]), context)
+		routeReport1.add(new Event(nodes[0]), context)
 
 		def routeReport2 = new RouteReport(vehicles[0])
-		routeReport2.add(new Event(nodes[0]))
-		routeReport2.add(new Event(nodes[3]))
-		routeReport2.add(new Event(nodes[4]))
-		routeReport2.add(new Event(nodes[0]))
+		routeReport2.add(new Event(nodes[0]), context)
+		routeReport2.add(new Event(nodes[3]), context)
+		routeReport2.add(new Event(nodes[4]), context)
+		routeReport2.add(new Event(nodes[0]), context)
 
 		def routeReport3 = new RouteReport(vehicles[1])
-		routeReport3.add(new Event(nodes[0]))
-		routeReport3.add(new Event(nodes[5]))
-		routeReport3.add(new Event(nodes[0]))
+		routeReport3.add(new Event(nodes[0]), context)
+		routeReport3.add(new Event(nodes[5]), context)
+		routeReport3.add(new Event(nodes[0]), context)
 		
 
 		selector.getBestRoutes(vehicles[0], _) >> [routeReport1, routeReport2]
@@ -339,7 +342,6 @@ class FullRouteMixedFleetHeuristicSpec extends Specification {
 		def s1 = result.stream().filter({f -> f.getModel().getVehicle().name == 'V1'}).findFirst().get()
 		def s2 = result.stream().filter({f -> f.getModel().getVehicle().name == 'V2'}).findFirst().get()
 		def s3 = result.stream().filter({f -> f.getModel().getVehicle().name == 'INVALID'}).findFirst().get()
-		def gT = s1.getSolution().getGiantRoute()
 
 		then:
 		result != null

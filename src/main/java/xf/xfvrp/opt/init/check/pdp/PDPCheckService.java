@@ -4,6 +4,13 @@ import xf.xfvrp.base.InvalidReason;
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.XFVRPModel;
 
+/**
+ * Copyright (c) 2012-2020 Holger Schneider
+ * All rights reserved.
+ *
+ * This source code is licensed under the MIT License (MIT) found in the
+ * LICENSE file in the root directory of this source tree.
+ **/
 public class PDPCheckService {
 	
 	public boolean check(XFVRPModel model, Node[] shipment) {

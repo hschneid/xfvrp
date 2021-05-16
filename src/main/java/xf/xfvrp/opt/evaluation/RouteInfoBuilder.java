@@ -8,6 +8,13 @@ import xf.xfvrp.base.exception.XFVRPExceptionType;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Copyright (c) 2012-2020 Holger Schneider
+ * All rights reserved.
+ *
+ * This source code is licensed under the MIT License (MIT) found in the
+ * LICENSE file in the root directory of this source tree.
+ **/
 public class RouteInfoBuilder {
 
 	public static Map<Node, RouteInfo> build(Node[] route) throws XFVRPException {
@@ -41,7 +48,7 @@ public class RouteInfoBuilder {
 		}			
 	}
 
-	private static void changeRouteInfo(Node node, RouteInfo routeInfo) {
+	private static void changeRouteInfo(Node node, RouteInfo routeInfo) throws XFVRPException {
 		LoadType loadType = node.getLoadType();
 		
 		if(loadType == LoadType.PICKUP) {
@@ -51,7 +58,7 @@ public class RouteInfoBuilder {
 			routeInfo.addLoadingServiceTime(node.getServiceTime());
 			routeInfo.addDeliveryAmount(node.getDemand());
 		} else
-			throw new IllegalStateException("Found unexpected load type ("+loadType.toString()+")");
+			throw new XFVRPException(XFVRPExceptionType.ILLEGAL_STATE ,"Found unexpected load type ("+loadType.toString()+")");
 	}
 	
 }

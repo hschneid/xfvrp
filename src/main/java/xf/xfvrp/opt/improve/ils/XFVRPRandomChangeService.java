@@ -11,6 +11,13 @@ import xf.xfvrp.opt.Solution;
 import xf.xfvrp.opt.XFVRPOptBase;
 import xf.xfvrp.opt.improve.routebased.move.XFVRPMoveUtil;
 
+/**
+ * Copyright (c) 2012-2020 Holger Schneider
+ * All rights reserved.
+ *
+ * This source code is licensed under the MIT License (MIT) found in the
+ * LICENSE file in the root directory of this source tree.
+ **/
 public class XFVRPRandomChangeService extends XFVRPOptBase implements XFRandomChangeService {
 
 	private int NBR_ACCEPTED_INVALIDS = 100;
