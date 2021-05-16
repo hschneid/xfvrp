@@ -36,15 +36,14 @@ public class FlexiImporter {
 	private final List<InternalDepotData> depotList = new ArrayList<>();
 	private final List<InternalCustomerData> customerList = new ArrayList<>();
 	private final List<InternalReplenishData> replenishList = new ArrayList<>();
-	private final List<InternalVehicleData> vehicleList = new ArrayList<>();
+	private final List<VehicleData> vehicleList = new ArrayList<>();
 
-	public final InternalVehicleData defaultVehicle = InternalVehicleData.createDefault();
-	public final InternalVehicleData invalidVehicle = InternalVehicleData.createInvalid();
+	public final VehicleData defaultVehicle = VehicleData.createDefault();
 
 	private InternalDepotData lastDepotData = null;
 	private InternalCustomerData lastCustomerData = null;
 	private InternalReplenishData lastReplenishData = null;
-	private InternalVehicleData lastVehicleData = null;
+	private VehicleData lastVehicleData = null;
 
 	/**
 	 * Standard constructor
@@ -182,7 +181,7 @@ public class FlexiImporter {
 			vehicleList.add(lastVehicleData);
 		}
 
-		lastVehicleData = new InternalVehicleData();
+		lastVehicleData = new VehicleData();
 
 		return lastVehicleData;
 	}
@@ -255,7 +254,7 @@ public class FlexiImporter {
 		Vehicle[] vehicles = new Vehicle[vehicleList.size()];
 
 		int idx = 0;
-		for (InternalVehicleData veh : vehicleList) {
+		for (VehicleData veh : vehicleList) {
 			vehicles[idx] = veh.createVehicle(idx);
 			idx++;
 		}

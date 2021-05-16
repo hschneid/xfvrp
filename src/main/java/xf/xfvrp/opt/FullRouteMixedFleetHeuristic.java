@@ -4,7 +4,7 @@ import util.collection.ListMap;
 import xf.xfvrp.RoutingDataBag;
 import xf.xfvrp.base.*;
 import xf.xfvrp.base.exception.XFVRPException;
-import xf.xfvrp.base.fleximport.InternalVehicleData;
+import xf.xfvrp.base.fleximport.InvalidVehicle;
 import xf.xfvrp.base.metric.InternalMetric;
 import xf.xfvrp.base.metric.Metric;
 import xf.xfvrp.base.metric.internal.AcceleratedMetricTransformator;
@@ -155,7 +155,7 @@ public class FullRouteMixedFleetHeuristic {
 
 		Solution giantRoute = buildGiantRouteForInvalidNodes(unplannedCustomers, nodes[0], statusManager);
 
-		Vehicle invalidVehicle = InternalVehicleData.createInvalid().createVehicle(-1);
+		Vehicle invalidVehicle = InvalidVehicle.createInvalid();
 
 		// Create solution with single routes for each invalid node
 		InternalMetric internalMetric = AcceleratedMetricTransformator.transform(metric, nodes, invalidVehicle);

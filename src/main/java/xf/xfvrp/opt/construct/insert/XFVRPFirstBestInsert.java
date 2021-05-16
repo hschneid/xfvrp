@@ -91,7 +91,7 @@ public class XFVRPFirstBestInsert extends XFVRPOptBase {
 	 */
 	private Node[] insertNodes(Node[] giantRoute, List<Node> customers) throws XFVRPException {
 		for (Node customer : customers) {
-			// Get all feasable insertion points on current giant route
+			// Get all feasible insertion points on current giant route
 			List<float[]> insertPoints = evaluate(giantRoute, customer);
 
 			// Sort for lowest insertion costs
@@ -127,7 +127,7 @@ public class XFVRPFirstBestInsert extends XFVRPOptBase {
 	 * This make sense, because this heuristic is strongly dependent from
 	 * ordered sequence of customer to insert. So a reinsert of first inserted
 	 * nodes may give the possibility to find a better insert position than
-	 * the insert without the other customers
+	 * the order insertion before
 	 * 
 	 * @param giantRoute Current solution of planned routes
 	 * @return New solution of planned routes

@@ -26,10 +26,22 @@ Additional requirements are the useage and maintainability of the API like
 - No free lunch: Good results with good performance.
 
 ## License
-This software is released under [MIT License] (https://opensource.org/licenses/MIT)
+This software is licenced under [MIT License] (https://opensource.org/licenses/MIT).
 
 ## Getting started
-Load xfvrp from github, append it to your project and use the API.
+* Add dependency to your project
+  * Maven: 
+    ```
+    <dependency>
+      <groupId>com.github.hschneid</groupId>
+      <artifactId>xfvrp</artifactId>
+      <version>11.3.0-RELEASE</version>
+    </dependency>
+    ```
+  * Gradle:
+    ```
+    implementation 'com.github.hschneid:xfvrp:11.3.0-RELEASE'
+    ```
 
 A simple example for a capacitated vehicle route planning:
 ``` 

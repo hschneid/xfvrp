@@ -32,14 +32,16 @@ public class XFVRPILS extends XFILS {
 	@Override
 	public Solution execute(Solution solution) throws XFVRPException {
 		optArr = new XFVRPOptBase[]{
-				new XFVRPSingleMove(),
+				new XFVRPSegmentMove()
+				/*new XFVRPSingleMove(),
 				new XFVRPSingleSwap(),
 				new XFVRPSegmentMove(),
-				new XFVRPSegmentExchange()
+				new XFVRPSegmentExchange()*/
 		};
 		
 		optPropArr = new double[] {
-				0.4, 0.3, 0.2, 0.1
+				1
+				//0.4, 0.3, 0.2, 0.1
 		};
 		
 		randomChangeService = new XFVRPRandomChangeService();

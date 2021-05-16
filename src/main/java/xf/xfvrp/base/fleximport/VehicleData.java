@@ -1,6 +1,7 @@
 package xf.xfvrp.base.fleximport;
 
 import xf.xfvrp.base.Vehicle;
+import xf.xfvrp.base.exception.XFVRPException;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -18,7 +19,8 @@ import java.util.List;
  * @author hschneid
  *
  */
-public abstract class VehicleData implements Serializable {
+public class VehicleData implements Serializable {
+
 	private static final long serialVersionUID = -7693160190888296907L;
 
 	/** Basic - parameter **/
@@ -38,6 +40,8 @@ public abstract class VehicleData implements Serializable {
 	protected float waitingTimeBetweenShifts = 0;
 
 	protected int priority = Vehicle.PRIORITY_UNDEF;
+
+	private static final String defaultVehicleName = "DEFAULT";
 
 	/**
 	 * @param name the name to set
@@ -155,5 +159,106 @@ public abstract class VehicleData implements Serializable {
 	 */
 	public void setPriority(int priority) {
 		this.priority = priority;
+	}
+
+	//////////////////////////////////////
+
+	/**
+	 * Creates a default vehicle object, which parameters mean no restriction.
+	 *
+	 * @return default vehicle
+	 */
+	public static VehicleData createDefault() {
+		return new VehicleData().setName(defaultVehicleName);
+	}
+
+	/**
+	 * @return the name
+	 */
+	String getName() {
+		return name;
+	}
+	/**
+	 * @return the capacity
+	 */
+	List<CompartmentCapacity> getCapacity() {
+		return capacityPerCompartment;
+	}
+	/**
+	 * @return the fixCost
+	 */
+	float getFixCost() {
+		return fixCost;
+	}
+	/**
+	 * @return the varCost
+	 */
+	float getVarCost() {
+		return varCost;
+	}
+	/**
+	 * @return the count
+	 */
+	int getCount() {
+		return count;
+	}
+	/**
+	 * @return the maxRouteDuration
+	 */
+	float getMaxRouteDuration() {
+		return maxRouteDuration;
+	}
+	/**
+	 * @return the maxStopCount
+	 */
+	int getMaxStopCount() {
+		return maxStopCount;
+	}
+
+	/**
+	 * @return the maximal allowed time to wait at a certain node
+	 */
+	float getMaxWaitingTime() {
+		return maxWaitingTime;
+	}
+
+	int getVehicleMetricId() {
+		return vehicleMetricId;
+	}
+	/**
+	 * @return the rank of the vehicle type, which vehicle type ordering should be planned
+	 */
+	int getPriority() {
+		return priority;
+	}
+
+	/**
+	 * @return Creates an internal Vehicle object with imported vehicle data
+	 */
+	Vehicle createVehicle(int idx) throws XFVRPException {
+		return new Vehicle(
+				idx,
+				name,
+				count,
+				capacityPerCompartment,
+				maxRouteDuration,
+				maxStopCount,
+				maxWaitingTime,
+				fixCost,
+				varCost,
+				vehicleMetricId,
+				maxDrivingTimePerShift,
+				waitingTimeBetweenShifts,
+				priority
+		);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return name;
 	}
 }
