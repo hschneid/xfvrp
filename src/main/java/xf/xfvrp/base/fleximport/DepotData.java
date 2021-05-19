@@ -30,6 +30,11 @@ import xf.xfvrp.base.SiteType;
  *
  */
 public class DepotData extends NodeData {
+	private int nbrOfCompartments;
+
+	public DepotData(int nbrOfCompartments) {
+		this.nbrOfCompartments = nbrOfCompartments;
+	}
 
 	/**
 	 * @param externID the externID to set
@@ -112,7 +117,7 @@ public class DepotData extends NodeData {
 				xlong,
 				ylat,
 				geoId,
-				new float[]{0,0,0},
+				new float[nbrOfCompartments],
 				timeWindowList.toArray(new float[0][]),
 				0,
 				0,

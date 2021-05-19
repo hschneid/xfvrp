@@ -48,7 +48,7 @@ public class ReportSummary {
 		data[DISTANCE] += routeSummary.getDistance();
 		data[NBR_VEHICLES]++;
 		data[DELAY] += routeSummary.getDelay();
-		data[OVERLOAD] += routeSummary.getOverloads()[0];
+		data[OVERLOAD] += 0; //TODO: Think about this. routeSummary.getOverloads() is only possible for single compartment
 		data[COST] += routeSummary.getCost();
 		data[DURATION] += routeSummary.getDuration();
 		data[WAITING] += routeSummary.getWaitingTime();
@@ -60,10 +60,12 @@ public class ReportSummary {
 		cost += routeSummary.getCost();
 		duration += routeSummary.getDuration();
 
-		if(overloads == null && routeSummary.getOverloads() != null) {
-			overloads = new float[routeSummary.getOverloads().length];
+		int olLength = routeSummary.getOverloads().length;
+		if(overloads == null && routeSummary.getOverloads() != null)
+			overloads = new float[olLength];
+		if(overloads != null && overloads.length == olLength) {
+			ArrayUtil.add(overloads, routeSummary.getOverloads(), overloads);
 		}
-		ArrayUtil.add(overloads, routeSummary.getOverloads(), overloads);
 	}
 
 	public float getDistance(Vehicle veh) {

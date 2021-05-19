@@ -13,6 +13,7 @@ public class InvalidVehicle {
      * @return default vehicle for invalid routes
      */
     public static Vehicle createInvalid() throws XFVRPException {
-        return new VehicleData().setName(invalidVehicleName).createVehicle(-1);
+        VehicleData vehicleData = new VehicleData();
+        return vehicleData.setName(invalidVehicleName).createVehicle(-1);
     }
 }
