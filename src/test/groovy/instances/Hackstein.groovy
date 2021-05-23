@@ -13,7 +13,6 @@ import xf.xfvrp.report.RouteReport
 
 class Hackstein extends Specification {
 
-    @Ignore
     def "test"() {
         def xfvrp = build(new File("./src/test/resources/hackstein/testinstance_01.json"))
         when:
@@ -26,6 +25,8 @@ class Hackstein extends Specification {
             .filter(f -> f.getLoadType() == LoadType.DELIVERY)
             .mapToDouble(m -> (double)m.getAmounts()[0])
             .sum()
+
+            assert s < 33.0
 
             println s
         }
@@ -64,9 +65,10 @@ class Hackstein extends Specification {
                     .setLoadType(LoadType.DELIVERY)
         }
 
+        xfvrp.addOptType(XFVRPOptType.SAVINGS)
         xfvrp.addOptType(XFVRPOptType.RELOCATE)
-        xfvrp.addOptType(XFVRPOptType.PATH_RELOCATE)
-        xfvrp.addOptType(XFVRPOptType.PATH_EXCHANGE)
+        //xfvrp.addOptType(XFVRPOptType.PATH_RELOCATE)
+        //xfvrp.addOptType(XFVRPOptType.PATH_EXCHANGE)
 
         xfvrp.setMetric(new EucledianMetric())
 
