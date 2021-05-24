@@ -45,6 +45,8 @@ public class FlexiImporter {
 	private ReplenishData lastReplenishData = null;
 	private VehicleData lastVehicleData = null;
 
+	private int nbrOfCompartments;
+
 	/**
 	 * Standard constructor
 	 * 
@@ -125,7 +127,7 @@ public class FlexiImporter {
 		if(lastDepotData != null)
 			depotList.add(lastDepotData);
 
-		lastDepotData = new DepotData();
+		lastDepotData = new DepotData(nbrOfCompartments);
 
 		return lastDepotData;
 	}
@@ -255,10 +257,14 @@ public class FlexiImporter {
 
 		int idx = 0;
 		for (VehicleData veh : vehicleList) {
-			vehicles[idx] = veh.createVehicle(idx);
+			vehicles[idx] = veh.createVehicle(idx, nbrOfCompartments);
 			idx++;
 		}
 
 		return vehicles;
+	}
+
+	public void setNbrOfCompartments(int nbrOfCompartments) {
+		this.nbrOfCompartments = nbrOfCompartments;
 	}
 }

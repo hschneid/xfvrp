@@ -182,4 +182,8 @@ public class XFVRP_Data extends XFVRP_Base {
 		// Den Parameter des default-Fahrzeugs anpassen
 		importer.defaultVehicle.setMaxStopCount(maxNbrOfStops);
 	}
+
+	public void setNbrOfCompartments(int c){
+		importer.setNbrOfCompartments(c);
+	}
 }

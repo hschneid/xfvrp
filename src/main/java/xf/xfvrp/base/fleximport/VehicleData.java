@@ -23,10 +23,14 @@ public class VehicleData implements Serializable {
 
 	private static final long serialVersionUID = -7693160190888296907L;
 
+	public static int expectedCapacityPerCompartmentSize = -1;
+
 	/** Basic - parameter **/
 	protected String name = "";
 	// Capacity per Compartment and Load Type - Default 3 compartments with max capacity
-	protected List<CompartmentCapacity> capacityPerCompartment = Arrays.asList(new CompartmentCapacity(), new CompartmentCapacity(), new CompartmentCapacity());
+	protected List<CompartmentCapacity> capacityPerCompartment =
+			Arrays.asList(new CompartmentCapacity(), new CompartmentCapacity(), new CompartmentCapacity());
+
 	protected float fixCost = 0;
 	protected float varCost = 1;
 	protected int count = Integer.MAX_VALUE;
@@ -59,7 +63,7 @@ public class VehicleData implements Serializable {
 		for (float simpleCapacityPerCompartment : capacity) {
 			this.capacityPerCompartment.add(new CompartmentCapacity(simpleCapacityPerCompartment));
 		}
-
+		if (expectedCapacityPerCompartmentSize < 0) expectedCapacityPerCompartmentSize = capacity.length;
 		return this;
 	}
 
@@ -235,28 +239,27 @@ public class VehicleData implements Serializable {
 	/**
 	 * @return Creates an internal Vehicle object with imported vehicle data
 	 */
+	Vehicle createVehicle(int idx, int nbrOfCompartments) throws XFVRPException {
+		expectedCapacityPerCompartmentSize = nbrOfCompartments;
+		return createVehicle(idx);
+	}
+
+	/**
+	 * @return Creates an internal Vehicle object with imported vehicle data
+	 */
 	Vehicle createVehicle(int idx) throws XFVRPException {
+			capacityPerCompartment = new ArrayList<>();
+			for (int i = 0; i < expectedCapacityPerCompartmentSize; i++)
+				capacityPerCompartment.add(new CompartmentCapacity());
 		return new Vehicle(
-				idx,
-				name,
-				count,
+				idx, name, count,
 				capacityPerCompartment,
-				maxRouteDuration,
-				maxStopCount,
-				maxWaitingTime,
-				fixCost,
-				varCost,
-				vehicleMetricId,
-				maxDrivingTimePerShift,
-				waitingTimeBetweenShifts,
-				priority
+				maxRouteDuration, maxStopCount, maxWaitingTime,
+				fixCost, varCost,
+				vehicleMetricId, maxDrivingTimePerShift, waitingTimeBetweenShifts, priority
 		);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
 	@Override
 	public String toString() {
 		return name;

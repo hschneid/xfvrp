@@ -31,7 +31,6 @@ public class ReportSummary {
 
 	public void add(RouteReport t) {
 		RouteReportSummary routeSummary = t.getSummary();
-
 		addPerVehicleType(t, routeSummary);
 		addTotal(routeSummary);
 	}
@@ -57,7 +56,6 @@ public class ReportSummary {
 		if(overloads == null && routeSummary.getOverloads() != null) {
 			overloads = new float[routeSummary.getOverloads().length];
 		}
-		ArrayUtil.add(overloads, routeSummary.getOverloads(), overloads);
 	}
 
 	public float getDistance(Vehicle veh) {

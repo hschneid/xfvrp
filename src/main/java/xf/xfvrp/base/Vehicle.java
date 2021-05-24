@@ -55,23 +55,26 @@ public class Vehicle {
 				   float maxRouteDuration, int maxStopCount, float maxWaitingTime, float fixCost, float varCost, int vehicleMetricId,
 				   float maxDrivingTimePerShift, float waitingTimeBetweenShifts, int priority
 	) throws XFVRPException {
-		float sumCapacity = 0;
-		for(int i = capacity.size() - 1; i >= 0; i--)
-			for(int j = 0; j < CompartmentLoadType.NBR_OF_LOAD_TYPES; j++)
-				sumCapacity += capacity.get(i).asArray()[j];
-		if(sumCapacity <= 0)
-			throw new XFVRPException(XFVRPExceptionType.ILLEGAL_INPUT, "Parameter for capacities must be greater than zero.");
 
-		if(maxRouteDuration <= 0)
-			throw new XFVRPException(XFVRPExceptionType.ILLEGAL_INPUT, "Parameter for maxRouteDuration must be greater than zero.");
-		if(maxStopCount <= 0)
-			throw new XFVRPException(XFVRPExceptionType.ILLEGAL_INPUT, "Parameter for maxStopCount must be greater than zero.");
-		if(nbrOfAvailableVehicles <= 0)
-			throw new XFVRPException(XFVRPExceptionType.ILLEGAL_INPUT, "Parameter for nbrOfAvailableVehicles must be greater than zero.");
-		if(maxWaitingTime < 0)
-			throw new XFVRPException(XFVRPExceptionType.ILLEGAL_INPUT, "Parameter for maxWaitingTime must be greater or equal than zero.");
-		if(vehicleMetricId < 0)
-			throw new XFVRPException(XFVRPExceptionType.ILLEGAL_INPUT, "Parameter for vehicleMetricId must be greater or equal than zero.");
+		if (idx > -1) {
+			float sumCapacity = 0;
+			for (int i = capacity.size() - 1; i >= 0; i--)
+				for (int j = 0; j < CompartmentLoadType.NBR_OF_LOAD_TYPES; j++)
+					sumCapacity += capacity.get(i).asArray()[j];
+			if (sumCapacity <= 0)
+				throw new XFVRPException(XFVRPExceptionType.ILLEGAL_INPUT, "Parameter for capacities must be greater than zero.");
+
+			if (maxRouteDuration <= 0)
+				throw new XFVRPException(XFVRPExceptionType.ILLEGAL_INPUT, "Parameter for maxRouteDuration must be greater than zero.");
+			if (maxStopCount <= 0)
+				throw new XFVRPException(XFVRPExceptionType.ILLEGAL_INPUT, "Parameter for maxStopCount must be greater than zero.");
+			if (nbrOfAvailableVehicles <= 0)
+				throw new XFVRPException(XFVRPExceptionType.ILLEGAL_INPUT, "Parameter for nbrOfAvailableVehicles must be greater than zero.");
+			if (maxWaitingTime < 0)
+				throw new XFVRPException(XFVRPExceptionType.ILLEGAL_INPUT, "Parameter for maxWaitingTime must be greater or equal than zero.");
+			if (vehicleMetricId < 0)
+				throw new XFVRPException(XFVRPExceptionType.ILLEGAL_INPUT, "Parameter for vehicleMetricId must be greater or equal than zero.");
+		}
 
 		this.idx = idx;
 		this.name = name;
