@@ -19,15 +19,6 @@ import java.util.Map;
  */
 public class ReportSummary {
 
-	private static final int DISTANCE = 0;
-	private static final int NBR_VEHICLES = 1;
-	private static final int DELAY = 2;
-	private static final int OVERLOAD = 3;
-	private static final int COST = 4;
-	private static final int DURATION = 5;
-	private static final int WAITING = 6;
-	private static final int LENGTH = 7;
-	
 	private float distance = 0;
 	private float duration = 0;
 	private float nbrOfUsedVehicles = 0;
@@ -36,40 +27,39 @@ public class ReportSummary {
 	private float[] overloads;
 	private float cost = 0;
 	
-	private final Map<Vehicle, float[]> dataMap = new HashMap<>();
+	private final Map<Vehicle, RouteReportSummary> dataMap = new HashMap<>();
 
 	public void add(RouteReport t) {
-		if(!dataMap.containsKey(t.getVehicle()))
-			dataMap.put(t.getVehicle(), new float[LENGTH]);
-		float[] data = dataMap.get(t.getVehicle());
-		
 		RouteReportSummary routeSummary = t.getSummary();
-		
-		data[DISTANCE] += routeSummary.getDistance();
-		data[NBR_VEHICLES]++;
-		data[DELAY] += routeSummary.getDelay();
-		data[OVERLOAD] += 0; //TODO: Think about this. routeSummary.getOverloads() is only possible for single compartment
-		data[COST] += routeSummary.getCost();
-		data[DURATION] += routeSummary.getDuration();
-		data[WAITING] += routeSummary.getWaitingTime();
-		
+		addPerVehicleType(t, routeSummary);
+		addTotal(routeSummary);
+	}
+
+	private void addTotal(RouteReportSummary routeSummary) {
 		distance += routeSummary.getDistance();
 		nbrOfUsedVehicles++;
 		delay += routeSummary.getDelay();
 		waitingTime += routeSummary.getWaitingTime();
 		cost += routeSummary.getCost();
 		duration += routeSummary.getDuration();
+		addOverloads(routeSummary);
+	}
 
-		int olLength = routeSummary.getOverloads().length;
-		if(overloads == null && routeSummary.getOverloads() != null)
-			overloads = new float[olLength];
-		if(overloads != null && overloads.length == olLength) {
-			ArrayUtil.add(overloads, routeSummary.getOverloads(), overloads);
+	private void addPerVehicleType(RouteReport t, RouteReportSummary routeSummary) {
+		if(!dataMap.containsKey(t.getVehicle()))
+			dataMap.put(t.getVehicle(), new RouteReportSummary(t.getVehicle()));
+		RouteReportSummary data = dataMap.get(t.getVehicle());
+		data.add(routeSummary);
+	}
+
+	private void addOverloads(RouteReportSummary routeSummary) {
+		if(overloads == null && routeSummary.getOverloads() != null) {
+			overloads = new float[routeSummary.getOverloads().length];
 		}
 	}
 
 	public float getDistance(Vehicle veh) {
-		return dataMap.get(veh)[DISTANCE];
+		return dataMap.get(veh).getDistance();
 	}
 
 	public float getDistance() {
@@ -77,7 +67,7 @@ public class ReportSummary {
 	}
 
 	public float getNbrOfUsedVehicles(Vehicle veh) {
-		return dataMap.get(veh)[NBR_VEHICLES];
+		return dataMap.get(veh).getNbrOfRoutes();
 	}
 
 	public float getNbrOfUsedVehicles() {
@@ -85,7 +75,7 @@ public class ReportSummary {
 	}
 
 	public float getDelay(Vehicle veh) {
-		return dataMap.get(veh)[DELAY];
+		return dataMap.get(veh).getDelay();
 	}
 
 	public float getDelay() {
@@ -93,7 +83,11 @@ public class ReportSummary {
 	}
 
 	public float getOverload(Vehicle veh) {
-		return dataMap.get(veh)[OVERLOAD];
+		return dataMap.get(veh).getOverloads()[0];
+	}
+
+	public float[] getOverloads(Vehicle veh) {
+		return dataMap.get(veh).getOverloads();
 	}
 
 	public float[] getOverloads() {
@@ -101,7 +95,7 @@ public class ReportSummary {
 	}
 
 	public float getCost(Vehicle veh) {
-		return dataMap.get(veh)[COST];
+		return dataMap.get(veh).getCost();
 	}
 
 	public float getCost() {
@@ -113,7 +107,7 @@ public class ReportSummary {
 	}
 
 	public float getDuration(Vehicle veh) {
-		return dataMap.get(veh)[DURATION];
+		return dataMap.get(veh).getDuration();
 	}
 
 	public float getWaitingTime() {
@@ -121,6 +115,6 @@ public class ReportSummary {
 	}
 
 	public float getWaitingTime(Vehicle veh) {
-		return dataMap.get(veh)[WAITING];
+		return dataMap.get(veh).getWaitingTime();
 	}
 }

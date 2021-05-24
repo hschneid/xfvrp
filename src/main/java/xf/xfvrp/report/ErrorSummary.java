@@ -60,7 +60,7 @@ public class ErrorSummary {
 	}
 	
 	/**
-	 * If multiple report are joined, the ErrorSummary objects must be joined too.
+	 * If multiple reports are joined, the ErrorSummary objects must be joined too.
 	 * 
 	 * This is done in this method. The given ErrorSummary will be added to this object.
 	 * 

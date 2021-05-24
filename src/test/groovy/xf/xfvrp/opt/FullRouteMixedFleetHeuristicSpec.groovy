@@ -31,7 +31,6 @@ class FullRouteMixedFleetHeuristicSpec extends Specification {
 		routeReport.getSummary().pickups = [555]
 		routeReport.getSummary().deliveries = [666]
 		routeReport.getSummary().delay = 0
-
 	}
 
 	def "Get unused nodes - normal"() {

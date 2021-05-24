@@ -11,7 +11,7 @@ import xf.xfvrp.opt.Solution
 import xf.xfvrp.opt.XFVRPSolution
 import xf.xfvrp.report.build.ReportBuilder
 
-class ReportBuilderCompartmentCapacitySpec extends Specification {
+class ReportBuilderExtendedCompartmentCapacitySpec extends Specification {
 
 	def service = new ReportBuilder()
 
@@ -28,7 +28,7 @@ class ReportBuilderCompartmentCapacitySpec extends Specification {
 
 	def metric = new EucledianMetric()
 
-	def "Valid - 3 compartments and load types are all equal"() {
+	def "Valid and invalid nodes with same number of compartments in vehicle and nodes"() {
 		def v = new TestVehicle(name: "V1",
 				compartmentCapacity: [
 						new CompartmentCapacity(6),
