@@ -29,7 +29,7 @@ public class Vehicle {
 	public final int idx;
 	public final String name;
 	// Capacity per compartement and load type (PICKUP, DELIVERY, MIXED)
-	public final float[] capacity;
+	public float[] capacity;
 	public final float fixCost;
 	public final float varCost;
 	public final int nbrOfAvailableVehicles;

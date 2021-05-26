@@ -21,7 +21,7 @@ public class ReportSummary {
 
 	private float distance = 0;
 	private float duration = 0;
-	private float nbrOfUsedVehicles = 0;
+	private int nbrOfUsedVehicles = 0;
 	private float delay = 0;
 	private float waitingTime = 0;
 	private float[] overloads;
@@ -68,11 +68,11 @@ public class ReportSummary {
 		return distance;
 	}
 
-	public float getNbrOfUsedVehicles(Vehicle veh) {
+	public int getNbrOfUsedVehicles(Vehicle veh) {
 		return dataMap.get(veh).getNbrOfRoutes();
 	}
 
-	public float getNbrOfUsedVehicles() {
+	public int getNbrOfUsedVehicles() {
 		return nbrOfUsedVehicles;
 	}
 

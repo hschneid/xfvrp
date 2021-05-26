@@ -62,7 +62,8 @@ As a general purpose solver, XFVRP is not fully compatable with single problem s
 ## Change log
 
 ### 11.4.1
-- Fixed in report the summary per vehicle type, that it considers multi compartments as well.
+- Fixed in report the summary per vehicle type, so that it considers multi compartments correctly as well.
+- Fixed error, when customer demands and vehicle capacity have a different number of compartments
 
 ### 11.4.0
 - Add more multi-compartment constraints

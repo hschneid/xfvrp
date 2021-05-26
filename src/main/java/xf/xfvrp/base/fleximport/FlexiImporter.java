@@ -83,6 +83,7 @@ public class FlexiImporter {
 		
 		// Convert external node data to internal node data
 		// Indexing, replacing, transforming
+		CompartmentInitializer.execute(nodes, vehicles);
 		BlockedVehicleListConverter.convert(nodes, customerList, vehicles, statusManager);
 		BlockNameConverter.convert(nodes, customerList);
 		BlockPositionConverter.convert(nodes, customerList);

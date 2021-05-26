@@ -155,7 +155,7 @@ public class FullRouteMixedFleetHeuristic {
 
 		Solution giantRoute = buildGiantRouteForInvalidNodes(unplannedCustomers, nodes[0], statusManager);
 
-		Vehicle invalidVehicle = InvalidVehicle.createInvalid();
+		Vehicle invalidVehicle = InvalidVehicle.createInvalid(unplannedCustomers.get(0).getDemand().length);
 
 		// Create solution with single routes for each invalid node
 		InternalMetric internalMetric = AcceleratedMetricTransformator.transform(metric, nodes, invalidVehicle);

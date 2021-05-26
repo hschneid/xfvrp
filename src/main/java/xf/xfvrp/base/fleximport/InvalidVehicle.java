@@ -3,6 +3,8 @@ package xf.xfvrp.base.fleximport;
 import xf.xfvrp.base.Vehicle;
 import xf.xfvrp.base.exception.XFVRPException;
 
+import java.util.Arrays;
+
 public class InvalidVehicle {
 
     public static final String invalidVehicleName = "INVALID";
@@ -12,7 +14,13 @@ public class InvalidVehicle {
      *
      * @return default vehicle for invalid routes
      */
-    public static Vehicle createInvalid() throws XFVRPException {
-        return new VehicleData().setName(invalidVehicleName).createVehicle(-1);
+    public static Vehicle createInvalid(int nbrOfCompartments) throws XFVRPException {
+        float[] capacities = new float[nbrOfCompartments];
+        Arrays.fill(capacities, Float.MAX_VALUE);
+
+        return new VehicleData()
+                .setName(invalidVehicleName)
+                .setCapacity(capacities)
+                .createVehicle(-1);
     }
 }
