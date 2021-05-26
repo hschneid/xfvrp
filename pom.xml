@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.hschneid</groupId>
     <artifactId>xfvrp</artifactId>
-    <version>11.4.1-IML-RELEASE</version>
+    <version>11.4.2-IML-RELEASE</version>
     <name>XFVRP</name>
     <description>eXtreme Fast Vehicle Routing Problem with F-IML modification</description>
 
@@ -57,7 +57,7 @@
             <url>${nexus320-snapshots-push-url}</url>
         </snapshotRepository>
     </distributionManagement>
-
+    
     <build>
         <plugins>
             <plugin>

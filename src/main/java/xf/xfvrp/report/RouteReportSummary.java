@@ -130,8 +130,8 @@ public class RouteReportSummary {
 				pickups[compartment] += e.getAmounts()[compartment];
 				pickupLoads[compartment] += e.getAmounts()[compartment];
 			}
-
-			commonLoads[compartment] += e.getAmounts()[compartment];
+			if (e.getAmounts().length == commonLoads.length)
+				commonLoads[compartment] += e.getAmounts()[compartment];
 		}
 	}
 
