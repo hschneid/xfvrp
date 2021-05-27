@@ -1,5 +1,6 @@
 package xf.xfvrp.report;
 
+import util.ArrayUtil;
 import xf.xfvrp.base.CompartmentLoadType;
 import xf.xfvrp.base.LoadType;
 import xf.xfvrp.base.SiteType;
@@ -27,6 +28,7 @@ public class RouteReportSummary {
 
 	private Vehicle vehicle;
 
+	private int nbrOfRoutes = 1;
 	private int nbrOfEvents = 0;
 	private int nbrOfStops = 0;
 	private float distance = 0;
@@ -57,7 +59,26 @@ public class RouteReportSummary {
 	}
 
 	/**
-	 * Adds a event to the summary object.
+	 * This method is used to aggregate the ReportSummary per vehicle type.
+	 */
+	public void add(RouteReportSummary addReport) {
+		this.nbrOfEvents += addReport.nbrOfEvents;
+		this.nbrOfStops += addReport.nbrOfStops;
+		this.distance += addReport.distance;
+		this.duration += addReport.duration;
+		this.waitingTime += addReport.waitingTime;
+		this.delay += addReport.delay;
+		this.nbrOfRoutes += addReport.nbrOfRoutes;
+		ArrayUtil.add(this.pickups, addReport.pickups, this.pickups);
+		ArrayUtil.add(this.deliveries, addReport.deliveries, this.deliveries);
+		ArrayUtil.add(this.pickupLoads, addReport.pickupLoads, this.pickupLoads);
+		ArrayUtil.add(this.deliveryLoads, addReport.deliveryLoads, this.deliveryLoads);
+		ArrayUtil.add(this.commonLoads, addReport.commonLoads, this.commonLoads);
+		ArrayUtil.add(this.overloads, addReport.overloads, this.overloads);
+	}
+
+	/**
+	 * Adds an event to the summary object.
 	 * <p>
 	 * The aggregation of KPIs is done in this method.
 	 */
@@ -196,5 +217,9 @@ public class RouteReportSummary {
 
 	public void setDelay(float delay) {
 		this.delay = delay;
+	}
+
+	public int getNbrOfRoutes() {
+		return nbrOfRoutes;
 	}
 }

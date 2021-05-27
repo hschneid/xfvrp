@@ -49,19 +49,12 @@ public class Report {
 		this.model = model;
 	}
 	
-	/**
-	 * 
-	 * @return
-	 */
 	public Set<Vehicle> getVehicles() {
 		return vehicleSet;
 	}
 	
 	/* Add-Functions */
 
-	/**
-	 * 
-	 */
 	public void add(RouteReport route) {
 		if(route.getSummary().getNbrOfEvents() > 0) {
 			summary.add(route);
@@ -72,32 +65,21 @@ public class Report {
 
 	/* GetFunctions-Functions */
 
-	/**
-	 * 
-	 */
 	public List<RouteReport> getRoutes() {
 		return reportList;
 	}
 
-	/**
-	 * 
-	 * @return
-	 */
 	public ReportSummary getSummary() {
 		return summary;
 	}
 	
-	/**
-	 * Returns the used planning model for obtaining this solution report.
-	 * @return
-	 */
 	public XFVRPModel getModel() {
 		return model;
 	}
 	
 	/**
 	 * Import the route reports of another report object into this report.
-	 * 
+	 *
 	 * @param rep Another report object
 	 */
 	public void importReport(Report rep) {
@@ -107,10 +89,6 @@ public class Report {
 		errors.importErrors(rep.getErrors());
 	}
 	
-	/**
-	 * 
-	 * @return
-	 */
 	public ErrorSummary getErrors() {
 		return errors;
 	}

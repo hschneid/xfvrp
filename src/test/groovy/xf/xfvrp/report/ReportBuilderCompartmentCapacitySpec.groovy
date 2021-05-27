@@ -107,6 +107,13 @@ class ReportBuilderCompartmentCapacitySpec extends Specification {
 		result.getSummary().getOverloads()[0] == 3
 		result.getSummary().getOverloads()[1] == 0
 		result.getSummary().getOverloads()[2] == 3
+		result.getSummary().getOverload(v) == 3
+		result.getSummary().getOverloads(v)[0] == 3
+		result.getSummary().getOverloads(v)[1] == 0
+		result.getSummary().getOverloads(v)[2] == 3
+		result.getRoutes()[0].getSummary().getOverloads()[0] == 3
+		result.getRoutes()[0].getSummary().getOverloads()[1] == 0
+		result.getRoutes()[0].getSummary().getOverloads()[2] == 3
 	}
 
 	def "Valid - 3 compartments, only deliveries, only capacity for delivery needs to be considered"() {
