@@ -8,6 +8,7 @@ import xf.xfvrp.base.exception.XFVRPException;
 import xf.xfvrp.base.exception.XFVRPExceptionType;
 import xf.xfvrp.base.preset.BlockNameConverter;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -101,6 +102,6 @@ public class VRPPreCheckService  {
 
 	private List<Node> getPlannedNodes(Node[] nodes) {
 		// Already planned customers (true = planned, false = unplanned, DEPOTS/REPLENISH always false)
-		return Arrays.asList(nodes);		
+		return new ArrayList<>(Arrays.asList(nodes));
 	}
 }
