@@ -11,7 +11,6 @@ import xf.xfvrp.base.exception.XFVRPException;
 import xf.xfvrp.base.metric.EucledianMetric;
 import xf.xfvrp.base.monitor.DefaultStatusMonitor;
 import xf.xfvrp.opt.XFVRPOptType;
-import xf.xfvrp.opt.init.precheck.PreCheckException;
 import xf.xfvrp.report.Report;
 
 import javax.xml.bind.JAXBException;
@@ -74,7 +73,7 @@ public class XFVRPInstanceBridge {
 		.setYlat(node.getCy().floatValue());
 	}
 
-	private void opt(XFVRP vrp) throws PreCheckException, XFVRPException {
+	private void opt(XFVRP vrp) throws XFVRPException {
 		//vrp.addOptType(XFVRPOptType.CONST);
 		/*vrp.addOptType(XFVRPOptType.RELOCATE);
 		vrp.addOptType(XFVRPOptType.SWAP);
@@ -114,7 +113,7 @@ public class XFVRPInstanceBridge {
 			XFVRPInstanceBridge i = new XFVRPInstanceBridge();
 			XFVRP vrp = i.build("./src/test/resources/CMT01.xml");
 			i.opt(vrp);
-		} catch (JAXBException | PreCheckException | XFVRPException e) {
+		} catch (JAXBException | XFVRPException e) {
 			e.printStackTrace();
 		}
 	}

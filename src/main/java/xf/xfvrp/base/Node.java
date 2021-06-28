@@ -366,6 +366,10 @@ public class Node implements Cloneable {
 		this.demand[0] = val;
 	}
 
+	public void setDemands(float[] demands) {
+		this.demand = demands;
+	}
+
 	public boolean[] isCompartmentReplenished() {
 		return isCompartmentReplenished;
 	}

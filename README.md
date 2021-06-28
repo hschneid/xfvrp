@@ -1,6 +1,6 @@
 [![MIT License](https://img.shields.io/apm/l/atomic-design-ui.svg?)](https://github.com/tterb/atomic-design-ui/blob/master/LICENSEs)
 [![BCH compliance](https://bettercodehub.com/edge/badge/hschneid/xfvrp?branch=master)](https://bettercodehub.com/)
-![alt text](https://img.shields.io/static/v1?label=version&message=11.4.1&color=-)
+![alt text](https://img.shields.io/static/v1?label=version&message=11.4.3&color=-)
 
 xfvrp
 ======
@@ -61,8 +61,15 @@ As a general purpose solver, XFVRP is not fully compatable with single problem s
 
 ## Change log
 
+### 11.4.3
+- Fixed error when checking vehicle types in blocks
+
+### 11.4.2
+- Fixed irregular behaviour, when node.externId is not unique. Precheck method checks this now. 
+
 ### 11.4.1
-- Fixed in report the summary per vehicle type, that it considers multi compartments as well.
+- Fixed in report the summary per vehicle type, so that it considers multi compartments correctly as well.
+- Fixed error, when customer demands and vehicle capacity have a different number of compartments
 
 ### 11.4.0
 - Add more multi-compartment constraints

@@ -4,9 +4,11 @@ import xf.xfvrp.base.InvalidReason;
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.SiteType;
 import xf.xfvrp.base.Vehicle;
+import xf.xfvrp.base.exception.XFVRPException;
+import xf.xfvrp.base.exception.XFVRPExceptionType;
 import xf.xfvrp.base.preset.BlockNameConverter;
-import xf.xfvrp.opt.init.precheck.PreCheckException;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -45,7 +47,7 @@ public class VRPPreCheckService  {
 	/**
 	 * Structural checks of the nodes without model 
 	 */
-	public Node[] precheck(Node[] nodes, Vehicle vehicle) throws PreCheckException {
+	public Node[] precheck(Node[] nodes, Vehicle vehicle) throws XFVRPException {
 		checkFeasibility(nodes);
 
 		// Fetch block informations
@@ -56,14 +58,12 @@ public class VRPPreCheckService  {
 		// Check if customer is allowed for this vehicle type
 		checkVehicleType(nodes, vehicle, blocks, plannedNodes);
 
-		// TODO: PDP shipments
-
 		return plannedNodes.toArray(new Node[0]);
 	}
 
-	private void checkFeasibility(Node[] nodes) throws PreCheckException {
+	private void checkFeasibility(Node[] nodes) throws XFVRPException {
 		if(nodes.length == 0) {
-			throw new PreCheckException("No nodes found.");
+			throw new XFVRPException(XFVRPExceptionType.ILLEGAL_INPUT, "No nodes found.");
 		}
 	}
 
@@ -102,6 +102,6 @@ public class VRPPreCheckService  {
 
 	private List<Node> getPlannedNodes(Node[] nodes) {
 		// Already planned customers (true = planned, false = unplanned, DEPOTS/REPLENISH always false)
-		return Arrays.asList(nodes);		
+		return new ArrayList<>(Arrays.asList(nodes));
 	}
 }
