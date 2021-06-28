@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.hschneid</groupId>
     <artifactId>xfvrp</artifactId>
-    <version>11.4.3-IML-RELEASE</version>
+    <version>11.4.4-IML-SNAPSHOT</version>
     <name>XFVRP</name>
     <description>eXtreme Fast Vehicle Routing Problem with F-IML modification</description>
 
@@ -46,19 +46,38 @@
             <version>1.1</version>
         </dependency>
         <dependency>
+            <groupId>org.codehaus.groovy</groupId>
+            <artifactId>groovy-all</artifactId>
+            <version>3.0.8</version>
+            <type>pom</type>
+        </dependency>
+        <dependency>
             <groupId>org.spockframework</groupId>
             <artifactId>spock-core</artifactId>
             <version>2.0-groovy-3.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.12.3</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.13.1</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
     <distributionManagement>
         <repository>
             <id>nexus320-releases</id>
+            <!--suppress UnresolvedMavenProperty -->
             <url>${nexus320-releases-push-url}</url>
         </repository>
         <snapshotRepository>
             <id>nexus320-snapshots</id>
+            <!--suppress UnresolvedMavenProperty -->
             <url>${nexus320-snapshots-push-url}</url>
         </snapshotRepository>
     </distributionManagement>

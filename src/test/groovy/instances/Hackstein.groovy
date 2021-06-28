@@ -1,12 +1,8 @@
 package instances
 
 import cern.colt.list.FloatArrayList
-import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
-
-import spock.lang.Ignore
 import spock.lang.Specification
-
 import xf.xfvrp.XFVRP
 import xf.xfvrp.base.LoadType
 import xf.xfvrp.base.metric.EucledianMetric
@@ -15,12 +11,10 @@ import xf.xfvrp.opt.XFVRPOptType
 import xf.xfvrp.report.RouteReport
 
 import java.util.concurrent.atomic.AtomicInteger
-import java.util.stream.DoubleStream
 
 class Hackstein extends Specification {
-
     def "test"() {
-        def xfvrp = build(new File("./src/test/resources/hackstein/faulty_instance_vrp.json"))
+        def xfvrp = build(new File("./src/test/resources/hackstein/with_vehicle_restrictions.json"))
         when:
         xfvrp.executeRoutePlanning()
         def rep = xfvrp.getReport()
@@ -31,7 +25,6 @@ class Hackstein extends Specification {
             .filter(f -> f.getLoadType() == LoadType.DELIVERY)
             .mapToDouble(m -> (double)m.getAmounts()[0])
             .sum()
-
             //assert s <= 33.0
             println s
         }
@@ -76,16 +69,19 @@ class Hackstein extends Specification {
         AtomicInteger counter = new AtomicInteger();
         customers.forEach(customer -> {
             Collection<Double> dblDemand = customer.get("amount");
+            Collection<String> vehiclesAllowed = customer.get("vehicles");
             FloatArrayList fltDemand = new FloatArrayList();
             dblDemand.forEach(d -> fltDemand.add((float)d));
             fltDemand.trimToSize();
-            xfvrp.addCustomer()
+            var cust = xfvrp.addCustomer()
                     .setExternID(counter.getAndIncrement()+"")
                     .setXlong((float)customer.get("lng"))
                     .setYlat((float)customer.get("lat"))
                     .setDemand(fltDemand.elements())
                     .setServiceTime((float)customer.get("serviceTime"))
                     .setLoadType(LoadType.DELIVERY)
+            if (vehiclesAllowed != null && vehiclesAllowed.size() > 0)
+                cust.setPresetBlockVehicleList(new HashSet<String>(vehiclesAllowed));
         })
         println "Added " + counter + " demands."
 
