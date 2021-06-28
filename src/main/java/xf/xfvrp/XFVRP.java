@@ -16,6 +16,7 @@ import xf.xfvrp.report.Report;
 import xf.xfvrp.report.build.ReportBuilder;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /** 
@@ -75,26 +76,13 @@ public class XFVRP extends XFVRP_Parameter {
 			statusManager.fireMessage(StatusCode.ABORT, "No vehicle information are present.");
 			throw new XFVRPException(XFVRPExceptionType.ILLEGAL_INPUT, "No vehicle information are present.");
 		}
+		
+		Collection<XFVRPSolution> solutions = new FullRouteMixedFleetHeuristic().execute(
+				nodes, vehicles, (dataBag) -> executeRoutePlanning(dataBag), metric, parameter, statusManager);
+		
+		vehicleSolutionList.addAll(solutions);
 
-		vehicleSolutionList.addAll(
-				new FullRouteMixedFleetHeuristic().execute(
-						nodes,
-						vehicles,
-						(dataBag) -> {
-							try {
-								return executeRoutePlanning(dataBag);
-							} catch (XFVRPException e) {
-								e.printStackTrace();
-							}
-							return null;
-						},
-						metric,
-						parameter,
-						statusManager)
-				);
-
-
-		statusManager.fireMessage(StatusCode.FINISHED, "XFVRP finished sucessfully.");
+		statusManager.fireMessage(StatusCode.FINISHED, "XFVRP finished successfully.");
 	}
 
 	/**

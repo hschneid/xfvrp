@@ -18,7 +18,6 @@ import xf.xfvrp.report.build.ReportBuilder;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -41,6 +40,9 @@ import java.util.stream.IntStream;
  *
  */
 public class FullRouteMixedFleetHeuristic {
+	public interface RoutePlanningFunction {
+		XFVRPSolution apply(RoutingDataBag bag) throws XFVRPException;
+	}
 
 	private FullRouteMixedFleetSelector selector = new FullRouteMixedFleetSelector();
 	private final ReportBuilder reportBuilder = new ReportBuilder();
@@ -48,7 +50,7 @@ public class FullRouteMixedFleetHeuristic {
 	public List<XFVRPSolution> execute(
 			Node[] nodes,
 			Vehicle[] vehicles,
-			Function<RoutingDataBag, XFVRPSolution> routePlanningFunction,
+			RoutePlanningFunction routePlanningFunction,
 			Metric metric,
 			XFVRPParameter parameter,
 			StatusManager statusManager) throws XFVRPException {
