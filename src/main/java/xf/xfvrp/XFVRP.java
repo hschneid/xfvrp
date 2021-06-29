@@ -80,14 +80,7 @@ public class XFVRP extends XFVRP_Parameter {
 				new FullRouteMixedFleetHeuristic().execute(
 						nodes,
 						vehicles,
-						(dataBag) -> {
-							try {
-								return executeRoutePlanning(dataBag);
-							} catch (XFVRPException e) {
-								e.printStackTrace();
-							}
-							return null;
-						},
+						this::executeRoutePlanning,
 						metric,
 						parameter,
 						statusManager)

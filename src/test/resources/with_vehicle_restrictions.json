@@ -1,0 +1,153 @@
+{
+  "Depots" : [ {
+    "lat" : 48.53390121459961,
+    "lng" : 7.594339847564697
+  } ],
+  "Customers" : [ {
+    "amount" : [ 3.6116433, 0.0, 0.0 ],
+    "externID" : "CUSTOMER_29324",
+    "serviceTime" : 0.0,
+    "lat" : 48.08013153076172,
+    "lng" : 7.364990234375,
+    "vehicles" : [ "VEHICLE_2" ]
+  }, {
+    "amount" : [ 2.5, 0.0, 0.0 ],
+    "externID" : "CUSTOMER_29633",
+    "serviceTime" : 0.0,
+    "lat" : 48.7363395690918,
+    "lng" : 7.056950092315674,
+    "vehicles" : [ "VEHICLE_2" ]
+  }, {
+    "amount" : [ 2.6025257, 0.0, 0.0 ],
+    "externID" : "CUSTOMER_29874",
+    "serviceTime" : 0.0,
+    "lat" : 47.686649322509766,
+    "lng" : 6.494699954986572,
+    "vehicles" : [ "VEHICLE_2" ]
+  }, {
+    "amount" : [ 2.3243933, 0.0, 0.0 ],
+    "externID" : "CUSTOMER_31129",
+    "serviceTime" : 0.0,
+    "lat" : 47.821739196777344,
+    "lng" : 6.378469944000244,
+    "vehicles" : [ "VEHICLE_2" ]
+  }, {
+    "amount" : [ 3.8555412, 0.0, 0.0 ],
+    "externID" : "CUSTOMER_31298",
+    "serviceTime" : 0.0,
+    "lat" : 47.249610900878906,
+    "lng" : 6.798490047454834,
+    "vehicles" : [ "VEHICLE_2" ]
+  }, {
+    "amount" : [ 2.5351214, 0.0, 0.0 ],
+    "externID" : "CUSTOMER_31411",
+    "serviceTime" : 0.0,
+    "lat" : 48.34867858886719,
+    "lng" : 6.634500026702881,
+    "vehicles" : [ "VEHICLE_2" ]
+  }, {
+    "amount" : [ 3.4057045, 0.0, 0.0 ],
+    "externID" : "CUSTOMER_31519",
+    "serviceTime" : 0.0,
+    "lat" : 48.37928009033203,
+    "lng" : 6.913479804992676,
+    "vehicles" : [ "VEHICLE_2" ]
+  }, {
+    "amount" : [ 2.5351214, 0.0, 0.0 ],
+    "externID" : "CUSTOMER_31725",
+    "serviceTime" : 0.0,
+    "lat" : 48.008758544921875,
+    "lng" : 6.720330238342285,
+    "vehicles" : [ "VEHICLE_2" ]
+  }, {
+    "amount" : [ 3.9954946, 0.0, 0.0 ],
+    "externID" : "CUSTOMER_31801",
+    "serviceTime" : 0.0,
+    "lat" : 48.10895919799805,
+    "lng" : 6.560810089111328,
+    "vehicles" : [ "VEHICLE_2" ]
+  }, {
+    "amount" : [ 3.4574997, 0.0, 0.0 ],
+    "externID" : "CUSTOMER_31880",
+    "serviceTime" : 0.0,
+    "lat" : 47.70547103881836,
+    "lng" : 6.686069965362549,
+    "vehicles" : [ "VEHICLE_2" ]
+  }, {
+    "amount" : [ 3.418476, 0.0, 0.0 ],
+    "externID" : "CUSTOMER_32053",
+    "serviceTime" : 0.0,
+    "lat" : 47.46152877807617,
+    "lng" : 6.859720230102539,
+    "vehicles" : [ "VEHICLE_2" ]
+  }, {
+    "amount" : [ 6.6666665, 0.0, 0.0 ],
+    "externID" : "CUSTOMER_32514",
+    "serviceTime" : 0.0,
+    "lat" : 48.76778030395508,
+    "lng" : 7.253570079803467,
+    "vehicles" : [ "VEHICLE_2" ]
+  }, {
+    "amount" : [ 2.5287356, 0.0, 0.0 ],
+    "externID" : "CUSTOMER_32783",
+    "serviceTime" : 0.0,
+    "lat" : 47.81000900268555,
+    "lng" : 7.236760139465332,
+    "vehicles" : [ "VEHICLE_2" ]
+  }, {
+    "amount" : [ 5.050021, 0.0, 0.0 ],
+    "externID" : "CUSTOMER_33121",
+    "serviceTime" : 0.0,
+    "lat" : 47.98630905151367,
+    "lng" : 7.397439956665039,
+    "vehicles" : [ "VEHICLE_2" ]
+  }, {
+    "amount" : [ 8.333333, 0.0, 0.0 ],
+    "externID" : "CUSTOMER_33423",
+    "serviceTime" : 0.0,
+    "lat" : 47.58831024169922,
+    "lng" : 7.253610134124756,
+    "vehicles" : [ "VEHICLE_2" ]
+  }, {
+    "amount" : [ 5.078757, 0.0, 0.0 ],
+    "externID" : "CUSTOMER_33491",
+    "serviceTime" : 0.0,
+    "lat" : 48.25524139404297,
+    "lng" : 6.415180206298828,
+    "vehicles" : [ "VEHICLE_2" ]
+  }, {
+    "amount" : [ 2.3243933, 0.0, 0.0 ],
+    "externID" : "CUSTOMER_33712",
+    "serviceTime" : 0.0,
+    "lat" : 48.0452995300293,
+    "lng" : 6.406010150909424,
+    "vehicles" : [ "VEHICLE_2" ]
+  }, {
+    "amount" : [ 1.9369946, 0.0, 0.0 ],
+    "externID" : "CUSTOMER_33792",
+    "serviceTime" : 0.0,
+    "lat" : 48.130741119384766,
+    "lng" : 7.355830192565918,
+    "vehicles" : [ "VEHICLE_2" ]
+  }, {
+    "amount" : [ 4.2571306, 0.0, 0.0 ],
+    "externID" : "CUSTOMER_33944",
+    "serviceTime" : 0.0,
+    "lat" : 47.5089111328125,
+    "lng" : 7.002429962158203,
+    "vehicles" : [ "VEHICLE_2" ]
+  } ],
+  "Vehicles" : {
+    "10" : [ {
+      "name" : "VEHICLE_1",
+      "metric" : 0,
+      "capacity" : [ 33.0, 3.4028234663852886E38, 3.4028234663852886E38 ],
+      "maxRouteDuration" : 480.0
+    }, {
+      "name" : "VEHICLE_2",
+      "metric" : 1,
+      "capacity" : [ 33.0, 3.4028234663852886E38, 3.4028234663852886E38 ],
+      "maxRouteDuration" : 600.0
+    } ]
+  }
+}
