@@ -10,7 +10,6 @@ import xf.xfvrp.base.monitor.StatusCode;
 import xf.xfvrp.base.xfvrp.XFVRP_Parameter;
 import xf.xfvrp.opt.*;
 import xf.xfvrp.opt.init.ModelBuilder;
-import xf.xfvrp.opt.init.precheck.PreCheckException;
 import xf.xfvrp.opt.init.precheck.PreCheckService;
 import xf.xfvrp.opt.init.solution.InitialSolutionBuilder;
 import xf.xfvrp.report.Report;
@@ -55,7 +54,7 @@ public class XFVRP extends XFVRP_Parameter {
 	 * by addDepot(), addCustomer(), addMetric() and 
 	 * addVehicle() or the parameters setCapacity() and setMaxRouteDuration()
 	 */
-	public void executeRoutePlanning() throws PreCheckException, XFVRPException {
+	public void executeRoutePlanning() throws XFVRPException {
 		statusManager.fireMessage(StatusCode.RUNNING, "XFVRP started");
 		statusManager.setStartTime();
 
@@ -81,14 +80,7 @@ public class XFVRP extends XFVRP_Parameter {
 				new FullRouteMixedFleetHeuristic().execute(
 						nodes,
 						vehicles,
-						(dataBag) -> {
-							try {
-								return executeRoutePlanning(dataBag);
-							} catch (PreCheckException | XFVRPException e) {
-								e.printStackTrace();
-							}
-							return null;
-						},
+						this::executeRoutePlanning,
 						metric,
 						parameter,
 						statusManager)
@@ -102,7 +94,7 @@ public class XFVRP extends XFVRP_Parameter {
 	 * Calculates a single vehicle VRP for a given vehicle with all
 	 * announced optimization procedures.
 	 */
-	private XFVRPSolution executeRoutePlanning(RoutingDataBag dataBag) throws PreCheckException, XFVRPException {
+	private XFVRPSolution executeRoutePlanning(RoutingDataBag dataBag) throws XFVRPException {
 		Node[] nodes = new PreCheckService().precheck(dataBag.nodes, dataBag.vehicle, parameter);
 		XFVRPModel model = new ModelBuilder().build(nodes, dataBag.vehicle, metric, parameter, statusManager);
 		Solution solution = new InitialSolutionBuilder().build(model, parameter, statusManager);
