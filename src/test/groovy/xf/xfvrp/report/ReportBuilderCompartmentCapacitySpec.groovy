@@ -8,7 +8,6 @@ import xf.xfvrp.base.fleximport.CompartmentCapacity
 import xf.xfvrp.base.metric.EucledianMetric
 import xf.xfvrp.base.metric.internal.AcceleratedMetricTransformator
 import xf.xfvrp.opt.Solution
-import xf.xfvrp.opt.XFVRPSolution
 import xf.xfvrp.report.build.ReportBuilder
 
 class ReportBuilderCompartmentCapacitySpec extends Specification {
@@ -42,7 +41,7 @@ class ReportBuilderCompartmentCapacitySpec extends Specification {
 		sol.setGiantRoute([nd, n[1], n[2], n[3], n[4] ,nd] as Node[])
 
 		when:
-		def result = service.getReport(new XFVRPSolution(sol, model))
+		def result = service.getReport(sol)
 
 		then:
 		result.getSummary().getOverloads()[0] == 0
@@ -71,7 +70,7 @@ class ReportBuilderCompartmentCapacitySpec extends Specification {
 		sol.setGiantRoute([nd, n[1], n[2], n[3], n[4], nd] as Node[])
 
 		when:
-		def result = service.getReport(new XFVRPSolution(sol, model))
+		def result = service.getReport(sol)
 
 		then:
 		result.getSummary().getOverloads()[0] == 0
@@ -101,7 +100,7 @@ class ReportBuilderCompartmentCapacitySpec extends Specification {
 		sol.setGiantRoute([nd, n[1], n[2], n[3], n[4], nd] as Node[])
 
 		when:
-		def result = service.getReport(new XFVRPSolution(sol, model))
+		def result = service.getReport(sol)
 
 		then:
 		result.getSummary().getOverloads()[0] == 3
@@ -130,7 +129,7 @@ class ReportBuilderCompartmentCapacitySpec extends Specification {
 		sol.setGiantRoute([nd, n[1], n[2], n[3], n[4], nd] as Node[])
 
 		when:
-		def result = service.getReport(new XFVRPSolution(sol, model))
+		def result = service.getReport(sol)
 
 		then:
 		result.getSummary().getOverloads()[0] == 0
@@ -160,7 +159,7 @@ class ReportBuilderCompartmentCapacitySpec extends Specification {
 		sol.setGiantRoute([nd, n[1], n[2], n[3], n[4], nd] as Node[])
 
 		when:
-		def result = service.getReport(new XFVRPSolution(sol, model))
+		def result = service.getReport(sol)
 
 		then:
 		result.getSummary().getOverloads()[0] == 0
@@ -182,7 +181,7 @@ class ReportBuilderCompartmentCapacitySpec extends Specification {
 		sol.setGiantRoute([nd, n[1], n[2], n[3], n[4], nd] as Node[])
 
 		when:
-		def result = service.getReport(new XFVRPSolution(sol, model))
+		def result = service.getReport(sol)
 
 		then:
 		result.getSummary().getOverloads()[0] == 0
@@ -212,7 +211,7 @@ class ReportBuilderCompartmentCapacitySpec extends Specification {
 		sol.setGiantRoute([nd, n[1], n[2], n[3], n[4], nd] as Node[])
 
 		when:
-		def result = service.getReport(new XFVRPSolution(sol, model))
+		def result = service.getReport(sol)
 
 		then:
 		result.getSummary().getOverloads()[0] == 2

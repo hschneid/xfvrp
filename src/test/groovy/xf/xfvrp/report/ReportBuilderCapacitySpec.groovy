@@ -7,7 +7,6 @@ import xf.xfvrp.base.*
 import xf.xfvrp.base.metric.EucledianMetric
 import xf.xfvrp.base.metric.internal.AcceleratedMetricTransformator
 import xf.xfvrp.opt.Solution
-import xf.xfvrp.opt.XFVRPSolution
 import xf.xfvrp.report.build.ReportBuilder
 
 class ReportBuilderCapacitySpec extends Specification {
@@ -42,10 +41,8 @@ class ReportBuilderCapacitySpec extends Specification {
 		sol = new Solution()
 		sol.setGiantRoute([nd, n[1], n[2], n[3], nd] as Node[])
 
-		def solution = new XFVRPSolution(sol, model);
-
 		when:
-		def result = service.getReport(solution)
+		def result = service.getReport(sol)
 
 		then:
 		result != null
@@ -69,10 +66,8 @@ class ReportBuilderCapacitySpec extends Specification {
 		sol = new Solution()
 		sol.setGiantRoute([nd, n[1], n[2], n[3], nd] as Node[])
 
-		def solution = new XFVRPSolution(sol, model);
-
 		when:
-		def result = service.getReport(solution)
+		def result = service.getReport(sol)
 
 		then:
 		result != null
@@ -102,10 +97,8 @@ class ReportBuilderCapacitySpec extends Specification {
 		sol = new Solution()
 		sol.setGiantRoute([nd, n[1], n[2], n[3], nd] as Node[])
 
-		def solution = new XFVRPSolution(sol, model);
-
 		when:
-		def result = service.getReport(solution)
+		def result = service.getReport(sol)
 
 		then:
 		result != null
@@ -137,10 +130,8 @@ class ReportBuilderCapacitySpec extends Specification {
 		sol = new Solution()
 		sol.setGiantRoute([nd, n[1], n[2], n[3], nd] as Node[])
 
-		def solution = new XFVRPSolution(sol, model);
-
 		when:
-		def result = service.getReport(solution)
+		def result = service.getReport(sol)
 
 		then:
 		result != null
@@ -173,10 +164,8 @@ class ReportBuilderCapacitySpec extends Specification {
 		sol = new Solution()
 		sol.setGiantRoute([nd, n[1], n[2], n[3], nd] as Node[])
 
-		def solution = new XFVRPSolution(sol, model);
-
 		when:
-		def result = service.getReport(solution)
+		def result = service.getReport(sol)
 
 		then:
 		result != null
@@ -207,10 +196,8 @@ class ReportBuilderCapacitySpec extends Specification {
 		sol = new Solution()
 		sol.setGiantRoute([nd, n[1], n[2], n[3], nd] as Node[])
 
-		def solution = new XFVRPSolution(sol, model)
-
 		when:
-		def result = service.getReport(solution)
+		def result = service.getReport(sol)
 
 		then:
 		result != null
@@ -241,10 +228,8 @@ class ReportBuilderCapacitySpec extends Specification {
 		sol = new Solution()
 		sol.setGiantRoute([nd, n[1], n[2], n[3], nd] as Node[])
 
-		def solution = new XFVRPSolution(sol, model);
-
 		when:
-		def result = service.getReport(solution)
+		def result = service.getReport(sol)
 
 		then:
 		result != null
@@ -275,10 +260,8 @@ class ReportBuilderCapacitySpec extends Specification {
 		sol = new Solution()
 		sol.setGiantRoute([nd, n[1], n[3], n[2], nd] as Node[])
 
-		def solution = new XFVRPSolution(sol, model);
-
 		when:
-		def result = service.getReport(solution)
+		def result = service.getReport(sol)
 
 		then:
 		result != null
@@ -320,10 +303,8 @@ class ReportBuilderCapacitySpec extends Specification {
 		sol = new Solution()
 		sol.setGiantRoute([nd, n[1], n[2], n[3], nd] as Node[])
 
-		def solution = new XFVRPSolution(sol, model);
-
 		when:
-		def result = service.getReport(solution)
+		def result = service.getReport(sol)
 
 		then:
 		result != null
@@ -356,10 +337,8 @@ class ReportBuilderCapacitySpec extends Specification {
 		sol = new Solution()
 		sol.setGiantRoute([nd, n[2], n[4], nr, n[6], n[3], nd] as Node[])
 
-		def solution = new XFVRPSolution(sol, model);
-
 		when:
-		def result = service.getReport(solution)
+		def result = service.getReport(sol)
 
 		then:
 		result != null
@@ -388,10 +367,8 @@ class ReportBuilderCapacitySpec extends Specification {
 		sol = new Solution()
 		sol.setGiantRoute([nd, n[2], n[4], nr, n[3], n[5], nd] as Node[])
 
-		def solution = new XFVRPSolution(sol, model);
-
 		when:
-		def result = service.getReport(solution)
+		def result = service.getReport(sol)
 
 		then:
 		result != null
@@ -421,10 +398,8 @@ class ReportBuilderCapacitySpec extends Specification {
 		sol = new Solution()
 		sol.setGiantRoute([nd, n[2], n[4], n[6], nr, n[3], nd] as Node[])
 
-		def solution = new XFVRPSolution(sol, model);
-
 		when:
-		def result = service.getReport(solution)
+		def result = service.getReport(sol)
 
 		then:
 		result != null
@@ -454,10 +429,8 @@ class ReportBuilderCapacitySpec extends Specification {
 		sol = new Solution()
 		sol.setGiantRoute([nd, n[4], n[5], n[2], nr, n[6], n[3], nd] as Node[])
 
-		def solution = new XFVRPSolution(sol, model);
-
 		when:
-		def result = service.getReport(solution)
+		def result = service.getReport(sol)
 
 		then:
 		result != null

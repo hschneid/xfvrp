@@ -55,7 +55,7 @@ public class XFPDPFirstBestInsert extends XFVRPOptBase {
 		for (int i = 0; i < model.getParameter().getILSLoops(); i++)
 			giantRoute = reinsertShipments(giantRoute, shipments);
 
-		Solution newSolution = new Solution();
+		Solution newSolution = new Solution(solution.getModel());
 		newSolution.setGiantRoute(giantRoute);
 		return NormalizeSolutionService.normalizeRoute(newSolution, model);
 	}
@@ -91,7 +91,7 @@ public class XFPDPFirstBestInsert extends XFVRPOptBase {
 				insertShipment(giantRoute, newGiantRoute, shipment[0], shipment[1], (int)val[PICKUP_POS], (int)val[DELIVERY_POS]);
 
 				// Evaluate new solution
-				Solution newSolution = new Solution();
+				Solution newSolution = new Solution(model);
 				newSolution.setGiantRoute(newGiantRoute);
 				Quality qq = check(newSolution);
 				if(qq.getPenalty() == 0) {
@@ -144,7 +144,7 @@ public class XFPDPFirstBestInsert extends XFVRPOptBase {
 				insertShipment(giantRoute, newGiantRoute, shipment[0], shipment[1], (int)val[PICKUP_POS], (int)val[DELIVERY_POS]);
 
 				// Evaluate new solution
-				Solution newSolution = new Solution();
+				Solution newSolution = new Solution(model);
 				newSolution.setGiantRoute(newGiantRoute);
 				Quality qq = check(newSolution);
 				if(qq.getPenalty() == 0) {
@@ -181,7 +181,7 @@ public class XFPDPFirstBestInsert extends XFVRPOptBase {
 			// Get current solution
 			route[1] = route[0];
 			route[2] = route[0];
-			Solution ss = new Solution();
+			Solution ss = new Solution(model);
 			ss.setGiantRoute(route);
 			Quality currentRouteQuality = check(ss);
 
@@ -197,7 +197,7 @@ public class XFPDPFirstBestInsert extends XFVRPOptBase {
 					route[deliCnt] = delivery;
 
 					// Check for feasibility
-					Solution newSolution = new Solution();
+					Solution newSolution = new Solution(model);
 					newSolution.setGiantRoute(route);
 					Quality newRouteQuality = check(newSolution);
 					if (newRouteQuality != null && newRouteQuality.getPenalty() == 0) {
@@ -275,7 +275,7 @@ public class XFPDPFirstBestInsert extends XFVRPOptBase {
 		route[0] = Util.createIdNode(model.getNodes()[0], 0);
 		route[1] = Util.createIdNode(model.getNodes()[0], 1);
 
-		Solution newSolution = new Solution();
+		Solution newSolution = new Solution(model);
 		newSolution.setGiantRoute(route);
 		return NormalizeSolutionService.normalizeRoute(newSolution, model).getGiantRoute();
 	}

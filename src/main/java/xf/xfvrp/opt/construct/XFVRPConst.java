@@ -76,7 +76,7 @@ public class XFVRPConst extends XFVRPOptBase {
 			}
 		}
 
-		Solution newSolution = new Solution();
+		Solution newSolution = new Solution(this.model);
 		newSolution.setGiantRoute(giantList.toArray(new Node[giantList.size()]));
 		return NormalizeSolutionService.normalizeRoute(newSolution, model);
 	}
@@ -163,7 +163,7 @@ public class XFVRPConst extends XFVRPOptBase {
 		}
 		gT[idx++] = Util.createIdNode(dep, depID);
 
-		Solution solution = new Solution();
+		Solution solution = new Solution(this.model);
 		solution.setGiantRoute(Arrays.copyOf(gT, idx));
 
 		return solution;

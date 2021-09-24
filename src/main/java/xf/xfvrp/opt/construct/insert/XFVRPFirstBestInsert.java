@@ -54,7 +54,7 @@ public class XFVRPFirstBestInsert extends XFVRPOptBase {
 		for (int i = 0; i < model.getParameter().getILSLoops(); i++)
 			giantRoute = reinsertNodes(giantRoute, customers);
 		
-		Solution newSolution = new Solution();
+		Solution newSolution = new Solution(solution.getModel());
 		newSolution.setGiantRoute(giantRoute);
 		return NormalizeSolutionService.normalizeRoute(newSolution, model);
 	}
@@ -108,7 +108,7 @@ public class XFVRPFirstBestInsert extends XFVRPOptBase {
 				insertCustomer(giantRoute, newGiantRoute, customer, (int)val[0]);
 
 				// Evaluate new solution
-				Solution solution = new Solution();
+				Solution solution = new Solution(model);
 				solution.setGiantRoute(newGiantRoute);
 				Quality qq = check(solution);
 				if(qq.getPenalty() == 0) {
@@ -157,7 +157,7 @@ public class XFVRPFirstBestInsert extends XFVRPOptBase {
 				insertCustomer(giantRoute, newGiantRoute, customer, (int)val[0]);
 
 				// Evaluate new solution
-				Solution solution = new Solution();
+				Solution solution = new Solution(model);
 				solution.setGiantRoute(newGiantRoute);
 				Quality qq = check(solution);
 				if(qq.getPenalty() == 0) {
@@ -190,7 +190,7 @@ public class XFVRPFirstBestInsert extends XFVRPOptBase {
 
 			// Check for feasibility
 			route[1] = route[0];
-			Solution ss = new Solution();
+			Solution ss = new Solution(model);
 			ss.setGiantRoute(route);
 			Quality currentRouteQuality = check(ss);
 
@@ -201,7 +201,7 @@ public class XFVRPFirstBestInsert extends XFVRPOptBase {
 				route[cnt] = customer;
 
 				// Check for feasibility
-				Solution solution = new Solution();
+				Solution solution = new Solution(model);
 				solution.setGiantRoute(route);
 				Quality newRouteQuality = check(solution);
 				if (newRouteQuality != null && newRouteQuality.getPenalty() == 0) {
@@ -261,7 +261,7 @@ public class XFVRPFirstBestInsert extends XFVRPOptBase {
 		route[0] = Util.createIdNode(model.getNodes()[0], 0);
 		route[1] = Util.createIdNode(model.getNodes()[0], 1);
 
-		Solution solution = new Solution();
+		Solution solution = new Solution(model);
 		solution.setGiantRoute(route);
 		return NormalizeSolutionService.normalizeRoute(solution, model).getGiantRoute();
 	}

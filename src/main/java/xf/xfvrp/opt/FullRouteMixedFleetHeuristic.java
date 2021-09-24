@@ -45,10 +45,10 @@ public class FullRouteMixedFleetHeuristic {
 	private FullRouteMixedFleetSelector selector = new FullRouteMixedFleetSelector();
 	private final ReportBuilder reportBuilder = new ReportBuilder();
 
-	public List<XFVRPSolution> execute(
+	public List<Solution> execute(
 			Node[] nodes,
 			Vehicle[] vehicles,
-			Function<RoutingDataBag, XFVRPSolution> routePlanningFunction,
+			Function<RoutingDataBag, Solution> routePlanningFunction,
 			Metric metric,
 			XFVRPParameter parameter,
 			StatusManager statusManager) throws XFVRPException {
@@ -56,12 +56,12 @@ public class FullRouteMixedFleetHeuristic {
 
 		vehicles = VehiclePriorityInitialiser.execute(vehicles);
 
-		List<XFVRPSolution> vehicleSolutions = new ArrayList<>();
+		List<Solution> vehicleSolutions = new ArrayList<>();
 		for (Vehicle veh : vehicles) {
 			statusManager.fireMessage(StatusCode.RUNNING, "Run with vehicle "+veh.name+" started.");
 
 			// Optimize all nodes with current vehicle type
-			XFVRPSolution solution = routePlanningFunction.apply(new RoutingDataBag(unplannedNodes.toArray(new Node[0]), veh));
+			Solution solution = routePlanningFunction.apply(new RoutingDataBag(unplannedNodes.toArray(new Node[0]), veh));
 
 			// Point out best routes for this vehicle type
 			List<RouteReport> bestRoutes = selector.getBestRoutes(veh, reportBuilder.getReport(solution));
@@ -76,7 +76,7 @@ public class FullRouteMixedFleetHeuristic {
 		}
 
 		// Insert invalid and unplanned nodes into solution
-		XFVRPSolution unplannedNodesSolution = insertUnplannedNodes(unplannedNodes, metric, parameter, statusManager);
+		Solution unplannedNodesSolution = insertUnplannedNodes(unplannedNodes, metric, parameter, statusManager);
 		if(unplannedNodesSolution != null)
 			vehicleSolutions.add(unplannedNodesSolution);
 
@@ -107,7 +107,7 @@ public class FullRouteMixedFleetHeuristic {
 	 * This method constructs a giant tour for a given list of route reports
 	 * (can be found in solution objects).
 	 */
-	private XFVRPSolution reconstructGiantRoute(List<RouteReport> routes, XFVRPModel model) {
+	private Solution reconstructGiantRoute(List<RouteReport> routes, XFVRPModel model) {
 		Map<String, Node> nodeMap = Arrays.stream(model.getNodes()).collect(Collectors.toMap(Node::getExternID, node -> node, (v1, v2) -> v1));
 
 		AtomicInteger depotId = new AtomicInteger(0);
@@ -125,10 +125,10 @@ public class FullRouteMixedFleetHeuristic {
 				})
 				.toArray(Node[]::new);
 
-		return new XFVRPSolution(getSolution(giantRoute), model);
+		return getSolution(giantRoute, model);
 	}
 
-	private XFVRPSolution insertUnplannedNodes(
+	private Solution insertUnplannedNodes(
 			List<Node> unplannedNodes,
 			Metric metric,
 			XFVRPParameter parameter,
@@ -160,16 +160,15 @@ public class FullRouteMixedFleetHeuristic {
 		// Create solution with single routes for each invalid node
 		InternalMetric internalMetric = AcceleratedMetricTransformator.transform(metric, nodes, invalidVehicle);
 
-		return new XFVRPSolution(
-				giantRoute,
-				new XFVRPModel(
-						nodes,
-						internalMetric,
-						internalMetric,
-						invalidVehicle,
-						parameter
-				)
-		);
+		Solution newSolution = new Solution(new XFVRPModel(
+				nodes,
+				internalMetric,
+				internalMetric,
+				invalidVehicle,
+				parameter
+		));
+		newSolution.setGiantRoute(giantRoute.getGiantRoute());
+		return newSolution;
 	}
 
 	/**
@@ -181,7 +180,7 @@ public class FullRouteMixedFleetHeuristic {
 	 */
 	private Solution buildGiantRouteForInvalidNodes(List<Node> unplannedNodes, Node depot, StatusManager statusManager) {
 		if(unplannedNodes.size() == 0)
-			return getSolution(null);
+			return getSolution(null, null);
 
 		Node[] giantRoute = new Node[unplannedNodes.size() * 2 + 2];
 
@@ -220,14 +219,14 @@ public class FullRouteMixedFleetHeuristic {
 			giantRoute[i++] = Util.createIdNode(depot, maxDepotId++);
 		}
 
-		return getSolution(Arrays.copyOf(giantRoute, i));
+		return getSolution(Arrays.copyOf(giantRoute, i), null);
 	}
 
-	private Solution getSolution(Node[] giantRoute) {
+	private Solution getSolution(Node[] giantRoute, XFVRPModel model) {
 		if(giantRoute == null)
 			giantRoute = new Node[0];
 
-		Solution solution = new Solution();
+		Solution solution = new Solution(model);
 		solution.setGiantRoute(giantRoute);
 		return solution;
 	}

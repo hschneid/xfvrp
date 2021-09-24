@@ -50,7 +50,7 @@ public class VRPInitialSolutionBuilder {
 	 */
 	private Solution buildSolution(List<Node> nodes, XFVRPModel model, StatusManager statusManager) throws XFVRPException {
 		if(nodes == null) {
-			return new Solution();
+			return new Solution(model);
 		}
 		
 		// If user has given a predefined solution
@@ -101,7 +101,7 @@ public class VRPInitialSolutionBuilder {
 		// Add last depot
 		gL.add(Util.createIdNode(nodes.get(depotIdx % depots.size()), maxIdx));
 
-		Solution solution = new Solution();
+		Solution solution = new Solution(model);
 		solution.setGiantRoute(gL.toArray(new Node[0]));
 		return solution;
 	}

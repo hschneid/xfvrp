@@ -7,7 +7,6 @@ import xf.xfvrp.base.*
 import xf.xfvrp.base.metric.EucledianMetric
 import xf.xfvrp.base.metric.internal.AcceleratedMetricTransformator
 import xf.xfvrp.opt.Solution
-import xf.xfvrp.opt.XFVRPSolution
 import xf.xfvrp.report.build.ReportBuilder
 
 class ReportBuilderReplenishSpec extends Specification {
@@ -38,7 +37,7 @@ class ReportBuilderReplenishSpec extends Specification {
 		sol.setGiantRoute([nd, n[2], n[3], nr, n[4], n[5], nd] as Node[])
 
 		when:
-		def result = service.getReport(new XFVRPSolution(sol, model))
+		def result = service.getReport(sol)
 
 		then:
 		for (i in 0..<3) {
@@ -69,7 +68,7 @@ class ReportBuilderReplenishSpec extends Specification {
 		sol.setGiantRoute([nd, n[2], n[3], nr, n[4], n[5], nd] as Node[])
 
 		when:
-		def result = service.getReport(new XFVRPSolution(sol, model))
+		def result = service.getReport(sol)
 
 		then:
 		result.getSummary().getOverloads()[0] == 0
@@ -86,7 +85,7 @@ class ReportBuilderReplenishSpec extends Specification {
 		sol.setGiantRoute([nd, n[2], n[3], nr, n[4], n[5], nd] as Node[])
 
 		when:
-		def result = service.getReport(new XFVRPSolution(sol, model))
+		def result = service.getReport(sol)
 
 		then:
 		result.getSummary().getOverloads()[1] == 0
@@ -101,7 +100,7 @@ class ReportBuilderReplenishSpec extends Specification {
 		sol.setGiantRoute([nd, n[2], n[3], nr, n[4], n[5], nd] as Node[])
 
 		when:
-		def result = service.getReport(new XFVRPSolution(sol, model))
+		def result = service.getReport(sol)
 
 		then:
 		result.getSummary().getOverloads()[0] == 0
@@ -118,7 +117,7 @@ class ReportBuilderReplenishSpec extends Specification {
 		sol.setGiantRoute([nd, n[2], n[3], nr, n[4], n[5], nd] as Node[])
 
 		when:
-		def result = service.getReport(new XFVRPSolution(sol, model))
+		def result = service.getReport(sol)
 
 		then:
 		result.getSummary().getOverloads()[0] > 0

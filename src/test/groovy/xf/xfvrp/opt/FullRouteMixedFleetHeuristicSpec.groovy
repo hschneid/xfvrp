@@ -335,7 +335,7 @@ class FullRouteMixedFleetHeuristicSpec extends Specification {
 		when:
 		def result = service.execute(nodes, vehicles, {routingDataBag ->
 			def model = new XFVRPModel(nodes, iMetric, iMetric, routingDataBag.vehicle, parameter)
-			return new XFVRPSolution(solution, model)
+			return solution
 		}, metric, parameter, statusManager)
 
 		def s1 = result.stream().filter({f -> f.getModel().getVehicle().name == 'V1'}).findFirst().get()
@@ -386,7 +386,7 @@ class FullRouteMixedFleetHeuristicSpec extends Specification {
 		when:
 		def result = service.execute(nodes, vehicles, {routingDataBag ->
 			def model = new XFVRPModel(nodes, iMetric, iMetric, routingDataBag.vehicle, parameter)
-			return new XFVRPSolution(solution, model)
+			return solution
 		}, metric, parameter, statusManager)
 
 		then:

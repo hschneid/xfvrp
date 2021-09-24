@@ -173,7 +173,7 @@ public class CheckService {
 
 			// Check with Relocate optimization, if there is a sequence of nodes
 			// in the block, which are valid for the constraints.
-			Solution solution = new Solution();
+			Solution solution = new Solution(model);
 			solution.addRoute(route);
 
 			solution = optimizationMethod.execute(solution, model, null);

@@ -5,7 +5,7 @@ import xf.xfvrp.base.Node;
 import xf.xfvrp.base.SiteType;
 import xf.xfvrp.base.XFVRPModel;
 import xf.xfvrp.base.exception.XFVRPException;
-import xf.xfvrp.opt.XFVRPSolution;
+import xf.xfvrp.opt.Solution;
 import xf.xfvrp.opt.evaluation.*;
 import xf.xfvrp.report.Event;
 import xf.xfvrp.report.Report;
@@ -24,12 +24,12 @@ import xf.xfvrp.report.RouteReport;
  */
 public class ReportBuilder {
 
-    public Report getReport(XFVRPSolution solution) throws XFVRPException {
+    public Report getReport(Solution solution) throws XFVRPException {
         XFVRPModel model = solution.getModel();
-        Report rep = new Report(solution.getSolution(), model);
+        Report rep = new Report(solution, model);
 
         Context context = ContextBuilder.build(model);
-        for (Node[] route : solution.getSolution()) {
+        for (Node[] route : solution) {
             // Feasibility check
             FeasibilityAnalzer.checkFeasibility(route);
 

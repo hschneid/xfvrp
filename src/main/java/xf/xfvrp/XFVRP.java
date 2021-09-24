@@ -47,7 +47,7 @@ public class XFVRP extends XFVRP_Parameter {
 	private XFVRPModel lastModel;
 
 	/* Solutions - List of generated solutions per each vehicle type*/
-	private final List<XFVRPSolution> vehicleSolutionList = new ArrayList<>();
+	private final List<Solution> vehicleSolutionList = new ArrayList<>();
 
 	/**
 	 * Calculates the VRP with the before inserted data
@@ -94,13 +94,13 @@ public class XFVRP extends XFVRP_Parameter {
 	 * Calculates a single vehicle VRP for a given vehicle with all
 	 * announced optimization procedures.
 	 */
-	private XFVRPSolution executeRoutePlanning(RoutingDataBag dataBag) throws XFVRPException {
+	private Solution executeRoutePlanning(RoutingDataBag dataBag) throws XFVRPException {
 		Node[] nodes = new PreCheckService().precheck(dataBag.nodes, dataBag.vehicle, parameter);
 		XFVRPModel model = new ModelBuilder().build(nodes, dataBag.vehicle, metric, parameter, statusManager);
 		Solution solution = new InitialSolutionBuilder().build(model, parameter, statusManager);
 
 		// VRP optimizations, if initiated solution has appropriate length
-		if (solution.getGiantRoute().length > 0) {
+		if (solution.isValid()) {
 			/*
 			 * For each given optimization procedure the current
 			 * solution plan is searched for optimizations. If solution
@@ -127,7 +127,7 @@ public class XFVRP extends XFVRP_Parameter {
 		}
 
 		lastModel = model;
-		return new XFVRPSolution(solution, model);
+		return solution;
 	}
 
 	/**
@@ -142,7 +142,7 @@ public class XFVRP extends XFVRP_Parameter {
 		if(vehicleSolutionList.size() > 0) {
 
 			Report rep = new Report(lastModel);
-			for (XFVRPSolution sol : vehicleSolutionList)
+			for (Solution sol : vehicleSolutionList)
 				rep.importReport(new ReportBuilder().getReport(sol));
 
 			return rep;

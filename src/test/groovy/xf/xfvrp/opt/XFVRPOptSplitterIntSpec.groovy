@@ -5,23 +5,22 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import spock.lang.Specification
 import xf.xfvrp.XFVRP
 import xf.xfvrp.base.LoadType
-import xf.xfvrp.base.exception.XFVRPException
 import xf.xfvrp.base.metric.EucledianMetric
 import xf.xfvrp.base.monitor.DefaultStatusMonitor
 
 import java.util.concurrent.atomic.AtomicInteger
 
-class FullRouteMixedFleetIntSpec extends Specification {
+class XFVRPOptSplitterIntSpec extends Specification {
 
-	def "test vehicle restrictions - 1 vehicle has zero allowed customers "() {
-		def xfvrp = build(new File("./src/test/resources/with_vehicle_restrictions.json"))
+	def "Optimize with activated route splitting"() {
+		XFVRP xfvrp = build(new File("./src/test/resources/with_route_plan_splitting.json"))
+		xfvrp.allowsRoutePlanSplitting()
 
 		when:
 		xfvrp.executeRoutePlanning()
 
 		then:
-		def ex = thrown(XFVRPException)
-		ex.message == 'Not a single node is allowed for vehicle VEHICLE_1. Please remove it from input.'
+		1 == 1
 	}
 
 	static XFVRP build(File file) {
@@ -61,15 +60,13 @@ class FullRouteMixedFleetIntSpec extends Specification {
 			FloatArrayList fltDemand = new FloatArrayList()
 			dblDemand.forEach(d -> fltDemand.add((float)d))
 			fltDemand.trimToSize()
-			var cust = xfvrp.addCustomer()
+			xfvrp.addCustomer()
 					.setExternID(counter.getAndIncrement()+"")
 					.setXlong((float)customer.get("lng"))
 					.setYlat((float)customer.get("lat"))
 					.setDemand(fltDemand.elements())
 					.setServiceTime((float)customer.get("serviceTime"))
 					.setLoadType(LoadType.DELIVERY)
-			if (vehiclesAllowed != null && vehiclesAllowed.size() > 0)
-				cust.setPresetBlockVehicleList(new HashSet<String>(vehiclesAllowed))
 		})
 		println "Added " + counter + " demands."
 

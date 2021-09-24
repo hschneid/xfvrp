@@ -35,7 +35,7 @@ public class PDPInitialSolutionBuilder {
 		PDPCheckService checkService = new PDPCheckService();
 		
 		if (nodes.length == 0) {
-			return new Solution();
+			return new Solution(model);
 		}
 		
 		List<Node> gL = new ArrayList<>();
@@ -58,7 +58,7 @@ public class PDPInitialSolutionBuilder {
 		if (gL.size() > 0) 
 			gL.add(Util.createIdNode(nodes[depotIdx[0]], maxIdx[0]++));
 
-		Solution solution = new Solution();
+		Solution solution = new Solution(model);
 		solution.setGiantRoute(gL.toArray(new Node[0]));
 		return solution;
 	}
