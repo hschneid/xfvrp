@@ -37,7 +37,7 @@ class ReportBuilderCompartmentCapacitySpec extends Specification {
 		def model = initScen(v, null)
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[1], n[2], n[3], n[4] ,nd] as Node[])
 
 		when:
@@ -66,7 +66,7 @@ class ReportBuilderCompartmentCapacitySpec extends Specification {
 		def model = initScen(v, null)
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[1], n[2], n[3], n[4], nd] as Node[])
 
 		when:
@@ -96,7 +96,7 @@ class ReportBuilderCompartmentCapacitySpec extends Specification {
 		def model = initScen(v, null)
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[1], n[2], n[3], n[4], nd] as Node[])
 
 		when:
@@ -125,7 +125,7 @@ class ReportBuilderCompartmentCapacitySpec extends Specification {
 		def model = initScen(v, LoadType.DELIVERY)
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[1], n[2], n[3], n[4], nd] as Node[])
 
 		when:
@@ -155,7 +155,7 @@ class ReportBuilderCompartmentCapacitySpec extends Specification {
 		def model = initScen(v, LoadType.DELIVERY)
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[1], n[2], n[3], n[4], nd] as Node[])
 
 		when:
@@ -177,7 +177,7 @@ class ReportBuilderCompartmentCapacitySpec extends Specification {
 		def model = initScen(v, LoadType.PICKUP)
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[1], n[2], n[3], n[4], nd] as Node[])
 
 		when:
@@ -207,7 +207,7 @@ class ReportBuilderCompartmentCapacitySpec extends Specification {
 		def model = initScen(v, LoadType.PICKUP)
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[1], n[2], n[3], n[4], nd] as Node[])
 
 		when:

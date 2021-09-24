@@ -61,7 +61,7 @@ class ReportBuilderTimeWindowSpec extends Specification {
 		def model = initScenBasic([[[3,4]],[[4,5]],[[5,6]]] as float[][][], 0f, null)
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([depot, n[1], n[2], n[3], depot] as Node[])
 
 		when:
@@ -108,7 +108,7 @@ class ReportBuilderTimeWindowSpec extends Specification {
 		def model = initScenBasic([[[3,4]],[[3,3.9f]],[[5,6]]] as float[][][], 0f, null)
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([depot, n[1], n[2], n[3], depot] as Node[])
 
 		when:
@@ -138,7 +138,7 @@ class ReportBuilderTimeWindowSpec extends Specification {
 		def model = initScenBasic([[[3,4]],[[4,5.5]],[[6,7]]] as float[][][], 0.5f, null)
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([depot, n[1], n[2], n[3], depot] as Node[])
 
 		when:
@@ -179,7 +179,7 @@ class ReportBuilderTimeWindowSpec extends Specification {
 		def model = initScenBasic([[[3,4]],[[4,5.5]],[[6,7]]] as float[][][], 0.5f, null)
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([depot, n[1], n[2], n[3], depot] as Node[])
 
 		when:
@@ -210,7 +210,7 @@ class ReportBuilderTimeWindowSpec extends Specification {
 		def model = initScenBasic([[[3,4]],[[4,5.5]],[[6,7]]] as float[][][], 0.5f, null)
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([cp(depot), n[1], n[2], n[3], cp(depot)] as Node[])
 
 		when:
@@ -245,7 +245,7 @@ class ReportBuilderTimeWindowSpec extends Specification {
 		def model = initScenBasic([[[4,5]],[[5,6]],[[6,7]]] as float[][][], 0.5f, null)
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([cp(depot), n[1], n[2], n[3], cp(depot)] as Node[])
 
 		when:
@@ -280,7 +280,7 @@ class ReportBuilderTimeWindowSpec extends Specification {
 		def model = initScenBasicPickup([[[3,4]],[[4,5.5]],[[6,7]]] as float[][][], 0.5f, null)
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([cp(depot), n[1], n[2], n[3], cp(depot)] as Node[])
 
 		when:
@@ -317,7 +317,7 @@ class ReportBuilderTimeWindowSpec extends Specification {
 		def model = initScenBasicPickup([[[3,4]],[[4,5.5]],[[6,7]]] as float[][][], 0.5f, null)
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([cp(depot), n[1], n[2], n[3], cp(depot)] as Node[])
 
 		when:
@@ -353,7 +353,7 @@ class ReportBuilderTimeWindowSpec extends Specification {
 		def model = initScenBasic([[[3,4]],[[5,6]],[[6,7]]] as float[][][], 0f, new TestVehicle(name: "V1", capacity: [3, 3], maxWaitingTime: 1))
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([depot, n[1], n[2], n[3], depot] as Node[])
 
 		when:
@@ -385,7 +385,7 @@ class ReportBuilderTimeWindowSpec extends Specification {
 		)
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([depot, n[1], n[2], n[3], depot] as Node[])
 
 		when:
@@ -447,7 +447,7 @@ class ReportBuilderTimeWindowSpec extends Specification {
 		def model = initScenBasic([[[3,4]],[[2,3], [5,6]],[[5,6]]] as float[][][], 0f, null)
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([depot, n[1], n[2], n[3], depot] as Node[])
 
 		when:
@@ -476,7 +476,7 @@ class ReportBuilderTimeWindowSpec extends Specification {
 		def model = initScenBasic([[[3,4]],[[1,2], [2,2.5]],[[5,6]]] as float[][][], 0f, null)
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([depot, n[1], n[2], n[3], depot] as Node[])
 
 		when:

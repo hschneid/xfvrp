@@ -135,7 +135,7 @@ class FullRouteMixedFleetHeuristicSpec extends Specification {
 
 		when:
 		def result = service.reconstructGiantRoute(routes, model)
-		def gT = result.solution.getGiantRoute()
+		def gT = result.getGiantRoute()
 
 		then:
 		result != null
@@ -169,7 +169,7 @@ class FullRouteMixedFleetHeuristicSpec extends Specification {
 
 		when:
 		def result = service.reconstructGiantRoute(routes, model)
-		def gT = result.solution.getGiantRoute()
+		def gT = result.getGiantRoute()
 
 		then:
 		result != null
@@ -248,7 +248,7 @@ class FullRouteMixedFleetHeuristicSpec extends Specification {
 
 		when:
 		def result = service.insertUnplannedNodes(nodes, metric, parameter, statusManager)
-		def gT = result.getSolution().getGiantRoute()
+		def gT = result.getGiantRoute()
 
 		then:
 		result != null
@@ -335,7 +335,9 @@ class FullRouteMixedFleetHeuristicSpec extends Specification {
 		when:
 		def result = service.execute(nodes, vehicles, {routingDataBag ->
 			def model = new XFVRPModel(nodes, iMetric, iMetric, routingDataBag.vehicle, parameter)
-			return solution
+			def sol = new Solution(model)
+			sol.setGiantRoute(solution.getGiantRoute())
+			return sol
 		}, metric, parameter, statusManager)
 
 		def s1 = result.stream().filter({f -> f.getModel().getVehicle().name == 'V1'}).findFirst().get()
@@ -345,20 +347,20 @@ class FullRouteMixedFleetHeuristicSpec extends Specification {
 		then:
 		result != null
 		result.size() == 3
-		s1.getSolution().getGiantRoute()[0].externID == 'nD'
-		s1.getSolution().getGiantRoute()[1].externID == 'n1'
-		s1.getSolution().getGiantRoute()[2].externID == 'n2'
-		s1.getSolution().getGiantRoute()[3].externID == 'nD'
-		s1.getSolution().getGiantRoute()[4].externID == 'nD'
-		s1.getSolution().getGiantRoute()[5].externID == 'n3'
-		s1.getSolution().getGiantRoute()[6].externID == 'n4'
-		s1.getSolution().getGiantRoute()[7].externID == 'nD'
-		s2.getSolution().getGiantRoute()[0].externID == 'nD'
-		s2.getSolution().getGiantRoute()[1].externID == 'n5'
-		s2.getSolution().getGiantRoute()[2].externID == 'nD'
-		s3.getSolution().getGiantRoute()[0].externID == 'nD'
-		s3.getSolution().getGiantRoute()[1].externID == 'n6'
-		s3.getSolution().getGiantRoute()[2].externID == 'nD'
+		s1.getGiantRoute()[0].externID == 'nD'
+		s1.getGiantRoute()[1].externID == 'n1'
+		s1.getGiantRoute()[2].externID == 'n2'
+		s1.getGiantRoute()[3].externID == 'nD'
+		s1.getGiantRoute()[4].externID == 'nD'
+		s1.getGiantRoute()[5].externID == 'n3'
+		s1.getGiantRoute()[6].externID == 'n4'
+		s1.getGiantRoute()[7].externID == 'nD'
+		s2.getGiantRoute()[0].externID == 'nD'
+		s2.getGiantRoute()[1].externID == 'n5'
+		s2.getGiantRoute()[2].externID == 'nD'
+		s3.getGiantRoute()[0].externID == 'nD'
+		s3.getGiantRoute()[1].externID == 'n6'
+		s3.getGiantRoute()[2].externID == 'nD'
 	}
 	
 	def "Execute - no vehicles"() {
