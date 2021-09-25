@@ -142,7 +142,7 @@ class XFVRPSegmentMoveTest extends Specification {
         def model = initScen()
         def n = model.getNodes()
 
-        def sol = new Solution()
+        def sol = new Solution(model)
         sol.setGiantRoute([n[0], n[1], n[2], n[5], n[6], n[3], n[4], n[7], n[0]] as Node[])
 
         when:
@@ -165,7 +165,7 @@ class XFVRPSegmentMoveTest extends Specification {
         def model = initScen()
         def n = model.getNodes()
 
-        def sol = new Solution()
+        def sol = new Solution(model)
         sol.setGiantRoute([n[0], n[1], n[2], n[7], n[6], n[5], n[3], n[4], n[0]] as Node[])
 
         when:
@@ -188,7 +188,7 @@ class XFVRPSegmentMoveTest extends Specification {
         def model = initScen()
         def n = model.getNodes()
 
-        def sol = new Solution()
+        def sol = new Solution(model)
         sol.setGiantRoute([n[0], n[1], n[2], n[3], n[4], n[5], n[6], n[7], n[0]] as Node[])
 
         when:

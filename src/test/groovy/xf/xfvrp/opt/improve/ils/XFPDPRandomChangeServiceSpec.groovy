@@ -330,7 +330,7 @@ class XFPDPRandomChangeServiceSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[4], n[3], n[5], nd] as Node[])
 
 		def choice = new Choice()
@@ -412,7 +412,7 @@ class XFPDPRandomChangeServiceSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[3], n[4], n[5], n[6], n[7], nd] as Node[])
 		// 0, 4,5,2,3,6,7
 		random.nextInt(_) >>> [2, 0, 0, 4, 0, 6]

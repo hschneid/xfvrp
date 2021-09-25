@@ -128,21 +128,6 @@ public class XFVRPOptSplitter {
 				blocks[blockIdx].add(node);
 			}
 		}
-		/*
-		int lastDepot = 0;
-		Node[] giantTour = solution.getGiantRoute();
-		for (int i = 1; i < giantTour.length; i++) {
-			if(giantTour[i].getSiteType() == SiteType.DEPOT) {
-				int blockIdx = random.nextInt(allowedNbrOfBlocks);
-				
-				for (int j = lastDepot; j < i; j++)
-					blocks[blockIdx].add(giantTour[j]);
-				
-				lastDepot = i;
-			}
-		}
-
-		 */
 	}
 
 	private static List<Node>[] initBlocks() {

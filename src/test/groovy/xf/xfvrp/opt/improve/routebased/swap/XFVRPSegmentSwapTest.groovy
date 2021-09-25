@@ -23,7 +23,7 @@ class XFVRPSegmentSwapTest extends Specification {
         def model = initScen()
         segmentService.setModel(model)
         def n = model.getNodes()
-        sol = new Solution()
+        sol = new Solution(model)
         sol.setGiantRoute([nd, n[5], n[2], n[4], nd2, n[6], n[3], n[7], nd2] as Node[])
 
         when:
@@ -45,7 +45,7 @@ class XFVRPSegmentSwapTest extends Specification {
         def model = initScen()
         singleService.setModel(model)
         def n = model.getNodes()
-        sol = new Solution()
+        sol = new Solution(model)
         sol.setGiantRoute([nd, n[5], n[2], n[4], nd2, n[6], n[3], n[7], nd2] as Node[])
 
         when:
@@ -67,7 +67,7 @@ class XFVRPSegmentSwapTest extends Specification {
         def model = initScen()
         exchangeService.setModel(model)
         def n = model.getNodes()
-        sol = new Solution()
+        sol = new Solution(model)
         sol.setGiantRoute([nd, n[5], n[3], n[7], nd2, n[6], n[2], n[4], nd2] as Node[])
 
         when:

@@ -47,7 +47,7 @@ class XFVRPRandomChangeServiceSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[3], n[4], n[5], nd] as Node[])
 
 		def choice = new Choice()
@@ -67,7 +67,7 @@ class XFVRPRandomChangeServiceSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[3], n[4], n[5], nd] as Node[])
 
 		def choice = new Choice()
@@ -87,7 +87,7 @@ class XFVRPRandomChangeServiceSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[3], n[4], n[5], nd] as Node[])
 
 		def choice = new Choice()
@@ -107,7 +107,7 @@ class XFVRPRandomChangeServiceSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[3], n[4], n[5], nd] as Node[])
 
 		def choice = new Choice()
@@ -127,7 +127,7 @@ class XFVRPRandomChangeServiceSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[3], n[4], n[5], nd] as Node[])
 
 		def choice = new Choice()
@@ -149,7 +149,7 @@ class XFVRPRandomChangeServiceSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[3], n[4], n[5], nd] as Node[])
 
 		def choice = new Choice()
@@ -171,7 +171,7 @@ class XFVRPRandomChangeServiceSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[3], n[4], n[5], nd] as Node[])
 
 		def choice = new Choice()
@@ -193,7 +193,7 @@ class XFVRPRandomChangeServiceSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[3], n[4], nd, n[5], nd] as Node[])
 
 		def choice = new Choice()
@@ -223,7 +223,7 @@ class XFVRPRandomChangeServiceSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[3], n[4], nd, n[5], nd] as Node[])
 
 		def choice = new Choice()
@@ -253,7 +253,7 @@ class XFVRPRandomChangeServiceSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], nd, n[3], n[4], n[5], nd] as Node[])
 
 		def choice = new Choice()
@@ -283,7 +283,7 @@ class XFVRPRandomChangeServiceSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[3], n[4], nd, n[5], nd] as Node[])
 
 		random.nextInt(_) >>> [0,0,1,1,1,0,0,1]
@@ -308,7 +308,7 @@ class XFVRPRandomChangeServiceSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[3], n[4], nd, n[5], nd] as Node[])
 
 		random.nextInt(_) >>> [0,0,0,2,1,0,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1]

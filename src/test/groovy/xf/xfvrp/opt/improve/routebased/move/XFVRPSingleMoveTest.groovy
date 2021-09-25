@@ -79,7 +79,7 @@ class XFVRPSingleMoveTest extends Specification {
         def model = initScen()
         def n = model.getNodes()
 
-        def sol = new Solution()
+        def sol = new Solution(model)
         sol.setGiantRoute([n[0], n[3], n[1], n[2], n[4], n[0]] as Node[])
 
         when:
@@ -99,7 +99,7 @@ class XFVRPSingleMoveTest extends Specification {
         def model = initScen()
         def n = model.getNodes()
 
-        def sol = new Solution()
+        def sol = new Solution(model)
         sol.setGiantRoute([n[0], n[1], n[2], n[3], n[4], n[0]] as Node[])
 
         when:
