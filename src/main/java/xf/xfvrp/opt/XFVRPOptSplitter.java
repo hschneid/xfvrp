@@ -42,8 +42,6 @@ public class XFVRPOptSplitter {
 	private static final int ALLOWED_NBR_OF_CUSTOMERS_IN_BLOCK = 250;
 	private static final int ALLOWED_NBR_OF_NON_IMPROVES = 2;
 
-	private static int allowedNbrOfBlocks = 1;
-
 	/**
 	 * Executes the optimization by splitting a big route plan into smaller
 	 * blocks with less routes and optimizes each block independently. Afterwards
@@ -51,7 +49,7 @@ public class XFVRPOptSplitter {
 	 * improvement could be found.
 	 */
 	public Solution execute(final Solution solution, XFVRPModel model, StatusManager statusManager, XFVRPOptBase opt) throws XFVRPException {
-		init(model);
+		int allowedNbrOfBlocks = init(model);
 
 		Solution best = solution.copy();
 		float bestCost = getCost(solution, opt);
@@ -59,7 +57,7 @@ public class XFVRPOptSplitter {
 		int nbrOfTries = 0;
 		while(nbrOfTries < ALLOWED_NBR_OF_NON_IMPROVES) {
 			
-			List<Solution> blocks = splitIntoBlocks(best, opt.getRandom());
+			List<Solution> blocks = splitIntoBlocks(best, opt.getRandom(), allowedNbrOfBlocks);
 
 			Solution newSolution = optimizeBlocks(model, statusManager, opt, blocks);
 
@@ -77,8 +75,8 @@ public class XFVRPOptSplitter {
 		return best;
 	}
 
-	private void init(XFVRPModel model) {
-		allowedNbrOfBlocks = (int)Math.max(1, model.getNbrOfNodes() / (float)ALLOWED_NBR_OF_CUSTOMERS_IN_BLOCK);
+	private int init(XFVRPModel model) {
+		return (int)Math.max(1, model.getNbrOfNodes() / (float)ALLOWED_NBR_OF_CUSTOMERS_IN_BLOCK);
 	}
 
 	private Solution optimizeBlocks(XFVRPModel model, StatusManager statusManager, XFVRPOptBase opt, List<Solution> blocks) throws XFVRPException {
@@ -100,38 +98,38 @@ public class XFVRPOptSplitter {
 	 * blocks is precalculated by the average number of customers
 	 * in a block. A route can not be split into two routes.
 	 */
-	private static List<Solution> splitIntoBlocks(Solution solution, Random random) {
-		List<Node>[] blocks = initBlocks();
+	private static List<Solution> splitIntoBlocks(Solution solution, Random random, int allowedNbrOfBlocks) {
+		List<Node[]>[] blocks = initBlocks(allowedNbrOfBlocks);
 
 		fillRoutesIntoBlocks(solution, blocks, random);
 
 		return convertToSolutions(solution, blocks);
 	}
 
-	private static List<Solution> convertToSolutions(Solution solution, List<Node>[] blocks) {
+	private static List<Solution> convertToSolutions(Solution solution, List<Node[]>[] blocks) {
 		return Arrays.stream(blocks)
 				.filter(b -> b.size() > 0)
-				.map(b -> {
+				.map(block -> {
 					Solution sol = new Solution(solution.getModel());
-					sol.setGiantRoute(b.toArray(new Node[0]));
-					return solution;
+					for (Node[] route : block) {
+						sol.addRoute(route);
+					}
+					return sol;
 				})
 				.collect(Collectors.toList());
 	}
 
-	private static void fillRoutesIntoBlocks(Solution solution, List<Node>[] blocks, Random random) {
+	private static void fillRoutesIntoBlocks(Solution solution, List<Node[]>[] blocks, Random random) {
 		for (Node[] route : solution) {
 			// Each route is 1 block
-			int blockIdx = random.nextInt(allowedNbrOfBlocks);
-			// Store nodes per block
-			for (Node node : route) {
-				blocks[blockIdx].add(node);
-			}
+			int blockIdx = random.nextInt(blocks.length);
+			// Store routes per block
+			blocks[blockIdx].add(route);
 		}
 	}
 
-	private static List<Node>[] initBlocks() {
-		List<Node>[] blocks = new ArrayList[allowedNbrOfBlocks];
+	private static List<Node[]>[] initBlocks(int allowedNbrOfBlocks) {
+		List<Node[]>[] blocks = new ArrayList[allowedNbrOfBlocks];
 		for (int i = 0; i < blocks.length; i++)
 			blocks[i] = new ArrayList<>();
 		return blocks;

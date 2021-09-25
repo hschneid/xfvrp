@@ -1,77 +1,48 @@
 package xf.xfvrp.opt
 
-import cern.colt.list.FloatArrayList
-import com.fasterxml.jackson.databind.ObjectMapper
+
 import spock.lang.Specification
 import xf.xfvrp.XFVRP
-import xf.xfvrp.base.LoadType
+import xf.xfvrp.base.SiteType
 import xf.xfvrp.base.metric.EucledianMetric
 import xf.xfvrp.base.monitor.DefaultStatusMonitor
 
-import java.util.concurrent.atomic.AtomicInteger
-
 class XFVRPOptSplitterIntSpec extends Specification {
 
+	def rand = new Random(1234)
+
 	def "Optimize with activated route splitting"() {
-		XFVRP xfvrp = build(new File("./src/test/resources/with_route_plan_splitting.json"))
+		XFVRP xfvrp = build()
 		xfvrp.allowsRoutePlanSplitting()
 
 		when:
 		xfvrp.executeRoutePlanning()
 
 		then:
-		1 == 1
+		// Number is customers fits
+		xfvrp.getReport().getRoutes().sum {route -> route.events.findAll {e -> e.siteType == SiteType.CUSTOMER}.size()} == 550
+		// Number is depots fits
+		xfvrp.getReport().getRoutes().stream().flatMap({route -> route.getEvents().stream()}).filter({e -> e.getSiteType() == SiteType.DEPOT}).map(n -> n.getID()).distinct().count() == 1
 	}
 
-	static XFVRP build(File file) {
+	private XFVRP build() {
 		XFVRP xfvrp = new XFVRP()
 		xfvrp.setStatusMonitor(new DefaultStatusMonitor())
 
-		Map<?, ?> map = new ObjectMapper().readValue(file, Map.class)
-
-		def customers = map.get("Customers")
-		def depots = map.get("Depots")
-		def vehicles = map.get("Vehicles")
-
-		vehicles.forEach((depot, depotVehicles) -> {
-			depotVehicles.forEach(vehicle -> {
-				Collection<Double> dblCap = vehicle.get("capacity")
-				FloatArrayList fltCap = new FloatArrayList()
-				dblCap.forEach(d -> fltCap.add((float)d))
-				fltCap.trimToSize()
-				xfvrp.addVehicle()
-						.setName(vehicle.get("name"))
-						.setCapacity(fltCap.elements())
-						.setMaxRouteDuration(600)
-			})
-		})
-
-		depots.forEach(depot -> {
-			xfvrp.addDepot()
-					.setExternID("DEP")
-					.setYlat((float)depot.get("lat"))
-					.setXlong((float)depot.get("lng"))
-		})
-
-		AtomicInteger counter = new AtomicInteger()
-		customers.forEach(customer -> {
-			Collection<Double> dblDemand = customer.get("amount")
-			Collection<String> vehiclesAllowed = customer.get("vehicles")
-			FloatArrayList fltDemand = new FloatArrayList()
-			dblDemand.forEach(d -> fltDemand.add((float)d))
-			fltDemand.trimToSize()
+		xfvrp.addVehicle().setCapacity(100).setName("V1")
+		xfvrp.addDepot().setXlong(10).setYlat(10).setExternID("D")
+		for (i in 0..<550) {
 			xfvrp.addCustomer()
-					.setExternID(counter.getAndIncrement()+"")
-					.setXlong((float)customer.get("lng"))
-					.setYlat((float)customer.get("lat"))
-					.setDemand(fltDemand.elements())
-					.setServiceTime((float)customer.get("serviceTime"))
-					.setLoadType(LoadType.DELIVERY)
-		})
-		println "Added " + counter + " demands."
+					.setExternID("C1"+i)
+					.setXlong(rand.nextFloat() * 20f as float)
+					.setYlat(rand.nextFloat() * 20f as float)
+					.setDemand(rand.nextInt(10) + 1)
+					.setServiceTime(5)
+		}
 
 		xfvrp.addOptType(XFVRPOptType.SAVINGS)
 		xfvrp.addOptType(XFVRPOptType.RELOCATE)
+		xfvrp.addOptType(XFVRPOptType.SWAP)
 		//xfvrp.addOptType(XFVRPOptType.PATH_RELOCATE)
 		//xfvrp.addOptType(XFVRPOptType.PATH_EXCHANGE)
 
