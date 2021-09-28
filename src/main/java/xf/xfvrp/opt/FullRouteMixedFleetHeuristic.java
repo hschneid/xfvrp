@@ -68,7 +68,7 @@ public class FullRouteMixedFleetHeuristic {
 
 			if(bestRoutes.size() > 0) {
 				// Add selected routes to overall best solution
-				vehicleSolutions.add(reconstructGiantRoute(bestRoutes, solution.getModel()));
+				vehicleSolutions.add(reconstructSolution(bestRoutes, solution.getModel()));
 
 				// Remove customers from best routes for next planning stage
 				unplannedNodes = getUnusedNodes(bestRoutes, unplannedNodes);
@@ -104,28 +104,34 @@ public class FullRouteMixedFleetHeuristic {
 	}
 
 	/**
-	 * This method constructs a giant tour for a given list of route reports
-	 * (can be found in solution objects).
+	 * This method transforms an optimization result (report) into an input for new optimization
 	 */
-	private Solution reconstructGiantRoute(List<RouteReport> routes, XFVRPModel model) {
+	private Solution reconstructSolution(List<RouteReport> routes, XFVRPModel model) {
 		Map<String, Node> nodeMap = Arrays.stream(model.getNodes()).collect(Collectors.toMap(Node::getExternID, node -> node, (v1, v2) -> v1));
 
-		AtomicInteger depotId = new AtomicInteger(0);
-		Node[] giantRoute = routes.stream()
-				.map(RouteReport::getEvents)
-				.filter(events -> events.size() > 2)
-				.flatMap(events -> events.stream().sequential())
-				// Other nodes (PAUSE is no structural node type. It is only inserted for evaluation issues in reports.)
-				.filter(event -> event.getLoadType() != LoadType.PAUSE)
-				.map(event -> nodeMap.get(event.getID()))
-				.map(node -> {
-					if(node.getSiteType() == SiteType.DEPOT)
-						return Util.createIdNode(node, depotId.getAndIncrement());
-					return node;
-				})
-				.toArray(Node[]::new);
+		// Remove empty routes
+		routes = routes.stream()
+				.filter(route -> route.getEvents().size() > 2)
+				.collect(Collectors.toList());
 
-		return getSolution(giantRoute, model);
+		Node[][] newRoutes = new Node[routes.size()][];
+		AtomicInteger depotId = new AtomicInteger(0);
+		for (int i = 0, routesSize = routes.size(); i < routesSize; i++) {
+			RouteReport route = routes.get(i);
+			newRoutes[i] = route.getEvents()
+					.stream()
+					// Other nodes (PAUSE is no structural node type. It is only inserted for evaluation issues in reports.)
+					.filter(event -> event.getLoadType() != LoadType.PAUSE)
+					.map(event -> nodeMap.get(event.getID()))
+					.map(node -> {
+						if (node.getSiteType() == SiteType.DEPOT)
+							return Util.createIdNode(node, depotId.getAndIncrement());
+						return node;
+					})
+					.toArray(Node[]::new);
+		}
+
+		return getSolution(newRoutes, model);
 	}
 
 	private Solution insertUnplannedNodes(
@@ -153,7 +159,7 @@ public class FullRouteMixedFleetHeuristic {
 		Node[] nodes = unplannedNodes.toArray(new Node[0]);
 		IntStream.range(0, nodes.length).forEach(i -> nodes[i].setIdx(i));
 
-		Solution giantRoute = buildGiantRouteForInvalidNodes(unplannedCustomers, nodes[0], statusManager);
+		Solution giantRoute = buildSolutionForInvalidNodes(unplannedCustomers, nodes[0], statusManager);
 
 		Vehicle invalidVehicle = InvalidVehicle.createInvalid(unplannedCustomers.get(0).getDemand().length);
 
@@ -173,16 +179,14 @@ public class FullRouteMixedFleetHeuristic {
 
 	/**
 	 * Invalid customers are excluded from optimization. Afterwards they
-	 * have to be included to the result. This method builds a giant route with
+	 * have to be included to the result. This method builds a solution with
 	 * the excluded customer nodes. 
-	 * For a given set of invalid nodes, a giant tour is created, where each invalid
+	 * For a given set of invalid nodes, a new route is created, where each invalid
 	 * node is on a single route.
 	 */
-	private Solution buildGiantRouteForInvalidNodes(List<Node> unplannedNodes, Node depot, StatusManager statusManager) {
+	private Solution buildSolutionForInvalidNodes(List<Node> unplannedNodes, Node depot, StatusManager statusManager) {
 		if(unplannedNodes.size() == 0)
 			return getSolution(null, null);
-
-		Node[] giantRoute = new Node[unplannedNodes.size() * 2 + 2];
 
 		// Cluster blocked nodes
 		List<Node> unplannedSingles = new ArrayList<>();
@@ -194,16 +198,17 @@ public class FullRouteMixedFleetHeuristic {
 				unplannedSingles.add(node);
 		});
 
-		// A dummy depot is needed. So first depot is taken, which is obligatory.
 		int maxDepotId = 0;
-		giantRoute[0] = Util.createIdNode(depot, maxDepotId++);
-		int i = 1;
+		List<Node[]> invalidRoutes = new ArrayList<>();
 
 		// Add invalid nodes with no block preset on single routes
 		for (Node node : unplannedSingles) {
 			statusManager.fireMessage(StatusCode.EXCEPTION, "Warning: Invalid node " + node.toString() + " Reason: " + node.getInvalidReason());
-			giantRoute[i++] = node;
-			giantRoute[i++] = Util.createIdNode(depot, maxDepotId++);
+			Node[] route = new Node[3];
+			route[0] = Util.createIdNode(depot, maxDepotId++);
+			route[1] = node;
+			route[2] = route[0];
+			invalidRoutes.add(route);
 		}
 
 		// Add invalid nodes with block preset
@@ -211,23 +216,32 @@ public class FullRouteMixedFleetHeuristic {
 			// Right order of preset sequence positions
 			block.sort(Comparator.comparingInt(Node::getPresetBlockPos));
 
+			Node[] route = new Node[block.size() + 2];
+
 			// Add nodes of block in preset sequence ordering
-			for (Node node : block) {
+			route[0] = Util.createIdNode(depot, maxDepotId++);
+			for (int k = 0, blockSize = block.size(); k < blockSize; k++) {
+				Node node = block.get(k);
 				statusManager.fireMessage(StatusCode.EXCEPTION, "Warning: Invalid node " + node.toString() + " Reason: " + node.getInvalidReason());
-				giantRoute[i++] = node;
+				route[k + 1] = node;
 			}
-			giantRoute[i++] = Util.createIdNode(depot, maxDepotId++);
+			route[route.length - 1] = route[0];
+
+			invalidRoutes.add(route);
 		}
 
-		return getSolution(Arrays.copyOf(giantRoute, i), null);
+		return getSolution(invalidRoutes.toArray(new Node[0][]), null);
 	}
 
-	private Solution getSolution(Node[] giantRoute, XFVRPModel model) {
-		if(giantRoute == null)
-			giantRoute = new Node[0];
+	private Solution getSolution(Node[][] routes, XFVRPModel model) {
+		if(routes == null)
+			routes = new Node[0][0];
 
 		Solution solution = new Solution(model);
-		solution.setGiantRoute(giantRoute);
+		for (Node[] route : routes) {
+			solution.addRoute(route);
+		}
 		return solution;
 	}
+
 }

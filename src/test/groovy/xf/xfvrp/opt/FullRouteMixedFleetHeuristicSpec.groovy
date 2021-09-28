@@ -134,7 +134,7 @@ class FullRouteMixedFleetHeuristicSpec extends Specification {
 		def routes = [routeReport1, routeReport3, routeReport2] as List<RouteReport>
 
 		when:
-		def result = service.reconstructGiantRoute(routes, model)
+		def result = service.reconstructSolution(routes, model)
 		def gT = result.getGiantRoute()
 
 		then:
@@ -144,10 +144,9 @@ class FullRouteMixedFleetHeuristicSpec extends Specification {
 		gT[1].externID == 'n1'
 		gT[2].externID == 'n2'
 		gT[3].externID == 'nD'
-		gT[4].externID == 'nD'
-		gT[5].externID == 'n3'
-		gT[6].externID == 'n4'
-		gT[7].externID == 'nD'
+		gT[4].externID == 'n3'
+		gT[5].externID == 'n4'
+		gT[6].externID == 'nD'
 	}
 
 	def "Reconstruct giant route - empty routes"() {
@@ -168,7 +167,7 @@ class FullRouteMixedFleetHeuristicSpec extends Specification {
 		def routes = [] as List<RouteReport>
 
 		when:
-		def result = service.reconstructGiantRoute(routes, model)
+		def result = service.reconstructSolution(routes, model)
 		def gT = result.getGiantRoute()
 
 		then:
@@ -183,7 +182,7 @@ class FullRouteMixedFleetHeuristicSpec extends Specification {
 		def n2 = new TestNode(externID: 'n2', siteType: SiteType.CUSTOMER).getNode()
 
 		when:
-		def result = service.buildGiantRouteForInvalidNodes([n1, n2] as List<Node>, depot, statusManager)
+		def result = service.buildSolutionForInvalidNodes([n1, n2] as List<Node>, depot, statusManager)
 		def gT = result.getGiantRoute()
 
 		then:
@@ -205,7 +204,7 @@ class FullRouteMixedFleetHeuristicSpec extends Specification {
 		def n3 = new TestNode(externID: 'n3', siteType: SiteType.CUSTOMER, presetBlockIdx: 2).getNode()
 
 		when:
-		def result = service.buildGiantRouteForInvalidNodes([n1, n2, n3] as List<Node>, depot, statusManager)
+		def result = service.buildSolutionForInvalidNodes([n1, n2, n3] as List<Node>, depot, statusManager)
 		def gT = result.getGiantRoute()
 
 		then:
@@ -225,7 +224,7 @@ class FullRouteMixedFleetHeuristicSpec extends Specification {
 		def depot = new TestNode(externID: 'nD', siteType: SiteType.DEPOT).getNode()
 
 		when:
-		def result = service.buildGiantRouteForInvalidNodes([] as List<Node>, depot, statusManager)
+		def result = service.buildSolutionForInvalidNodes([] as List<Node>, depot, statusManager)
 		def gT = result.getGiantRoute()
 
 		then:
@@ -351,10 +350,9 @@ class FullRouteMixedFleetHeuristicSpec extends Specification {
 		s1.getGiantRoute()[1].externID == 'n1'
 		s1.getGiantRoute()[2].externID == 'n2'
 		s1.getGiantRoute()[3].externID == 'nD'
-		s1.getGiantRoute()[4].externID == 'nD'
-		s1.getGiantRoute()[5].externID == 'n3'
-		s1.getGiantRoute()[6].externID == 'n4'
-		s1.getGiantRoute()[7].externID == 'nD'
+		s1.getGiantRoute()[4].externID == 'n3'
+		s1.getGiantRoute()[5].externID == 'n4'
+		s1.getGiantRoute()[6].externID == 'nD'
 		s2.getGiantRoute()[0].externID == 'nD'
 		s2.getGiantRoute()[1].externID == 'n5'
 		s2.getGiantRoute()[2].externID == 'nD'
