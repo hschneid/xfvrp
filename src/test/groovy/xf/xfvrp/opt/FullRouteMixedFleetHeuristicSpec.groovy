@@ -175,18 +175,20 @@ class FullRouteMixedFleetHeuristicSpec extends Specification {
 		gT.length == 0
 	}
 
-	def "Build Giant Route For Invalid Nodes - normal"() {
+	def "Build solution For Invalid Nodes - normal"() {
 		def statusManager = Stub StatusManager
 		def depot = new TestNode(externID: 'nD', siteType: SiteType.DEPOT).getNode()
 		def n1 = new TestNode(externID: 'n1', siteType: SiteType.CUSTOMER).getNode()
 		def n2 = new TestNode(externID: 'n2', siteType: SiteType.CUSTOMER).getNode()
+		def model = Stub XFVRPModel
 
 		when:
-		def result = service.buildSolutionForInvalidNodes([n1, n2] as List<Node>, depot, statusManager)
+		def result = service.buildSolutionForInvalidNodes([n1, n2] as List<Node>, depot, model, statusManager)
 		def gT = result.getGiantRoute()
 
 		then:
 		result != null
+		result.model == model
 		gT != null
 		gT.length == 5
 		gT[0].externID == 'nD'
@@ -196,15 +198,16 @@ class FullRouteMixedFleetHeuristicSpec extends Specification {
 		gT[4].externID == 'nD'
 	}
 
-	def "Build Giant Route For Invalid Nodes - with Blocks"() {
+	def "Build solution For Invalid Nodes - with Blocks"() {
 		def statusManager = Stub StatusManager
 		def depot = new TestNode(externID: 'nD', siteType: SiteType.DEPOT).getNode()
 		def n1 = new TestNode(externID: 'n1', siteType: SiteType.CUSTOMER, presetBlockIdx: 2).getNode()
 		def n2 = new TestNode(externID: 'n2', siteType: SiteType.CUSTOMER, presetBlockIdx: BlockNameConverter.DEFAULT_BLOCK_IDX).getNode()
 		def n3 = new TestNode(externID: 'n3', siteType: SiteType.CUSTOMER, presetBlockIdx: 2).getNode()
+		def model = Stub XFVRPModel
 
 		when:
-		def result = service.buildSolutionForInvalidNodes([n1, n2, n3] as List<Node>, depot, statusManager)
+		def result = service.buildSolutionForInvalidNodes([n1, n2, n3] as List<Node>, depot, model, statusManager)
 		def gT = result.getGiantRoute()
 
 		then:
@@ -219,12 +222,13 @@ class FullRouteMixedFleetHeuristicSpec extends Specification {
 		gT[5].externID == 'nD'
 	}
 
-	def "Build Giant Route For Invalid Nodes - no unplanned"() {
+	def "Build solution For Invalid Nodes - no unplanned"() {
 		def statusManager = Stub StatusManager
 		def depot = new TestNode(externID: 'nD', siteType: SiteType.DEPOT).getNode()
+		def model = Stub XFVRPModel
 
 		when:
-		def result = service.buildSolutionForInvalidNodes([] as List<Node>, depot, statusManager)
+		def result = service.buildSolutionForInvalidNodes([] as List<Node>, depot, model, statusManager)
 		def gT = result.getGiantRoute()
 
 		then:

@@ -155,26 +155,25 @@ public class FullRouteMixedFleetHeuristic {
 				.filter(n -> n.getInvalidReason() == InvalidReason.NONE)
 				.forEach(n -> n.setInvalidReason(InvalidReason.UNPLANNED));
 
+		// Create solution with single routes for each invalid node
 		// Set local index
 		Node[] nodes = unplannedNodes.toArray(new Node[0]);
 		IntStream.range(0, nodes.length).forEach(i -> nodes[i].setIdx(i));
+		XFVRPModel model = createModelForInvalids(metric, parameter, unplannedCustomers, nodes);
 
-		Solution giantRoute = buildSolutionForInvalidNodes(unplannedCustomers, nodes[0], statusManager);
+		return buildSolutionForInvalidNodes(unplannedCustomers, nodes[0], model, statusManager);
+	}
 
+	private XFVRPModel createModelForInvalids(Metric metric, XFVRPParameter parameter, List<Node> unplannedCustomers, Node[] nodes) {
 		Vehicle invalidVehicle = InvalidVehicle.createInvalid(unplannedCustomers.get(0).getDemand().length);
-
-		// Create solution with single routes for each invalid node
 		InternalMetric internalMetric = AcceleratedMetricTransformator.transform(metric, nodes, invalidVehicle);
-
-		Solution newSolution = new Solution(new XFVRPModel(
+		return new XFVRPModel(
 				nodes,
 				internalMetric,
 				internalMetric,
 				invalidVehicle,
 				parameter
-		));
-		newSolution.setGiantRoute(giantRoute.getGiantRoute());
-		return newSolution;
+		);
 	}
 
 	/**
@@ -184,7 +183,7 @@ public class FullRouteMixedFleetHeuristic {
 	 * For a given set of invalid nodes, a new route is created, where each invalid
 	 * node is on a single route.
 	 */
-	private Solution buildSolutionForInvalidNodes(List<Node> unplannedNodes, Node depot, StatusManager statusManager) {
+	private Solution buildSolutionForInvalidNodes(List<Node> unplannedNodes, Node depot, XFVRPModel model, StatusManager statusManager) {
 		if(unplannedNodes.size() == 0)
 			return getSolution(null, null);
 
@@ -230,7 +229,7 @@ public class FullRouteMixedFleetHeuristic {
 			invalidRoutes.add(route);
 		}
 
-		return getSolution(invalidRoutes.toArray(new Node[0][]), null);
+		return getSolution(invalidRoutes.toArray(new Node[0][]), model);
 	}
 
 	private Solution getSolution(Node[][] routes, XFVRPModel model) {
