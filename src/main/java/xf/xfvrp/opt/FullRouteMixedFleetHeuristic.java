@@ -29,13 +29,13 @@ import java.util.stream.IntStream;
  * LICENSE file in the root directory of this source tree.
  *
  * Mixed fleet heuristic
- * 
+ *
  * Choose biggest vehicle type and optimize with no
  * fleet size limitation. Afterwards the k best
  * routes are chosen. The customers on the trashed
  * routes are the base for the next run with next
  * vehicle type.
- *   
+ *
  * @author hschneid
  *
  */
@@ -79,7 +79,7 @@ public class FullRouteMixedFleetHeuristic {
 
 		// Insert invalid and unplanned nodes into solution
 		XFVRPSolution unplannedNodesSolution = insertUnplannedNodes(unplannedNodes, metric, parameter, statusManager);
-		if(unplannedNodesSolution != null) 
+		if(unplannedNodesSolution != null)
 			vehicleSolutions.add(unplannedNodesSolution);
 
 		return vehicleSolutions;
@@ -89,7 +89,7 @@ public class FullRouteMixedFleetHeuristic {
 	 * This method removes customers which are found in the given solution
 	 * from the nodeList object, which is managed by executeRoutePlanning() method.
 	 */
-	private List<Node> getUnusedNodes(List<RouteReport> routes, List<Node> unplannedNodes) {	
+	private List<Node> getUnusedNodes(List<RouteReport> routes, List<Node> unplannedNodes) {
 		Map<String, Node> nodeIdxMap = unplannedNodes.stream().collect(Collectors.toMap(Node::getExternID, node -> node, (v1, v2) -> v1));
 
 		List<Node> usedNodes = routes.stream()
@@ -132,7 +132,7 @@ public class FullRouteMixedFleetHeuristic {
 
 	private XFVRPSolution insertUnplannedNodes(
 			List<Node> unplannedNodes,
-			Metric metric, 
+			Metric metric,
 			XFVRPParameter parameter,
 			StatusManager statusManager) throws XFVRPException {
 
@@ -148,8 +148,8 @@ public class FullRouteMixedFleetHeuristic {
 
 		// Set unplanned reason, for valid nodes
 		unplannedCustomers.stream()
-		.filter(n -> n.getInvalidReason() == InvalidReason.NONE)
-		.forEach(n -> n.setInvalidReason(InvalidReason.UNPLANNED));
+				.filter(n -> n.getInvalidReason() == InvalidReason.NONE)
+				.forEach(n -> n.setInvalidReason(InvalidReason.UNPLANNED));
 
 		// Set local index
 		Node[] nodes = unplannedNodes.toArray(new Node[0]);
@@ -167,11 +167,11 @@ public class FullRouteMixedFleetHeuristic {
 				new XFVRPModel(
 						nodes,
 						internalMetric,
-						internalMetric, 
+						internalMetric,
 						invalidVehicle,
 						parameter
-						)
-				);
+				)
+		);
 	}
 
 	/**
@@ -231,6 +231,6 @@ public class FullRouteMixedFleetHeuristic {
 
 		Solution solution = new Solution();
 		solution.setGiantRoute(giantRoute);
-		return solution;		
+		return solution;
 	}
 }
