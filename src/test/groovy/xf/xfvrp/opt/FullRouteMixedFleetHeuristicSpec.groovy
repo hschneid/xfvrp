@@ -1,5 +1,6 @@
 package xf.xfvrp.opt
 
+import spock.lang.Ignore
 import spock.lang.Specification
 import util.instances.TestNode
 import util.instances.TestVehicle
@@ -283,6 +284,7 @@ class FullRouteMixedFleetHeuristicSpec extends Specification {
 		result == null
 	}
 
+	@Ignore
 	def "Execute - normal"() {
 		def parameter = Stub XFVRPParameter
 		def statusManager = Stub StatusManager
@@ -360,7 +362,7 @@ class FullRouteMixedFleetHeuristicSpec extends Specification {
 		s3.getSolution().getGiantRoute()[1].externID == 'n6'
 		s3.getSolution().getGiantRoute()[2].externID == 'nD'
 	}
-	
+
 	def "Execute - no vehicles"() {
 		def parameter = Stub XFVRPParameter
 		def statusManager = Stub StatusManager
