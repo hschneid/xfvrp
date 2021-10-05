@@ -89,7 +89,11 @@ public class Vehicle {
 
 		this.priority = priority;
 	}
-
+	
+	public void setCapacity(float[] capacity) {
+		this.capacity = capacity;
+	}
+	
 	private float[] transform(List<CompartmentCapacity> capacity) {
 		float[] capacityArray = new float[capacity.size() * CompartmentLoadType.NBR_OF_LOAD_TYPES];
 		Arrays.fill(capacityArray, Float.MAX_VALUE);

@@ -8,7 +8,7 @@ import xf.xfvrp.base.fleximport.CustomerData
 
 class BlockNameConverterSpec extends Specification {
 
-	def service = new BlockNameConverter();
+	def service = new BlockNameConverter()
 	
 	def "Set block index mixed"() {
 		def customers = [

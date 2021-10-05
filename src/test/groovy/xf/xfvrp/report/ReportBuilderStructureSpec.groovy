@@ -14,7 +14,7 @@ import xf.xfvrp.report.build.ReportBuilder
 
 class ReportBuilderStructureSpec extends Specification {
 
-	def service = new ReportBuilder();
+	def service = new ReportBuilder()
 
 	def nd = new TestNode(
 	externID: "DEP",
@@ -30,7 +30,7 @@ class ReportBuilderStructureSpec extends Specification {
 	timeWindow: [[0,99],[2,99]]
 	).getNode()
 
-	def sol;
+	def sol
 
 	def parameter = new XFVRPParameter()
 
@@ -44,7 +44,7 @@ class ReportBuilderStructureSpec extends Specification {
 		sol = new Solution()
 		sol.setGiantRoute([n[2], nd, n[3], n[4], nd] as Node[])
 
-		def solution = new XFVRPSolution(sol, model);
+		def solution = new XFVRPSolution(sol, model)
 
 		when:
 		def result = service.getReport(solution)
@@ -61,7 +61,7 @@ class ReportBuilderStructureSpec extends Specification {
 		sol = new Solution()
 		sol.setGiantRoute([nd, n[2], n[3], n[4]] as Node[])
 
-		def solution = new XFVRPSolution(sol, model);
+		def solution = new XFVRPSolution(sol, model)
 
 		when:
 		service.getReport(solution)
@@ -78,7 +78,7 @@ class ReportBuilderStructureSpec extends Specification {
 		sol = new Solution()
 		sol.setGiantRoute([nd, n[2], null, n[4]] as Node[])
 
-		def solution = new XFVRPSolution(sol, model);
+		def solution = new XFVRPSolution(sol, model)
 
 		when:
 		service.getReport(solution)
@@ -95,7 +95,7 @@ class ReportBuilderStructureSpec extends Specification {
 		sol = new Solution()
 		sol.setGiantRoute([nd, nd] as Node[])
 
-		def solution = new XFVRPSolution(sol, model);
+		def solution = new XFVRPSolution(sol, model)
 
 		when:
 		def result = service.getReport(solution)
@@ -113,7 +113,7 @@ class ReportBuilderStructureSpec extends Specification {
 		sol = new Solution()
 		sol.setGiantRoute([] as Node[])
 
-		def solution = new XFVRPSolution(sol, model);
+		def solution = new XFVRPSolution(sol, model)
 
 		when:
 		def result = service.getReport(solution)
@@ -130,7 +130,7 @@ class ReportBuilderStructureSpec extends Specification {
 		sol = new Solution()
 		sol.setGiantRoute(null)
 
-		def solution = new XFVRPSolution(sol, model);
+		def solution = new XFVRPSolution(sol, model)
 
 		when:
 		def result = service.getReport(solution)
@@ -147,7 +147,7 @@ class ReportBuilderStructureSpec extends Specification {
 		def sol = new Solution()
 		sol.setGiantRoute([nd, nd, nr, nr, n[2], n[3], n[4], nr, nd, nd] as Node[])
 
-		def solution = new XFVRPSolution(sol, model);
+		def solution = new XFVRPSolution(sol, model)
 		
 		when:
 		def result = service.getReport(solution)
@@ -191,15 +191,15 @@ class ReportBuilderStructureSpec extends Specification {
 				loadType: loadType)
 				.getNode()
 
-		nd.setIdx(0);
-		nr.setIdx(1);
-		n1.setIdx(2);
-		n2.setIdx(3);
-		n3.setIdx(4);
+		nd.setIdx(0)
+		nr.setIdx(1)
+		n1.setIdx(2)
+		n2.setIdx(3)
+		n3.setIdx(4)
 
-		def nodes = [nd, nr, n1, n2, n3] as Node[];
+		def nodes = [nd, nr, n1, n2, n3] as Node[]
 
-		def iMetric = new AcceleratedMetricTransformator().transform(metric, nodes, v);
+		def iMetric = new AcceleratedMetricTransformator().transform(metric, nodes, v)
 
 		return new XFVRPModel(nodes, iMetric, iMetric, v, parameter)
 	}

@@ -29,42 +29,42 @@ class ReportBuilderExtendedCompartmentCapacitySpec extends Specification {
 	}
 
 	static void initScen(XFVRP xfvrp) {
-		xfvrp.addVehicle()
+		xfvrp.getData().addVehicle()
 				.setName("V1")
 				.setCapacity([4,4,5] as float[])
 
-		xfvrp.addDepot()
+		xfvrp.getData().addDepot()
 				.setExternID("DEP")
 
-		xfvrp.addCustomer()
+		xfvrp.getData().addCustomer()
 				.setExternID("1")
 				.setXlong(1)
 				.setYlat(1)
 				.setDemand([1, 1, 1, 1] as float[])
 				.setLoadType(LoadType.DELIVERY)
 
-		xfvrp.addCustomer()
+		xfvrp.getData().addCustomer()
 				.setExternID("2")
 				.setXlong(0)
 				.setYlat(1)
 				.setDemand([2, 2] as float[])
 				.setLoadType(LoadType.DELIVERY)
 
-		xfvrp.addCustomer()
+		xfvrp.getData().addCustomer()
 				.setExternID("3")
 				.setXlong(1)
 				.setYlat(0)
 				.setDemand([3] as float[])
 				.setLoadType(LoadType.DELIVERY)
 
-		xfvrp.addCustomer()
+		xfvrp.getData().addCustomer()
 				.setExternID("4")
 				.setXlong(0)
 				.setYlat(-1)
 				.setDemand([0,0,6] as float[])
 				.setLoadType(LoadType.DELIVERY)
 
-		xfvrp.setMetric(new EucledianMetric())
+		xfvrp.getData().setMetric(new EucledianMetric())
 		xfvrp.addOptType(XFVRPOptType.RELOCATE)
 	}
 

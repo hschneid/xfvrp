@@ -1,4 +1,4 @@
-package xf.xfvrp.opt;
+package xf.xfvrp.opt.fleetmix;
 
 import xf.xfvrp.base.Vehicle;
 import xf.xfvrp.report.Report;
@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
  * This source code is licensed under the MIT License (MIT) found in the
  * LICENSE file in the root directory of this source tree.
  **/
-public class FullRouteMixedFleetSelector {
+public class MixedFleetSelector {
 
 	/**
 	 * This method searches the best k routes in a given solution

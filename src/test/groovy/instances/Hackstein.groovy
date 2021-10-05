@@ -30,7 +30,7 @@ class Hackstein extends Specification {
         }
 
         def maxValue = rep.getRoutes().stream().mapToDouble(r -> r.getEvents()
-                .stream().mapToDouble(s -> (double)s.amounts[0]).sum()).max();
+                .stream().mapToDouble(s -> (double)s.amounts[0]).sum()).max()
         println maxValue
 
         assert true
@@ -40,7 +40,7 @@ class Hackstein extends Specification {
         XFVRP xfvrp = new XFVRP()
         xfvrp.setStatusMonitor(new DefaultStatusMonitor())
 
-        Map<?, ?> map = new ObjectMapper().readValue(file, Map.class);
+        Map<?, ?> map = new ObjectMapper().readValue(file, Map.class)
 
         Collection<Map<String, ?>> customers = map.get("Customers")
         Collection<Map<String, ?>> depots = map.get("Depots")
@@ -48,32 +48,32 @@ class Hackstein extends Specification {
 
         vehicles.forEach((depot, depotVehicles) -> {
             depotVehicles.forEach(vehicle -> {
-                Collection<Double> dblCap = vehicle.get("capacity");
-                FloatArrayList fltCap = new FloatArrayList();
-                dblCap.forEach(d -> fltCap.add((float)d));
-                fltCap.trimToSize();
-                xfvrp.addVehicle()
+                Collection<Double> dblCap = vehicle.get("capacity")
+                FloatArrayList fltCap = new FloatArrayList()
+                dblCap.forEach(d -> fltCap.add((float)d))
+                fltCap.trimToSize()
+                xfvrp.getData().addVehicle()
                         .setName(vehicle.get("name"))
                         .setCapacity(fltCap.elements())
-                        .setMaxRouteDuration(600);
-            });
+                        .setMaxRouteDuration(600)
+            })
         })
 
         depots.forEach(depot -> {
-            xfvrp.addDepot()
+            xfvrp.getData().addDepot()
                     .setExternID("DEP")
                     .setYlat((float)depot.get("lat"))
                     .setXlong((float)depot.get("lng"))
-        });
+        })
 
-        AtomicInteger counter = new AtomicInteger();
+        AtomicInteger counter = new AtomicInteger()
         customers.forEach(customer -> {
-            Collection<Double> dblDemand = customer.get("amount");
-            Collection<String> vehiclesAllowed = customer.get("vehicles");
-            FloatArrayList fltDemand = new FloatArrayList();
-            dblDemand.forEach(d -> fltDemand.add((float)d));
-            fltDemand.trimToSize();
-            var cust = xfvrp.addCustomer()
+            Collection<Double> dblDemand = customer.get("amount")
+            Collection<String> vehiclesAllowed = customer.get("vehicles")
+            FloatArrayList fltDemand = new FloatArrayList()
+            dblDemand.forEach(d -> fltDemand.add((float)d))
+            fltDemand.trimToSize()
+            var cust = xfvrp.getData().addCustomer()
                     .setExternID(counter.getAndIncrement()+"")
                     .setXlong((float)customer.get("lng"))
                     .setYlat((float)customer.get("lat"))
@@ -81,7 +81,7 @@ class Hackstein extends Specification {
                     .setServiceTime((float)customer.get("serviceTime"))
                     .setLoadType(LoadType.DELIVERY)
             if (vehiclesAllowed != null && vehiclesAllowed.size() > 0)
-                cust.setPresetBlockVehicleList(new HashSet<String>(vehiclesAllowed));
+                cust.setPresetBlockVehicleList(new HashSet<String>(vehiclesAllowed))
         })
         println "Added " + counter + " demands."
 
@@ -90,7 +90,7 @@ class Hackstein extends Specification {
         //xfvrp.addOptType(XFVRPOptType.PATH_RELOCATE)
         //xfvrp.addOptType(XFVRPOptType.PATH_EXCHANGE)
 
-        xfvrp.setMetric(new EucledianMetric())
+        xfvrp.getData().setMetric(new EucledianMetric())
 
         return xfvrp
     }
