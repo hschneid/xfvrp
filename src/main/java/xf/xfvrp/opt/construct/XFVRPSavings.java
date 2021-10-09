@@ -269,12 +269,14 @@ public class XFVRPSavings extends XFVRPOptBase {
 
 	/**
 	 * Creates the initial list of lists where each
-	 * sub list is a route.
+	 * sub list is a route. Each savings route contains only Customer nodes.
 	 */
-	private SavingsDataBag buildRoutes(Node[] giantRoute) {
+	private SavingsDataBag buildRoutes(Solution solution) {
 		SavingsDataBag dataBag = new SavingsDataBag();
 
-		Node[][] routeArr = new Node[giantRoute.length][];
+		Node[][] routeArr = new Node[solution.getRoutes().length][];
+
+
 
 		int idx = 0;
 		for (int i = 0; i < giantRoute.length; i++) {
