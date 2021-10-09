@@ -9,7 +9,7 @@ import xf.xfvrp.base.SiteType
 
 class PDPPreCheckServiceSpec extends Specification {
 
-	def service = new PDPPreCheckService();
+	def service = new PDPPreCheckService()
 	def nd = new TestNode(externID: "nd").getNode()
 	def nd2 = new TestNode(externID: "nd2").getNode()
 	def nr = new TestNode(externID: "nr").getNode()

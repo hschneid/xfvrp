@@ -10,7 +10,7 @@ import xf.xfvrp.opt.Solution
 
 class EvaluationServiceStopSpec extends Specification {
 
-	def service = new EvaluationService();
+	def service = new EvaluationService()
 
 	def nd = new TestNode(
 	externID: "DEP",
@@ -26,7 +26,7 @@ class EvaluationServiceStopSpec extends Specification {
 	timeWindow: [[0,99],[2,99]]
 	).getNode()
 
-	def sol;
+	def sol
 
 	def parameter = new XFVRPParameter()
 
@@ -145,9 +145,9 @@ class EvaluationServiceStopSpec extends Specification {
 		n3.setIdx(4)
 		n4.setIdx(5)
 
-		def nodes = [nd, nr, n1, n2, n3, n4] as Node[];
+		def nodes = [nd, nr, n1, n2, n3, n4] as Node[]
 
-		def iMetric = new AcceleratedMetricTransformator().transform(metric, nodes, v);
+		def iMetric = new AcceleratedMetricTransformator().transform(metric, nodes, v)
 
 		return new XFVRPModel(nodes, iMetric, iMetric, v, parameter)
 	}

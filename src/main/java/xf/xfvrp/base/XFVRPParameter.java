@@ -2,6 +2,9 @@ package xf.xfvrp.base;
 
 import java.io.Serializable;
 
+import xf.xfvrp.opt.fleetmix.DefaultMixedFleetHeuristic;
+import xf.xfvrp.opt.fleetmix.IMixedFleetHeuristic;
+
 /** 
  * Copyright (c) 2012-2021 Holger Schneider
  * All rights reserved.
@@ -56,6 +59,8 @@ public class XFVRPParameter implements Serializable {
 	 * Parameter for planning a pickup-and-delivery problem (dial-a-ride)
 	 */
 	private boolean isWithPDP = false;
+	
+	IMixedFleetHeuristic mixedFleetHeuristic = new DefaultMixedFleetHeuristic();
 	
 	/**
 	 * Reset of all parameters to default value
@@ -204,5 +209,13 @@ public class XFVRPParameter implements Serializable {
 	 */
 	public void setMaxRunningTimeInSec(long maxRunningTimeInSec) {
 		this.maxRunningTimeInSec = maxRunningTimeInSec;
+	}
+	
+	public IMixedFleetHeuristic getMixedFleetHeuristic() {
+		return mixedFleetHeuristic;
+	}
+	
+	public void setMixedFleetHeuristic(IMixedFleetHeuristic mixedFleetHeuristic) {
+		this.mixedFleetHeuristic = mixedFleetHeuristic;
 	}
 }

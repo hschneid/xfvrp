@@ -45,7 +45,7 @@ public class XFVRPInstanceBridge {
 		}
 
 		for (VehicleProfile vehicle : instance.getFleet().getVehicleProfile()) {
-			vrp.addVehicle()
+			vrp.getData().addVehicle()
 			.setName(vehicle.getType().toString())
 			.setCapacity(new float[]{vehicle.getCapacity().floatValue()});
 		}
@@ -58,7 +58,7 @@ public class XFVRPInstanceBridge {
 	private void addCustomer(Node node, Map<String, Request> requests, XFVRP vrp) {
 		String nodeId = node.getId().toString();
 
-		vrp.addCustomer()
+		vrp.getData().addCustomer()
 		.setExternID(nodeId)
 		.setXlong(node.getCx().floatValue())
 		.setYlat(node.getCy().floatValue())
@@ -67,7 +67,7 @@ public class XFVRPInstanceBridge {
 	}
 
 	private void addDepot(Node node, XFVRP vrp) {
-		vrp.addDepot()
+		vrp.getData().addDepot()
 		.setExternID(node.getId().toString())
 		.setXlong(node.getCx().floatValue())
 		.setYlat(node.getCy().floatValue());
@@ -79,7 +79,7 @@ public class XFVRPInstanceBridge {
 		vrp.addOptType(XFVRPOptType.SWAP);
 		vrp.addOptType(XFVRPOptType.PATH_RELOCATE);*/
 		vrp.addOptType(XFVRPOptType.ILS);
-		vrp.setNbrOfLoopsForILS(20000);
+		vrp.getParameters().setNbrOfILSLoops(20000);
 
 		/*vrp.setPredefinedSolutionString(
 				"{(200,194,158,192,184,190,43,199,197,136,1,191,196,66,200),"+
@@ -100,7 +100,7 @@ public class XFVRPInstanceBridge {
 						"(200,95,151,117,63,107,24,144,74,49,182,67,188,200)}"
 				);*/
 
-		vrp.setMetric(new EucledianMetric());
+		vrp.getData().setMetric(new EucledianMetric());
 		vrp.executeRoutePlanning();
 
 		Report report = vrp.getReport();

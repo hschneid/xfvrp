@@ -54,3 +54,8 @@ Temporary Items
 
 # Hidden credentials
 application-secret.properties
+
+.project
+.classpath
+/.settings/
+/target/

@@ -8,7 +8,7 @@ import xf.xfvrp.base.fleximport.CustomerData
 
 class PresetBlacklistedNodeConverterSpec extends Specification {
 
-	def service = new PresetBlacklistedNodeConverter();
+	def service = new PresetBlacklistedNodeConverter()
 	
 	def "Set blacklisted node index"() {
 		def customers = [

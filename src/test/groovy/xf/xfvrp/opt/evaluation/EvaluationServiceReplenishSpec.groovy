@@ -10,7 +10,7 @@ import xf.xfvrp.opt.Solution
 
 class EvaluationServiceReplenishSpec extends Specification {
 
-	def service = new EvaluationService();
+	def service = new EvaluationService()
 
 	def nd = new TestNode(
 			externID: "DEP",
@@ -21,7 +21,7 @@ class EvaluationServiceReplenishSpec extends Specification {
 
 	Node nr
 
-	def sol;
+	def sol
 
 	def parameter = new XFVRPParameter()
 

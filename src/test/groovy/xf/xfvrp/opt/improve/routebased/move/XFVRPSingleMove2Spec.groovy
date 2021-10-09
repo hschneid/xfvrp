@@ -10,7 +10,7 @@ import xf.xfvrp.opt.Solution
 
 class XFVRPSingleMove2Spec extends Specification {
 
-	def service = new XFVRPSingleMove();
+	def service = new XFVRPSingleMove()
 
 	def nd = new TestNode(
 	externID: "DEP",
@@ -114,15 +114,15 @@ class XFVRPSingleMove2Spec extends Specification {
 				loadType: LoadType.DELIVERY)
 				.getNode()
 
-		nd.setIdx(0);
-		nd2.setIdx(1);
-		n1.setIdx(2);
-		n2.setIdx(3);
-		n3.setIdx(4);
+		nd.setIdx(0)
+		nd2.setIdx(1)
+		n1.setIdx(2)
+		n2.setIdx(3)
+		n3.setIdx(4)
 
-		def nodes = [nd, nd2, n1, n2, n3] as Node[];
+		def nodes = [nd, nd2, n1, n2, n3] as Node[]
 
-		def iMetric = new AcceleratedMetricTransformator().transform(metric, nodes, v);
+		def iMetric = new AcceleratedMetricTransformator().transform(metric, nodes, v)
 
 		return new XFVRPModel(nodes, iMetric, iMetric, v, parameter)
 	}
@@ -161,15 +161,15 @@ class XFVRPSingleMove2Spec extends Specification {
 				loadType: LoadType.DELIVERY)
 				.getNode()
 
-		nd.setIdx(0);
-		nd2.setIdx(1);
-		n1.setIdx(2);
-		n2.setIdx(3);
-		n3.setIdx(4);
+		nd.setIdx(0)
+		nd2.setIdx(1)
+		n1.setIdx(2)
+		n2.setIdx(3)
+		n3.setIdx(4)
 
-		def nodes = [nd, nd2, n1, n2, n3] as Node[];
+		def nodes = [nd, nd2, n1, n2, n3] as Node[]
 
-		def iMetric = new AcceleratedMetricTransformator().transform(metric, nodes, v);
+		def iMetric = new AcceleratedMetricTransformator().transform(metric, nodes, v)
 
 		return new XFVRPModel(nodes, iMetric, iMetric, v, parameter)
 	}

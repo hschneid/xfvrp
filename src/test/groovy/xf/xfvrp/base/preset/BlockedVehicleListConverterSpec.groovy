@@ -11,7 +11,7 @@ import xf.xfvrp.base.monitor.StatusManager
 
 class BlockedVehicleListConverterSpec extends Specification {
 
-	def service = new BlockedVehicleListConverter();
+	def service = new BlockedVehicleListConverter()
 	def statusManager = Mock StatusManager
 	
 	def "Set blocked vehicle index"() {

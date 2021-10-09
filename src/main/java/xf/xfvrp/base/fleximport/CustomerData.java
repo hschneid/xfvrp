@@ -244,10 +244,14 @@ public class CustomerData extends NodeData {
 
 	///////////////////////////////////////
 
+	public float[] getDemand() {
+		return demand;
+	}
+
 	/**
 	 * @return the serviceTime
 	 */
-	float getServiceTime() {
+	public float getServiceTime() {
 		return serviceTime;
 	}
 

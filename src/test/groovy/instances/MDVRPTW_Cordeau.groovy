@@ -72,7 +72,7 @@ class MDVRPTW_Cordeau extends Specification {
 
         // xfvrp.setStatusMonitor(new DefaultStatusMonitor())
 
-        List<String> lines = Files.readAllLines(file.toPath());
+        List<String> lines = Files.readAllLines(file.toPath())
         float[] headerData = split(lines.get(0))
         float[] depotData = split(lines.get(1))
         int nbrOfDepots = (int)headerData[3]

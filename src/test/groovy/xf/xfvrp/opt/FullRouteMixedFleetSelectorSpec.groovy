@@ -2,12 +2,13 @@ package xf.xfvrp.opt
 
 import spock.lang.Specification
 import util.instances.TestVehicle
+import xf.xfvrp.opt.fleetmix.MixedFleetSelector
 import xf.xfvrp.report.Report
 import xf.xfvrp.report.RouteReport
 
 class FullRouteMixedFleetSelectorSpec extends Specification {
 
-	def service = new FullRouteMixedFleetSelector()
+	def service = new MixedFleetSelector()
 
 	def testVehicle
 	def routeReport
@@ -27,7 +28,7 @@ class FullRouteMixedFleetSelectorSpec extends Specification {
 
 	def "Get quality - normal"() {
 		when:
-		def result = service.getQuality(routeReport);
+		def result = service.getQuality(routeReport)
 
 		then:
 		result != null
@@ -38,7 +39,7 @@ class FullRouteMixedFleetSelectorSpec extends Specification {
 	def "Get quality - with delay"() {
 		routeReport.getSummary().delay = 1
 		when:
-		def result = service.getQuality(routeReport);
+		def result = service.getQuality(routeReport)
 
 		then:
 		result != null
@@ -53,7 +54,7 @@ class FullRouteMixedFleetSelectorSpec extends Specification {
 		routeReport.getSummary().delay = 0
 		
 		when:
-		def result = service.getQuality(routeReport);
+		def result = service.getQuality(routeReport)
 
 		then:
 		result != null
@@ -67,7 +68,7 @@ class FullRouteMixedFleetSelectorSpec extends Specification {
 		def solution = Stub Solution
 		solution.getGiantRoute() >> []
 		
-		def report = new Report(solution, null);
+		def report = new Report(solution, null)
 		def routeReport1 = new RouteReport(testVehicle.getVehicle())
 		routeReport1.getSummary().duration = 1234
 		routeReport1.getSummary().pickups = [555]
@@ -102,7 +103,7 @@ class FullRouteMixedFleetSelectorSpec extends Specification {
 		report.add(routeReport4)
 		
 		when:
-		def result = service.getBestRoutes(testVehicle.getVehicle(), report);
+		def result = service.getBestRoutes(testVehicle.getVehicle(), report)
 		
 		then:
 		result != null
@@ -117,10 +118,10 @@ class FullRouteMixedFleetSelectorSpec extends Specification {
 		def solution = Stub Solution
 		solution.getGiantRoute() >> []
 		
-		def report = new Report(solution, null);
+		def report = new Report(solution, null)
 		
 		when:
-		def result = service.getBestRoutes(testVehicle.getVehicle(), report);
+		def result = service.getBestRoutes(testVehicle.getVehicle(), report)
 		
 		then:
 		result != null

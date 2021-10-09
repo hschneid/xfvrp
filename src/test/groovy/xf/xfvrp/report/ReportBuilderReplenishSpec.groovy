@@ -12,7 +12,7 @@ import xf.xfvrp.report.build.ReportBuilder
 
 class ReportBuilderReplenishSpec extends Specification {
 
-	def service = new ReportBuilder();
+	def service = new ReportBuilder()
 
 	def nd = new TestNode(
 			externID: "DEP",

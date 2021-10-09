@@ -6,7 +6,7 @@ import xf.xfvrp.base.Vehicle
 
 class VehiclePriorityInitialiserSpec extends Specification {
 
-	def service = new VehiclePriorityInitialiser();
+	def service = new VehiclePriorityInitialiser()
 	
 	def "Set vehicle priorities with mix"() {
 		def vehicles = [

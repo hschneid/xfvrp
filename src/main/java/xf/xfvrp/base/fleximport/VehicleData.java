@@ -135,7 +135,6 @@ public class VehicleData implements Serializable {
 	}
 
 	/**
-	 *
 	 * @param maxDrivingTimePerShift
 	 */
 	public VehicleData setMaxDrivingTimePerShift(float maxDrivingTimePerShift) {
@@ -171,58 +170,61 @@ public class VehicleData implements Serializable {
 	public static VehicleData createDefault() {
 		return new VehicleData().setName(defaultVehicleName);
 	}
-
+	
 	/**
 	 * @return the name
 	 */
-	String getName() {
+	public String getName() {
 		return name;
 	}
-	/**
-	 * @return the capacity
-	 */
-	List<CompartmentCapacity> getCapacity() {
-		return capacityPerCompartment;
+	
+	public double[] getCapacity() {
+		return capacityPerCompartment.stream().mapToDouble(c -> c.getDeliveryAndPickupCapacity()).toArray();
 	}
+	
 	/**
 	 * @return the fixCost
 	 */
-	float getFixCost() {
+	public float getFixCost() {
 		return fixCost;
 	}
+	
 	/**
 	 * @return the varCost
 	 */
-	float getVarCost() {
+	public float getVarCost() {
 		return varCost;
 	}
+	
 	/**
 	 * @return the count
 	 */
-	int getCount() {
+	public int getCount() {
 		return count;
 	}
+	
 	/**
 	 * @return the maxRouteDuration
 	 */
-	float getMaxRouteDuration() {
+	public float getMaxRouteDuration() {
 		return maxRouteDuration;
 	}
+	
 	/**
 	 * @return the maxStopCount
 	 */
-	int getMaxStopCount() {
+	public int getMaxStopCount() {
 		return maxStopCount;
 	}
 
 	/**
 	 * @return the maximal allowed time to wait at a certain node
 	 */
-	float getMaxWaitingTime() {
+	public float getMaxWaitingTime() {
 		return maxWaitingTime;
 	}
 
-	int getVehicleMetricId() {
+	public int getVehicleMetricId() {
 		return vehicleMetricId;
 	}
 	/**
