@@ -2,6 +2,7 @@ package instances
 
 import cern.colt.list.FloatArrayList
 import com.fasterxml.jackson.databind.ObjectMapper
+import spock.lang.Ignore
 import spock.lang.Specification
 import xf.xfvrp.XFVRP
 import xf.xfvrp.base.LoadType
@@ -13,6 +14,8 @@ import xf.xfvrp.report.RouteReport
 import java.util.concurrent.atomic.AtomicInteger
 
 class Hackstein extends Specification {
+
+    @Ignore
     def "test"() {
         def xfvrp = build(new File("./src/test/resources/hackstein/with_vehicle_restrictions.json"))
         when:
