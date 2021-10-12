@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>de.fhg.iml.vlog</groupId>
     <artifactId>xfvrp</artifactId>
-    <version>11.5.0-IML-SNAPSHOT</version>
+    <version>11.5.1-IML-SNAPSHOT</version>
     <name>XFVRP</name>
     <description>eXtreme Fast Vehicle Routing Problem with F-IML modification</description>
 
@@ -93,19 +93,24 @@
         </dependency>
     </dependencies>
 
+    <repositories>
+        <repository>
+            <id>gitlab-maven</id>
+            <url>https://gitlab.cc-asp.fraunhofer.de/api/v4/groups/16343/-/packages/maven</url>
+        </repository>
+    </repositories>
     <distributionManagement>
         <repository>
-            <id>nexus320-releases</id>
-            <!--suppress UnresolvedMavenProperty -->
-            <url>${nexus320-releases-push-url}</url>
+            <id>gitlab-maven</id>
+            <url>https://gitlab.cc-asp.fraunhofer.de/api/v4/projects/${CI_PROJECT_ID}/packages/maven</url>
         </repository>
         <snapshotRepository>
-            <id>nexus320-snapshots</id>
-            <!--suppress UnresolvedMavenProperty -->
-            <url>${nexus320-snapshots-push-url}</url>
+            <id>gitlab-maven</id>
+            <url>https://gitlab.cc-asp.fraunhofer.de/api/v4/projects/${CI_PROJECT_ID}/packages/maven</url>
         </snapshotRepository>
     </distributionManagement>
-    
+
+
     <build>
         <plugins>
             <plugin>
