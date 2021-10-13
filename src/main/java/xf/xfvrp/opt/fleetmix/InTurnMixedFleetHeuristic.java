@@ -1,9 +1,7 @@
 package xf.xfvrp.opt.fleetmix;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import xf.xfvrp.RoutingDataBag;
 import xf.xfvrp.base.Node;
@@ -11,14 +9,19 @@ import xf.xfvrp.base.SiteType;
 import xf.xfvrp.base.Vehicle;
 import xf.xfvrp.base.XFVRPParameter;
 import xf.xfvrp.base.exception.XFVRPException;
-import xf.xfvrp.base.fleximport.CompartmentCapacity;
 import xf.xfvrp.base.metric.Metric;
 import xf.xfvrp.base.monitor.StatusCode;
 import xf.xfvrp.base.monitor.StatusManager;
 import xf.xfvrp.base.preset.VehiclePriorityInitialiser;
 import xf.xfvrp.opt.XFVRPSolution;
+import xf.xfvrp.report.Report;
 import xf.xfvrp.report.RouteReport;
 
+/**
+ * InTurnMixedFleetHeuristic aims to distribute the set of generated routes fairly to the set of different vehicles
+ *
+ *
+ */
 public class InTurnMixedFleetHeuristic extends MixedFleetHeuristicBase implements IMixedFleetHeuristic{
 	List<XFVRPSolution> vehicleSolutions;
 	String fallbackVehicleName;
@@ -31,29 +34,23 @@ public class InTurnMixedFleetHeuristic extends MixedFleetHeuristicBase implement
 		List<Node> unplannedNodes = Arrays.asList(nodes);
 		
 		if (fallbackVehicleName != null) {
-			fallbackVehicle = Arrays.stream(vehicles).filter(v -> Objects.equals(v.name, fallbackVehicleName)).findFirst().get();
-			vehicles = Arrays.stream(vehicles).filter(v -> !Objects.equals(v.name, fallbackVehicleName)).toArray(Vehicle[]::new);
+			fallbackVehicle = Arrays.stream(vehicles).filter(v -> Objects.equals(v.getName(), fallbackVehicleName)).findFirst().get();
+			vehicles = Arrays.stream(vehicles).filter(v -> !Objects.equals(v.getName(), fallbackVehicleName)).toArray(Vehicle[]::new);
 		}
 		vehicles = VehiclePriorityInitialiser.execute(vehicles);
 		
 		vehicleSolutions = new ArrayList<>();
 		
-		int[] vehCounts = Arrays.stream(vehicles).mapToInt(v -> v.nbrOfAvailableVehicles).toArray();
+		int[] vehCounts = Arrays.stream(vehicles).mapToInt(Vehicle::getNbrOfAvailableVehicles).toArray();
 		int i = 0;
 		while (countCustomersLeft(unplannedNodes) > 0 && countVehiclesLeft(vehCounts) > 0) {
 			if (vehCounts[i] == 0) continue;
 			
 			Vehicle veh = vehicles[i];
-			statusManager.fireMessage(StatusCode.RUNNING, "Run with vehicle " + veh.name + " started.");
+			statusManager.fireMessage(StatusCode.RUNNING, "Run with vehicle " + veh.getName() + " started.");
 			
-			List<CompartmentCapacity> capacityPerCompartment = Arrays.asList(
-					new CompartmentCapacity(),
-					new CompartmentCapacity(),
-					new CompartmentCapacity());
-			Vehicle instance = new Vehicle(veh.idx, veh.name, 1, capacityPerCompartment,
-					veh.maxRouteDuration, veh.maxStopCount, veh.maxWaitingTime, veh.fixCost, veh.varCost,
-					veh.vehicleMetricId, veh.maxDrivingTimePerShift, veh.waitingTimeBetweenShifts, veh.priority);
-			instance.setCapacity(veh.capacity.clone());
+			Vehicle instance = new Vehicle(veh);
+			instance.setNbrOfAvailableVehicles(1);
 			
 			unplannedNodes = route(routePlanningFunction, unplannedNodes, instance);
 			
@@ -79,7 +76,10 @@ public class InTurnMixedFleetHeuristic extends MixedFleetHeuristicBase implement
 		XFVRPSolution solution = routePlanningFunction.apply(new RoutingDataBag(unplannedNodes.toArray(new Node[0]), instance));
 		
 		// Point out best routes for this vehicle type
-		List<RouteReport> bestRoutes = getSelector().getBestRoutes(instance, getReportBuilder().getReport(solution));
+		InTurnMixedFleetSelector selector = getSelector();
+		selector.setNumberOfRoutes(instance.getNbrOfAvailableVehicles());
+		
+		List<RouteReport> bestRoutes = selector.getBestRoutes(instance, getReportBuilder().getReport(solution));
 		
 		if (bestRoutes.size() > 0) {
 			// Add selected routes to overall best solution
@@ -101,5 +101,40 @@ public class InTurnMixedFleetHeuristic extends MixedFleetHeuristicBase implement
 	
 	private long countCustomersLeft(List<Node> unplannedNodes) {
 		return unplannedNodes.stream().filter(f -> f.getSiteType().equals(SiteType.CUSTOMER)).count();
+	}
+	
+	/**
+	 * Custom implementation of a "best" route selector
+	 * @return the route with the highest density of stops
+	 */
+	@Override
+	public InTurnMixedFleetSelector getSelector() {
+		return new InTurnMixedFleetSelector();
+	}
+	
+	private static class InTurnMixedFleetSelector implements IMixedFleetSelector {
+		int numberOfRoutes;
+		
+		@Override
+		public List<RouteReport> getBestRoutes(Vehicle veh, Report rep) {
+			List<RouteReport> routes = rep.getRoutes()
+					.stream()
+					.sorted(Comparator.comparingDouble(this::getStopDensity))
+					.collect(Collectors.toList());
+			List<RouteReport> bestRoutes = new ArrayList<>();
+			for (int i = 0; i < routes.size(); i++) {
+				if (i < numberOfRoutes)
+					bestRoutes.add(routes.get(i));
+			}
+			return bestRoutes;
+		}
+		
+		private float getStopDensity(RouteReport r) {
+			return r.getSummary().getDistance() / r.getSummary().getNbrOfStops();
+		}
+		
+		public void setNumberOfRoutes(int numberOfRoutes) {
+			this.numberOfRoutes = numberOfRoutes;
+		}
 	}
 }

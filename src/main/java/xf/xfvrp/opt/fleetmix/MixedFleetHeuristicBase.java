@@ -24,7 +24,8 @@ import xf.xfvrp.report.build.ReportBuilder;
 
 public abstract class MixedFleetHeuristicBase {
 	private final ReportBuilder reportBuilder = new ReportBuilder();
-	private MixedFleetSelector selector = new MixedFleetSelector();
+	
+	public abstract IMixedFleetSelector getSelector();
 	
 	public abstract List<XFVRPSolution> execute(
 			Node[] nodes,
@@ -174,9 +175,7 @@ public abstract class MixedFleetHeuristicBase {
 		return getSolution(Arrays.copyOf(giantRoute, i));
 	}
 	
-	public MixedFleetSelector getSelector() {
-		return selector;
-	}
+	
 	
 	public ReportBuilder getReportBuilder() {
 		return reportBuilder;

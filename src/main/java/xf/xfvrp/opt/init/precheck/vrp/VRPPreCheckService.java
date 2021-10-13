@@ -70,7 +70,7 @@ public class VRPPreCheckService  {
 	private void checkVehicleType(Node[] nodes, Vehicle vehicle, Map<Integer, List<Node>> blocks, List<Node> plannedNodes) throws XFVRPException {
 		for (Node node : nodes) {
 			if(node.getSiteType() == SiteType.CUSTOMER) {
-				if(!node.getPresetBlockVehicleList().isEmpty() && !node.getPresetBlockVehicleList().contains(vehicle.idx)) {
+				if(!node.getPresetBlockVehicleList().isEmpty() && !node.getPresetBlockVehicleList().contains(vehicle.getIdx())) {
 					// Remove invalid customer from nodes list
 					removeNode(plannedNodes, node, InvalidReason.WRONG_VEHICLE_TYPE);
 
@@ -82,7 +82,7 @@ public class VRPPreCheckService  {
 
 		// There must be customers left, otherwise input is wrong
 		if(plannedNodes.stream().noneMatch(node -> node.getSiteType() == SiteType.CUSTOMER)) {
-			throw new XFVRPException(XFVRPExceptionType.ILLEGAL_INPUT, "Not a single node is allowed for vehicle " + vehicle.name + ". Please remove it from input.");
+			throw new XFVRPException(XFVRPExceptionType.ILLEGAL_INPUT, "Not a single node is allowed for vehicle " + vehicle.getName() + ". Please remove it from input.");
 		}
 	}
 

@@ -1,5 +1,6 @@
 package xf.xfvrp.opt.evaluation
 
+import spock.lang.Ignore
 import spock.lang.Specification
 import util.instances.TestNode
 import util.instances.TestVehicle
@@ -151,6 +152,7 @@ class EvaluationServiceCapacitySpec extends Specification {
 		Math.abs(result.getCost() - 4.828) < 0.01
 	}
 
+	@Ignore
 	def "Pickup/Delivery - wrong route order"() {
 		def v = new TestVehicle(name: "V1", capacity: [3, 3]).getVehicle()
 		def model = initScen2(v)

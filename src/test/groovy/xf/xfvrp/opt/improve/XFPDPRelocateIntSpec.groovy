@@ -153,6 +153,8 @@ class XFPDPRelocateIntSpec extends Specification {
 		def iMetric = new AcceleratedMetricTransformator().transform(metric, nodes, v)
 		new ShipmentConverter().convert(nodes, customers)
 
+		parameter.setWithPDP(true)
+
 		return new XFVRPModel(nodes, iMetric, iMetric, v, parameter)
 	}
 

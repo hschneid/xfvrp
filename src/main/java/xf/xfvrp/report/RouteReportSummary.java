@@ -48,7 +48,7 @@ public class RouteReportSummary {
 	public RouteReportSummary(Vehicle vehicle) {
 		this.vehicle = vehicle;
 
-		int nbrOfCompartments = (vehicle.capacity.length / CompartmentLoadType.NBR_OF_LOAD_TYPES);
+		int nbrOfCompartments = (vehicle.getCapacity().length / CompartmentLoadType.NBR_OF_LOAD_TYPES);
 		pickups = new float[nbrOfCompartments];
 		deliveries = new float[nbrOfCompartments];
 
@@ -143,11 +143,11 @@ public class RouteReportSummary {
 	private void checkOverload(Event e) {
 		for (int compartment = 0; compartment < overloads.length; compartment++) {
 			if (deliveryLoads[compartment] > 0 && pickupLoads[compartment] == 0) {
-				overloads[compartment] += deliveryLoads[compartment] > vehicle.capacity[compartment * CompartmentLoadType.NBR_OF_LOAD_TYPES + CompartmentLoadType.DELIVERY.index()] ? e.getAmounts()[compartment] : 0;
+				overloads[compartment] += deliveryLoads[compartment] > vehicle.getCapacity()[compartment * CompartmentLoadType.NBR_OF_LOAD_TYPES + CompartmentLoadType.DELIVERY.index()] ? e.getAmounts()[compartment] : 0;
 			} else if (deliveryLoads[compartment] == 0 && pickupLoads[compartment] > 0) {
-				overloads[compartment] += pickupLoads[compartment] > vehicle.capacity[compartment * CompartmentLoadType.NBR_OF_LOAD_TYPES + CompartmentLoadType.PICKUP.index()] ? e.getAmounts()[compartment] : 0;
+				overloads[compartment] += pickupLoads[compartment] > vehicle.getCapacity()[compartment * CompartmentLoadType.NBR_OF_LOAD_TYPES + CompartmentLoadType.PICKUP.index()] ? e.getAmounts()[compartment] : 0;
 			} else if (deliveryLoads[compartment] > 0 && pickupLoads[compartment] > 0) {
-				overloads[compartment] += commonLoads[compartment] > vehicle.capacity[compartment * CompartmentLoadType.NBR_OF_LOAD_TYPES + CompartmentLoadType.MIXED.index()] ? e.getAmounts()[compartment] : 0;
+				overloads[compartment] += commonLoads[compartment] > vehicle.getCapacity()[compartment * CompartmentLoadType.NBR_OF_LOAD_TYPES + CompartmentLoadType.MIXED.index()] ? e.getAmounts()[compartment] : 0;
 			}
 		}
 	}
@@ -185,7 +185,7 @@ public class RouteReportSummary {
 	 * Cost function: fix + var * distance
 	 */
 	public float getCost() {
-		return vehicle.fixCost + distance * vehicle.varCost;
+		return vehicle.getFixCost() + distance * vehicle.getVarCost();
 	}
 
 	public float getDuration() {

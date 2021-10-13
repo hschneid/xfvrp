@@ -113,13 +113,13 @@ public class ReportBuilder {
         context.drive(dist);
 
         // check max driving time per shift restrictions
-        if(context.getDrivingTime() >= context.getModel().getVehicle().maxDrivingTimePerShift) {
+        if(context.getDrivingTime() >= context.getModel().getVehicle().getMaxDrivingTimePerShift()) {
             context.resetDrivingTime();
 
             Node waitingNode = context.getCurrentNode().copy();
             waitingNode.setSiteType(SiteType.PAUSE);
             Event e = new Event(waitingNode); // Driver Pause
-            e.setDuration(context.getModel().getVehicle().waitingTimeBetweenShifts);
+            e.setDuration(context.getModel().getVehicle().getWaitingTimeBetweenShifts());
             e.setLoadType(LoadType.PAUSE);
 
             report.add(e, context);

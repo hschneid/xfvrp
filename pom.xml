@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>de.fhg.iml.vlog</groupId>
     <artifactId>xfvrp</artifactId>
-    <version>11.5.1-IML-SNAPSHOT</version>
+    <version>11.5.2-IML-SNAPSHOT</version>
     <name>XFVRP</name>
     <description>eXtreme Fast Vehicle Routing Problem with F-IML modification</description>
 
@@ -118,8 +118,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.3</version>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <source>11</source>
+                    <target>11</target>
                     <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>

@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
  * This source code is licensed under the MIT License (MIT) found in the
  * LICENSE file in the root directory of this source tree.
  **/
-public class MixedFleetSelector {
+public class MixedFleetSelector implements IMixedFleetSelector {
 
 	/**
 	 * This method searches the best k routes in a given solution
@@ -26,7 +26,8 @@ public class MixedFleetSelector {
 	 * @param rep Solution as report object
 	 * @return List of best routes in solution report
 	 */
-	List<RouteReport> getBestRoutes(Vehicle veh, Report rep) {
+	@Override
+	public List<RouteReport> getBestRoutes(Vehicle veh, Report rep) {
 		return rep.getRoutes().stream()
 				// Get the quality of routes by the report informations
 				.map(route -> getQuality(route))
@@ -40,7 +41,7 @@ public class MixedFleetSelector {
 				})
 				// Reduce routes to the n best routes
 				.map(val -> val.route)
-				.limit(veh.nbrOfAvailableVehicles)
+				.limit(veh.getNbrOfAvailableVehicles())
 				.collect(Collectors.toList());
 	}
 
@@ -50,7 +51,7 @@ public class MixedFleetSelector {
 		Vehicle veh = route.getVehicle();
 		float time = summary.getDuration();
 		float amount = sum(summary.getPickups()) + sum(summary.getDeliveries());
-		float quality = (veh.fixCost + (veh.varCost * time)) / amount;
+		float quality = (veh.getFixCost() + (veh.getVarCost() * time)) / amount;
 		
 		if(summary.getDelay() > 0)
 			quality = Float.MAX_VALUE;

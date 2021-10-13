@@ -32,7 +32,7 @@ public class ModelBuilder {
 	 * @return Returns a model, which can be used for optimization procedures.
 	 */
 	public XFVRPModel build(Node[] nodes, Vehicle veh, Metric externalMetric, XFVRPParameter parameter, StatusManager statusManager) throws XFVRPException {
-		statusManager.fireMessage(StatusCode.RUNNING, "Initialisation of instance for vehicle "+veh.name);
+		statusManager.fireMessage(StatusCode.RUNNING, "Initialisation of instance for vehicle "+ veh.getName());
 
 		// Set local node index
 		indexNodes(nodes);
