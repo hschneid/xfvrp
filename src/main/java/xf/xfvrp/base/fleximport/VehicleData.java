@@ -177,9 +177,11 @@ public class VehicleData implements Serializable {
 	public String getName() {
 		return name;
 	}
-	
-	public double[] getCapacity() {
-		return capacityPerCompartment.stream().mapToDouble(c -> c.getDeliveryAndPickupCapacity()).toArray();
+	/**
+	 * @return the capacity
+	 */
+	List<CompartmentCapacity> getCapacity() {
+		return capacityPerCompartment;
 	}
 	
 	/**
