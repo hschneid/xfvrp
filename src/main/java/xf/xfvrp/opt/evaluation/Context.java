@@ -273,6 +273,15 @@ public class Context {
 			sum += (int) Math.ceil(Math.max(0, Math.abs(amountsOfRoute[deliveryIdx]) - capacity[deliveryIdx]));
 			sum += (int) Math.ceil(Math.max(0, Math.abs(amountsOfRoute[pickupIdx]) - capacity[pickupIdx]));
 			sum += (int) Math.ceil(Math.max(0, Math.abs(amountsOfRoute[mixedIndex]) - capacity[mixedIndex]));
+
+			System.out.println("X "+compartment+" "+
+					amountsOfRoute[deliveryIdx]+","+
+					amountsOfRoute[pickupIdx] +","+
+					amountsOfRoute[mixedIndex] + "|"+
+					capacity[deliveryIdx]+","+
+					capacity[pickupIdx] +","+
+					capacity[mixedIndex] + "="+sum
+			);
 		}
 
 		return sum;
