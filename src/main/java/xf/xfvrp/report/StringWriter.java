@@ -47,7 +47,7 @@ public class StringWriter {
 			RouteReport tRep = report.getRoutes().get(i);
 			RouteReportSummary tSum = tRep.getSummary();
 			sb.append("#; TOUR_ID; VEHICLE; CUSTOMER_COUNT; DISTANCE; DELAY; PICKUP; DELIVERY\n");
-			sb.append("=; "+(i+1)+"; "+tRep.getVehicle().name+"; "+tSum.getNbrOfEvents()+"; "+tSum.getDistance()+"; "+tSum.getDelay()+"; "+Arrays.toString(tSum.getPickups())+"; "+Arrays.toString(tSum.getDeliveries())+"\n");
+			sb.append("=; "+(i+1)+"; "+ tRep.getVehicle().getName() +"; "+tSum.getNbrOfEvents()+"; "+tSum.getDistance()+"; "+tSum.getDelay()+"; "+Arrays.toString(tSum.getPickups())+"; "+Arrays.toString(tSum.getDeliveries())+"\n");
 			sb.append("# STOP_ID; ID; DISTANCE; AMOUNT; ARRIVAL; DEPARTURE; SERVICE; WAITING; TYPE\n");
 
 			for (int j = 0; j < tRep.getEvents().size(); j++) {

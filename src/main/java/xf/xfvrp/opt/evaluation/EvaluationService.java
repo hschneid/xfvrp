@@ -139,8 +139,11 @@ public class EvaluationService {
 		float[] amounts = context.getAmountsOfRoute();
 
 		for (int compartment = 0; compartment < context.getNbrOfCompartments(); compartment++) {
-			float delivery = (context.getCurrentNode().getLoadType() == LoadType.DELIVERY) ? context.getCurrentNode().getDemand()[compartment] : 0;
-			float pickup = (context.getCurrentNode().getLoadType() == LoadType.PICKUP) ? context.getCurrentNode().getDemand()[compartment] : 0;
+			LoadType loadType = context.getCurrentNode().getLoadType();
+			float delivery = (loadType == LoadType.DELIVERY) ?
+					context.getCurrentNode().getDemand()[compartment] : 0;
+			float pickup = (loadType == LoadType.PICKUP) ?
+					context.getCurrentNode().getDemand()[compartment] : 0;
 
 			int compartmentIdx = compartment * CompartmentLoadType.NBR_OF_LOAD_TYPES;
 			amounts[compartmentIdx + CompartmentLoadType.PICKUP.index()] += pickup;
@@ -173,7 +176,7 @@ public class EvaluationService {
 		float waiting = context.getWaitingTimeAtTimeWindow(timeWindow);
 
 		// Check maxWaiting penalty
-		if(waiting > model.getVehicle().maxWaitingTime)
+		if(waiting > model.getVehicle().getMaxWaitingTime())
 			q.addPenalty(1, Quality.PENALTY_REASON_DURATION);
 
 		float serviceTime = (context.getLastDrivenDistance()[0] == 0) ? currentNode.getServiceTime() : currentNode.getServiceTime() + currentNode.getServiceTimeForSite();
@@ -220,7 +223,7 @@ public class EvaluationService {
 
 	private void checkDriverRestrictions(Context context) {
 		// check max driving time per shift restrictions
-		if(context.getDrivingTime() >= context.getModel().getVehicle().maxDrivingTimePerShift) {
+		if(context.getDrivingTime() >= context.getModel().getVehicle().getMaxDrivingTimePerShift()) {
 			context.resetDrivingTime();
 		}
 	}
@@ -234,8 +237,8 @@ public class EvaluationService {
 	private void finishRoute(Quality q, Context context) {
 		Vehicle v = context.getModel().getVehicle();
 
-		float stopCountPenalty = Math.max(0, context.getNbrOfStops() - v.maxStopCount);
-		float durationPenalty = Math.max(0, context.getDuration() - v.maxRouteDuration);
+		float stopCountPenalty = Math.max(0, context.getNbrOfStops() - v.getMaxStopCount());
+		float durationPenalty = Math.max(0, context.getDuration() - v.getMaxRouteDuration());
 		float delayPenalty = context.getDelay();
 
 		q.addPenalty(stopCountPenalty, Quality.PENALTY_REASON_STOPCOUNT);
@@ -247,7 +250,7 @@ public class EvaluationService {
 
 		// Add fix cost per route
 		if(context.getNbrOfStops() > 0)
-			q.addCost(v.fixCost);
+			q.addCost(v.getFixCost());
 
 		// Check for black listed nodes on route
 		// Afterwards reset the arrays for next route

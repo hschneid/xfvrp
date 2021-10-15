@@ -3,6 +3,7 @@ package util.instances
 
 import xf.xfvrp.base.Vehicle
 import xf.xfvrp.base.fleximport.CompartmentCapacity
+import xf.xfvrp.base.fleximport.VehicleData
 
 class TestVehicle {
 
@@ -30,7 +31,7 @@ class TestVehicle {
 
 		return new Vehicle(
 			idx, name,
-			nbrOfAvailableVehicles, compartmentCapacity,
+			nbrOfAvailableVehicles, VehicleData.transformCapacity(compartmentCapacity),
 			maxRouteDuration, maxStopCount, maxWaitingTime,	fixCost, varCost, vehicleMetricId,
 			maxDrivingTimePerShift, waitingTimeBetweenShifts, priority
 		)

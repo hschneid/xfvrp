@@ -290,6 +290,8 @@ class XFPDPFirstBestInsertSpec extends Specification {
 
 		def iMetric = new AcceleratedMetricTransformator().transform(metric, nodes, v)
 
+		parameter.setWithPDP(true)
+
 		return new XFVRPModel(nodes, iMetric, iMetric, v, parameter)
 	}
 }

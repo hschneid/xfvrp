@@ -254,7 +254,7 @@ class FullRouteMixedFleetHeuristicSpec extends Specification {
 		then:
 		result != null
 		gT != null
-		result.getModel().getVehicle().name.contains("INVALID")
+        result.getModel().getVehicle().name.contains("INVALID")
 		gT[0].externID == 'nD'
 		gT[1].externID == 'n1'
 		gT[2].externID == 'nD'
@@ -394,6 +394,6 @@ class FullRouteMixedFleetHeuristicSpec extends Specification {
 		then:
 		result != null
 		result.size() == 1
-		result.get(0).model.getVehicle().name.contains('INVALID')
+        result.get(0).model.getVehicle().name.contains('INVALID')
 	}
 }

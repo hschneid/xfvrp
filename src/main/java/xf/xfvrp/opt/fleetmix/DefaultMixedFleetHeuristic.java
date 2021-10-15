@@ -35,6 +35,7 @@ import xf.xfvrp.report.RouteReport;
  *
  */
 public class DefaultMixedFleetHeuristic extends MixedFleetHeuristicBase implements IMixedFleetHeuristic {
+	private MixedFleetSelector selector = new MixedFleetSelector();
 	
 	@Override
 	public List<XFVRPSolution> execute(
@@ -50,7 +51,7 @@ public class DefaultMixedFleetHeuristic extends MixedFleetHeuristicBase implemen
 
 		List<XFVRPSolution> vehicleSolutions = new ArrayList<>();
 		for (Vehicle veh : vehicles) {
-			statusManager.fireMessage(StatusCode.RUNNING, "Run with vehicle "+veh.name+" started.");
+			statusManager.fireMessage(StatusCode.RUNNING, "Run with vehicle "+ veh.getName() +" started.");
 
 			// Optimize all nodes with current vehicle type
 			XFVRPSolution solution = routePlanningFunction.apply(new RoutingDataBag(unplannedNodes.toArray(new Node[0]), veh));
@@ -65,6 +66,7 @@ public class DefaultMixedFleetHeuristic extends MixedFleetHeuristicBase implemen
 				// Remove customers from best routes for next planning stage
 				unplannedNodes = getUnusedNodes(bestRoutes, unplannedNodes);
 			}
+			if (unplannedNodes.size() == 0) break;
 		}
 
 		// Insert invalid and unplanned nodes into solution
@@ -75,4 +77,8 @@ public class DefaultMixedFleetHeuristic extends MixedFleetHeuristicBase implemen
 		return vehicleSolutions;
 	}
 	
+	@Override
+	public MixedFleetSelector getSelector() {
+		return selector;
+	}
 }

@@ -34,11 +34,11 @@ class CompartmentInitializer {
 
     private static void adjustVehicles(Vehicle[] vehicles, int nbrOfCompartments) {
         Arrays.stream(vehicles)
-                .filter(vehicle -> (vehicle.capacity.length / CompartmentLoadType.NBR_OF_LOAD_TYPES) != nbrOfCompartments)
+                .filter(vehicle -> (vehicle.getCapacity().length / CompartmentLoadType.NBR_OF_LOAD_TYPES) != nbrOfCompartments)
                 .forEach(vehicle -> {
-                    int nbrOfCompartmentsBefore = vehicle.capacity.length;
-                    vehicle.capacity = Arrays.copyOf(vehicle.capacity, nbrOfCompartments * CompartmentLoadType.NBR_OF_LOAD_TYPES);
-                    Arrays.fill(vehicle.capacity, nbrOfCompartmentsBefore, vehicle.capacity.length, Float.MAX_VALUE);
+                    int nbrOfCompartmentsBefore = vehicle.getCapacity().length;
+                    vehicle.setCapacity(Arrays.copyOf(vehicle.getCapacity(), nbrOfCompartments * CompartmentLoadType.NBR_OF_LOAD_TYPES));
+                    Arrays.fill(vehicle.getCapacity(), nbrOfCompartmentsBefore, vehicle.getCapacity().length, Float.MAX_VALUE);
                 });
     }
 
@@ -54,7 +54,7 @@ class CompartmentInitializer {
         nbrOfCompartments = Math.max(
                 nbrOfCompartments,
                 Arrays.stream(vehicles)
-                        .mapToInt(vehicle -> vehicle.capacity.length / CompartmentLoadType.NBR_OF_LOAD_TYPES)
+                        .mapToInt(vehicle -> vehicle.getCapacity().length / CompartmentLoadType.NBR_OF_LOAD_TYPES)
                         .max()
                         .orElse(-1)
         );
