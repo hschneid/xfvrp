@@ -126,21 +126,26 @@ public class Context {
 			Arrays.fill(amountsOfRoute, 0);
 		}
 
-		// TODO(Holger): What is this for? Currently, this leads to errors while calculating mixed compartment usage
-		// Init delivery amount on the route
-		if (getModel().getParameter().isWithPDP()) {
-			if (!routeInfos.containsKey(currentNode))
-				throw new XFVRPException(XFVRPExceptionType.ILLEGAL_ARGUMENT,
-						"Could not find route infos for depot id " + currentNode.getDepotId());
-			Amount deliveryOfRoute = routeInfos.get(currentNode).getDeliveryAmount();
-			if (deliveryOfRoute.hasAmount()) {
-				for (int compartment = 0; compartment < getNbrOfCompartments(); compartment++) {
-					int mixedIndex = compartment * CompartmentLoadType.NBR_OF_LOAD_TYPES + CompartmentLoadType.MIXED.index();
-					amountsOfRoute[mixedIndex] += deliveryOfRoute.getAmounts()[compartment];
-				}
-				return checkCapacities();
-			}
+		// TODO(Lars) If this leads to an error, then please raise a bug ticket with concrete example (maybe test)
+		// Init delivery amount on the route:
+		// Here it is checked, that there is a pre-collection of amounts for this depot
+		// For example: This fails, if currentNode is no depot, which means, that start of
+		// route is no depot. This is a critical situation, because somewhere the route is
+		// malformed initialized.
+		if (!routeInfos.containsKey(currentNode)) {
+			throw new XFVRPException(XFVRPExceptionType.ILLEGAL_ARGUMENT,
+					"Could not find route infos for depot id " + currentNode.getDepotId());
 		}
+
+		Amount deliveryOfRoute = routeInfos.get(currentNode).getDeliveryAmount();
+		if (deliveryOfRoute.hasAmount()) {
+			for (int compartment = 0; compartment < getNbrOfCompartments(); compartment++) {
+				int mixedIndex = compartment * CompartmentLoadType.NBR_OF_LOAD_TYPES + CompartmentLoadType.MIXED.index();
+				amountsOfRoute[mixedIndex] += deliveryOfRoute.getAmounts()[compartment];
+			}
+			return checkCapacities();
+		}
+
 		return 0;
 	}
 
@@ -263,23 +268,11 @@ public class Context {
 			int pickupIdx = compartmentIdx + CompartmentLoadType.PICKUP.index();
 			int deliveryIdx = compartmentIdx + CompartmentLoadType.DELIVERY.index();
 			int mixedIndex = compartmentIdx + CompartmentLoadType.MIXED.index();
-			
-			// TODO(Holger): I'd like to remove this code. I think my implementation allows more flexibility on compartments
-//			if(amountsOfRoute[pickupIdx] == 0 && amountsOfRoute[deliveryIdx] > 0) {
-//				sum += (int) Math.ceil(Math.max(0, amountsOfRoute[deliveryIdx] - vehicle.capacity[deliveryIdx]));
-//			} else if(amountsOfRoute[pickupIdx] > 0 && amountsOfRoute[deliveryIdx] == 0) {
-//				sum += (int) Math.ceil(Math.max(0, amountsOfRoute[pickupIdx] - vehicle.capacity[pickupIdx]));
-//			} else if(amountsOfRoute[pickupIdx] > 0 && amountsOfRoute[deliveryIdx] > 0) {
-//				sum += (int) Math.ceil(Math.max(0, amountsOfRoute[compartmentIdx + CompartmentLoadType.MIXED.index()] - vehicle.capacity[compartmentIdx + CompartmentLoadType.MIXED.index()]));
-//			}
-			
+
 			float[] capacity = vehicle.getCapacity();
-			float[] absAmounts = new float[this.amountsOfRoute.length];
-			for (int i = 0; i < this.amountsOfRoute.length; i++) absAmounts[i] = Math.abs(this.amountsOfRoute[i]);
-			
-			sum += (int) Math.ceil(Math.max(0, absAmounts[deliveryIdx] - capacity[deliveryIdx]));
-			sum += (int) Math.ceil(Math.max(0, absAmounts[pickupIdx] - capacity[pickupIdx]));
-			sum += (int) Math.ceil(Math.max(0, absAmounts[mixedIndex] - capacity[mixedIndex]));
+			sum += (int) Math.ceil(Math.max(0, Math.abs(amountsOfRoute[deliveryIdx]) - capacity[deliveryIdx]));
+			sum += (int) Math.ceil(Math.max(0, Math.abs(amountsOfRoute[pickupIdx]) - capacity[pickupIdx]));
+			sum += (int) Math.ceil(Math.max(0, Math.abs(amountsOfRoute[mixedIndex]) - capacity[mixedIndex]));
 		}
 
 		return sum;

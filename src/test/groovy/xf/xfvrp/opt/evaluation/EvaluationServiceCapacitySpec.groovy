@@ -152,13 +152,16 @@ class EvaluationServiceCapacitySpec extends Specification {
 		Math.abs(result.getCost() - 4.828) < 0.01
 	}
 
-	@Ignore
 	def "Pickup/Delivery - wrong route order"() {
 		def v = new TestVehicle(name: "V1", capacity: [3, 3]).getVehicle()
 		def model = initScen2(v)
 		def n = model.getNodes()
 
 		sol = new Solution()
+		// Pickup 3 at    depot (truck 3)
+		// Unload 1 at 1. node  (truck=2)
+		// Pickup 3 at 2. node  (truck=5) <--- Error
+		// Unload 2 at 3. node  (truck=3)
 		sol.setGiantRoute([nd, n[1], n[2], n[3], nd] as Node[])
 
 		when:
