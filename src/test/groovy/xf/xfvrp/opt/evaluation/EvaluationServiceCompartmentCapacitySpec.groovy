@@ -121,7 +121,6 @@ class EvaluationServiceCompartmentCapacitySpec extends Specification {
 		result.getPenalty() == 0
 	}
 
-	@Ignore
 	def "Invalid - 3 compartments, only deliveries, only capacity for delivery needs to be considered"() {
 		def v = new TestVehicle(name: "V1",
 				compartmentCapacity: [
@@ -142,7 +141,6 @@ class EvaluationServiceCompartmentCapacitySpec extends Specification {
 		result.getPenalty() > 0
 	}
 
-	@Ignore
 	def "Valid - 3 compartments, only pickups, only capacity for pickups needs to be considered"() {
 		def v = new TestVehicle(name: "V1",
 				compartmentCapacity: [

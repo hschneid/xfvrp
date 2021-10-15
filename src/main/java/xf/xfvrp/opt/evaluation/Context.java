@@ -140,6 +140,8 @@ public class Context {
 		// If there are mixed compartments, consider delivery amount at starting depot
 		RouteInfo routeInfo = routeInfos.get(currentNode);
 		Amount deliveryOfRoute = routeInfo.getDeliveryAmount();
+		// With old code, this would suffer...
+		// if (deliveryOfRoute.hasAmount()) {
 		if (deliveryOfRoute.hasAmount() && routeInfo.getPickupAmount().hasAmount()) {
 			for (int compartment = 0; compartment < getNbrOfCompartments(); compartment++) {
 				int mixedIndex = compartment * CompartmentLoadType.NBR_OF_LOAD_TYPES + CompartmentLoadType.MIXED.index();
@@ -270,6 +272,15 @@ public class Context {
 			int pickupIdx = compartmentIdx + CompartmentLoadType.PICKUP.index();
 			int deliveryIdx = compartmentIdx + CompartmentLoadType.DELIVERY.index();
 			int mixedIndex = compartmentIdx + CompartmentLoadType.MIXED.index();
+
+			// TODO(Lars): That is exactly the code, which considers if routes have mixed load or single load. In single load, the mixed load must not be checked, because this would lead to wrong interpretation.
+//			if(amountsOfRoute[pickupIdx] == 0 && amountsOfRoute[deliveryIdx] > 0) {
+//				sum += (int) Math.ceil(Math.max(0, amountsOfRoute[deliveryIdx] - vehicle.capacity[deliveryIdx]));
+//			} else if(amountsOfRoute[pickupIdx] > 0 && amountsOfRoute[deliveryIdx] == 0) {
+//				sum += (int) Math.ceil(Math.max(0, amountsOfRoute[pickupIdx] - vehicle.capacity[pickupIdx]));
+//			} else if(amountsOfRoute[pickupIdx] > 0 && amountsOfRoute[deliveryIdx] > 0) {
+//				sum += (int) Math.ceil(Math.max(0, amountsOfRoute[compartmentIdx + CompartmentLoadType.MIXED.index()] - vehicle.capacity[compartmentIdx + CompartmentLoadType.MIXED.index()]));
+//			}
 
 			float[] capacity = vehicle.getCapacity();
 			sum += (int) Math.ceil(Math.max(0, amountsOfRoute[deliveryIdx] - capacity[deliveryIdx]));
