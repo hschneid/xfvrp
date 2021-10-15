@@ -137,8 +137,10 @@ public class Context {
 					"Could not find route infos for depot id " + currentNode.getDepotId());
 		}
 
-		Amount deliveryOfRoute = routeInfos.get(currentNode).getDeliveryAmount();
-		if (deliveryOfRoute.hasAmount()) {
+		// If there are mixed compartments, consider delivery amount at starting depot
+		RouteInfo routeInfo = routeInfos.get(currentNode);
+		Amount deliveryOfRoute = routeInfo.getDeliveryAmount();
+		if (deliveryOfRoute.hasAmount() && routeInfo.getPickupAmount().hasAmount()) {
 			for (int compartment = 0; compartment < getNbrOfCompartments(); compartment++) {
 				int mixedIndex = compartment * CompartmentLoadType.NBR_OF_LOAD_TYPES + CompartmentLoadType.MIXED.index();
 				amountsOfRoute[mixedIndex] += deliveryOfRoute.getAmounts()[compartment];
@@ -270,9 +272,9 @@ public class Context {
 			int mixedIndex = compartmentIdx + CompartmentLoadType.MIXED.index();
 
 			float[] capacity = vehicle.getCapacity();
-			sum += (int) Math.ceil(Math.max(0, Math.abs(amountsOfRoute[deliveryIdx]) - capacity[deliveryIdx]));
-			sum += (int) Math.ceil(Math.max(0, Math.abs(amountsOfRoute[pickupIdx]) - capacity[pickupIdx]));
-			sum += (int) Math.ceil(Math.max(0, Math.abs(amountsOfRoute[mixedIndex]) - capacity[mixedIndex]));
+			sum += (int) Math.ceil(Math.max(0, amountsOfRoute[deliveryIdx] - capacity[deliveryIdx]));
+			sum += (int) Math.ceil(Math.max(0, amountsOfRoute[pickupIdx] - capacity[pickupIdx]));
+			sum += (int) Math.ceil(Math.max(0, amountsOfRoute[mixedIndex] - capacity[mixedIndex]));
 
 			System.out.println("X "+compartment+" "+
 					amountsOfRoute[deliveryIdx]+","+

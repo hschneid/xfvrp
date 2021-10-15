@@ -81,13 +81,12 @@ class EvaluationServiceCompartmentCapacitySpec extends Specification {
 		result.getPenalty() == 0
 	}
 
-	@Ignore
 	def "Invalid - 3 compartments and mixed is too less"() {
 		def v = new TestVehicle(name: "V1",
 				compartmentCapacity: [
-						new CompartmentCapacity(1, 1, 6),
-						new CompartmentCapacity(1,1,5),
-						new CompartmentCapacity(1,1,6)
+						new CompartmentCapacity(4, 4, 6),
+						new CompartmentCapacity(4,4,5),
+						new CompartmentCapacity(4,4,6)
 				]).getVehicle()
 		def model = initScen(v, null)
 		def n = model.getNodes()
@@ -102,7 +101,6 @@ class EvaluationServiceCompartmentCapacitySpec extends Specification {
 		result.getPenalty() > 0
 	}
 
-	@Ignore
 	def "Valid - 3 compartments, only deliveries, only capacity for delivery needs to be considered"() {
 		def v = new TestVehicle(name: "V1",
 				compartmentCapacity: [
