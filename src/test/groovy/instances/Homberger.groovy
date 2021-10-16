@@ -86,7 +86,7 @@ class Homberger extends Specification {
 
         // xfvrp.setStatusMonitor(new DefaultStatusMonitor())
 
-        List<String> lines = Files.readAllLines(file.toPath());
+        List<String> lines = Files.readAllLines(file.toPath())
         String vehicleData = lines.get(4)
         int[] data = split(vehicleData)
         xfvrp.addVehicle()
@@ -106,7 +106,7 @@ class Homberger extends Specification {
         for (int i = 10; i < lines.size(); i++) {
             String customerData = lines.get(i)
             if(customerData.trim().length() == 0) {
-                continue;
+                continue
             }
 
             data = split(customerData)

@@ -3,6 +3,7 @@ package xf.xfvrp.report;
 import util.ArrayUtil;
 import xf.xfvrp.base.Vehicle;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -54,10 +55,17 @@ public class ReportSummary {
 	}
 
 	private void addOverloads(RouteReportSummary routeSummary) {
-		if(overloads == null && routeSummary.getOverloads() != null) {
-			overloads = new float[routeSummary.getOverloads().length];
+		float[] routeOverload = routeSummary.getOverloads();
+		if(this.overloads == null && routeOverload != null) {
+			this.overloads = new float[routeOverload.length];
 		}
-		ArrayUtil.add(overloads, routeSummary.getOverloads(), overloads);
+		else if (this.overloads.length < routeOverload.length){
+			this.overloads = Arrays.copyOf(this.overloads, routeOverload.length);
+		}
+		else if (routeOverload.length < this.overloads.length){
+			routeOverload = Arrays.copyOf(routeOverload, this.overloads.length);
+		}
+		ArrayUtil.add(this.overloads, routeOverload, this.overloads);
 	}
 
 	public float getDistance(Vehicle veh) {

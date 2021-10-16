@@ -1,14 +1,12 @@
 package xf.xfvrp;
 
-import xf.xfvrp.base.Node;
-import xf.xfvrp.base.NormalizeSolutionService;
-import xf.xfvrp.base.Vehicle;
-import xf.xfvrp.base.XFVRPModel;
+import xf.xfvrp.base.*;
 import xf.xfvrp.base.exception.XFVRPException;
 import xf.xfvrp.base.exception.XFVRPExceptionType;
 import xf.xfvrp.base.monitor.StatusCode;
-import xf.xfvrp.base.xfvrp.XFVRP_Parameter;
+import xf.xfvrp.base.xfvrp.XFVRPData;
 import xf.xfvrp.opt.*;
+import xf.xfvrp.opt.fleetmix.IMixedFleetHeuristic;
 import xf.xfvrp.opt.init.ModelBuilder;
 import xf.xfvrp.opt.init.precheck.PreCheckService;
 import xf.xfvrp.opt.init.solution.InitialSolutionBuilder;
@@ -16,6 +14,7 @@ import xf.xfvrp.report.Report;
 import xf.xfvrp.report.build.ReportBuilder;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /** 
@@ -38,7 +37,9 @@ import java.util.List;
  * @author hschneid
  * 
  */
-public class XFVRP extends XFVRP_Parameter {
+public class XFVRP extends XFVRPData {
+
+	private final XFVRPParameter parameters = new XFVRPParameter();
 
 	/* List of optimization procedures */
 	private final List<XFVRPOptBase> optList = new ArrayList<>();
@@ -75,19 +76,14 @@ public class XFVRP extends XFVRP_Parameter {
 			statusManager.fireMessage(StatusCode.ABORT, "No vehicle information are present.");
 			throw new XFVRPException(XFVRPExceptionType.ILLEGAL_INPUT, "No vehicle information are present.");
 		}
+		
+		IMixedFleetHeuristic heuristic = getParameters().getMixedFleetHeuristic();
+		Collection<XFVRPSolution> solutions = heuristic.execute(nodes, vehicles, this::executeRoutePlanning,
+				metric, parameters, statusManager);
+		
+		vehicleSolutionList.addAll(solutions);
 
-		vehicleSolutionList.addAll(
-				new FullRouteMixedFleetHeuristic().execute(
-						nodes,
-						vehicles,
-						this::executeRoutePlanning,
-						metric,
-						parameter,
-						statusManager)
-				);
-
-
-		statusManager.fireMessage(StatusCode.FINISHED, "XFVRP finished sucessfully.");
+		statusManager.fireMessage(StatusCode.FINISHED, "XFVRP finished successfully.");
 	}
 
 	/**
@@ -95,9 +91,9 @@ public class XFVRP extends XFVRP_Parameter {
 	 * announced optimization procedures.
 	 */
 	private XFVRPSolution executeRoutePlanning(RoutingDataBag dataBag) throws XFVRPException {
-		Node[] nodes = new PreCheckService().precheck(dataBag.nodes, dataBag.vehicle, parameter);
-		XFVRPModel model = new ModelBuilder().build(nodes, dataBag.vehicle, metric, parameter, statusManager);
-		Solution solution = new InitialSolutionBuilder().build(model, parameter, statusManager);
+		Node[] nodes = new PreCheckService().precheck(dataBag.nodes, dataBag.vehicle, parameters);
+		XFVRPModel model = new ModelBuilder().build(nodes, dataBag.vehicle, metric, parameters, statusManager);
+		Solution solution = new InitialSolutionBuilder().build(model, parameters, statusManager);
 
 		// VRP optimizations, if initiated solution has appropriate length
 		if (solution.getGiantRoute().length > 0) {
@@ -113,7 +109,7 @@ public class XFVRP extends XFVRP_Parameter {
 				statusManager.fireMessage(StatusCode.RUNNING, "Optimization for algorithm " + xfvrp.getClass().getSimpleName() + " started.");
 
 				try {
-					if (parameter.isRouteSplittingAllowed() && xfvrp.isSplittable)
+					if (parameters.isRouteSplittingAllowed() && xfvrp.isSplittable)
 						solution = splitter.execute(solution, model, statusManager, xfvrp);
 					else
 						solution = xfvrp.execute(solution, model, statusManager);
@@ -167,5 +163,14 @@ public class XFVRP extends XFVRP_Parameter {
 	 */
 	public void clearOptTypes() {
 		optList.clear();
+	}
+	
+	public XFVRPParameter getParameters() {
+		return parameters;
+	}
+
+	// TODO: Obsolete
+	public XFVRPData getData() {
+		return this;
 	}
 }

@@ -1,12 +1,16 @@
 package xf.xfvrp.base.fleximport;
 
+import xf.xfvrp.base.CompartmentLoadType;
 import xf.xfvrp.base.Vehicle;
 import xf.xfvrp.base.exception.XFVRPException;
+import xf.xfvrp.base.exception.XFVRPExceptionType;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import static xf.xfvrp.base.Vehicle.PRIORITY_UNDEF;
 
 /**
  * Copyright (c) 2012-2021 Holger Schneider
@@ -20,29 +24,32 @@ import java.util.List;
  *
  */
 public class VehicleData implements Serializable {
-
 	private static final long serialVersionUID = -7693160190888296907L;
-
-	/** Basic - parameter **/
-	protected String name = "";
-	// Capacity per Compartment and Load Type - Default 3 compartments with max capacity
-	protected List<CompartmentCapacity> capacityPerCompartment = Arrays.asList(new CompartmentCapacity(), new CompartmentCapacity(), new CompartmentCapacity());
+	
+	protected String name;
+	
 	protected float fixCost = 0;
 	protected float varCost = 1;
+	
 	protected int count = Integer.MAX_VALUE;
 	protected float maxRouteDuration = Float.MAX_VALUE;
 	protected int maxStopCount = Integer.MAX_VALUE;
 	protected float maxWaitingTime = Float.MAX_VALUE;
 	protected int vehicleMetricId = 0;
-
-	/** Driver time restriction **/
+	
 	protected float maxDrivingTimePerShift = Integer.MAX_VALUE;
 	protected float waitingTimeBetweenShifts = 0;
-
-	protected int priority = Vehicle.PRIORITY_UNDEF;
-
+	
+	protected int priority = PRIORITY_UNDEF;
+	
+	protected List<CompartmentCapacity> compartments;
+	
 	private static final String defaultVehicleName = "DEFAULT";
-
+	
+	public VehicleData() {
+		compartments = Arrays.asList(new CompartmentCapacity(), new CompartmentCapacity(), new CompartmentCapacity());
+	}
+	
 	/**
 	 * @param name the name to set
 	 */
@@ -50,19 +57,19 @@ public class VehicleData implements Serializable {
 		this.name = name;
 		return this;
 	}
-
+	
 	/**
 	 * This sets the capacity for a set of compartments, where all load types have same capacity.
 	 */
 	public VehicleData setCapacity(float[] capacity) {
-		this.capacityPerCompartment = new ArrayList<>();
+		this.compartments = new ArrayList<>();
 		for (float simpleCapacityPerCompartment : capacity) {
-			this.capacityPerCompartment.add(new CompartmentCapacity(simpleCapacityPerCompartment));
+			this.compartments.add(new CompartmentCapacity(simpleCapacityPerCompartment));
 		}
-
+		
 		return this;
 	}
-
+	
 	/**
 	 * This sets the capacity for a certain compartment with specification for each load type.
 	 *
@@ -70,18 +77,18 @@ public class VehicleData implements Serializable {
 	 */
 	public VehicleData setCapacityForCompartment(int compartmentIdx, CompartmentCapacity compartmentCapacity) {
 		// If idx is out of range, increase size
-		if(compartmentIdx >= capacityPerCompartment.size()) {
+		if(compartmentIdx >= compartments.size()) {
 			List<CompartmentCapacity> newCapacityPerCompartment = new ArrayList<>(compartmentIdx + 1);
-			for (int i = 0; i < capacityPerCompartment.size(); i++) {
-				newCapacityPerCompartment.set(i, capacityPerCompartment.get(i));
+			for (int i = 0; i < compartments.size(); i++) {
+				newCapacityPerCompartment.set(i, compartments.get(i));
 			}
-			this.capacityPerCompartment = newCapacityPerCompartment;
+			this.compartments = newCapacityPerCompartment;
 		}
-
-		this.capacityPerCompartment.set(compartmentIdx, compartmentCapacity);
+		
+		this.compartments.set(compartmentIdx, compartmentCapacity);
 		return this;
 	}
-
+	
 	/**
 	 * @param fixCost the fixCost to set
 	 */
@@ -117,7 +124,7 @@ public class VehicleData implements Serializable {
 		this.maxStopCount = maxStopCount;
 		return this;
 	}
-
+	
 	/**
 	 * @param maxWaitingTime
 	 */
@@ -125,7 +132,7 @@ public class VehicleData implements Serializable {
 		this.maxWaitingTime = maxWaitingTime;
 		return this;
 	}
-
+	
 	/**
 	 * @param vehicleMetricId
 	 */
@@ -133,16 +140,15 @@ public class VehicleData implements Serializable {
 		this.vehicleMetricId = vehicleMetricId;
 		return this;
 	}
-
+	
 	/**
-	 *
 	 * @param maxDrivingTimePerShift
 	 */
 	public VehicleData setMaxDrivingTimePerShift(float maxDrivingTimePerShift) {
 		this.maxDrivingTimePerShift = maxDrivingTimePerShift;
 		return this;
 	}
-
+	
 	/**
 	 *
 	 * @param waitingTimeBetweenShifts
@@ -151,18 +157,17 @@ public class VehicleData implements Serializable {
 		this.waitingTimeBetweenShifts = waitingTimeBetweenShifts;
 		return this;
 	}
-
+	
 	/**
 	 * Is used by mixed fleet heuristics. If this parameter is set,
 	 * this vehicle is priorized by this value. Lower value means
 	 * higher priority.
 	 */
-	public void setPriority(int priority) {
+	public VehicleData setPriority(int priority) {
 		this.priority = priority;
+		return this;
 	}
-
-	//////////////////////////////////////
-
+	
 	/**
 	 * Creates a default vehicle object, which parameters mean no restriction.
 	 *
@@ -171,92 +176,52 @@ public class VehicleData implements Serializable {
 	public static VehicleData createDefault() {
 		return new VehicleData().setName(defaultVehicleName);
 	}
-
-	/**
-	 * @return the name
-	 */
-	String getName() {
-		return name;
-	}
-	/**
-	 * @return the capacity
-	 */
-	List<CompartmentCapacity> getCapacity() {
-		return capacityPerCompartment;
-	}
-	/**
-	 * @return the fixCost
-	 */
-	float getFixCost() {
-		return fixCost;
-	}
-	/**
-	 * @return the varCost
-	 */
-	float getVarCost() {
-		return varCost;
-	}
-	/**
-	 * @return the count
-	 */
-	int getCount() {
-		return count;
-	}
-	/**
-	 * @return the maxRouteDuration
-	 */
-	float getMaxRouteDuration() {
-		return maxRouteDuration;
-	}
-	/**
-	 * @return the maxStopCount
-	 */
-	int getMaxStopCount() {
-		return maxStopCount;
-	}
-
-	/**
-	 * @return the maximal allowed time to wait at a certain node
-	 */
-	float getMaxWaitingTime() {
-		return maxWaitingTime;
-	}
-
-	int getVehicleMetricId() {
-		return vehicleMetricId;
-	}
-	/**
-	 * @return the rank of the vehicle type, which vehicle type ordering should be planned
-	 */
-	int getPriority() {
-		return priority;
-	}
-
+	
+	
 	/**
 	 * @return Creates an internal Vehicle object with imported vehicle data
 	 */
 	Vehicle createVehicle(int idx) throws XFVRPException {
+		if(maxRouteDuration <= 0)
+			throw new XFVRPException(XFVRPExceptionType.ILLEGAL_INPUT, "Parameter for maxRouteDuration must be greater than zero.");
+		if(maxStopCount <= 0)
+			throw new XFVRPException(XFVRPExceptionType.ILLEGAL_INPUT, "Parameter for maxStopCount must be greater than zero.");
+		if(count <= 0)
+			throw new XFVRPException(XFVRPExceptionType.ILLEGAL_INPUT, "Parameter for nbrOfAvailableVehicles must be greater than zero.");
+		if(maxWaitingTime < 0)
+			throw new XFVRPException(XFVRPExceptionType.ILLEGAL_INPUT, "Parameter for maxWaitingTime must be greater or equal than zero.");
+		if(vehicleMetricId < 0)
+			throw new XFVRPException(XFVRPExceptionType.ILLEGAL_INPUT, "Parameter for vehicleMetricId must be greater or equal than zero.");
+		
+		float[] capacityArray = transformCapacity(compartments);
+		boolean greaterZero = false;
+		for (float v : capacityArray)
+			if (v > 0) {
+				greaterZero = true;
+				break;
+			}
+		if(!greaterZero)
+			throw new XFVRPException(XFVRPExceptionType.ILLEGAL_INPUT, "Vehicle capacities must be greater or equal than zero.");
+		
 		return new Vehicle(
-				idx,
-				name,
-				count,
-				capacityPerCompartment,
-				maxRouteDuration,
-				maxStopCount,
-				maxWaitingTime,
-				fixCost,
-				varCost,
-				vehicleMetricId,
-				maxDrivingTimePerShift,
-				waitingTimeBetweenShifts,
-				priority
+				idx, name, count, capacityArray, maxRouteDuration, maxStopCount, maxWaitingTime, fixCost,
+				varCost, vehicleMetricId, maxDrivingTimePerShift, waitingTimeBetweenShifts, priority
 		);
 	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
+	
+	public static float[] transformCapacity(List<CompartmentCapacity> capacityPerCompartment) {
+		float[] capacityArray = new float[capacityPerCompartment.size() * CompartmentLoadType.NBR_OF_LOAD_TYPES];
+		Arrays.fill(capacityArray, Float.MAX_VALUE);
+		for (int i = 0; i < capacityPerCompartment.size(); i++) {
+			CompartmentCapacity compartmentCapacity = capacityPerCompartment.get(i);
+			if(compartmentCapacity != null) {
+				System.arraycopy(compartmentCapacity.asArray(), 0, capacityArray,
+						i * CompartmentLoadType.NBR_OF_LOAD_TYPES, CompartmentLoadType.NBR_OF_LOAD_TYPES);
+			}
+		}
+		return capacityArray;
+	}
+	
 	@Override
 	public String toString() {
 		return name;

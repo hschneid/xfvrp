@@ -119,7 +119,7 @@ public class PDPPreCheckService {
 
 	private void checkCapacityOfCustomer(Node cust, Vehicle vehicle) {
 		float[] demands = cust.getDemand();
-		float[] capacities = vehicle.capacity;
+		float[] capacities = vehicle.getCapacity();
 
 		int length = Math.min(demands.length, (capacities.length / CompartmentLoadType.NBR_OF_LOAD_TYPES));
 		for (int compartment = 0; compartment < length; compartment++) {

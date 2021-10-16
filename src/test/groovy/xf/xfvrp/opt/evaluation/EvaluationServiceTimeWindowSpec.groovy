@@ -10,9 +10,9 @@ import xf.xfvrp.opt.Solution
 
 class EvaluationServiceTimeWindowSpec extends Specification {
 
-	def service = new EvaluationService();
+	def service = new EvaluationService()
 
-	def depot;
+	def depot
 
 	def nd = new TestNode(
 	externID: "DEP",
@@ -56,7 +56,7 @@ class EvaluationServiceTimeWindowSpec extends Specification {
 	timeWindow: [[0,99],[2,99]]
 	).getNode()
 
-	def sol;
+	def sol
 
 	def parameter = new XFVRPParameter()
 
@@ -352,14 +352,14 @@ class EvaluationServiceTimeWindowSpec extends Specification {
 				loadType: loadType)
 				.getNode()
 
-		depot.setIdx(0);
-		n1.setIdx(1);
-		n2.setIdx(2);
-		n3.setIdx(3);
+		depot.setIdx(0)
+		n1.setIdx(1)
+		n2.setIdx(2)
+		n3.setIdx(3)
 
-		def nodes = [depot, n1, n2, n3] as Node[];
+		def nodes = [depot, n1, n2, n3] as Node[]
 
-		def iMetric = new AcceleratedMetricTransformator().transform(metric, nodes, v);
+		def iMetric = new AcceleratedMetricTransformator().transform(metric, nodes, v)
 
 		return new XFVRPModel(nodes, iMetric, iMetric, v, parameter)
 	}

@@ -58,7 +58,7 @@ class ReportBuilderTimeWindowSpec extends Specification {
 	timeWindow: [[0,99],[2,99]]
 	).getNode()
 
-	def sol;
+	def sol
 
 	def parameter = new XFVRPParameter()
 
@@ -431,8 +431,8 @@ class ReportBuilderTimeWindowSpec extends Specification {
 		Math.abs(result.getRoutes().get(0).getEvents().get(1).getDeparture() - 3) < 0.001
 
 		// PAUSE
-		result.getRoutes().get(0).getEvents().get(2).getSiteType() == SiteType.PAUSE;
-		result.getRoutes().get(0).getEvents().get(2).getID() == n[2].getExternID();
+		result.getRoutes().get(0).getEvents().get(2).getSiteType() == SiteType.PAUSE
+		result.getRoutes().get(0).getEvents().get(2).getID() == n[2].getExternID()
 		Math.abs(result.getRoutes().get(0).getEvents().get(2).getArrival() - 0) < 0.001
 		Math.abs(result.getRoutes().get(0).getEvents().get(2).getDeparture() - 0) < 0.001
 		Math.abs(result.getRoutes().get(0).getEvents().get(2).getDuration() - 1) < 0.001
@@ -444,8 +444,8 @@ class ReportBuilderTimeWindowSpec extends Specification {
 		Math.abs(result.getRoutes().get(0).getEvents().get(4).getDeparture() - 6) < 0.001
 
 		// PAUSE 2
-		result.getRoutes().get(0).getEvents().get(5).getSiteType() == SiteType.PAUSE;
-		result.getRoutes().get(0).getEvents().get(5).getID() == depot.getExternID();
+		result.getRoutes().get(0).getEvents().get(5).getSiteType() == SiteType.PAUSE
+		result.getRoutes().get(0).getEvents().get(5).getID() == depot.getExternID()
 		Math.abs(result.getRoutes().get(0).getEvents().get(5).getArrival() - 0) < 0.001
 		Math.abs(result.getRoutes().get(0).getEvents().get(5).getDeparture() - 0) < 0.001
 		Math.abs(result.getRoutes().get(0).getEvents().get(5).getDuration() - 1) < 0.001
@@ -580,14 +580,14 @@ class ReportBuilderTimeWindowSpec extends Specification {
 				loadType: loadType)
 				.getNode()
 
-		depot.setIdx(0);
-		n1.setIdx(1);
-		n2.setIdx(2);
-		n3.setIdx(3);
+		depot.setIdx(0)
+		n1.setIdx(1)
+		n2.setIdx(2)
+		n3.setIdx(3)
 
-		def nodes = [depot, n1, n2, n3] as Node[];
+		def nodes = [depot, n1, n2, n3] as Node[]
 
-		def iMetric = new AcceleratedMetricTransformator().transform(metric, nodes, v);
+		def iMetric = new AcceleratedMetricTransformator().transform(metric, nodes, v)
 
 		return new XFVRPModel(nodes, iMetric, iMetric, v, parameter)
 	}

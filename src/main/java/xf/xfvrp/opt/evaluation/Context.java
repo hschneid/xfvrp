@@ -77,8 +77,8 @@ public class Context {
 		Vehicle vehicle = model.getVehicle();
 
 		routeVar[DRIVING_TIME] = 0;
-		routeVar[TIME] += vehicle.waitingTimeBetweenShifts;
-		routeVar[DURATION] += vehicle.waitingTimeBetweenShifts;
+		routeVar[TIME] += vehicle.getWaitingTimeBetweenShifts();
+		routeVar[DURATION] += vehicle.getWaitingTimeBetweenShifts();
 	}
 
 	public int createNewRoute(Node newDepot) throws XFVRPException {
@@ -260,11 +260,11 @@ public class Context {
 			int pickupIdx = compartmentIdx + CompartmentLoadType.PICKUP.index();
 			int deliveryIdx = compartmentIdx + CompartmentLoadType.DELIVERY.index();
 			if(amountsOfRoute[pickupIdx] == 0 && amountsOfRoute[deliveryIdx] > 0) {
-				sum += (int) Math.ceil(Math.max(0, amountsOfRoute[deliveryIdx] - vehicle.capacity[deliveryIdx]));
+				sum += (int) Math.ceil(Math.max(0, amountsOfRoute[deliveryIdx] - vehicle.getCapacity()[deliveryIdx]));
 			} else if(amountsOfRoute[pickupIdx] > 0 && amountsOfRoute[deliveryIdx] == 0) {
-				sum += (int) Math.ceil(Math.max(0, amountsOfRoute[pickupIdx] - vehicle.capacity[pickupIdx]));
+				sum += (int) Math.ceil(Math.max(0, amountsOfRoute[pickupIdx] - vehicle.getCapacity()[pickupIdx]));
 			} else if(amountsOfRoute[pickupIdx] > 0 && amountsOfRoute[deliveryIdx] > 0) {
-				sum += (int) Math.ceil(Math.max(0, amountsOfRoute[compartmentIdx + CompartmentLoadType.MIXED.index()] - vehicle.capacity[compartmentIdx + CompartmentLoadType.MIXED.index()]));
+				sum += (int) Math.ceil(Math.max(0, amountsOfRoute[compartmentIdx + CompartmentLoadType.MIXED.index()] - vehicle.getCapacity()[compartmentIdx + CompartmentLoadType.MIXED.index()]));
 			}
 		}
 

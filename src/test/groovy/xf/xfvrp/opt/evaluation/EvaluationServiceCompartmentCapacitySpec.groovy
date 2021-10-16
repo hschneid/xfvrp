@@ -1,5 +1,6 @@
 package xf.xfvrp.opt.evaluation
 
+
 import spock.lang.Specification
 import util.instances.TestNode
 import util.instances.TestVehicle
@@ -54,9 +55,22 @@ class EvaluationServiceCompartmentCapacitySpec extends Specification {
 						new CompartmentCapacity(2,1,6)
 				]).getVehicle()
 		def model = initScen(v, null)
+		// Pickup corrections
+		model.nodes[3].demand[1] = 0
+		model.nodes[3].demand[2] = 1
+		// Delivery corrections
+		model.nodes[2].demand[1] = 1
+		model.nodes[2].demand[2] = 1
+		model.nodes[4].demand[1] = 1
+		model.nodes[4].demand[2] = 0
 		def n = model.getNodes()
 
 		sol = new Solution()
+		// Pickup 4 at depot (truck=0,0,4)
+		// Pickup 1 at 1.node (truck=0,1,5)
+		// Unload 2 at 2.node (truck=2,1,3)
+		// Pickup 3 at 3.node (truck=2,4,6)
+		// Unload 2 at 4.node (truck=4,4,4)
 		sol.setGiantRoute([nd, n[1], n[2], n[3], n[4], nd] as Node[])
 
 		when:
@@ -69,9 +83,9 @@ class EvaluationServiceCompartmentCapacitySpec extends Specification {
 	def "Invalid - 3 compartments and mixed is too less"() {
 		def v = new TestVehicle(name: "V1",
 				compartmentCapacity: [
-						new CompartmentCapacity(1, 1, 6),
-						new CompartmentCapacity(1,1,5),
-						new CompartmentCapacity(1,1,6)
+						new CompartmentCapacity(4, 4, 6),
+						new CompartmentCapacity(4,4,5),
+						new CompartmentCapacity(4,4,6)
 				]).getVehicle()
 		def model = initScen(v, null)
 		def n = model.getNodes()

@@ -1,6 +1,6 @@
 package xf.xfvrp.opt.improve.ils
 
-import spock.lang.Ignore
+
 import spock.lang.Specification
 import util.instances.TestNode
 import util.instances.TestVehicle
@@ -16,7 +16,7 @@ class XFPDPRandomChangeServiceSpec extends Specification {
 	def random = Stub Random
 	def realRandom = new Random(1234)
 	def evaluationService = Stub EvaluationService
-	def service = new XFPDPRandomChangeService();
+	def service = new XFPDPRandomChangeService()
 
 	def nd = new TestNode(
 	externID: "DEP",
@@ -36,7 +36,7 @@ class XFPDPRandomChangeServiceSpec extends Specification {
 	timeWindow: [[0,99],[2,99]]
 	).getNode()
 
-	def sol;
+	def sol
 
 	def parameter = new XFVRPParameter()
 
@@ -433,33 +433,6 @@ class XFPDPRandomChangeServiceSpec extends Specification {
 		gt[7] == nd
 	}
 
-	@Ignore
-	def "Execute - Reach termination criteria"() {
-		def model = initBase([0, 0, 0, 0] as int[], [0, 0, 0, 0] as int[])
-		def n = model.getNodes()
-		service.setModel(model)
-
-		sol = new Solution()
-		sol.setGiantRoute([nd, n[2], n[3], n[4], nd, n[5], nd] as Node[])
-
-		random.nextInt(_) >>> [0, 2, 4, 1]
-		service.NBR_OF_VARIATIONS = 2
-		service.NBR_ACCEPTED_INVALIDS = 10
-
-		when:
-		def result = service.change(sol, model)
-		def gt = result.getGiantRoute()
-
-		then:
-		gt[0] == nd
-		gt[1] == n[3]
-		gt[2] == n[2]
-		gt[3] == n[4]
-		gt[4] == nd
-		gt[5] == n[5]
-		gt[6] == nd
-	}
-
 	boolean doRandomChange(Solution sol, Node[] n) {
 		def choice = new Choice()
 		service.chooseSrcPickup(choice, sol)
@@ -569,18 +542,20 @@ class XFPDPRandomChangeServiceSpec extends Specification {
 				loadType: LoadType.DELIVERY)
 				.getNode()
 
-		nd.setIdx(0);
-		nd2.setIdx(1);
-		n1.setIdx(2);
-		n2.setIdx(3);
-		n3.setIdx(4);
-		n4.setIdx(5);
-		n5.setIdx(6);
-		n6.setIdx(7);
+		nd.setIdx(0)
+		nd2.setIdx(1)
+		n1.setIdx(2)
+		n2.setIdx(3)
+		n3.setIdx(4)
+		n4.setIdx(5)
+		n5.setIdx(6)
+		n6.setIdx(7)
 
-		def nodes = [nd, nd2, n1, n2, n3, n4, n5, n6] as Node[];
+		def nodes = [nd, nd2, n1, n2, n3, n4, n5, n6] as Node[]
 
-		def iMetric = new AcceleratedMetricTransformator().transform(metric, nodes, v);
+		def iMetric = new AcceleratedMetricTransformator().transform(metric, nodes, v)
+
+		parameter.setWithPDP(true)
 
 		return new XFVRPModel(nodes, iMetric, iMetric, v, parameter)
 	}

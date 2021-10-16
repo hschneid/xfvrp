@@ -21,7 +21,7 @@ import java.util.NoSuchElementException;
 public class XFPDPRandomChangeService extends XFVRPOptBase implements XFRandomChangeService {
 
 	private static final int MAX_TRIES_CHOOSING = 100;
-	private final int NBR_ACCEPTED_INVALIDS = 100;
+	private int NBR_ACCEPTED_INVALIDS = 100;
 	private int NBR_OF_VARIATIONS = 5;
 
 	private final XFPDPRelocate operator = new XFPDPRelocate();
@@ -69,6 +69,7 @@ public class XFPDPRandomChangeService extends XFVRPOptBase implements XFRandomCh
 					cnt++;
 				}
 			} catch (NoSuchElementException | XFVRPException e) {
+				e.printStackTrace();
 				// Means, that one of the choose methods could not find a valid variation parameter.
 			}
 		}

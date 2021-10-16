@@ -66,7 +66,7 @@ public class CheckCustomerService {
 
 			// Check route duration with this customer
 			float time = travelTime + travelTime2 + cust.getServiceTime();
-			if(time > model.getVehicle().maxRouteDuration){
+			if(time > model.getVehicle().getMaxRouteDuration()){
 				cust.setInvalidReason(InvalidReason.TRAVEL_TIME, "Customer " + cust.getExternID() + " - Traveltime required: " + time);
 				continue;
 			}
@@ -92,7 +92,7 @@ public class CheckCustomerService {
 
 	private boolean checkDemands(Node cust, XFVRPModel model) {
 		float[] demands = cust.getDemand();
-		float[] capacities = model.getVehicle().capacity;
+		float[] capacities = model.getVehicle().getCapacity();
 
 		int length = Math.min(demands.length, (capacities.length / CompartmentLoadType.NBR_OF_LOAD_TYPES));
 		for (int compartment = 0; compartment < length; compartment++) {

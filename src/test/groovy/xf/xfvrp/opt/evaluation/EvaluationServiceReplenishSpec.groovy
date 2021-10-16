@@ -1,5 +1,6 @@
 package xf.xfvrp.opt.evaluation
 
+
 import spock.lang.Specification
 import util.instances.TestNode
 import util.instances.TestVehicle
@@ -10,7 +11,7 @@ import xf.xfvrp.opt.Solution
 
 class EvaluationServiceReplenishSpec extends Specification {
 
-	def service = new EvaluationService();
+	def service = new EvaluationService()
 
 	def nd = new TestNode(
 			externID: "DEP",
@@ -21,7 +22,7 @@ class EvaluationServiceReplenishSpec extends Specification {
 
 	Node nr
 
-	def sol;
+	def sol
 
 	def parameter = new XFVRPParameter()
 

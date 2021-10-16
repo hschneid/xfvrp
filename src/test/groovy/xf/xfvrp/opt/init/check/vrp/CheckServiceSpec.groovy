@@ -18,7 +18,7 @@ class CheckServiceSpec extends Specification {
 	def service = new CheckService(
 			checkCustomerService: checkCustomerService,
 			optimizationMethod: opt
-	);
+	)
 
 	def setup() {
 		opt.execute(_, _, null) >> {it[0]}
@@ -29,9 +29,9 @@ class CheckServiceSpec extends Specification {
 
 		def v = new TestVehicle().getVehicle()
 
-		def p = new XFVRPParameter();
+		def p = new XFVRPParameter()
 
-		def iMetric = new AcceleratedMetricTransformator().transform(new EucledianMetric(), nodes, v);
+		def iMetric = new AcceleratedMetricTransformator().transform(new EucledianMetric(), nodes, v)
 		def model = new XFVRPModel(nodes, iMetric, iMetric, v, p)
 
 		when:
@@ -49,9 +49,9 @@ class CheckServiceSpec extends Specification {
 	}
 
 	def "Set nodes invalid"() {
-		def n2 = new TestNode(externID: "1", siteType: SiteType.CUSTOMER, presetBlockIdx: 1).getNode();
-		def n3 = new TestNode(externID: "2", siteType: SiteType.CUSTOMER, presetBlockIdx: 1).getNode();
-		def n4 = new TestNode(externID: "3", siteType: SiteType.CUSTOMER, presetBlockIdx: 1).getNode();
+		def n2 = new TestNode(externID: "1", siteType: SiteType.CUSTOMER, presetBlockIdx: 1).getNode()
+		def n3 = new TestNode(externID: "2", siteType: SiteType.CUSTOMER, presetBlockIdx: 1).getNode()
+		def n4 = new TestNode(externID: "3", siteType: SiteType.CUSTOMER, presetBlockIdx: 1).getNode()
 
 		def nodesOfBlock = [n2, n3, n4]
 		def invalidNodes = []
@@ -74,9 +74,9 @@ class CheckServiceSpec extends Specification {
 
 		def v = new TestVehicle().getVehicle()
 
-		def p = new XFVRPParameter();
+		def p = new XFVRPParameter()
 
-		def iMetric = new AcceleratedMetricTransformator().transform(new EucledianMetric(), nodes, v);
+		def iMetric = new AcceleratedMetricTransformator().transform(new EucledianMetric(), nodes, v)
 		def model = new XFVRPModel(nodes, iMetric, iMetric, v, p)
 
 		def nodesOfBlock = [nodes[1], nodes[2]]
@@ -95,9 +95,9 @@ class CheckServiceSpec extends Specification {
 
 		def v = new TestVehicle().getVehicle()
 
-		def p = new XFVRPParameter();
+		def p = new XFVRPParameter()
 
-		def iMetric = new AcceleratedMetricTransformator().transform(new EucledianMetric(), nodes, v);
+		def iMetric = new AcceleratedMetricTransformator().transform(new EucledianMetric(), nodes, v)
 		def model = new XFVRPModel(nodes, iMetric, iMetric, v, p)
 
 		def nodesOfBlock = [nodes[1], nodes[2]]
@@ -122,9 +122,9 @@ class CheckServiceSpec extends Specification {
 
 		def v = new TestVehicle().getVehicle()
 
-		def p = new XFVRPParameter();
+		def p = new XFVRPParameter()
 
-		def iMetric = new AcceleratedMetricTransformator().transform(new EucledianMetric(), nodes, v);
+		def iMetric = new AcceleratedMetricTransformator().transform(new EucledianMetric(), nodes, v)
 		def model = new XFVRPModel(nodes, iMetric, iMetric, v, p)
 
 		def nodesOfBlock = [nodes[1], nodes[2]]
@@ -149,9 +149,9 @@ class CheckServiceSpec extends Specification {
 
 		def v = new TestVehicle().getVehicle()
 
-		def p = new XFVRPParameter();
+		def p = new XFVRPParameter()
 
-		def iMetric = new AcceleratedMetricTransformator().transform(new EucledianMetric(), nodes, v);
+		def iMetric = new AcceleratedMetricTransformator().transform(new EucledianMetric(), nodes, v)
 		def model = new XFVRPModel(nodes, iMetric, iMetric, v, p)
 
 		def nodesOfBlock = [nodes[1], nodes[2]]
@@ -178,9 +178,9 @@ class CheckServiceSpec extends Specification {
 	def "Check nodes of block - Okay for customers"() {
 		def nodes = getNodes()
 		def v = new TestVehicle().getVehicle()
-		def p = new XFVRPParameter();
+		def p = new XFVRPParameter()
 
-		def iMetric = new AcceleratedMetricTransformator().transform(new EucledianMetric(), nodes, v);
+		def iMetric = new AcceleratedMetricTransformator().transform(new EucledianMetric(), nodes, v)
 		def model = new XFVRPModel(nodes, iMetric, iMetric, v, p)
 
 		def nodesOfBlock = [nodes[1], nodes[2]]
@@ -208,9 +208,9 @@ class CheckServiceSpec extends Specification {
 	def "Check nodes of block - Not okay for customers"() {
 		def nodes = getNodes()
 		def v = new TestVehicle().getVehicle()
-		def p = new XFVRPParameter();
+		def p = new XFVRPParameter()
 
-		def iMetric = new AcceleratedMetricTransformator().transform(new EucledianMetric(), nodes, v);
+		def iMetric = new AcceleratedMetricTransformator().transform(new EucledianMetric(), nodes, v)
 		def model = new XFVRPModel(nodes, iMetric, iMetric, v, p)
 
 		def nodesOfBlock = [nodes[1], nodes[2]]
@@ -235,9 +235,9 @@ class CheckServiceSpec extends Specification {
 	def "Check nodes of block - Not okay for a customer of default block"() {
 		def nodes = getNodes()
 		def v = new TestVehicle().getVehicle()
-		def p = new XFVRPParameter();
+		def p = new XFVRPParameter()
 
-		def iMetric = new AcceleratedMetricTransformator().transform(new EucledianMetric(), nodes, v);
+		def iMetric = new AcceleratedMetricTransformator().transform(new EucledianMetric(), nodes, v)
 		def model = new XFVRPModel(nodes, iMetric, iMetric, v, p)
 
 		def nodesOfBlock = [nodes[1], nodes[2]]
@@ -263,9 +263,9 @@ class CheckServiceSpec extends Specification {
 		def nodes = getNodes()
 		nodes[1].siteType = SiteType.DEPOT
 		def v = new TestVehicle().getVehicle()
-		def p = new XFVRPParameter();
+		def p = new XFVRPParameter()
 
-		def iMetric = new AcceleratedMetricTransformator().transform(new EucledianMetric(), nodes, v);
+		def iMetric = new AcceleratedMetricTransformator().transform(new EucledianMetric(), nodes, v)
 		def model = new XFVRPModel(nodes, iMetric, iMetric, v, p)
 
 		def nodesOfBlock = [nodes[0], nodes[1]]
@@ -293,9 +293,9 @@ class CheckServiceSpec extends Specification {
 		nodes[0].siteType = SiteType.REPLENISH
 		nodes[1].siteType = SiteType.REPLENISH
 		def v = new TestVehicle().getVehicle()
-		def p = new XFVRPParameter();
+		def p = new XFVRPParameter()
 
-		def iMetric = new AcceleratedMetricTransformator().transform(new EucledianMetric(), nodes, v);
+		def iMetric = new AcceleratedMetricTransformator().transform(new EucledianMetric(), nodes, v)
 		def model = new XFVRPModel(nodes, iMetric, iMetric, v, p)
 
 		def nodesOfBlock = [nodes[0], nodes[1]]
@@ -321,9 +321,9 @@ class CheckServiceSpec extends Specification {
 	def "Check blocks - Okay"() {
 		def nodes = getNodes()
 		def v = new TestVehicle().getVehicle()
-		def p = new XFVRPParameter();
+		def p = new XFVRPParameter()
 
-		def iMetric = new AcceleratedMetricTransformator().transform(new EucledianMetric(), nodes, v);
+		def iMetric = new AcceleratedMetricTransformator().transform(new EucledianMetric(), nodes, v)
 		def model = new XFVRPModel(nodes, iMetric, iMetric, v, p)
 
 		def nodesOfBlock = [nodes[1], nodes[2]]
@@ -352,9 +352,9 @@ class CheckServiceSpec extends Specification {
 	def "Check blocks - One not okay"() {
 		def nodes = getNodes()
 		def v = new TestVehicle().getVehicle()
-		def p = new XFVRPParameter();
+		def p = new XFVRPParameter()
 
-		def iMetric = new AcceleratedMetricTransformator().transform(new EucledianMetric(), nodes, v);
+		def iMetric = new AcceleratedMetricTransformator().transform(new EucledianMetric(), nodes, v)
 		def model = new XFVRPModel(nodes, iMetric, iMetric, v, p)
 
 		def nodesOfBlock = [nodes[1], nodes[2]]
@@ -384,9 +384,9 @@ class CheckServiceSpec extends Specification {
 	def "Check - Okay"() {
 		def nodes = getNodes()
 		def v = new TestVehicle().getVehicle()
-		def p = new XFVRPParameter();
+		def p = new XFVRPParameter()
 
-		def iMetric = new AcceleratedMetricTransformator().transform(new EucledianMetric(), nodes, v);
+		def iMetric = new AcceleratedMetricTransformator().transform(new EucledianMetric(), nodes, v)
 		def model = new XFVRPModel(nodes, iMetric, iMetric, v, p)
 
 		def invalidNodes = new ArrayList<Node>()

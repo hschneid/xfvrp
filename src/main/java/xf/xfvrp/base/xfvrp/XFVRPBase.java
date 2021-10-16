@@ -11,7 +11,7 @@ import xf.xfvrp.base.monitor.StatusMonitor;
  * LICENSE file in the root directory of this source tree.
  *
  **/
-public abstract class XFVRP_Base {
+public abstract class XFVRPBase {
 
 	/* Manages internal status messages to external observer */
 	protected StatusManager statusManager = new StatusManager();

@@ -11,7 +11,7 @@ import xf.xfvrp.opt.Solution
 
 class EvaluationServiceStructureSpec extends Specification {
 
-	def service = new EvaluationService();
+	def service = new EvaluationService()
 
 	def nd = new TestNode(
 	externID: "DEP",
@@ -27,7 +27,7 @@ class EvaluationServiceStructureSpec extends Specification {
 	timeWindow: [[0,99],[2,99]]
 	).getNode()
 
-	def sol;
+	def sol
 
 	def parameter = new XFVRPParameter()
 
@@ -134,15 +134,15 @@ class EvaluationServiceStructureSpec extends Specification {
 				loadType: loadType)
 				.getNode()
 
-		nd.setIdx(0);
-		nr.setIdx(1);
-		n1.setIdx(2);
-		n2.setIdx(3);
-		n3.setIdx(4);
+		nd.setIdx(0)
+		nr.setIdx(1)
+		n1.setIdx(2)
+		n2.setIdx(3)
+		n3.setIdx(4)
 
-		def nodes = [nd, nr, n1, n2, n3] as Node[];
+		def nodes = [nd, nr, n1, n2, n3] as Node[]
 
-		def iMetric = new AcceleratedMetricTransformator().transform(metric, nodes, v);
+		def iMetric = new AcceleratedMetricTransformator().transform(metric, nodes, v)
 
 		return new XFVRPModel(nodes, iMetric, iMetric, v, parameter)
 	}
