@@ -15,7 +15,7 @@ import xf.xfvrp.opt.XFVRPOptType
 
 class EvaluationServiceCapacityIntSpec extends Specification {
 
-	def "Check capacities with different compartment types"() {
+	def "Check capacities with different compartment types - all fit on 1 truck"() {
 		XFVRP vrp = new XFVRP()
 		vrp.setMetric(Metrics.EUCLEDIAN.get())
 		vrp.addOptType(XFVRPOptType.RELOCATE)
@@ -38,6 +38,26 @@ class EvaluationServiceCapacityIntSpec extends Specification {
 		then:
 		result.routes.size() == 1
 		result.routes[0].vehicle.name == 'V1'
+	}
+
+	def "Check capacities - deliveries don't fit on 1 truck"() {
+
+	}
+
+	def "Check capacities - pickups don't fit on 1 truck"() {
+
+	}
+
+	def "Check capacities - mixed load does not fit on 1 truck"() {
+
+	}
+
+	def "No given compartments, detect compartments automatically"() {
+
+	}
+
+	def "Not all compartments are given, detect missing compartments automatically"() {
+
 	}
 
 }

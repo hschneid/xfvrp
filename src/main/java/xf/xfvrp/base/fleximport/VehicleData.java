@@ -1,12 +1,10 @@
 package xf.xfvrp.base.fleximport;
 
-import xf.xfvrp.base.compartment.CompartmentType;
 import xf.xfvrp.base.Vehicle;
 import xf.xfvrp.base.exception.XFVRPException;
 import xf.xfvrp.base.exception.XFVRPExceptionType;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -41,7 +39,8 @@ public class VehicleData implements Serializable {
 	protected float waitingTimeBetweenShifts = 0;
 	
 	protected int priority = PRIORITY_UNDEF;
-	
+
+	protected float[] capacities;
 	protected List<CompartmentCapacity> compartments;
 	
 	private static final String defaultVehicleName = "DEFAULT";
@@ -59,33 +58,11 @@ public class VehicleData implements Serializable {
 	}
 	
 	/**
-	 * This sets the capacity for a set of compartments, where all load types have same capacity.
+	 * This sets the capacities for a set of compartments
 	 */
-	public VehicleData setCapacity(float[] capacity) {
-		this.compartments = new ArrayList<>();
-		for (float simpleCapacityPerCompartment : capacity) {
-			this.compartments.add(new CompartmentCapacity(simpleCapacityPerCompartment));
-		}
-		
-		return this;
-	}
-	
-	/**
-	 * This sets the capacity for a certain compartment with specification for each load type.
-	 *
-	 * compartmentIdx is an index in array. So it should be an integer between 0 and number of used compartments.
-	 */
-	public VehicleData setCapacityForCompartment(int compartmentIdx, CompartmentCapacity compartmentCapacity) {
-		// If idx is out of range, increase size
-		if(compartmentIdx >= compartments.size()) {
-			List<CompartmentCapacity> newCapacityPerCompartment = new ArrayList<>(compartmentIdx + 1);
-			for (int i = 0; i < compartments.size(); i++) {
-				newCapacityPerCompartment.set(i, compartments.get(i));
-			}
-			this.compartments = newCapacityPerCompartment;
-		}
-		
-		this.compartments.set(compartmentIdx, compartmentCapacity);
+	public VehicleData setCapacity(float[] capacities) {
+		this.capacities = capacities;
+
 		return this;
 	}
 	
@@ -193,9 +170,8 @@ public class VehicleData implements Serializable {
 		if(vehicleMetricId < 0)
 			throw new XFVRPException(XFVRPExceptionType.ILLEGAL_INPUT, "Parameter for vehicleMetricId must be greater or equal than zero.");
 		
-		float[] capacityArray = transformCapacity(compartments);
 		boolean greaterZero = false;
-		for (float v : capacityArray)
+		for (float v : capacities)
 			if (v > 0) {
 				greaterZero = true;
 				break;
@@ -204,22 +180,9 @@ public class VehicleData implements Serializable {
 			throw new XFVRPException(XFVRPExceptionType.ILLEGAL_INPUT, "Vehicle capacities must be greater or equal than zero.");
 		
 		return new Vehicle(
-				idx, name, count, capacityArray, maxRouteDuration, maxStopCount, maxWaitingTime, fixCost,
+				idx, name, count, capacities, maxRouteDuration, maxStopCount, maxWaitingTime, fixCost,
 				varCost, vehicleMetricId, maxDrivingTimePerShift, waitingTimeBetweenShifts, priority
 		);
-	}
-	
-	public static float[] transformCapacity(List<CompartmentCapacity> capacityPerCompartment) {
-		float[] capacityArray = new float[capacityPerCompartment.size() * CompartmentType.NBR_OF_LOAD_TYPES];
-		Arrays.fill(capacityArray, Float.MAX_VALUE);
-		for (int i = 0; i < capacityPerCompartment.size(); i++) {
-			CompartmentCapacity compartmentCapacity = capacityPerCompartment.get(i);
-			if(compartmentCapacity != null) {
-				System.arraycopy(compartmentCapacity.asArray(), 0, capacityArray,
-						i * CompartmentType.NBR_OF_LOAD_TYPES, CompartmentType.NBR_OF_LOAD_TYPES);
-			}
-		}
-		return capacityArray;
 	}
 	
 	@Override
