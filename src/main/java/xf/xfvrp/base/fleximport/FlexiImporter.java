@@ -3,6 +3,7 @@ package xf.xfvrp.base.fleximport;
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.ShipmentConverter;
 import xf.xfvrp.base.Vehicle;
+import xf.xfvrp.base.compartment.CompartmentType;
 import xf.xfvrp.base.exception.XFVRPException;
 import xf.xfvrp.base.monitor.StatusManager;
 import xf.xfvrp.base.preset.*;
@@ -37,6 +38,7 @@ public class FlexiImporter {
 	private final List<CustomerData> customerList = new ArrayList<>();
 	private final List<ReplenishData> replenishList = new ArrayList<>();
 	private final List<VehicleData> vehicleList = new ArrayList<>();
+	private final List<CompartmentType> compartmentTypes = new ArrayList<>();
 
 	public final VehicleData defaultVehicle = VehicleData.createDefault();
 
@@ -187,6 +189,10 @@ public class FlexiImporter {
 		return lastVehicleData;
 	}
 
+	public void addCompartmentType(CompartmentType type) {
+		compartmentTypes.add(type);
+	}
+
 	/**
 	 * Clears all internal data lists and reset the internal fields.
 	 */
@@ -194,6 +200,7 @@ public class FlexiImporter {
 		depotList.clear();
 		customerList.clear();
 		vehicleList.clear();
+		compartmentTypes.clear();
 
 		lastDepotData = null;
 		lastCustomerData = null;
@@ -215,6 +222,13 @@ public class FlexiImporter {
 	}
 
 	/**
+	 * Clears all added compartment types.
+	 */
+	public void clearCompartmentTypes() {
+		compartmentTypes.clear();
+	}
+
+	/**
 	 * Removes all inserted vehicles and reset the planning parameters to default.
 	 * (See setCapacity() and setMaxRouteDuration() )
 	 */
@@ -223,34 +237,20 @@ public class FlexiImporter {
 		vehicleList.add(defaultVehicle);
 	}
 
-	/**
-	 * 
-	 * @return the collected depots
-	 */
 	public List<DepotData> getDepotList() {
 		return depotList;
 	}
 
-	/**
-	 * 
-	 * @return the collected customers
-	 */
 	public List<CustomerData> getCustomerList() {
 		return customerList;
 	}
 
-	/**
-	 * 
-	 * @return the collected customers
-	 */
 	public List<ReplenishData> getReplenishList() {
 		return replenishList;
 	}
 
-	/**
-	 * 
-	 * @return the collected vehicles
-	 */
+	public List<CompartmentType> getCompartmentTypes() {return compartmentTypes;}
+
 	public Vehicle[] getVehicles() throws XFVRPException {
 		Vehicle[] vehicles = new Vehicle[vehicleList.size()];
 

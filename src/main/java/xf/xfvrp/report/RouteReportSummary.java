@@ -1,7 +1,7 @@
 package xf.xfvrp.report;
 
 import util.ArrayUtil;
-import xf.xfvrp.base.CompartmentLoadType;
+import xf.xfvrp.base.compartment.CompartmentType;
 import xf.xfvrp.base.LoadType;
 import xf.xfvrp.base.SiteType;
 import xf.xfvrp.base.Vehicle;
@@ -48,7 +48,7 @@ public class RouteReportSummary {
 	public RouteReportSummary(Vehicle vehicle) {
 		this.vehicle = vehicle;
 
-		int nbrOfCompartments = (vehicle.getCapacity().length / CompartmentLoadType.NBR_OF_LOAD_TYPES);
+		int nbrOfCompartments = (vehicle.getCapacity().length / CompartmentType.NBR_OF_LOAD_TYPES);
 		pickups = new float[nbrOfCompartments];
 		deliveries = new float[nbrOfCompartments];
 
@@ -143,11 +143,11 @@ public class RouteReportSummary {
 	private void checkOverload(Event e) {
 		for (int compartment = 0; compartment < overloads.length; compartment++) {
 			if (deliveryLoads[compartment] > 0 && pickupLoads[compartment] == 0) {
-				overloads[compartment] += deliveryLoads[compartment] > vehicle.getCapacity()[compartment * CompartmentLoadType.NBR_OF_LOAD_TYPES + CompartmentLoadType.DELIVERY.index()] ? e.getAmounts()[compartment] : 0;
+				overloads[compartment] += deliveryLoads[compartment] > vehicle.getCapacity()[compartment * CompartmentType.NBR_OF_LOAD_TYPES + CompartmentType.DELIVERY.index()] ? e.getAmounts()[compartment] : 0;
 			} else if (deliveryLoads[compartment] == 0 && pickupLoads[compartment] > 0) {
-				overloads[compartment] += pickupLoads[compartment] > vehicle.getCapacity()[compartment * CompartmentLoadType.NBR_OF_LOAD_TYPES + CompartmentLoadType.PICKUP.index()] ? e.getAmounts()[compartment] : 0;
+				overloads[compartment] += pickupLoads[compartment] > vehicle.getCapacity()[compartment * CompartmentType.NBR_OF_LOAD_TYPES + CompartmentType.PICKUP.index()] ? e.getAmounts()[compartment] : 0;
 			} else if (deliveryLoads[compartment] > 0 && pickupLoads[compartment] > 0) {
-				overloads[compartment] += commonLoads[compartment] > vehicle.getCapacity()[compartment * CompartmentLoadType.NBR_OF_LOAD_TYPES + CompartmentLoadType.MIXED.index()] ? e.getAmounts()[compartment] : 0;
+				overloads[compartment] += commonLoads[compartment] > vehicle.getCapacity()[compartment * CompartmentType.NBR_OF_LOAD_TYPES + CompartmentType.MIXED.index()] ? e.getAmounts()[compartment] : 0;
 			}
 		}
 	}

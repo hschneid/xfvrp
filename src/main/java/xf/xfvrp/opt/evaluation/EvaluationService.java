@@ -1,6 +1,7 @@
 package xf.xfvrp.opt.evaluation;
 
 import xf.xfvrp.base.*;
+import xf.xfvrp.base.compartment.CompartmentType;
 import xf.xfvrp.base.exception.XFVRPException;
 import xf.xfvrp.base.preset.BlockNameConverter;
 import xf.xfvrp.base.quality.RouteQuality;
@@ -145,11 +146,11 @@ public class EvaluationService {
 			float pickup = (loadType == LoadType.PICKUP) ?
 					context.getCurrentNode().getDemand()[compartment] : 0;
 
-			int compartmentIdx = compartment * CompartmentLoadType.NBR_OF_LOAD_TYPES;
-			amounts[compartmentIdx + CompartmentLoadType.PICKUP.index()] += pickup;
-			amounts[compartmentIdx + CompartmentLoadType.DELIVERY.index()] += delivery;
-			amounts[compartmentIdx + CompartmentLoadType.MIXED.index()] -= delivery;
-			amounts[compartmentIdx + CompartmentLoadType.MIXED.index()] += pickup;
+			int compartmentIdx = compartment * CompartmentType.NBR_OF_LOAD_TYPES;
+			amounts[compartmentIdx + CompartmentType.PICKUP.index()] += pickup;
+			amounts[compartmentIdx + CompartmentType.DELIVERY.index()] += delivery;
+			amounts[compartmentIdx + CompartmentType.MIXED.index()] -= delivery;
+			amounts[compartmentIdx + CompartmentType.MIXED.index()] += pickup;
 		}
 
 		int penalty = context.checkCapacities();

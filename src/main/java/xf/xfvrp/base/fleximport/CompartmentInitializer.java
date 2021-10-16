@@ -1,6 +1,6 @@
 package xf.xfvrp.base.fleximport;
 
-import xf.xfvrp.base.CompartmentLoadType;
+import xf.xfvrp.base.compartment.CompartmentType;
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.Vehicle;
 
@@ -34,10 +34,10 @@ class CompartmentInitializer {
 
     private static void adjustVehicles(Vehicle[] vehicles, int nbrOfCompartments) {
         Arrays.stream(vehicles)
-                .filter(vehicle -> (vehicle.getCapacity().length / CompartmentLoadType.NBR_OF_LOAD_TYPES) != nbrOfCompartments)
+                .filter(vehicle -> (vehicle.getCapacity().length / CompartmentType.NBR_OF_LOAD_TYPES) != nbrOfCompartments)
                 .forEach(vehicle -> {
                     int nbrOfCompartmentsBefore = vehicle.getCapacity().length;
-                    vehicle.setCapacity(Arrays.copyOf(vehicle.getCapacity(), nbrOfCompartments * CompartmentLoadType.NBR_OF_LOAD_TYPES));
+                    vehicle.setCapacity(Arrays.copyOf(vehicle.getCapacity(), nbrOfCompartments * CompartmentType.NBR_OF_LOAD_TYPES));
                     Arrays.fill(vehicle.getCapacity(), nbrOfCompartmentsBefore, vehicle.getCapacity().length, Float.MAX_VALUE);
                 });
     }
@@ -54,7 +54,7 @@ class CompartmentInitializer {
         nbrOfCompartments = Math.max(
                 nbrOfCompartments,
                 Arrays.stream(vehicles)
-                        .mapToInt(vehicle -> vehicle.getCapacity().length / CompartmentLoadType.NBR_OF_LOAD_TYPES)
+                        .mapToInt(vehicle -> vehicle.getCapacity().length / CompartmentType.NBR_OF_LOAD_TYPES)
                         .max()
                         .orElse(-1)
         );

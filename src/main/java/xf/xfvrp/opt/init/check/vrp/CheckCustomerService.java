@@ -1,6 +1,7 @@
 package xf.xfvrp.opt.init.check.vrp;
 
 import xf.xfvrp.base.*;
+import xf.xfvrp.base.compartment.CompartmentType;
 import xf.xfvrp.base.exception.XFVRPException;
 import xf.xfvrp.base.exception.XFVRPExceptionType;
 import xf.xfvrp.base.preset.BlockPositionConverter;
@@ -94,11 +95,11 @@ public class CheckCustomerService {
 		float[] demands = cust.getDemand();
 		float[] capacities = model.getVehicle().getCapacity();
 
-		int length = Math.min(demands.length, (capacities.length / CompartmentLoadType.NBR_OF_LOAD_TYPES));
+		int length = Math.min(demands.length, (capacities.length / CompartmentType.NBR_OF_LOAD_TYPES));
 		for (int compartment = 0; compartment < length; compartment++) {
-			int loadType = (cust.getLoadType() == LoadType.DELIVERY) ? CompartmentLoadType.DELIVERY.index() :
-					(cust.getLoadType() == LoadType.PICKUP) ? CompartmentLoadType.PICKUP.index() : -1;
-			float capacity = capacities[compartment * CompartmentLoadType.NBR_OF_LOAD_TYPES + loadType];
+			int loadType = (cust.getLoadType() == LoadType.DELIVERY) ? CompartmentType.DELIVERY.index() :
+					(cust.getLoadType() == LoadType.PICKUP) ? CompartmentType.PICKUP.index() : -1;
+			float capacity = capacities[compartment * CompartmentType.NBR_OF_LOAD_TYPES + loadType];
 			if(demands[compartment] > capacity) {
 				cust.setInvalidReason(
 						InvalidReason.CAPACITY,

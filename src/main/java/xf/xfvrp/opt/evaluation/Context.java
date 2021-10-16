@@ -1,6 +1,7 @@
 package xf.xfvrp.opt.evaluation;
 
 import xf.xfvrp.base.*;
+import xf.xfvrp.base.compartment.CompartmentType;
 import xf.xfvrp.base.exception.XFVRPException;
 import xf.xfvrp.base.exception.XFVRPExceptionType;
 import xf.xfvrp.base.preset.BlockNameConverter;
@@ -116,8 +117,8 @@ public class Context {
 				if(currentNode.isCompartmentReplenished()[compartment]) {
 					Arrays.fill(
 							amountsOfRoute,
-							compartment * CompartmentLoadType.NBR_OF_LOAD_TYPES,
-							compartment * CompartmentLoadType.NBR_OF_LOAD_TYPES + CompartmentLoadType.NBR_OF_LOAD_TYPES,
+							compartment * CompartmentType.NBR_OF_LOAD_TYPES,
+							compartment * CompartmentType.NBR_OF_LOAD_TYPES + CompartmentType.NBR_OF_LOAD_TYPES,
 							0
 					);
 				}
@@ -133,7 +134,7 @@ public class Context {
 		Amount deliveryOfRoute = routeInfos.get(currentNode).getDeliveryAmount();
 		if(deliveryOfRoute.hasAmount()) {
 			for (int compartment = 0; compartment < getNbrOfCompartments(); compartment++)
-				amountsOfRoute[compartment * CompartmentLoadType.NBR_OF_LOAD_TYPES + CompartmentLoadType.MIXED.index()] += deliveryOfRoute.getAmounts()[compartment];
+				amountsOfRoute[compartment * CompartmentType.NBR_OF_LOAD_TYPES + CompartmentType.MIXED.index()] += deliveryOfRoute.getAmounts()[compartment];
 
 			return checkCapacities();
 		}
@@ -255,16 +256,16 @@ public class Context {
 
 		int sum = 0;
 		for (int compartment = 0; compartment < getNbrOfCompartments(); compartment++) {
-			int compartmentIdx = compartment * CompartmentLoadType.NBR_OF_LOAD_TYPES;
+			int compartmentIdx = compartment * CompartmentType.NBR_OF_LOAD_TYPES;
 
-			int pickupIdx = compartmentIdx + CompartmentLoadType.PICKUP.index();
-			int deliveryIdx = compartmentIdx + CompartmentLoadType.DELIVERY.index();
+			int pickupIdx = compartmentIdx + CompartmentType.PICKUP.index();
+			int deliveryIdx = compartmentIdx + CompartmentType.DELIVERY.index();
 			if(amountsOfRoute[pickupIdx] == 0 && amountsOfRoute[deliveryIdx] > 0) {
 				sum += (int) Math.ceil(Math.max(0, amountsOfRoute[deliveryIdx] - vehicle.getCapacity()[deliveryIdx]));
 			} else if(amountsOfRoute[pickupIdx] > 0 && amountsOfRoute[deliveryIdx] == 0) {
 				sum += (int) Math.ceil(Math.max(0, amountsOfRoute[pickupIdx] - vehicle.getCapacity()[pickupIdx]));
 			} else if(amountsOfRoute[pickupIdx] > 0 && amountsOfRoute[deliveryIdx] > 0) {
-				sum += (int) Math.ceil(Math.max(0, amountsOfRoute[compartmentIdx + CompartmentLoadType.MIXED.index()] - vehicle.getCapacity()[compartmentIdx + CompartmentLoadType.MIXED.index()]));
+				sum += (int) Math.ceil(Math.max(0, amountsOfRoute[compartmentIdx + CompartmentType.MIXED.index()] - vehicle.getCapacity()[compartmentIdx + CompartmentType.MIXED.index()]));
 			}
 		}
 
@@ -369,6 +370,6 @@ public class Context {
 	}
 
 	public int getNbrOfCompartments() {
-		return amountsOfRoute.length / CompartmentLoadType.NBR_OF_LOAD_TYPES;
+		return amountsOfRoute.length / CompartmentType.NBR_OF_LOAD_TYPES;
 	}
 }

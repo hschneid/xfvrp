@@ -1,6 +1,6 @@
 package xf.xfvrp.base.fleximport;
 
-import xf.xfvrp.base.CompartmentLoadType;
+import xf.xfvrp.base.compartment.CompartmentType;
 import xf.xfvrp.base.Vehicle;
 import xf.xfvrp.base.exception.XFVRPException;
 import xf.xfvrp.base.exception.XFVRPExceptionType;
@@ -210,13 +210,13 @@ public class VehicleData implements Serializable {
 	}
 	
 	public static float[] transformCapacity(List<CompartmentCapacity> capacityPerCompartment) {
-		float[] capacityArray = new float[capacityPerCompartment.size() * CompartmentLoadType.NBR_OF_LOAD_TYPES];
+		float[] capacityArray = new float[capacityPerCompartment.size() * CompartmentType.NBR_OF_LOAD_TYPES];
 		Arrays.fill(capacityArray, Float.MAX_VALUE);
 		for (int i = 0; i < capacityPerCompartment.size(); i++) {
 			CompartmentCapacity compartmentCapacity = capacityPerCompartment.get(i);
 			if(compartmentCapacity != null) {
 				System.arraycopy(compartmentCapacity.asArray(), 0, capacityArray,
-						i * CompartmentLoadType.NBR_OF_LOAD_TYPES, CompartmentLoadType.NBR_OF_LOAD_TYPES);
+						i * CompartmentType.NBR_OF_LOAD_TYPES, CompartmentType.NBR_OF_LOAD_TYPES);
 			}
 		}
 		return capacityArray;
