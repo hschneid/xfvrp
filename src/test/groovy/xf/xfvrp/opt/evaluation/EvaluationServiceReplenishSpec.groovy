@@ -9,7 +9,6 @@ import xf.xfvrp.base.metric.EucledianMetric
 import xf.xfvrp.base.metric.internal.AcceleratedMetricTransformator
 import xf.xfvrp.opt.Solution
 
-//TODO(Holger & Lars): Discuss! Bring this back to work
 class EvaluationServiceReplenishSpec extends Specification {
 
 	def service = new EvaluationService()
