@@ -1,9 +1,9 @@
 package xf.xfvrp.base;
 
-import java.io.Serializable;
-
 import xf.xfvrp.opt.fleetmix.DefaultMixedFleetHeuristic;
 import xf.xfvrp.opt.fleetmix.IMixedFleetHeuristic;
+
+import java.io.Serializable;
 
 /** 
  * Copyright (c) 2012-2021 Holger Schneider

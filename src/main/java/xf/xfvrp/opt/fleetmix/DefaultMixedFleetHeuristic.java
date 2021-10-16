@@ -1,9 +1,5 @@
 package xf.xfvrp.opt.fleetmix;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import xf.xfvrp.RoutingDataBag;
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.Vehicle;
@@ -15,6 +11,10 @@ import xf.xfvrp.base.monitor.StatusManager;
 import xf.xfvrp.base.preset.VehiclePriorityInitialiser;
 import xf.xfvrp.opt.XFVRPSolution;
 import xf.xfvrp.report.RouteReport;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Copyright (c) 2012-2021 Holger Schneider

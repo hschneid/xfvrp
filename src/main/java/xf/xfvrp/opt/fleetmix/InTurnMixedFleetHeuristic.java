@@ -1,8 +1,5 @@
 package xf.xfvrp.opt.fleetmix;
 
-import java.util.*;
-import java.util.stream.Collectors;
-
 import xf.xfvrp.RoutingDataBag;
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.SiteType;
@@ -16,6 +13,9 @@ import xf.xfvrp.base.preset.VehiclePriorityInitialiser;
 import xf.xfvrp.opt.XFVRPSolution;
 import xf.xfvrp.report.Report;
 import xf.xfvrp.report.RouteReport;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * InTurnMixedFleetHeuristic aims to distribute the set of generated routes fairly to the set of different vehicles

@@ -1,16 +1,16 @@
 package xf.xfvrp.base.fleximport;
 
-import static xf.xfvrp.base.Vehicle.PRIORITY_UNDEF;
+import xf.xfvrp.base.CompartmentLoadType;
+import xf.xfvrp.base.Vehicle;
+import xf.xfvrp.base.exception.XFVRPException;
+import xf.xfvrp.base.exception.XFVRPExceptionType;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import xf.xfvrp.base.CompartmentLoadType;
-import xf.xfvrp.base.Vehicle;
-import xf.xfvrp.base.exception.XFVRPException;
-import xf.xfvrp.base.exception.XFVRPExceptionType;
+import static xf.xfvrp.base.Vehicle.PRIORITY_UNDEF;
 
 /**
  * Copyright (c) 2012-2021 Holger Schneider

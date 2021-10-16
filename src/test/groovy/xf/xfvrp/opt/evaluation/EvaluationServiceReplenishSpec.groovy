@@ -1,6 +1,6 @@
 package xf.xfvrp.opt.evaluation
 
-import spock.lang.Ignore
+
 import spock.lang.Specification
 import util.instances.TestNode
 import util.instances.TestVehicle

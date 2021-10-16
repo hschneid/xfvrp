@@ -1,10 +1,5 @@
 package xf.xfvrp.opt.fleetmix;
 
-import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-
 import util.collection.ListMap;
 import xf.xfvrp.base.*;
 import xf.xfvrp.base.exception.XFVRPException;
@@ -21,6 +16,11 @@ import xf.xfvrp.opt.fleetmix.IMixedFleetHeuristic.RoutePlanningFunction;
 import xf.xfvrp.report.Event;
 import xf.xfvrp.report.RouteReport;
 import xf.xfvrp.report.build.ReportBuilder;
+
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public abstract class MixedFleetHeuristicBase {
 	private final ReportBuilder reportBuilder = new ReportBuilder();

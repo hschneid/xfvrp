@@ -3,12 +3,8 @@ package xf.xfvrp.opt
 import cern.colt.list.FloatArrayList
 import com.fasterxml.jackson.databind.ObjectMapper
 import spock.lang.Specification
-import util.instances.TestNode
-import util.instances.TestVehicle
 import xf.xfvrp.XFVRP
 import xf.xfvrp.base.LoadType
-import xf.xfvrp.base.Node
-import xf.xfvrp.base.SiteType
 import xf.xfvrp.base.exception.XFVRPException
 import xf.xfvrp.base.metric.EucledianMetric
 import xf.xfvrp.base.metric.Metrics
