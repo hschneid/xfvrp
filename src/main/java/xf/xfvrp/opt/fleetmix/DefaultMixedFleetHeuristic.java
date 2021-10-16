@@ -35,7 +35,8 @@ import xf.xfvrp.report.RouteReport;
  *
  */
 public class DefaultMixedFleetHeuristic extends MixedFleetHeuristicBase implements IMixedFleetHeuristic {
-	private MixedFleetSelector selector = new MixedFleetSelector();
+
+	private final MixedFleetSelector selector = new MixedFleetSelector();
 	
 	@Override
 	public List<XFVRPSolution> execute(
@@ -66,7 +67,10 @@ public class DefaultMixedFleetHeuristic extends MixedFleetHeuristicBase implemen
 				// Remove customers from best routes for next planning stage
 				unplannedNodes = getUnusedNodes(bestRoutes, unplannedNodes);
 			}
-			if (unplannedNodes.size() == 0) break;
+
+			// If no customers are left, stop!
+			if (getCustomers(unplannedNodes).size() == 0)
+				break;
 		}
 
 		// Insert invalid and unplanned nodes into solution

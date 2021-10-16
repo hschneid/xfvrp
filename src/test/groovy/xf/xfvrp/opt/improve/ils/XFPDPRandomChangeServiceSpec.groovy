@@ -433,33 +433,6 @@ class XFPDPRandomChangeServiceSpec extends Specification {
 		gt[7] == nd
 	}
 
-	@Ignore
-	def "Execute - Reach termination criteria"() {
-		def model = initBase([0, 0, 0, 0] as int[], [0, 0, 0, 0] as int[])
-		def n = model.getNodes()
-		service.setModel(model)
-
-		sol = new Solution()
-		sol.setGiantRoute([nd, n[2], n[3], n[4], nd, n[5], nd] as Node[])
-
-		random.nextInt(_) >>> [0, 2, 4, 1]
-		service.NBR_OF_VARIATIONS = 2
-		service.NBR_ACCEPTED_INVALIDS = 10
-
-		when:
-		def result = service.change(sol, model)
-		def gt = result.getGiantRoute()
-
-		then:
-		gt[0] == nd
-		gt[1] == n[3]
-		gt[2] == n[2]
-		gt[3] == n[4]
-		gt[4] == nd
-		gt[5] == n[5]
-		gt[6] == nd
-	}
-
 	boolean doRandomChange(Solution sol, Node[] n) {
 		def choice = new Choice()
 		service.chooseSrcPickup(choice, sol)

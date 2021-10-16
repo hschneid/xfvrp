@@ -1,14 +1,9 @@
 package xf.xfvrp;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 import xf.xfvrp.base.*;
 import xf.xfvrp.base.exception.XFVRPException;
 import xf.xfvrp.base.exception.XFVRPExceptionType;
 import xf.xfvrp.base.monitor.StatusCode;
-import xf.xfvrp.base.xfvrp.XFVRPBase;
 import xf.xfvrp.base.xfvrp.XFVRPData;
 import xf.xfvrp.opt.*;
 import xf.xfvrp.opt.fleetmix.IMixedFleetHeuristic;
@@ -17,6 +12,10 @@ import xf.xfvrp.opt.init.precheck.PreCheckService;
 import xf.xfvrp.opt.init.solution.InitialSolutionBuilder;
 import xf.xfvrp.report.Report;
 import xf.xfvrp.report.build.ReportBuilder;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /** 
  * Copyright (c) 2012-2021 Holger Schneider
@@ -38,10 +37,10 @@ import xf.xfvrp.report.build.ReportBuilder;
  * @author hschneid
  * 
  */
-public class XFVRP extends XFVRPBase {
+public class XFVRP extends XFVRPData {
+
 	private final XFVRPParameter parameters = new XFVRPParameter();
-	private final XFVRPData data = new XFVRPData();
-	
+
 	/* List of optimization procedures */
 	private final List<XFVRPOptBase> optList = new ArrayList<>();
 
@@ -61,15 +60,15 @@ public class XFVRP extends XFVRPBase {
 		statusManager.setStartTime();
 
 		// Flush import buffer
-		data.getImporter().finishImport();
+		importer.finishImport();
 		vehicleSolutionList.clear();
 
 		// Copy imported data to internal data structure
-		Vehicle[] vehicles = data.getImporter().getVehicles();
-		Node[] nodes = data.getImporter().getNodes(vehicles, statusManager);
+		Vehicle[] vehicles = importer.getVehicles();
+		Node[] nodes = importer.getNodes(vehicles, statusManager);
 
 		// Check of input parameter
-		if(data.getImporter().getDepotList().size() == 0) {
+		if(importer.getDepotList().size() == 0) {
 			statusManager.fireMessage(StatusCode.ABORT, "No depot is given.");
 			throw new XFVRPException(XFVRPExceptionType.ILLEGAL_INPUT, "No depot is given.");
 		}
@@ -80,7 +79,7 @@ public class XFVRP extends XFVRPBase {
 		
 		IMixedFleetHeuristic heuristic = getParameters().getMixedFleetHeuristic();
 		Collection<XFVRPSolution> solutions = heuristic.execute(nodes, vehicles, this::executeRoutePlanning,
-				data.getMetric(), parameters, statusManager);
+				metric, parameters, statusManager);
 		
 		vehicleSolutionList.addAll(solutions);
 
@@ -93,7 +92,7 @@ public class XFVRP extends XFVRPBase {
 	 */
 	private XFVRPSolution executeRoutePlanning(RoutingDataBag dataBag) throws XFVRPException {
 		Node[] nodes = new PreCheckService().precheck(dataBag.nodes, dataBag.vehicle, parameters);
-		XFVRPModel model = new ModelBuilder().build(nodes, dataBag.vehicle, data.getMetric(), parameters, statusManager);
+		XFVRPModel model = new ModelBuilder().build(nodes, dataBag.vehicle, metric, parameters, statusManager);
 		Solution solution = new InitialSolutionBuilder().build(model, parameters, statusManager);
 
 		// VRP optimizations, if initiated solution has appropriate length
@@ -169,8 +168,9 @@ public class XFVRP extends XFVRPBase {
 	public XFVRPParameter getParameters() {
 		return parameters;
 	}
-	
+
+	// TODO: Obsolete
 	public XFVRPData getData() {
-		return data;
+		return this;
 	}
 }

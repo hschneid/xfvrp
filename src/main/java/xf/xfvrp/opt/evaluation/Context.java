@@ -126,27 +126,15 @@ public class Context {
 			Arrays.fill(amountsOfRoute, 0);
 		}
 
-		// TODO(Lars) If this leads to an error, then please raise a bug ticket with concrete example (maybe test)
-		// Init delivery amount on the route:
-		// Here it is checked, that there is a pre-collection of amounts for this depot
-		// For example: This fails, if currentNode is no depot, which means, that start of
-		// route is no depot. This is a critical situation, because somewhere the route is
-		// malformed initialized.
-		if (!routeInfos.containsKey(currentNode)) {
-			throw new XFVRPException(XFVRPExceptionType.ILLEGAL_ARGUMENT,
-					"Could not find route infos for depot id " + currentNode.getDepotId());
-		}
+		// Init delivery amount on the route
+		if(!routeInfos.containsKey(currentNode))
+			throw new XFVRPException(XFVRPExceptionType.ILLEGAL_ARGUMENT, "Could not find route infos for depot id " + currentNode.getDepotId());
 
-		// If there are mixed compartments, consider delivery amount at starting depot
-		RouteInfo routeInfo = routeInfos.get(currentNode);
-		Amount deliveryOfRoute = routeInfo.getDeliveryAmount();
-		// With old code, this would suffer...
-		// if (deliveryOfRoute.hasAmount()) {
-		if (deliveryOfRoute.hasAmount() && routeInfo.getPickupAmount().hasAmount()) {
-			for (int compartment = 0; compartment < getNbrOfCompartments(); compartment++) {
-				int mixedIndex = compartment * CompartmentLoadType.NBR_OF_LOAD_TYPES + CompartmentLoadType.MIXED.index();
-				amountsOfRoute[mixedIndex] += deliveryOfRoute.getAmounts()[compartment];
-			}
+		Amount deliveryOfRoute = routeInfos.get(currentNode).getDeliveryAmount();
+		if(deliveryOfRoute.hasAmount()) {
+			for (int compartment = 0; compartment < getNbrOfCompartments(); compartment++)
+				amountsOfRoute[compartment * CompartmentLoadType.NBR_OF_LOAD_TYPES + CompartmentLoadType.MIXED.index()] += deliveryOfRoute.getAmounts()[compartment];
+
 			return checkCapacities();
 		}
 
@@ -271,30 +259,13 @@ public class Context {
 
 			int pickupIdx = compartmentIdx + CompartmentLoadType.PICKUP.index();
 			int deliveryIdx = compartmentIdx + CompartmentLoadType.DELIVERY.index();
-			int mixedIndex = compartmentIdx + CompartmentLoadType.MIXED.index();
-
-			// TODO(Lars): That is exactly the code, which considers if routes have mixed load or single load. In single load, the mixed load must not be checked, because this would lead to wrong interpretation.
-//			if(amountsOfRoute[pickupIdx] == 0 && amountsOfRoute[deliveryIdx] > 0) {
-//				sum += (int) Math.ceil(Math.max(0, amountsOfRoute[deliveryIdx] - vehicle.capacity[deliveryIdx]));
-//			} else if(amountsOfRoute[pickupIdx] > 0 && amountsOfRoute[deliveryIdx] == 0) {
-//				sum += (int) Math.ceil(Math.max(0, amountsOfRoute[pickupIdx] - vehicle.capacity[pickupIdx]));
-//			} else if(amountsOfRoute[pickupIdx] > 0 && amountsOfRoute[deliveryIdx] > 0) {
-//				sum += (int) Math.ceil(Math.max(0, amountsOfRoute[compartmentIdx + CompartmentLoadType.MIXED.index()] - vehicle.capacity[compartmentIdx + CompartmentLoadType.MIXED.index()]));
-//			}
-
-			float[] capacity = vehicle.getCapacity();
-			sum += (int) Math.ceil(Math.max(0, amountsOfRoute[deliveryIdx] - capacity[deliveryIdx]));
-			sum += (int) Math.ceil(Math.max(0, amountsOfRoute[pickupIdx] - capacity[pickupIdx]));
-			sum += (int) Math.ceil(Math.max(0, amountsOfRoute[mixedIndex] - capacity[mixedIndex]));
-
-			System.out.println("X "+compartment+" "+
-					amountsOfRoute[deliveryIdx]+","+
-					amountsOfRoute[pickupIdx] +","+
-					amountsOfRoute[mixedIndex] + "|"+
-					capacity[deliveryIdx]+","+
-					capacity[pickupIdx] +","+
-					capacity[mixedIndex] + "="+sum
-			);
+			if(amountsOfRoute[pickupIdx] == 0 && amountsOfRoute[deliveryIdx] > 0) {
+				sum += (int) Math.ceil(Math.max(0, amountsOfRoute[deliveryIdx] - vehicle.getCapacity()[deliveryIdx]));
+			} else if(amountsOfRoute[pickupIdx] > 0 && amountsOfRoute[deliveryIdx] == 0) {
+				sum += (int) Math.ceil(Math.max(0, amountsOfRoute[pickupIdx] - vehicle.getCapacity()[pickupIdx]));
+			} else if(amountsOfRoute[pickupIdx] > 0 && amountsOfRoute[deliveryIdx] > 0) {
+				sum += (int) Math.ceil(Math.max(0, amountsOfRoute[compartmentIdx + CompartmentLoadType.MIXED.index()] - vehicle.getCapacity()[compartmentIdx + CompartmentLoadType.MIXED.index()]));
+			}
 		}
 
 		return sum;

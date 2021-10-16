@@ -112,7 +112,6 @@ class EvaluationServiceReplenishSpec extends Specification {
 		!nr.isCompartmentReplenished()[2]
 	}
 
-	@Ignore
 	def "Invalid - All compartments are not replenished and it exceeds capacity"() {
 		def v = new TestVehicle(name: "V1", capacity: [7, 79, 799]).getVehicle()
 		def model = initScen(v, new boolean[]{false, false, false})

@@ -10,7 +10,6 @@ import xf.xfvrp.base.metric.EucledianMetric
 import xf.xfvrp.base.metric.internal.AcceleratedMetricTransformator
 import xf.xfvrp.opt.Solution
 
-//TODO(Holger & Lars): Discuss this! Tests are not working!
 class EvaluationServiceCompartmentCapacitySpec extends Specification {
 
 	def service = new EvaluationService()
@@ -161,7 +160,6 @@ class EvaluationServiceCompartmentCapacitySpec extends Specification {
 		result.getPenalty() == 0
 	}
 
-	@Ignore
 	def "Invalid - 3 compartments, only pickups, only capacity for pickups needs to be considered"() {
 		def v = new TestVehicle(name: "V1",
 				compartmentCapacity: [
