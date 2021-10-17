@@ -6,7 +6,7 @@ public interface CompartmentLoad {
 
     void addAmount(float[] amounts, LoadType loadType);
 
-    int checkCapacity(float[] capacities);
+    float checkCapacity(float[] capacities);
 
     void clear();
 

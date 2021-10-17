@@ -19,17 +19,23 @@ package xf.xfvrp.base.compartment;
  **/
 public enum CompartmentType {
 
-    PICKUP,     // This compartment is only picked up on routes
-    DELIVERY,   // This compartment is only delivered to customers
-    MIXED;       // This compartment is loaded and unloaded during route
+    PICKUP,                 // This compartment is only picked up on routes and with replenishment
+    DELIVERY,               // This compartment is only delivered to customers and with replenishment
+    MIXED,                  // This compartment is loaded and unloaded during route and with replenishment
+    PICKUP_NO_REPLENISH,    // This compartment is only picked up on routes and without replenishment
+    DELIVERY_NO_REPLENISH,  // This compartment is only delivered to customers and without replenishment
+    MIXED_NO_REPLENISH;     // This compartment is loaded and unloaded during route and without replenishment
 
     public CompartmentLoad createWithIndex(int idx) {
         switch (this) {
-            case PICKUP: return new PickupCompartmentLoad(idx);
-            case DELIVERY: return new DeliveryCompartmentLoad(idx);
-            case MIXED: return new MixedCompartmentLoad(idx);
+            case PICKUP: return new PickupCompartmentLoad(idx, true);
+            case DELIVERY: return new DeliveryCompartmentLoad(idx, true);
+            case MIXED: return new MixedCompartmentLoad(idx, true);
+            case PICKUP_NO_REPLENISH: return new PickupCompartmentLoad(idx, false);
+            case DELIVERY_NO_REPLENISH: return new DeliveryCompartmentLoad(idx, false);
+            case MIXED_NO_REPLENISH: return new MixedCompartmentLoad(idx, false);
+            // Cannot happen :-/
+            default: return null;
         }
-        // This case cannot happen, but compiler is not smart enough :-/
-        return null;
     }
 }
