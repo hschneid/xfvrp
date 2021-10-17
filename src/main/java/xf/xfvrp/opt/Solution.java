@@ -3,6 +3,7 @@ package xf.xfvrp.opt;
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.Quality;
 import xf.xfvrp.base.SiteType;
+import xf.xfvrp.base.XFVRPModel;
 import xf.xfvrp.base.quality.RouteQuality;
 
 import java.util.ArrayList;
@@ -19,11 +20,22 @@ import java.util.List;
  **/
 public class Solution implements Iterable<Node[]> {
 
+	private XFVRPModel model;
+
 	private Node[][] routes = new Node[1][0];
 	private RouteQuality[] routeQualities = new RouteQuality[] { new RouteQuality(0, null) };
 	private Quality totalQuality = new Quality(null);
 
 	private List<RouteQuality> invalidatedRoutesQualities = new ArrayList<>();
+
+
+	public XFVRPModel getModel() {
+		return model;
+	}
+
+	public void setModel(XFVRPModel model) {
+		this.model = model;
+	}
 
 	public Node[][] getRoutes() {
 		return routes;

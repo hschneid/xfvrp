@@ -1,6 +1,7 @@
 package xf.xfvrp.opt.evaluation;
 
 import xf.xfvrp.base.XFVRPModel;
+import xf.xfvrp.base.compartment.CompartmentLoadBuilder;
 
 import java.util.Arrays;
 
@@ -22,7 +23,7 @@ public class ContextBuilder {
 		context.setMaxGlobalNodeIdx(model.getMaxGlobalNodeIdx() + 1);
 
 		// Amounts - Which amounts must be stored during checking - Each compartment and each load type - So same like vehicle capacities
-		context.setAmountArr(new float[model.getVehicle().getCapacity().length]);
+		context.setAmountArr(CompartmentLoadBuilder.createCompartmentLoads(model.getCompartments()));
 
 		context.setBlockPresetArr(new int[model.getNbrOfBlocks()]);
 		Arrays.fill(context.getBlockPresetArr(), -1);

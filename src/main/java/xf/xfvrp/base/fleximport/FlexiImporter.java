@@ -249,15 +249,12 @@ public class FlexiImporter {
 		return replenishList;
 	}
 
-	public List<CompartmentType> getCompartmentTypes() {return compartmentTypes;}
+	public CompartmentType[] getCompartmentTypes() {return compartmentTypes.toArray(new CompartmentType[0]);}
 
 	public Vehicle[] getVehicles() throws XFVRPException {
 		Vehicle[] vehicles = new Vehicle[vehicleList.size()];
-
-		int idx = 0;
-		for (VehicleData veh : vehicleList) {
-			vehicles[idx] = veh.createVehicle(idx);
-			idx++;
+		for (int i = 0; i < vehicleList.size(); i++) {
+			vehicles[i] = vehicleList.get(i).createVehicle(i);
 		}
 
 		return vehicles;

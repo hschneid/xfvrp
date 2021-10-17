@@ -1,7 +1,9 @@
 package xf.xfvrp.opt.init.precheck.pdp;
 
-import xf.xfvrp.base.*;
-import xf.xfvrp.base.compartment.CompartmentType;
+import xf.xfvrp.base.InvalidReason;
+import xf.xfvrp.base.Node;
+import xf.xfvrp.base.SiteType;
+import xf.xfvrp.base.Vehicle;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -122,13 +124,8 @@ public class PDPPreCheckService {
 		float[] demands = cust.getDemand();
 		float[] capacities = vehicle.getCapacity();
 
-		int length = Math.min(demands.length, (capacities.length / CompartmentType.NBR_OF_LOAD_TYPES));
-		for (int compartment = 0; compartment < length; compartment++) {
-
-			int loadType = (cust.getLoadType() == LoadType.DELIVERY) ? CompartmentType.DELIVERY.index() :
-					(cust.getLoadType() == LoadType.PICKUP) ? CompartmentType.PICKUP.index() : -1;
-
-			float capacity = capacities[compartment * CompartmentType.NBR_OF_LOAD_TYPES + loadType];
+		for (int compartment = 0; compartment < demands.length; compartment++) {
+			float capacity = capacities[compartment];
 			if(demands[compartment] > capacity) {
 				cust.setInvalidReason(
 						InvalidReason.PDP_IMPROPER_AMOUNTS,

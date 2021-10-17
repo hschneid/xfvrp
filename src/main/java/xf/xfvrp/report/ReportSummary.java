@@ -2,6 +2,7 @@ package xf.xfvrp.report;
 
 import util.ArrayUtil;
 import xf.xfvrp.base.Vehicle;
+import xf.xfvrp.base.XFVRPModel;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -30,10 +31,10 @@ public class ReportSummary {
 	
 	private final Map<Vehicle, RouteReportSummary> dataMap = new HashMap<>();
 
-	public void add(RouteReport t) {
+	public void add(RouteReport t, XFVRPModel model) {
 		RouteReportSummary routeSummary = t.getSummary();
 
-		addPerVehicleType(t, routeSummary);
+		addPerVehicleType(t, routeSummary, model);
 		addTotal(routeSummary);
 	}
 
@@ -47,9 +48,9 @@ public class ReportSummary {
 		addOverloads(routeSummary);
 	}
 
-	private void addPerVehicleType(RouteReport t, RouteReportSummary routeSummary) {
+	private void addPerVehicleType(RouteReport t, RouteReportSummary routeSummary, XFVRPModel model) {
 		if(!dataMap.containsKey(t.getVehicle()))
-			dataMap.put(t.getVehicle(), new RouteReportSummary(t.getVehicle()));
+			dataMap.put(t.getVehicle(), new RouteReportSummary(t.getVehicle(), model));
 		RouteReportSummary data = dataMap.get(t.getVehicle());
 		data.add(routeSummary);
 	}

@@ -1,5 +1,7 @@
 package xf.xfvrp.base.compartment;
 
+import xf.xfvrp.base.LoadType;
+
 public class MixedCompartmentLoad implements CompartmentLoad {
 
     private final int compartmentIdx;
@@ -9,7 +11,7 @@ public class MixedCompartmentLoad implements CompartmentLoad {
     }
 
     @Override
-    public void addAmount(float[] demand, CompartmentLoad load) {
+    public void addAmount(float[] demand, LoadType loadType) {
 
     }
 
@@ -17,4 +19,16 @@ public class MixedCompartmentLoad implements CompartmentLoad {
     public int checkCapacity(float[] capacities) {
         return 0;
     }
+
+    @Override
+    public void clear() {
+
+    }
+
+    @Override
+    public void replenish() {
+
+    }
+
+
 }

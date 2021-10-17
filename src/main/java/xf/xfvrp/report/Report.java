@@ -57,7 +57,7 @@ public class Report {
 
 	public void add(RouteReport route) {
 		if(route.getSummary().getNbrOfEvents() > 0) {
-			summary.add(route);
+			summary.add(route, model);
 			reportList.add(route);
 			vehicleSet.add(route.getVehicle());
 		}

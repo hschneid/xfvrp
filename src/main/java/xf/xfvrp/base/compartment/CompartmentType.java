@@ -21,5 +21,15 @@ public enum CompartmentType {
 
     PICKUP,     // This compartment is only picked up on routes
     DELIVERY,   // This compartment is only delivered to customers
-    MIXED       // This compartment is loaded and unloaded during route
+    MIXED;       // This compartment is loaded and unloaded during route
+
+    public CompartmentLoad createWithIndex(int idx) {
+        switch (this) {
+            case PICKUP: return new PickupCompartmentLoad(idx);
+            case DELIVERY: return new DeliveryCompartmentLoad(idx);
+            case MIXED: return new MixedCompartmentLoad(idx);
+        }
+        // This case cannot happen, but compiler is not smart enough :-/
+        return null;
+    }
 }

@@ -4,6 +4,7 @@ import xf.xfvrp.RoutingDataBag;
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.Vehicle;
 import xf.xfvrp.base.XFVRPParameter;
+import xf.xfvrp.base.compartment.CompartmentType;
 import xf.xfvrp.base.exception.XFVRPException;
 import xf.xfvrp.base.metric.Metric;
 import xf.xfvrp.base.monitor.StatusCode;
@@ -41,6 +42,7 @@ public class DefaultMixedFleetHeuristic extends MixedFleetHeuristicBase implemen
 	@Override
 	public List<XFVRPSolution> execute(
 			Node[] nodes,
+			CompartmentType[] compartmentTypes,
 			Vehicle[] vehicles,
 			RoutePlanningFunction routePlanningFunction,
 			Metric metric,
@@ -55,7 +57,7 @@ public class DefaultMixedFleetHeuristic extends MixedFleetHeuristicBase implemen
 			statusManager.fireMessage(StatusCode.RUNNING, "Run with vehicle "+ veh.getName() +" started.");
 
 			// Optimize all nodes with current vehicle type
-			XFVRPSolution solution = routePlanningFunction.apply(new RoutingDataBag(unplannedNodes.toArray(new Node[0]), veh));
+			XFVRPSolution solution = routePlanningFunction.apply(new RoutingDataBag(unplannedNodes.toArray(new Node[0]), compartmentTypes, veh));
 
 			// Point out best routes for this vehicle type
 			List<RouteReport> bestRoutes = getSelector().getBestRoutes(veh, getReportBuilder().getReport(solution));

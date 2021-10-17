@@ -1,10 +1,10 @@
 package xf.xfvrp.base.fleximport;
 
-import xf.xfvrp.base.compartment.CompartmentType;
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.Vehicle;
 
 import java.util.Arrays;
+import java.util.stream.IntStream;
 
 /**
  * Copyright (c) 2012-2021 Holger Schneider
@@ -32,33 +32,27 @@ class CompartmentInitializer {
                 .forEach(node -> node.setDemands(Arrays.copyOf(node.getDemand(), nbrOfCompartments)));
     }
 
+    /**
+     * If there are multiple vehicles, and the number of compartments is not the same for all ones,
+     * then take the maximum and add missing capacity values at the end with default capacity (unlimited).
+     */
     private static void adjustVehicles(Vehicle[] vehicles, int nbrOfCompartments) {
         Arrays.stream(vehicles)
-                .filter(vehicle -> (vehicle.getCapacity().length / CompartmentType.NBR_OF_LOAD_TYPES) != nbrOfCompartments)
+                .filter(vehicle -> vehicle.getCapacity().length != nbrOfCompartments)
                 .forEach(vehicle -> {
                     int nbrOfCompartmentsBefore = vehicle.getCapacity().length;
-                    vehicle.setCapacity(Arrays.copyOf(vehicle.getCapacity(), nbrOfCompartments * CompartmentType.NBR_OF_LOAD_TYPES));
+                    vehicle.setCapacity(Arrays.copyOf(vehicle.getCapacity(), nbrOfCompartments));
                     Arrays.fill(vehicle.getCapacity(), nbrOfCompartmentsBefore, vehicle.getCapacity().length, Float.MAX_VALUE);
                 });
     }
 
     private static int getMaxNbrOfCompartments(Node[] nodes, Vehicle[] vehicles) {
-        int nbrOfCompartments = 0;
-        nbrOfCompartments = Math.max(
-                nbrOfCompartments,
-                Arrays.stream(nodes)
-                        .mapToInt(node -> node.getDemand().length)
-                        .max()
-                        .orElse(-1)
-        );
-        nbrOfCompartments = Math.max(
-                nbrOfCompartments,
-                Arrays.stream(vehicles)
-                        .mapToInt(vehicle -> vehicle.getCapacity().length / CompartmentType.NBR_OF_LOAD_TYPES)
-                        .max()
-                        .orElse(-1)
-        );
-
-        return nbrOfCompartments;
+        return IntStream
+                .concat(
+                        Arrays.stream(nodes).mapToInt(node -> node.getDemand().length),
+                        Arrays.stream(vehicles).mapToInt(vehicle -> vehicle.getCapacity().length)
+                )
+                .max()
+                .orElse(-1);
     }
 }

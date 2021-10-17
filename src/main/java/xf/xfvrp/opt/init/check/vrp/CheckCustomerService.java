@@ -95,11 +95,8 @@ public class CheckCustomerService {
 		float[] demands = cust.getDemand();
 		float[] capacities = model.getVehicle().getCapacity();
 
-		int length = Math.min(demands.length, (capacities.length / CompartmentType.NBR_OF_LOAD_TYPES));
-		for (int compartment = 0; compartment < length; compartment++) {
-			int loadType = (cust.getLoadType() == LoadType.DELIVERY) ? CompartmentType.DELIVERY.index() :
-					(cust.getLoadType() == LoadType.PICKUP) ? CompartmentType.PICKUP.index() : -1;
-			float capacity = capacities[compartment * CompartmentType.NBR_OF_LOAD_TYPES + loadType];
+		for (int compartment = 0; compartment < demands.length; compartment++) {
+			float capacity = capacities[compartment];
 			if(demands[compartment] > capacity) {
 				cust.setInvalidReason(
 						InvalidReason.CAPACITY,

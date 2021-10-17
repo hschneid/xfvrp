@@ -44,7 +44,7 @@ public class ReportBuilder {
     }
 
     private RouteReport getRouteReport(Node[] route, Context context) throws XFVRPException {
-        RouteReport routeReport = new RouteReport(context.getModel().getVehicle());
+        RouteReport routeReport = new RouteReport(context.getModel().getVehicle(), context.getModel());
 
         route = ActiveNodeAnalyzer.getActiveNodes(route);
         context.setRouteInfos(RouteInfoBuilder.build(route));

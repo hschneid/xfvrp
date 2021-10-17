@@ -285,9 +285,6 @@ public class Node implements Cloneable {
 		this.presetBlockRank = presetBlockRank;
 	}
 
-	/**
-	 * @return the presetBlockVehicleList
-	 */
 	public Set<Integer> getPresetBlockVehicleList() {
 		return presetBlockVehicleList;
 	}

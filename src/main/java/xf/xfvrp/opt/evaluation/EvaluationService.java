@@ -1,7 +1,7 @@
 package xf.xfvrp.opt.evaluation;
 
 import xf.xfvrp.base.*;
-import xf.xfvrp.base.compartment.CompartmentType;
+import xf.xfvrp.base.compartment.CompartmentLoad;
 import xf.xfvrp.base.exception.XFVRPException;
 import xf.xfvrp.base.preset.BlockNameConverter;
 import xf.xfvrp.base.quality.RouteQuality;
@@ -86,7 +86,7 @@ public class EvaluationService {
 		context.setRouteInfos(RouteInfoBuilder.build(route));
 
 		context.setCurrentNode(route[0]);
-		beginRoute(route[0], findNextCustomer(route), q, context);
+		beginRoute(route[0], findNextCustomer(route), context);
 		context.setNextNode(route[0]);
 
 		for (int i = 1; i < route.length; i++) {
@@ -104,11 +104,8 @@ public class EvaluationService {
 			// Time window constraint for VRPTW
 			checkTimeWindow(q, context);
 
-			// Reset loaded or unloaded volume at replenish point
-			replenishAmount(context);
-
-			// Capacity constraint for VRP with Pickup & Delivery
-			checkCapacities(q, context);
+			// load or unloaded or replenish volume at vehicle
+			loadAmounts(context);
 
 			// Presets
 			checkPreset(q, context);
@@ -136,25 +133,21 @@ public class EvaluationService {
 			context.removeStop();
 	}
 
-	private void checkCapacities(Quality q, Context context) {
-		float[] amounts = context.getAmountsOfRoute();
-
-		for (int compartment = 0; compartment < context.getNbrOfCompartments(); compartment++) {
-			LoadType loadType = context.getCurrentNode().getLoadType();
-			float delivery = (loadType == LoadType.DELIVERY) ?
-					context.getCurrentNode().getDemand()[compartment] : 0;
-			float pickup = (loadType == LoadType.PICKUP) ?
-					context.getCurrentNode().getDemand()[compartment] : 0;
-
-			int compartmentIdx = compartment * CompartmentType.NBR_OF_LOAD_TYPES;
-			amounts[compartmentIdx + CompartmentType.PICKUP.index()] += pickup;
-			amounts[compartmentIdx + CompartmentType.DELIVERY.index()] += delivery;
-			amounts[compartmentIdx + CompartmentType.MIXED.index()] -= delivery;
-			amounts[compartmentIdx + CompartmentType.MIXED.index()] += pickup;
+	/**
+	 * Load, Unload or Replenish the amount on vehicle
+	 */
+	private void loadAmounts(Context context) {
+		CompartmentLoad[] amounts = context.getAmountsOfRoute();
+		for (int i = amounts.length - 1; i >= 0; i--) {
+			if(context.getCurrentNode().getSiteType() == SiteType.REPLENISH) {
+				amounts[i].replenish();
+			} else if(context.getCurrentNode().getSiteType() == SiteType.CUSTOMER) {
+				amounts[i].addAmount(
+						context.getCurrentNode().getDemand(),
+						context.getCurrentNode().getLoadType()
+				);
+			}
 		}
-
-		int penalty = context.checkCapacities();
-		q.addPenalty(penalty, Quality.PENALTY_REASON_CAPACITY);
 	}
 
 	private void checkTimeWindow(Quality q, Context context) {
@@ -238,10 +231,12 @@ public class EvaluationService {
 	private void finishRoute(Quality q, Context context) {
 		Vehicle v = context.getModel().getVehicle();
 
+		int capacityPenalty = context.checkCapacities();
 		float stopCountPenalty = Math.max(0, context.getNbrOfStops() - v.getMaxStopCount());
 		float durationPenalty = Math.max(0, context.getDuration() - v.getMaxRouteDuration());
 		float delayPenalty = context.getDelay();
 
+		q.addPenalty(capacityPenalty, Quality.PENALTY_REASON_CAPACITY);
 		q.addPenalty(stopCountPenalty, Quality.PENALTY_REASON_STOPCOUNT);
 		q.addPenalty(delayPenalty, Quality.PENALTY_REASON_DELAY);
 		q.addPenalty(durationPenalty, Quality.PENALTY_REASON_DURATION);
@@ -259,11 +254,10 @@ public class EvaluationService {
 		q.addPenalty(penalty, Quality.PENALTY_REASON_BLACKLIST);
 	}
 
-	private void beginRoute(Node newDepot, Node nextNode, Quality q, Context context) throws XFVRPException {
+	private void beginRoute(Node newDepot, Node nextNode, Context context) throws XFVRPException {
 		XFVRPModel model = context.getModel();
 
-		float penalty = context.createNewRoute(newDepot);
-		q.addPenalty(penalty, Quality.PENALTY_REASON_CAPACITY);
+		context.createNewRoute(newDepot);
 
 		float earliestDepartureTime = (nextNode != null) ? nextNode.getTimeWindow(0)[0] - model.getTime(newDepot, nextNode) : 0;
 
@@ -282,12 +276,5 @@ public class EvaluationService {
 				return route[i];
 		}
 		return null;
-	}
-
-	private void replenishAmount(Context context) throws XFVRPException {
-		if(context.getCurrentNode().getSiteType() != SiteType.REPLENISH)
-			return;
-
-		context.resetAmountsOfRoute();
 	}
 }

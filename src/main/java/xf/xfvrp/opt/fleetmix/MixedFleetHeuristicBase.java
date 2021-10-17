@@ -2,6 +2,7 @@ package xf.xfvrp.opt.fleetmix;
 
 import util.collection.ListMap;
 import xf.xfvrp.base.*;
+import xf.xfvrp.base.compartment.CompartmentType;
 import xf.xfvrp.base.exception.XFVRPException;
 import xf.xfvrp.base.fleximport.InvalidVehicle;
 import xf.xfvrp.base.metric.InternalMetric;
@@ -23,12 +24,14 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public abstract class MixedFleetHeuristicBase {
+
 	private final ReportBuilder reportBuilder = new ReportBuilder();
 
 	public abstract IMixedFleetSelector getSelector();
 
 	public abstract List<XFVRPSolution> execute(
 			Node[] nodes,
+			CompartmentType[] compartmentTypes,
 			Vehicle[] vehicles,
 			RoutePlanningFunction routePlanningFunction,
 			Metric metric,
@@ -102,7 +105,7 @@ public abstract class MixedFleetHeuristicBase {
 		Node[] nodes = unplannedNodes.toArray(new Node[0]);
 		IntStream.range(0, nodes.length).forEach(i -> nodes[i].setIdx(i));
 
-		Solution giantRoute = buildGiantRouteForInvalidNodes(unplannedCustomers, nodes[0], statusManager);
+		Solution solution = buildGiantRouteForInvalidNodes(unplannedCustomers, nodes[0], statusManager);
 
 		Vehicle invalidVehicle = InvalidVehicle.createInvalid(unplannedCustomers.get(0).getDemand().length);
 
@@ -110,9 +113,10 @@ public abstract class MixedFleetHeuristicBase {
 		InternalMetric internalMetric = AcceleratedMetricTransformator.transform(metric, nodes, invalidVehicle);
 
 		return new XFVRPSolution(
-				giantRoute,
+				solution,
 				new XFVRPModel(
 						nodes,
+						solution.getModel().getCompartments(),
 						internalMetric,
 						internalMetric,
 						invalidVehicle,

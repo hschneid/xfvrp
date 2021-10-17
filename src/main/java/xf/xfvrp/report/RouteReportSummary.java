@@ -1,13 +1,12 @@
 package xf.xfvrp.report;
 
 import util.ArrayUtil;
-import xf.xfvrp.base.compartment.CompartmentType;
-import xf.xfvrp.base.LoadType;
 import xf.xfvrp.base.SiteType;
 import xf.xfvrp.base.Vehicle;
+import xf.xfvrp.base.XFVRPModel;
+import xf.xfvrp.base.compartment.CompartmentLoad;
+import xf.xfvrp.base.compartment.CompartmentLoadBuilder;
 import xf.xfvrp.opt.evaluation.Context;
-
-import java.util.Arrays;
 
 /**
  * Copyright (c) 2012-2021 Holger Schneider
@@ -37,6 +36,7 @@ public class RouteReportSummary {
 	private float delay = 0;
 
 	// Capacity values per compartment
+	private final CompartmentLoad[] amounts;
 	private float[] pickups;
 	private float[] deliveries;
 
@@ -45,10 +45,10 @@ public class RouteReportSummary {
 	private final float[] commonLoads;
 	private final float[] overloads;
 
-	public RouteReportSummary(Vehicle vehicle) {
+	public RouteReportSummary(Vehicle vehicle, XFVRPModel model) {
 		this.vehicle = vehicle;
 
-		int nbrOfCompartments = (vehicle.getCapacity().length / CompartmentType.NBR_OF_LOAD_TYPES);
+		int nbrOfCompartments = (vehicle.getCapacity().length);
 		pickups = new float[nbrOfCompartments];
 		deliveries = new float[nbrOfCompartments];
 
@@ -56,6 +56,8 @@ public class RouteReportSummary {
 		deliveryLoads = new float[nbrOfCompartments];
 		commonLoads = new float[nbrOfCompartments];
 		overloads = new float[nbrOfCompartments];
+
+		amounts = CompartmentLoadBuilder.createCompartmentLoads(model.getCompartments());
 	}
 
 	/**
@@ -89,67 +91,22 @@ public class RouteReportSummary {
 		waitingTime += e.getWaiting();
 		nbrOfEvents++;
 
-		if (e.getSiteType() == SiteType.REPLENISH) {
-			if(context.getCurrentNode().isCompartmentReplenished() != null) {
-				for (int i = 0; i < context.getNbrOfCompartments(); i++) {
-					if(context.getCurrentNode().isCompartmentReplenished()[i]) {
-						pickupLoads[i] = 0;
-						deliveryLoads[i] = 0;
-						commonLoads[i] = 0;
-					}
-				}
-			} else {
-				Arrays.fill(pickupLoads, 0);
-				Arrays.fill(deliveryLoads, 0);
-				Arrays.fill(commonLoads, 0);
-			}
-		}
 
-		if (e.getLoadType() == LoadType.PICKUP) {
-			setPickupLoad(e);
-		} else if (e.getLoadType() == LoadType.DELIVERY) {
-			setDeliveryLoad(e);
+		for (int i = 0; i < context.getAmountsOfRoute().length; i++) {
+			if (e.getSiteType() == SiteType.REPLENISH) {
+				amounts[i].replenish();
+			} else {
+				amounts[i].addAmount(e.getAmounts(), e.getLoadType());
+			}
+			overloads[i] = amounts[i].checkCapacity(vehicle.getCapacity());
 		}
-		checkOverload(e);
 
 		setNbrOfStops(e);
-	}
-
-	private void setDeliveryLoad(Event e) {
-		for (int compartment = 0; compartment < deliveries.length; compartment++) {
-			deliveries[compartment] += e.getAmounts()[compartment];
-
-			deliveryLoads[compartment] += e.getAmounts()[compartment];
-			commonLoads[compartment] -= e.getAmounts()[compartment];
-		}
-	}
-
-	private void setPickupLoad(Event e) {
-		for (int compartment = 0; compartment < pickups.length; compartment++) {
-			if(e.getSiteType() == SiteType.CUSTOMER) {
-				pickups[compartment] += e.getAmounts()[compartment];
-				pickupLoads[compartment] += e.getAmounts()[compartment];
-			}
-			if (e.getAmounts().length == commonLoads.length)
-				commonLoads[compartment] += e.getAmounts()[compartment];
-		}
 	}
 
 	private void setNbrOfStops(Event e) {
 		if (e.getSiteType().equals(SiteType.CUSTOMER) && e.getDistance() > 0)
 			nbrOfStops++;
-	}
-
-	private void checkOverload(Event e) {
-		for (int compartment = 0; compartment < overloads.length; compartment++) {
-			if (deliveryLoads[compartment] > 0 && pickupLoads[compartment] == 0) {
-				overloads[compartment] += deliveryLoads[compartment] > vehicle.getCapacity()[compartment * CompartmentType.NBR_OF_LOAD_TYPES + CompartmentType.DELIVERY.index()] ? e.getAmounts()[compartment] : 0;
-			} else if (deliveryLoads[compartment] == 0 && pickupLoads[compartment] > 0) {
-				overloads[compartment] += pickupLoads[compartment] > vehicle.getCapacity()[compartment * CompartmentType.NBR_OF_LOAD_TYPES + CompartmentType.PICKUP.index()] ? e.getAmounts()[compartment] : 0;
-			} else if (deliveryLoads[compartment] > 0 && pickupLoads[compartment] > 0) {
-				overloads[compartment] += commonLoads[compartment] > vehicle.getCapacity()[compartment * CompartmentType.NBR_OF_LOAD_TYPES + CompartmentType.MIXED.index()] ? e.getAmounts()[compartment] : 0;
-			}
-		}
 	}
 
 	/**
