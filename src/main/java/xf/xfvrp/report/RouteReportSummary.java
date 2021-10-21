@@ -1,6 +1,7 @@
 package xf.xfvrp.report;
 
 import util.ArrayUtil;
+import xf.xfvrp.base.LoadType;
 import xf.xfvrp.base.SiteType;
 import xf.xfvrp.base.Vehicle;
 import xf.xfvrp.base.XFVRPModel;
@@ -37,12 +38,8 @@ public class RouteReportSummary {
 
 	// Capacity values per compartment
 	private final CompartmentLoad[] amounts;
-	private float[] pickups;
-	private float[] deliveries;
-
-	private final float[] pickupLoads;
-	private final float[] deliveryLoads;
-	private final float[] commonLoads;
+	private final float[] pickups;
+	private final float[] deliveries;
 	private final float[] overloads;
 
 	public RouteReportSummary(Vehicle vehicle, XFVRPModel model) {
@@ -51,10 +48,6 @@ public class RouteReportSummary {
 		int nbrOfCompartments = (vehicle.getCapacity().length);
 		pickups = new float[nbrOfCompartments];
 		deliveries = new float[nbrOfCompartments];
-
-		pickupLoads = new float[nbrOfCompartments];
-		deliveryLoads = new float[nbrOfCompartments];
-		commonLoads = new float[nbrOfCompartments];
 		overloads = new float[nbrOfCompartments];
 
 		amounts = CompartmentLoadBuilder.createCompartmentLoads(model.getCompartments());
@@ -73,9 +66,6 @@ public class RouteReportSummary {
 		this.nbrOfRoutes += addReport.nbrOfRoutes;
 		ArrayUtil.add(this.pickups, addReport.pickups, this.pickups);
 		ArrayUtil.add(this.deliveries, addReport.deliveries, this.deliveries);
-		ArrayUtil.add(this.pickupLoads, addReport.pickupLoads, this.pickupLoads);
-		ArrayUtil.add(this.deliveryLoads, addReport.deliveryLoads, this.deliveryLoads);
-		ArrayUtil.add(this.commonLoads, addReport.commonLoads, this.commonLoads);
 		ArrayUtil.add(this.overloads, addReport.overloads, this.overloads);
 	}
 
@@ -91,12 +81,13 @@ public class RouteReportSummary {
 		waitingTime += e.getWaiting();
 		nbrOfEvents++;
 
-
 		for (int i = 0; i < context.getAmountsOfRoute().length; i++) {
 			if (e.getSiteType() == SiteType.REPLENISH) {
 				amounts[i].replenish();
-			} else {
+			} else if (e.getSiteType() == SiteType.CUSTOMER) {
 				amounts[i].addAmount(e.getAmounts(), e.getLoadType());
+				if(e.getLoadType() == LoadType.PICKUP) pickups[i] += e.getAmounts()[i];
+				if(e.getLoadType() == LoadType.DELIVERY) deliveries[i] += e.getAmounts()[i];
 			}
 			overloads[i] = amounts[i].checkCapacity(vehicle.getCapacity());
 		}

@@ -1,10 +1,7 @@
 package xf.xfvrp.opt.construct;
 
 import util.collection.ListMap;
-import xf.xfvrp.base.Node;
-import xf.xfvrp.base.NormalizeSolutionService;
-import xf.xfvrp.base.SiteType;
-import xf.xfvrp.base.Util;
+import xf.xfvrp.base.*;
 import xf.xfvrp.base.exception.XFVRPException;
 import xf.xfvrp.base.exception.XFVRPExceptionType;
 import xf.xfvrp.base.preset.BlockNameConverter;
@@ -13,6 +10,7 @@ import xf.xfvrp.opt.XFVRPOptBase;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -54,15 +52,13 @@ public class XFVRPConst extends XFVRPOptBase {
 			List<Node> customers = allocMap.get(depIdx);
 
 			// Prepare customer list: customers with same block are placed togehter
-			customers.sort((arg0, arg1) -> {
-				int diff = arg0.getPresetBlockIdx() - arg1.getPresetBlockIdx();
-				if(diff == 0)
-					diff = arg0.getPresetBlockPos() - arg1.getPresetBlockPos();
-				return diff;
-			});
+			customers.sort(
+					Comparator.comparingInt(Node::getPresetBlockIdx)
+							.thenComparingInt(Node::getPresetBlockPos)
+			);
 
 			// Create temp giant tour with only one depot and allocated customers
-			Solution gT = buildGiantRouteForOptimization(dep, customers);
+			Solution gT = buildGiantRouteForOptimization(dep, customers, model);
 
 			// Run optimizers for each piece and choose best
 			gT = savings.execute(gT, model, statusManager);
@@ -76,7 +72,7 @@ public class XFVRPConst extends XFVRPOptBase {
 			}
 		}
 
-		Solution newSolution = new Solution();
+		Solution newSolution = new Solution(model);
 		newSolution.setGiantRoute(giantList.toArray(new Node[giantList.size()]));
 		return NormalizeSolutionService.normalizeRoute(newSolution, model);
 	}
@@ -144,7 +140,7 @@ public class XFVRPConst extends XFVRPOptBase {
 		return bestIdx;
 	}
 
-	private Solution buildGiantRouteForOptimization(Node dep, List<Node> customers) {
+	private Solution buildGiantRouteForOptimization(Node dep, List<Node> customers, XFVRPModel model) {
 		Node[] gT = new Node[customers.size() * 2 + 1];
 
 		int idx = 0;
@@ -163,7 +159,7 @@ public class XFVRPConst extends XFVRPOptBase {
 		}
 		gT[idx++] = Util.createIdNode(dep, depID);
 
-		Solution solution = new Solution();
+		Solution solution = new Solution(model);
 		solution.setGiantRoute(Arrays.copyOf(gT, idx));
 
 		return solution;

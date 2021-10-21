@@ -49,7 +49,7 @@ public class XFVRPSavings extends XFVRPOptBase {
 
 		improve(depot, dataBag);
 
-		Solution newSolution = new Solution();
+		Solution newSolution = new Solution(model);
 		newSolution.setGiantRoute(buildGiantRoute(dataBag, depot));
 		return newSolution;
 	}
@@ -114,7 +114,7 @@ public class XFVRPSavings extends XFVRPOptBase {
 			Node[] newRoute = addDepots(coreRoute, depotStart, depotEnd);
 
 			// Check
-			Solution smallSolution = new Solution();
+			Solution smallSolution = new Solution(model);
 			smallSolution.setGiantRoute(newRoute);
 			Quality q = check(smallSolution);
 

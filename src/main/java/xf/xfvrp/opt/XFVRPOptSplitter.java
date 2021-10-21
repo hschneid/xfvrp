@@ -89,7 +89,7 @@ public class XFVRPOptSplitter {
 			resultGiantList.addAll(Arrays.asList(partialSolution.getGiantRoute()));
 		}
 		
-		Solution newSolution = new Solution();
+		Solution newSolution = new Solution(model);
 		newSolution.setGiantRoute(resultGiantList.toArray(new Node[0]));
 		return newSolution;
 	}
@@ -113,7 +113,7 @@ public class XFVRPOptSplitter {
 		return Arrays.stream(blocks)
 				.filter(b -> b.size() > 0)
 				.map(b -> {
-					Solution sol = new Solution();
+					Solution sol = new Solution(solution.getModel());
 					sol.setGiantRoute(b.toArray(new Node[0]));
 					return solution;
 				})

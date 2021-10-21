@@ -102,7 +102,7 @@ public class ReportBuilder {
         Amount deliveryAmount = context.getRouteInfo().getDeliveryAmount();
         setAmountsToEvent(e,
                 deliveryAmount.getAmounts(),
-                LoadType.PICKUP
+                LoadType.PRELOAD_AT_DEPOT
         );
 
         return e;
@@ -133,7 +133,7 @@ public class ReportBuilder {
             case REPLENISH:
                 setAmountsToEvent(e,
                         context.getRouteInfo().getDeliveryAmount().getAmounts(),
-                        LoadType.PICKUP
+                        LoadType.PRELOAD_AT_DEPOT
                 );
                 break;
             case CUSTOMER:

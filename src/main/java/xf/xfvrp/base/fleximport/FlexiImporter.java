@@ -3,6 +3,7 @@ package xf.xfvrp.base.fleximport;
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.ShipmentConverter;
 import xf.xfvrp.base.Vehicle;
+import xf.xfvrp.base.compartment.CompartmentInitializer;
 import xf.xfvrp.base.compartment.CompartmentType;
 import xf.xfvrp.base.exception.XFVRPException;
 import xf.xfvrp.base.monitor.StatusManager;
@@ -85,7 +86,7 @@ public class FlexiImporter {
 		
 		// Convert external node data to internal node data
 		// Indexing, replacing, transforming
-		CompartmentInitializer.execute(nodes, vehicles);
+		CompartmentInitializer.check(nodes, compartmentTypes, vehicles);
 		BlockedVehicleListConverter.convert(nodes, customerList, vehicles, statusManager);
 		BlockNameConverter.convert(nodes, customerList);
 		BlockPositionConverter.convert(nodes, customerList);

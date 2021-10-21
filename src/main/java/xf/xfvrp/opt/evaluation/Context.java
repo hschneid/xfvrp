@@ -122,7 +122,9 @@ public class Context {
 				throw new XFVRPException(XFVRPExceptionType.ILLEGAL_ARGUMENT, "Could not find route infos for depot id " + currentNode.getDepotId());
 
 			Amount deliveryOfRoute = routeInfos.get(currentNode).getDeliveryAmount();
-			amountsOfRoute[i].addAmount(deliveryOfRoute.getAmounts(), LoadType.PRELOAD_AT_DEPOT);
+			if(deliveryOfRoute.getAmounts() != null) {
+				amountsOfRoute[i].addAmount(deliveryOfRoute.getAmounts(), LoadType.PRELOAD_AT_DEPOT);
+			}
 		}
 	}
 

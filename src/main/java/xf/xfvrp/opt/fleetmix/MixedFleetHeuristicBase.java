@@ -80,11 +80,12 @@ public abstract class MixedFleetHeuristicBase {
 				})
 				.toArray(Node[]::new);
 
-		return new XFVRPSolution(getSolution(giantRoute), model);
+		return new XFVRPSolution(getSolution(giantRoute, model), model);
 	}
 
 	protected XFVRPSolution insertUnplannedNodes(
 			List<Node> unplannedNodes,
+			CompartmentType[] compartmentTypes,
 			Metric metric,
 			XFVRPParameter parameter,
 			StatusManager statusManager) throws XFVRPException {
@@ -105,23 +106,25 @@ public abstract class MixedFleetHeuristicBase {
 		Node[] nodes = unplannedNodes.toArray(new Node[0]);
 		IntStream.range(0, nodes.length).forEach(i -> nodes[i].setIdx(i));
 
-		Solution solution = buildGiantRouteForInvalidNodes(unplannedCustomers, nodes[0], statusManager);
-
 		Vehicle invalidVehicle = InvalidVehicle.createInvalid(unplannedCustomers.get(0).getDemand().length);
 
 		// Create solution with single routes for each invalid node
 		InternalMetric internalMetric = AcceleratedMetricTransformator.transform(metric, nodes, invalidVehicle);
 
+		XFVRPModel model = new XFVRPModel(
+				nodes,
+				compartmentTypes,
+				internalMetric,
+				internalMetric,
+				invalidVehicle,
+				parameter
+		);
+
+		Solution solution = buildGiantRouteForInvalidNodes(unplannedCustomers, nodes[0], model, statusManager);
+
 		return new XFVRPSolution(
 				solution,
-				new XFVRPModel(
-						nodes,
-						solution.getModel().getCompartments(),
-						internalMetric,
-						internalMetric,
-						invalidVehicle,
-						parameter
-				)
+				model
 		);
 	}
 
@@ -132,9 +135,9 @@ public abstract class MixedFleetHeuristicBase {
 	 * For a given set of invalid nodes, a giant tour is created, where each invalid
 	 * node is on a single route.
 	 */
-	public Solution buildGiantRouteForInvalidNodes(List<Node> unplannedNodes, Node depot, StatusManager statusManager) {
+	public Solution buildGiantRouteForInvalidNodes(List<Node> unplannedNodes, Node depot, XFVRPModel model, StatusManager statusManager) {
 		if (unplannedNodes.size() == 0)
-			return getSolution(null);
+			return getSolution(null, null);
 
 		Node[] giantRoute = new Node[unplannedNodes.size() * 2 + 2];
 
@@ -173,7 +176,7 @@ public abstract class MixedFleetHeuristicBase {
 			giantRoute[i++] = Util.createIdNode(depot, maxDepotId++);
 		}
 
-		return getSolution(Arrays.copyOf(giantRoute, i));
+		return getSolution(Arrays.copyOf(giantRoute, i), model);
 	}
 
 	protected List<Node> getCustomers(List<Node> allNodes) {
@@ -186,11 +189,11 @@ public abstract class MixedFleetHeuristicBase {
 		return reportBuilder;
 	}
 
-	private Solution getSolution(Node[] giantRoute) {
+	private Solution getSolution(Node[] giantRoute, XFVRPModel model) {
 		if (giantRoute == null)
 			giantRoute = new Node[0];
 
-		Solution solution = new Solution();
+		Solution solution = new Solution(model);
 		solution.setGiantRoute(giantRoute);
 		return solution;
 	}

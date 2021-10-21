@@ -7,8 +7,8 @@ public class MixedCompartmentLoad implements CompartmentLoad {
     private final int compartmentIdx;
     private final boolean isReplenished;
 
-    private float[] loads = null;
-    private float[] maxCommonLoads = null;
+    private float load;
+    private float maxCommonLoad;
 
     public MixedCompartmentLoad(int compartmentIdx, boolean isReplenished) {
         this.compartmentIdx = compartmentIdx;
@@ -17,48 +17,32 @@ public class MixedCompartmentLoad implements CompartmentLoad {
 
     @Override
     public void addAmount(float[] demand, LoadType loadType) {
-        init(demand.length);
-
         if(loadType == LoadType.PICKUP || loadType == LoadType.PRELOAD_AT_DEPOT) {
-            loads[compartmentIdx] += demand[compartmentIdx];
-            maxCommonLoads[compartmentIdx] = Math.max(
-                    loads[compartmentIdx],
-                    maxCommonLoads[compartmentIdx]
-            );
+            load += demand[compartmentIdx];
+            maxCommonLoad = Math.max(load, maxCommonLoad);
         }
 
         if(loadType == LoadType.DELIVERY) {
-            loads[compartmentIdx] -= demand[compartmentIdx];
+            load -= demand[compartmentIdx];
         }
     }
 
     @Override
     public float checkCapacity(float[] capacities) {
-        return Math.max(0, maxCommonLoads[compartmentIdx] - capacities[compartmentIdx]);
+        return Math.max(0, maxCommonLoad - capacities[compartmentIdx]);
     }
 
     @Override
     public void clear() {
-        if(loads != null) {
-            loads = new float[loads.length];
-            maxCommonLoads = new float[maxCommonLoads.length];
-        }
+        load = 0;
+        maxCommonLoad = 0;
     }
 
     @Override
     public void replenish() {
-        if(isReplenished && loads != null) {
-            loads[compartmentIdx] = 0;
-            maxCommonLoads = new float[maxCommonLoads.length];
+        if(isReplenished) {
+            load = 0;
+            maxCommonLoad = 0;
         }
     }
-
-    private void init(int nbrOfCompartments) {
-        if(loads == null) {
-            loads = new float[nbrOfCompartments];
-            maxCommonLoads = new float[nbrOfCompartments];
-        }
-    }
-
-
 }

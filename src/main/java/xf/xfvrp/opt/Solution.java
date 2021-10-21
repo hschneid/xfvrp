@@ -20,21 +20,20 @@ import java.util.List;
  **/
 public class Solution implements Iterable<Node[]> {
 
-	private XFVRPModel model;
+	private final XFVRPModel model;
 
 	private Node[][] routes = new Node[1][0];
 	private RouteQuality[] routeQualities = new RouteQuality[] { new RouteQuality(0, null) };
 	private Quality totalQuality = new Quality(null);
 
-	private List<RouteQuality> invalidatedRoutesQualities = new ArrayList<>();
+	private final List<RouteQuality> invalidatedRoutesQualities = new ArrayList<>();
 
+	public Solution(XFVRPModel model) {
+		this.model = model;
+	}
 
 	public XFVRPModel getModel() {
 		return model;
-	}
-
-	public void setModel(XFVRPModel model) {
-		this.model = model;
 	}
 
 	public Node[][] getRoutes() {
@@ -164,7 +163,7 @@ public class Solution implements Iterable<Node[]> {
 	}
 
 	public Solution copy() {
-		Solution solution = new Solution();
+		Solution solution = new Solution(model);
 
 		Node[][] copyRoutes = new Node[routes.length][];
 		for (int i = 0; i < routes.length; i++)

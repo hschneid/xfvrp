@@ -66,7 +66,7 @@ public class InTurnMixedFleetHeuristic extends MixedFleetHeuristicBase implement
 		}
 		
 		// Insert invalid and unplanned nodes into solution
-		XFVRPSolution unplannedNodesSolution = insertUnplannedNodes(unplannedNodes, metric, parameter, statusManager);
+		XFVRPSolution unplannedNodesSolution = insertUnplannedNodes(unplannedNodes, compartmentTypes, metric, parameter, statusManager);
 		if(unplannedNodesSolution != null)
 			vehicleSolutions.add(unplannedNodesSolution);
 		

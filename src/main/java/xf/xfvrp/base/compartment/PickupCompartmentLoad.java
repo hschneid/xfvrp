@@ -7,7 +7,7 @@ public class PickupCompartmentLoad implements CompartmentLoad {
     private final int compartmentIdx;
     private final boolean isReplenished;
 
-    private float[] loads = null;
+    private float load;
 
     public PickupCompartmentLoad(int compartmentIdx, boolean isReplenished) {
         this.compartmentIdx = compartmentIdx;
@@ -16,32 +16,25 @@ public class PickupCompartmentLoad implements CompartmentLoad {
 
     @Override
     public void addAmount(float[] demand, LoadType loadType) {
-        init(demand.length);
-
         if(loadType == LoadType.PICKUP) {
-            loads[compartmentIdx] += demand[compartmentIdx];
+            load += demand[compartmentIdx];
         }
     }
 
     @Override
     public float checkCapacity(float[] capacities) {
-        return Math.max(0, loads[compartmentIdx] - capacities[compartmentIdx]);
+        return Math.max(0, load - capacities[compartmentIdx]);
     }
 
     @Override
     public void clear() {
-        if(loads != null)
-            loads = new float[loads.length];
+        load = 0;
     }
 
     @Override
     public void replenish() {
-        if(isReplenished && loads != null) {
-            loads[compartmentIdx] = 0;
+        if(isReplenished) {
+            load = 0;
         }
-    }
-
-    private void init(int nbrOfCompartments) {
-        if(loads == null) loads = new float[nbrOfCompartments];
     }
 }
