@@ -42,7 +42,6 @@ public class MixedCompartmentLoad implements CompartmentLoad {
     public void replenish() {
         if(isReplenished) {
             load = 0;
-            maxCommonLoad = 0;
         }
     }
 }

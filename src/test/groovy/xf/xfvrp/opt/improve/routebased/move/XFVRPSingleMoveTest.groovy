@@ -3,6 +3,7 @@ package xf.xfvrp.opt.improve.routebased.move
 import spock.lang.Specification
 import util.instances.TestNode
 import util.instances.TestVehicle
+import util.instances.TestXFVRPModel
 import xf.xfvrp.base.*
 import xf.xfvrp.base.metric.EucledianMetric
 import xf.xfvrp.base.metric.internal.AcceleratedMetricTransformator
@@ -200,8 +201,6 @@ class XFVRPSingleMoveTest extends Specification {
 
         def nodes = [n1, n2, n3, n5, n6] as Node[]
 
-        def iMetric = new AcceleratedMetricTransformator().transform(new EucledianMetric(), nodes, v)
-
-        return new XFVRPModel(nodes, iMetric, iMetric, v, new XFVRPParameter())
+        return TestXFVRPModel.get(Arrays.asList(nodes), v)
     }
 }

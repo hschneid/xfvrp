@@ -1,6 +1,8 @@
 package xf.xfvrp.base
 
 import spock.lang.Specification
+import util.instances.TestVehicle
+import util.instances.TestXFVRPModel
 import xf.xfvrp.opt.Solution
 
 class NormalizeSpec extends Specification {
@@ -259,10 +261,8 @@ class NormalizeSpec extends Specification {
 		def n6 = new Node(externID: "6", siteType: SiteType.CUSTOMER)
 		def n7 = new Node(externID: "7", siteType: SiteType.CUSTOMER)
 		def n8 = new Node(externID: "8", siteType: SiteType.DEPOT)
-		
-		def model = new XFVRPModel([n1, n4, n8, n2, n3, n5, n6, n7] as Node[], null, null, null, null)
 
-		return model
+		return TestXFVRPModel.get([n1, n4, n8, n2, n3, n5, n6, n7], new TestVehicle(capacity: [3,3]).getVehicle())
 	}
 	
 	private XFVRPModel createModelWithReplenishs() {
@@ -277,7 +277,7 @@ class NormalizeSpec extends Specification {
 		def n9 = new Node(externID: "R1", siteType: SiteType.REPLENISH)
 		def n10 = new Node(externID: "R2", siteType: SiteType.REPLENISH)
 		
-		def model = new XFVRPModel([n1, n4, n8, n9, n10, n2, n3, n5, n6, n7] as Node[], null, null, null, null)
+		def model = TestXFVRPModel.get([n1, n4, n8, n9, n10, n2, n3, n5, n6, n7], new TestVehicle(capacity: [3,3]).getVehicle())
 
 		return model
 	}

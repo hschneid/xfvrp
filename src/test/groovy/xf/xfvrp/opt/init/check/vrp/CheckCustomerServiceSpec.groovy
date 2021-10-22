@@ -3,6 +3,7 @@ package xf.xfvrp.opt.init.check.vrp
 import spock.lang.Specification
 import util.instances.TestNode
 import util.instances.TestVehicle
+import util.instances.TestXFVRPModel
 import xf.xfvrp.base.InvalidReason
 import xf.xfvrp.base.Node
 import xf.xfvrp.base.SiteType
@@ -28,7 +29,7 @@ class CheckCustomerServiceSpec extends Specification {
 		dataBag.knownSequencePositions = [1] as Set<Integer>
 
 		when:
-		def result = service.checkPresets(customer, dataBag)
+		service.checkPresets(customer, dataBag)
 		then:
 		noExceptionThrown()
 	}
@@ -46,7 +47,7 @@ class CheckCustomerServiceSpec extends Specification {
 		dataBag.knownSequencePositions = [1] as Set<Integer>
 
 		when:
-		def result = service.checkPresets(customer, dataBag)
+		service.checkPresets(customer, dataBag)
 		then:
 		thrown XFVRPException
 	}
@@ -63,7 +64,7 @@ class CheckCustomerServiceSpec extends Specification {
 		def dataBag = new SolutionBuilderDataBag()
 
 		when:
-		def result = service.checkPresets(customer, dataBag)
+		service.checkPresets(customer, dataBag)
 		then:
 		thrown XFVRPException
 	}
@@ -81,7 +82,7 @@ class CheckCustomerServiceSpec extends Specification {
 		dataBag.knownSequencePositions = [2] as Set<Integer>
 
 		when:
-		def result = service.checkPresets(customer, dataBag)
+		service.checkPresets(customer, dataBag)
 
 		then:
 		thrown XFVRPException
@@ -95,7 +96,7 @@ class CheckCustomerServiceSpec extends Specification {
 				).getNode()
 
 		def v = new TestVehicle(capacity: [3, 3, 3] as float[]).getVehicle()
-		def model = new XFVRPModel(new Node[0], null, null, v, null)
+		def model = TestXFVRPModel.get(new Node[0], null, null, v, null)
 
 		when:
 		def result = service.checkDemands(customer, model)
@@ -112,7 +113,7 @@ class CheckCustomerServiceSpec extends Specification {
 				).getNode()
 
 		def v = new TestVehicle(capacity: [3, 1, 3] as float[]).getVehicle()
-		def model = new XFVRPModel(new Node[0], null, null, v, null)
+		def model = TestXFVRPModel.get(new Node[0], null, null, v, null)
 
 		when:
 		def result = service.checkDemands(customer, model)
@@ -129,7 +130,7 @@ class CheckCustomerServiceSpec extends Specification {
 				).getNode()
 
 		def v = new TestVehicle(capacity: [3, 3] as float[]).getVehicle()
-		def model = new XFVRPModel(new Node[0], null, null, v, null)
+		def model = TestXFVRPModel.get(new Node[0], null, null, v, null)
 
 		when:
 		def result = service.checkDemands(customer, model)

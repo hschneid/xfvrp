@@ -3,6 +3,7 @@ package xf.xfvrp.opt.improve
 import spock.lang.Specification
 import util.instances.TestNode
 import util.instances.TestVehicle
+import util.instances.TestXFVRPModel
 import xf.xfvrp.base.*
 import xf.xfvrp.base.fleximport.CustomerData
 import xf.xfvrp.base.metric.EucledianMetric
@@ -233,11 +234,9 @@ class XFPDPRelocateExtSpec extends Specification {
 		n6.setIdx(6)
 
 		def nodes = [nd, n1, n2, n3, n4, n5, n6] as Node[]
-
-		def iMetric = new AcceleratedMetricTransformator().transform(metric, nodes, v)
 		new ShipmentConverter().convert(nodes, customers)
 
-		return new XFVRPModel(nodes, iMetric, iMetric, v, parameter)
+		return TestXFVRPModel.get(Arrays.asList(nodes), v)
 	}
 
 }

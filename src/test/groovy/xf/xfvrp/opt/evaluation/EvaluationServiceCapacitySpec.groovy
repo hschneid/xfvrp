@@ -4,10 +4,12 @@ package xf.xfvrp.opt.evaluation
 import spock.lang.Specification
 import util.instances.TestNode
 import util.instances.TestVehicle
+import util.instances.TestXFVRPModel
 import xf.xfvrp.base.*
 import xf.xfvrp.base.metric.EucledianMetric
 import xf.xfvrp.base.metric.internal.AcceleratedMetricTransformator
 import xf.xfvrp.opt.Solution
+import xf.xfvrp.report.StringWriter
 
 class EvaluationServiceCapacitySpec extends Specification {
 
@@ -55,7 +57,7 @@ class EvaluationServiceCapacitySpec extends Specification {
 		def model = initScen1(v, LoadType.DELIVERY)
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[1], n[2], n[3], nd] as Node[])
 
 		when:
@@ -212,12 +214,11 @@ class EvaluationServiceCapacitySpec extends Specification {
 		def model = initScen3(v)
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[4], n[6], nr, n[3], nd] as Node[])
 
 		when:
 		def result = service.check(sol, model)
-
 		then:
 		result != null
 		result.getPenalty() > 0
@@ -283,7 +284,7 @@ class EvaluationServiceCapacitySpec extends Specification {
 
 		def iMetric = new AcceleratedMetricTransformator().transform(metric, nodes, v)
 
-		return new XFVRPModel(nodes, iMetric, iMetric, v, parameter)
+		return TestXFVRPModel.get(nodes, iMetric, iMetric, v, parameter)
 	}
 
 	XFVRPModel initScen2(Vehicle v) {
@@ -327,7 +328,7 @@ class EvaluationServiceCapacitySpec extends Specification {
 
 		def iMetric = new AcceleratedMetricTransformator().transform(metric, nodes, v)
 
-		return new XFVRPModel(nodes, iMetric, iMetric, v, parameter)
+		return TestXFVRPModel.get(nodes, iMetric, iMetric, v, parameter)
 	}
 
 	XFVRPModel initScen3(Vehicle v) {
@@ -392,9 +393,7 @@ class EvaluationServiceCapacitySpec extends Specification {
 
 		def nodes = [nd, nr, n1, n2, n3, n4, n5] as Node[]
 
-		def iMetric = new AcceleratedMetricTransformator().transform(metric, nodes, v)
-
-		return new XFVRPModel(nodes, iMetric, iMetric, v, parameter)
+		return TestXFVRPModel.get(Arrays.asList(nodes), v)
 	}
 
 }

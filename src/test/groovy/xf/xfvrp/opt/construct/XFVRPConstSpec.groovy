@@ -3,13 +3,15 @@ package xf.xfvrp.opt.construct
 import spock.lang.Specification
 import util.instances.TestNode
 import util.instances.TestVehicle
+import util.instances.TestXFVRPModel
 import xf.xfvrp.base.*
 import xf.xfvrp.base.exception.XFVRPException
+import xf.xfvrp.base.metric.Metric
 import xf.xfvrp.base.metric.internal.AcceleratedMetric
 
 class XFVRPConstSpec extends Specification {
 
-	def metric = Stub(AcceleratedMetric, constructorArgs: [5]) 
+	AcceleratedMetric metric = Stub(AcceleratedMetric, constructorArgs: [5])
 	def service = new XFVRPConst()
 
 	def nd = new TestNode(
@@ -54,7 +56,7 @@ class XFVRPConstSpec extends Specification {
 		def customers = [n[2], n[3], n[4]]
 
 		when:
-		def result = service.buildGiantRouteForOptimization(nd, customers)
+		def result = service.buildGiantRouteForOptimization(nd, customers, model)
 		def giantRoute = result.getGiantRoute()
 
 		then:
@@ -69,13 +71,12 @@ class XFVRPConstSpec extends Specification {
 	
 	def "Build Giant Route For Optimization - empty customers"() {
 		def model = initScen()
-		def n = model.getNodes()
 		service.setModel(model)
 
 		def customers = []
 
 		when:
-		def result = service.buildGiantRouteForOptimization(nd, customers)
+		def result = service.buildGiantRouteForOptimization(nd, customers, model)
 		def giantRoute = result.getGiantRoute()
 
 		then:
@@ -93,7 +94,7 @@ class XFVRPConstSpec extends Specification {
 		def customers = [n[2], n[3], n[4]]
 		
 		when:
-		def result = service.buildGiantRouteForOptimization(nd, customers)
+		def result = service.buildGiantRouteForOptimization(nd, customers, model)
 		def giantRoute = result.getGiantRoute()
 
 		then:
@@ -151,7 +152,7 @@ class XFVRPConstSpec extends Specification {
 		metric.getDistance(_, n[2]) >> 155
 		
 		when:
-		def result = service.findNearestDepot(depots, customer)
+		service.findNearestDepot(depots, customer)
 
 		then:
 		thrown XFVRPException
@@ -254,6 +255,6 @@ class XFVRPConstSpec extends Specification {
 
 		def nodes = [nd, nd2, n1, n2, n3, n4, n5, n6, n7, n8, nr] as Node[]
 
-		return new XFVRPModel(nodes, metric, metric, v, parameter)
+		return TestXFVRPModel.get(nodes, metric, metric, v, parameter)
 	}
 }

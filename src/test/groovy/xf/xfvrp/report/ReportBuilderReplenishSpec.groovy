@@ -3,6 +3,7 @@ package xf.xfvrp.report
 import spock.lang.Specification
 import util.instances.TestNode
 import util.instances.TestVehicle
+import util.instances.TestXFVRPModel
 import xf.xfvrp.base.*
 import xf.xfvrp.base.metric.EucledianMetric
 import xf.xfvrp.base.metric.internal.AcceleratedMetricTransformator
@@ -45,13 +46,13 @@ class ReportBuilderReplenishSpec extends Specification {
 			assert result.getSummary().getOverloads()[i] == 0
 		}
 		// Depot - Loading Deliveries
-		checkAmount(result, 0, [2, 20, 200], LoadType.PICKUP)
+		checkAmount(result, 0, [2, 20, 200], LoadType.PRELOAD_AT_DEPOT)
 
 		checkAmount(result, 1, [3, 30, 300], LoadType.PICKUP)
 		checkAmount(result, 2, [2, 20, 200], LoadType.DELIVERY)
 
 		// Replenish - Loading Deliveries
-		checkAmount(result, 3, [1, 10, 100], LoadType.PICKUP)
+		checkAmount(result, 3, [1, 10, 100], LoadType.PRELOAD_AT_DEPOT)
 
 		checkAmount(result, 4, [4, 40, 400], LoadType.PICKUP)
 		checkAmount(result, 5, [1, 10, 100], LoadType.DELIVERY)
@@ -188,7 +189,7 @@ class ReportBuilderReplenishSpec extends Specification {
 
 		def iMetric = new AcceleratedMetricTransformator().transform(metric, nodes, v)
 
-		return new XFVRPModel(nodes, iMetric, iMetric, v, parameter)
+		return TestXFVRPModel.get(nodes, iMetric, iMetric, v, parameter)
 	}
 
 	void createReplenishmentNode(boolean[] isCompartmentReplenished) {
