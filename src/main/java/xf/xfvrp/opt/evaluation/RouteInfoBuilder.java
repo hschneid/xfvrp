@@ -20,24 +20,22 @@ import java.util.Map;
  **/
 public class RouteInfoBuilder {
 
-	public static Map<Node, RouteInfo> build(Node[] route) throws XFVRPException {
+	public static Map<Node, RouteInfo> build(Node[] route, Context context) throws XFVRPException {
 		Map<Node, RouteInfo> routeInfos = new HashMap<>();
 		RouteInfo[] routeInfoPerCompartment = new RouteInfo[route[0].getDemand().length];
 
 		for (int idx = 0; idx < route.length; idx++) {
-			Node node = route[idx];
-
-			createRouteInfo(routeInfos, routeInfoPerCompartment, node);
+			createRouteInfo(route[idx], routeInfoPerCompartment, routeInfos, context);
 		}
 
 		return routeInfos;
 	}
 
-	private static void createRouteInfo(Map<Node, RouteInfo> routeInfos, RouteInfo[] routeInfoPerCompartment, Node node) throws XFVRPException {
+	private static void createRouteInfo(Node node, RouteInfo[] routeInfoPerCompartment, Map<Node, RouteInfo> routeInfos, Context context) throws XFVRPException {
 		switch(node.getSiteType()) {
 			case DEPOT :
 			case REPLENISH :
-				beginNewInfo(node, routeInfoPerCompartment, routeInfos);
+				beginNewInfo(node, routeInfoPerCompartment, routeInfos, context);
 				break;
 			case CUSTOMER : {
 				updateInfo(node, routeInfoPerCompartment);
@@ -49,11 +47,11 @@ public class RouteInfoBuilder {
 		}
 	}
 
-	private static void beginNewInfo(Node node, RouteInfo[] routeInfoPerCompartment, Map<Node, RouteInfo> routeInfos) {
+	private static void beginNewInfo(Node node, RouteInfo[] routeInfoPerCompartment, Map<Node, RouteInfo> routeInfos, Context context) {
 		Map<Node, RouteInfo> newRouteInfos = new HashMap<>();
 		for (int compartmentIdx = node.getDemand().length - 1; compartmentIdx >= 0; compartmentIdx--) {
 			// Compartments without replenishment
-			if(node.getSiteType() == SiteType.REPLENISH && !node.isCompartmentReplenished()[compartmentIdx]) {
+			if(node.getSiteType() == SiteType.REPLENISH && !context.getModel().getCompartments()[compartmentIdx].isReplenished()) {
 				continue;
 			}
 

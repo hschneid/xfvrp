@@ -47,7 +47,7 @@ public class ReportBuilder {
         RouteReport routeReport = new RouteReport(context.getModel().getVehicle());
 
         route = ActiveNodeAnalyzer.getActiveNodes(route);
-        context.setRouteInfos(RouteInfoBuilder.build(route));
+        context.setRouteInfos(RouteInfoBuilder.build(route, context));
 
         context.setCurrentNode(route[0]);
         routeReport.add(

@@ -19,12 +19,18 @@ package xf.xfvrp.base.compartment;
  **/
 public enum CompartmentType {
 
-    PICKUP,                 // This compartment is only picked up on routes and with replenishment
-    DELIVERY,               // This compartment is only delivered to customers and with replenishment
-    MIXED,                  // This compartment is loaded and unloaded during route and with replenishment
-    PICKUP_NO_REPLENISH,    // This compartment is only picked up on routes and without replenishment
-    DELIVERY_NO_REPLENISH,  // This compartment is only delivered to customers and without replenishment
-    MIXED_NO_REPLENISH;     // This compartment is loaded and unloaded during route and without replenishment
+    PICKUP(true),                  // This compartment is only picked up on routes and with replenishment
+    DELIVERY(true),                // This compartment is only delivered to customers and with replenishment
+    MIXED(true),                   // This compartment is loaded and unloaded during route and with replenishment
+    PICKUP_NO_REPLENISH(false),    // This compartment is only picked up on routes and without replenishment
+    DELIVERY_NO_REPLENISH(false),  // This compartment is only delivered to customers and without replenishment
+    MIXED_NO_REPLENISH(false);     // This compartment is loaded and unloaded during route and without replenishment
+
+    private final boolean isReplenished;
+
+    CompartmentType(boolean isReplenished) {
+        this.isReplenished = isReplenished;
+    }
 
     public CompartmentLoad createWithIndex(int idx) {
         switch (this) {
@@ -37,5 +43,9 @@ public enum CompartmentType {
             // Cannot happen :-/
             default: return null;
         }
+    }
+
+    public boolean isReplenished() {
+        return isReplenished;
     }
 }

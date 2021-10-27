@@ -41,9 +41,10 @@ public class Context {
 
 	private float[] lastDrivenDistance;
 
-	private XFVRPModel model;
+	private final XFVRPModel model;
 
-	public Context() {
+	public Context(XFVRPModel model) {
+		this.model = model;
 		routeVar = new float[7];
 		routeVar[ROUTE_IDX] = -1;
 	}
@@ -110,12 +111,11 @@ public class Context {
 
 	public void resetAmountsOfRoute() throws XFVRPException {
 		for (int i = amountsOfRoute.length - 1; i >= 0; i--) {
-			// If replenishment is not necessary, do not
-			if (currentNode.getSiteType() == SiteType.REPLENISH && !currentNode.isCompartmentReplenished()[i]) {
+			// If replenishment is not allowed, ignore rest
+			if (currentNode.getSiteType() == SiteType.REPLENISH && !model.getCompartments()[i].isReplenished()) {
 				continue;
 			}
 
-			// Reset amounts to zero only for compartments, where parameter is set to true
 			if (currentNode.getSiteType() == SiteType.REPLENISH) {
 				amountsOfRoute[i].replenish();
 			} else {
@@ -340,10 +340,6 @@ public class Context {
 
 	public float getLength() {
 		return routeVar[LENGTH];
-	}
-
-	public void setModel(XFVRPModel model) {
-		this.model = model;
 	}
 
 	public RouteInfo getRouteInfo() {

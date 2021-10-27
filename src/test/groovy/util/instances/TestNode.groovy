@@ -29,14 +29,8 @@ class TestNode {
 	int presetVehicleIdx2 = -1
 	int presetBlackNodeIdx = -1
 	InvalidReason invalidReason = InvalidReason.NONE
-	boolean[] isCompartmentReplenished
 
 	Node getNode() {
-		if(isCompartmentReplenished == null) {
-			isCompartmentReplenished = new boolean[demand.length]
-			Arrays.fill(isCompartmentReplenished, true)
-		}
-
 		Node node = new Node(
 				globalIdx,
 				externID,
@@ -50,8 +44,7 @@ class TestNode {
 				serviceTimeForSite,
 				loadType,
 				presetBlockRank,
-				shipID,
-				isCompartmentReplenished
+				shipID
 				)
 		node.setPresetBlockIdx(presetBlockIdx)
 		node.setPresetBlockPos(presetBlockPos)

@@ -32,8 +32,6 @@ import xf.xfvrp.base.SiteType;
  */
 public class ReplenishData extends NodeData {
 
-	protected boolean[] isCompartmentReplenished;
-
 	/**
 	 * @param externID the externID to set
 	 */
@@ -103,10 +101,6 @@ public class ReplenishData extends NodeData {
 		return this;
 	}
 
-	public void setIsCompartmentReplenished(boolean[] isCompartmentReplenished) {
-		this.isCompartmentReplenished = isCompartmentReplenished;
-	}
-
 	///////////////////////////////////
 
 	Node createReplenishment(int idx) {
@@ -125,8 +119,7 @@ public class ReplenishData extends NodeData {
 				0,
 				LoadType.REPLENISH,
 				0,
-				"",
-				isCompartmentReplenished
+				""
 		);
 	}
 }

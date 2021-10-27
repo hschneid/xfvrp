@@ -76,7 +76,7 @@ public class RouteReportSummary {
 		nbrOfEvents++;
 
 		for (int i = 0; i < context.getAmountsOfRoute().length; i++) {
-			if (e.getSiteType() == SiteType.REPLENISH && context.getCurrentNode().isCompartmentReplenished()[i]) {
+			if (e.getSiteType() == SiteType.REPLENISH) {
 				context.getAmountsOfRoute()[i].replenish();
 			} else if (e.getSiteType() == SiteType.CUSTOMER) {
 				context.getAmountsOfRoute()[i].addAmount(e.getAmounts(), e.getLoadType());

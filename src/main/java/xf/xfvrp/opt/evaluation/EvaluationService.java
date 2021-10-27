@@ -83,7 +83,7 @@ public class EvaluationService {
 		RouteQuality q = new RouteQuality(routeIdx, null);
 
 		route = ActiveNodeAnalyzer.getActiveNodes(route);
-		context.setRouteInfos(RouteInfoBuilder.build(route));
+		context.setRouteInfos(RouteInfoBuilder.build(route, context));
 
 		context.setCurrentNode(route[0]);
 		beginRoute(route[0], findNextCustomer(route), context);

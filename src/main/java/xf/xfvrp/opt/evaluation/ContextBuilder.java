@@ -15,9 +15,7 @@ import java.util.Arrays;
 public class ContextBuilder {
 
 	public static Context build(XFVRPModel model) {
-		Context context = new Context();
-		
-		context.setModel(model);
+		Context context = new Context(model);
 
 		// Variables
 		context.setMaxGlobalNodeIdx(model.getMaxGlobalNodeIdx() + 1);

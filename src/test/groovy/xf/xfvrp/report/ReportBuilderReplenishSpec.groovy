@@ -22,8 +22,12 @@ class ReportBuilderReplenishSpec extends Specification {
 			demand: [0, 0, 0],
 			timeWindow: [[0,99],[2,99]]
 	).getNode()
-
-	Node nr
+	def nr = new TestNode(
+			externID: "REP",
+			siteType: SiteType.REPLENISH,
+			demand: [0, 0, 0],
+			timeWindow: [[0,99],[2,99]]
+	).getNode()
 
 	def sol
 
@@ -136,8 +140,6 @@ class ReportBuilderReplenishSpec extends Specification {
 	}
 
 	XFVRPModel initScen(Vehicle v, boolean[] isCompartmentReplenished) {
-		createReplenishmentNode(isCompartmentReplenished)
-
 		def n1 = new TestNode(
 				globalIdx: 1,
 				externID: "1",
@@ -196,16 +198,6 @@ class ReportBuilderReplenishSpec extends Specification {
 		}
 
 		return TestXFVRPModel.get(nodes, types, iMetric, iMetric, v, parameter)
-	}
-
-	void createReplenishmentNode(boolean[] isCompartmentReplenished) {
-		nr = new TestNode(
-				externID: "REP",
-				siteType: SiteType.REPLENISH,
-				demand: [0, 0, 0],
-				timeWindow: [[0,99],[2,99]],
-				isCompartmentReplenished: isCompartmentReplenished
-		).getNode()
 	}
 
 }

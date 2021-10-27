@@ -117,8 +117,7 @@ public class DepotData extends NodeData {
 				0,
 				0,
 				null, 0,
-				"",
-				null
+				""
 		);
 	}
 }
