@@ -95,7 +95,8 @@ public class CheckCustomerService {
 		float[] demands = cust.getDemand();
 		float[] capacities = model.getVehicle().getCapacity();
 
-		for (int compartment = 0; compartment < demands.length; compartment++) {
+		int length = Math.min(demands.length, capacities.length);
+		for (int compartment = 0; compartment < length; compartment++) {
 			float capacity = capacities[compartment];
 			if(demands[compartment] > capacity) {
 				cust.setInvalidReason(

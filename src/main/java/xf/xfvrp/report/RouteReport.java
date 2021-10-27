@@ -1,7 +1,6 @@
 package xf.xfvrp.report;
 
 import xf.xfvrp.base.Vehicle;
-import xf.xfvrp.base.XFVRPModel;
 import xf.xfvrp.opt.evaluation.Context;
 
 import java.util.ArrayList;
@@ -30,9 +29,9 @@ public class RouteReport {
 	private final List<Event> eventList = new ArrayList<>();
 
 	
-	public RouteReport(Vehicle vehicle, XFVRPModel model) {
+	public RouteReport(Vehicle vehicle) {
 		this.vehicle = vehicle;
-		this.summary = new RouteReportSummary(vehicle, model);
+		this.summary = new RouteReportSummary(vehicle);
 	}
 
 	public void add(Event e, Context context) {

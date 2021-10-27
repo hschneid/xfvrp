@@ -5,8 +5,11 @@ import util.instances.TestNode
 import util.instances.TestVehicle
 import util.instances.TestXFVRPModel
 import xf.xfvrp.base.*
+import xf.xfvrp.base.compartment.CompartmentInitializer
+import xf.xfvrp.base.compartment.CompartmentType
 import xf.xfvrp.base.metric.EucledianMetric
 import xf.xfvrp.base.metric.internal.AcceleratedMetricTransformator
+import xf.xfvrp.base.monitor.DefaultStatusMonitor
 import xf.xfvrp.base.monitor.StatusManager
 import xf.xfvrp.opt.Solution
 import xf.xfvrp.opt.init.ModelBuilder
@@ -74,7 +77,7 @@ class EvaluationServicePresetsSpec extends Specification {
 		Math.abs(result.getCost() - 6.242) < 0.001
 	}
 	
-	def "Block Count Preset - Not Okay"() {
+	def "Solution does not contain full block in route"() {
 		def v = new TestVehicle(name: "V1", capacity: [3, 3]).getVehicle()
 		def model = initScen(v, [2, 2, 3] as int[])
 		def n = model.getNodes()
@@ -373,9 +376,10 @@ class EvaluationServicePresetsSpec extends Specification {
 
 		def nodes = [nd, n1, n2, n3] as Node[]
 
-		def iMetric = new AcceleratedMetricTransformator().transform(metric, nodes, v)
+		List<CompartmentType> types = new ArrayList<>()
+		CompartmentInitializer.check(nodes, types, new Vehicle[]{v})
 
-		return TestXFVRPModel.get(nodes, iMetric, iMetric, v, parameter)
+		return new ModelBuilder().build(nodes, types.toArray(new CompartmentType[0]), v, metric, parameter, new StatusManager())
 	}
 	
 	XFVRPModel initMultiDepotScenAbstract(Vehicle v, int[] presetBlocks, int[] presetRanks, int[] presetPos, int[] presetDepots) {

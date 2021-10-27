@@ -41,7 +41,7 @@ public class RouteReportSummary {
 	private final float[] deliveries;
 	private final float[] overloads;
 
-	public RouteReportSummary(Vehicle vehicle, XFVRPModel model) {
+	public RouteReportSummary(Vehicle vehicle) {
 		this.vehicle = vehicle;
 
 		int nbrOfCompartments = (vehicle.getCapacity().length);

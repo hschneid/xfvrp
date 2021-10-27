@@ -29,7 +29,7 @@ class EvaluationServiceReplenishSpec extends Specification {
 
 	def metric = new EucledianMetric()
 
-	def "Valid - Replenish all compartments by default values"() {
+	def "Valid - Replenish all compartments was initiated by default values"() {
 		def v = new TestVehicle(name: "V1", capacity: [5, 50, 500]).getVehicle()
 		def model = initScen(v, null)
 		def n = model.getNodes()
@@ -42,7 +42,7 @@ class EvaluationServiceReplenishSpec extends Specification {
 
 		then:
 		result.getPenalty() == 0
-		nr.isCompartmentReplenished() == null
+		nr.isCompartmentReplenished() == [true, true, true] as boolean[]
 	}
 
 	def "Valid - Replenish all compartments by defined values"() {

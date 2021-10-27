@@ -195,8 +195,8 @@ public class EvaluationService {
 
 		// Only for non default blocks
 		if(blockIndex > BlockNameConverter.DEFAULT_BLOCK_IDX) {
-			int peanlty = context.setAndCheckPresetBlock(blockIndex);
-			q.addPenalty(peanlty, Quality.PENALTY_REASON_PRESETTING);
+			int penalty = context.setAndCheckPresetBlock(blockIndex);
+			q.addPenalty(penalty, Quality.PENALTY_REASON_PRESETTING);
 		}
 
 		// Sequence rank of current node must be greater or equal than last node

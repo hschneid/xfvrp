@@ -21,7 +21,7 @@ class FullRouteMixedFleetSelectorSpec extends Specification {
 				varCost: 5
 				)
 		def model = TestXFVRPModel.get([], testVehicle.getVehicle())
-		routeReport = new RouteReport(testVehicle.getVehicle(), model)
+		routeReport = new RouteReport(testVehicle.getVehicle())
 		routeReport.getSummary().duration = 1234
 		routeReport.getSummary().pickups[0] = 555
 		routeReport.getSummary().deliveries[0] = 666
@@ -72,28 +72,28 @@ class FullRouteMixedFleetSelectorSpec extends Specification {
 
 		def model = TestXFVRPModel.get([], testVehicle.getVehicle())
 		def report = new Report(solution, model)
-		def routeReport1 = new RouteReport(testVehicle.getVehicle(), model)
+		def routeReport1 = new RouteReport(testVehicle.getVehicle())
 		routeReport1.getSummary().duration = 1234
 		routeReport1.getSummary().pickups[0] = 555
 		routeReport1.getSummary().deliveries[0] = 666
 		routeReport1.getSummary().delay = 0
 		routeReport1.getSummary().nbrOfEvents = 1
 		
-		def routeReport2 = new RouteReport(testVehicle.getVehicle(), model)
+		def routeReport2 = new RouteReport(testVehicle.getVehicle())
 		routeReport2.getSummary().duration = 1000
 		routeReport2.getSummary().pickups[0] = 555
 		routeReport2.getSummary().deliveries[0] = 666
 		routeReport2.getSummary().delay = 0
 		routeReport2.getSummary().nbrOfEvents = 1
 		
-		def routeReport3 = new RouteReport(testVehicle.getVehicle(), model)
+		def routeReport3 = new RouteReport(testVehicle.getVehicle())
 		routeReport3.getSummary().duration = 800
 		routeReport3.getSummary().pickups[0] = 555
 		routeReport3.getSummary().deliveries[0] = 666
 		routeReport3.getSummary().delay = 0
 		routeReport3.getSummary().nbrOfEvents = 1
 		
-		def routeReport4 = new RouteReport(testVehicle.getVehicle(), model)
+		def routeReport4 = new RouteReport(testVehicle.getVehicle())
 		routeReport4.getSummary().duration = 800
 		routeReport4.getSummary().pickups[0] = 555
 		routeReport4.getSummary().deliveries[0] = 666

@@ -10,7 +10,6 @@ import xf.xfvrp.base.compartment.CompartmentInitializer
 import xf.xfvrp.base.compartment.CompartmentLoadBuilder
 import xf.xfvrp.base.compartment.CompartmentType
 import xf.xfvrp.base.metric.Metric
-import xf.xfvrp.base.metric.internal.AcceleratedMetric
 import xf.xfvrp.base.monitor.StatusManager
 import xf.xfvrp.base.preset.BlockNameConverter
 import xf.xfvrp.opt.evaluation.Context
@@ -47,11 +46,11 @@ class FullRouteMixedFleetHeuristicSpec extends Specification {
 		def context = new Context()
 		context.amountsOfRoute = CompartmentLoadBuilder.createCompartmentLoads(model.getCompartments());
 
-		def routeReport1 = new RouteReport(testVehicle.getVehicle(), model)
+		def routeReport1 = new RouteReport(testVehicle.getVehicle())
 		routeReport1.add(new Event(nodes[1]), context)
 		routeReport1.add(new Event(nodes[2]), context)
 
-		def routeReport2 = new RouteReport(testVehicle.getVehicle(), model)
+		def routeReport2 = new RouteReport(testVehicle.getVehicle())
 		routeReport2.add(new Event(nodes[3]), context)
 		routeReport2.add(new Event(nodes[4]), context)
 
@@ -89,9 +88,9 @@ class FullRouteMixedFleetHeuristicSpec extends Specification {
 		def nodes = [] as List<Node>
 		def model = TestXFVRPModel.get(nodes, testVehicle.getVehicle())
 
-		def routeReport1 = new RouteReport(testVehicle.getVehicle(), model)
+		def routeReport1 = new RouteReport(testVehicle.getVehicle())
 
-		def routeReport2 = new RouteReport(testVehicle.getVehicle(), model)
+		def routeReport2 = new RouteReport(testVehicle.getVehicle())
 
 		def routes = [routeReport1, routeReport2] as List<RouteReport>
 
@@ -118,19 +117,19 @@ class FullRouteMixedFleetHeuristicSpec extends Specification {
 		def context = new Context()
 		context.amountsOfRoute = CompartmentLoadBuilder.createCompartmentLoads(model.getCompartments());
 
-		def routeReport1 = new RouteReport(testVehicle.getVehicle(), model)
+		def routeReport1 = new RouteReport(testVehicle.getVehicle())
 		routeReport1.add(new Event(nodes[6]), context)
 		routeReport1.add(new Event(nodes[1]), context)
 		routeReport1.add(new Event(nodes[2]), context)
 		routeReport1.add(new Event(nodes[6]), context)
 
-		def routeReport2 = new RouteReport(testVehicle.getVehicle(), model)
+		def routeReport2 = new RouteReport(testVehicle.getVehicle())
 		routeReport2.add(new Event(nodes[6]), context)
 		routeReport2.add(new Event(nodes[3]), context)
 		routeReport2.add(new Event(nodes[4]), context)
 		routeReport2.add(new Event(nodes[6]), context)
 
-		def routeReport3 = new RouteReport(testVehicle.getVehicle(), model)
+		def routeReport3 = new RouteReport(testVehicle.getVehicle())
 		routeReport3.add(new Event(nodes[6]), context)
 		routeReport3.add(new Event(nodes[6]), context)
 
