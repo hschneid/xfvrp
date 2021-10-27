@@ -4,9 +4,6 @@ import util.ArrayUtil;
 import xf.xfvrp.base.LoadType;
 import xf.xfvrp.base.SiteType;
 import xf.xfvrp.base.Vehicle;
-import xf.xfvrp.base.XFVRPModel;
-import xf.xfvrp.base.compartment.CompartmentLoad;
-import xf.xfvrp.base.compartment.CompartmentLoadBuilder;
 import xf.xfvrp.opt.evaluation.Context;
 
 /**
@@ -26,7 +23,7 @@ import xf.xfvrp.opt.evaluation.Context;
  */
 public class RouteReportSummary {
 
-	private Vehicle vehicle;
+	private final Vehicle vehicle;
 
 	private int nbrOfRoutes = 1;
 	private int nbrOfEvents = 0;
@@ -135,13 +132,6 @@ public class RouteReportSummary {
 
 	public float getDuration() {
 		return duration;
-	}
-
-	/**
-	 * @param vehicle the vehicle to set
-	 */
-	public void setVehicle(Vehicle vehicle) {
-		this.vehicle = vehicle;
 	}
 
 	public float getWaitingTime() {

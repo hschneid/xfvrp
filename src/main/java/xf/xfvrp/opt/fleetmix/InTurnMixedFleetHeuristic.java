@@ -93,10 +93,6 @@ public class InTurnMixedFleetHeuristic extends MixedFleetHeuristicBase implement
 		return unplannedNodes;
 	}
 	
-	public void setFallbackVehicleName(String vehicleName) {
-		this.fallbackVehicleName = vehicleName;
-	}
-	
 	private int countVehiclesLeft(int[] vehCounts) {
 		return Arrays.stream(vehCounts).sum();
 	}

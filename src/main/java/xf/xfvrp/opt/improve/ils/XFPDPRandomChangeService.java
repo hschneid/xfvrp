@@ -182,9 +182,6 @@ public class XFPDPRandomChangeService extends XFVRPOptBase implements XFRandomCh
 		int dstPickupIdx;
 		int dstDeliveryIdx;
 
-		public Choice() {
-		}
-
 		public float[] toArray() {
 			return new float[] {srcPickupIdx, srcDeliveryIdx, dstPickupIdx, dstDeliveryIdx};
 		}

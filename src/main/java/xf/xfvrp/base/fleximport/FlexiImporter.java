@@ -195,20 +195,6 @@ public class FlexiImporter {
 	}
 
 	/**
-	 * Clears all internal data lists and reset the internal fields.
-	 */
-	public void clear() {
-		depotList.clear();
-		customerList.clear();
-		vehicleList.clear();
-		compartmentTypes.clear();
-
-		lastDepotData = null;
-		lastCustomerData = null;
-		lastVehicleData = null;
-	}
-
-	/**
 	 * Clears all imported customers
 	 */
 	public void clearCustomers() {
@@ -220,13 +206,6 @@ public class FlexiImporter {
 	 */
 	public void clearDepots() {
 		depotList.clear();
-	}
-
-	/**
-	 * Clears all added compartment types.
-	 */
-	public void clearCompartmentTypes() {
-		compartmentTypes.clear();
 	}
 
 	/**
@@ -244,10 +223,6 @@ public class FlexiImporter {
 
 	public List<CustomerData> getCustomerList() {
 		return customerList;
-	}
-
-	public List<ReplenishData> getReplenishList() {
-		return replenishList;
 	}
 
 	public CompartmentType[] getCompartmentTypes() {return compartmentTypes.toArray(new CompartmentType[0]);}

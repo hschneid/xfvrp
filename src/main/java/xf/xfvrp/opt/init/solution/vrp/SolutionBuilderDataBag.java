@@ -24,20 +24,11 @@ public class SolutionBuilderDataBag {
 	public List<Node> getValidCustomers() {
 		return validCustomers;
 	}
-	public void setValidNodes(List<Node> validNodes) {
-		this.validCustomers = validNodes;
-	}
 	public List<Node> getValidDepots() {
 		return validDepots;
 	}
-	public void setValidDepots(List<Node> validDepots) {
-		this.validDepots = validDepots;
-	}
 	public List<Node> getValidReplenish() {
 		return validReplenish;
-	}
-	public void setValidReplenish(List<Node> validReplenish) {
-		this.validReplenish = validReplenish;
 	}
 	public void resetKnownSequencePositions() {
 		knownSequencePositions.clear();
@@ -48,7 +39,5 @@ public class SolutionBuilderDataBag {
 	public void setKnownSequencePositions(Set<Integer> knownSequencePositions) {
 		this.knownSequencePositions = knownSequencePositions;
 	}
-	
 
-	
 }

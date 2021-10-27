@@ -1,9 +1,6 @@
 package util.instances
 
-
 import xf.xfvrp.base.Vehicle
-import xf.xfvrp.base.fleximport.CompartmentCapacity
-import xf.xfvrp.base.fleximport.VehicleData
 
 class TestVehicle {
 

@@ -9,7 +9,6 @@ import xf.xfvrp.base.compartment.CompartmentInitializer
 import xf.xfvrp.base.compartment.CompartmentType
 import xf.xfvrp.base.metric.EucledianMetric
 import xf.xfvrp.base.metric.internal.AcceleratedMetricTransformator
-import xf.xfvrp.base.monitor.DefaultStatusMonitor
 import xf.xfvrp.base.monitor.StatusManager
 import xf.xfvrp.opt.Solution
 import xf.xfvrp.opt.init.ModelBuilder

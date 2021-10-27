@@ -6,7 +6,6 @@ import util.instances.TestVehicle
 import util.instances.TestXFVRPModel
 import xf.xfvrp.base.*
 import xf.xfvrp.base.exception.XFVRPException
-import xf.xfvrp.base.metric.Metric
 import xf.xfvrp.base.metric.internal.AcceleratedMetric
 
 class XFVRPConstSpec extends Specification {

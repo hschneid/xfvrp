@@ -1,6 +1,5 @@
 package xf.xfvrp.opt.evaluation
 
-
 import spock.lang.Specification
 import util.instances.TestNode
 import util.instances.TestVehicle
@@ -9,7 +8,6 @@ import xf.xfvrp.base.*
 import xf.xfvrp.base.metric.EucledianMetric
 import xf.xfvrp.base.metric.internal.AcceleratedMetricTransformator
 import xf.xfvrp.opt.Solution
-import xf.xfvrp.report.StringWriter
 
 class EvaluationServiceCapacitySpec extends Specification {
 

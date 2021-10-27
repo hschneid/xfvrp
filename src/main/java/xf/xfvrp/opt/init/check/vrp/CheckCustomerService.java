@@ -1,7 +1,8 @@
 package xf.xfvrp.opt.init.check.vrp;
 
-import xf.xfvrp.base.*;
-import xf.xfvrp.base.compartment.CompartmentType;
+import xf.xfvrp.base.InvalidReason;
+import xf.xfvrp.base.Node;
+import xf.xfvrp.base.XFVRPModel;
 import xf.xfvrp.base.exception.XFVRPException;
 import xf.xfvrp.base.exception.XFVRPExceptionType;
 import xf.xfvrp.base.preset.BlockPositionConverter;
