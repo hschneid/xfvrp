@@ -65,7 +65,7 @@ public class Node implements Cloneable {
 	private InvalidReason invalidReason = InvalidReason.NONE;
 
 	/** For Replenishment nodes: Trigger, if a certain compartment is replenished (true) or not (false). **/
-	private final boolean[] isCompartmentReplenished;
+	private boolean[] isCompartmentReplenished;
 
 	private String invalidArguments = "";
 
@@ -369,5 +369,9 @@ public class Node implements Cloneable {
 
 	public boolean[] isCompartmentReplenished() {
 		return isCompartmentReplenished;
+	}
+
+	public void setIsCompartmentReplenished(boolean[] isCompartmentReplenished) {
+		this.isCompartmentReplenished = isCompartmentReplenished;
 	}
 }

@@ -34,6 +34,26 @@ public class CompartmentInitializer {
         // Reset the checked compartment types
         compartmentTypes.clear();
         compartmentTypes.addAll(checkedTypes);
+
+        // Set replenishment type
+        correctReplenishmentTypes(nodes, nbrOfCompartments);
+    }
+
+    private static void correctReplenishmentTypes(Node[] nodes, int nbrOfCompartments) {
+        Arrays.stream(nodes)
+                .filter(node -> node.getSiteType() == SiteType.REPLENISH && node.isCompartmentReplenished() == null)
+                .forEach(node -> {
+                    node.setIsCompartmentReplenished(new boolean[nbrOfCompartments]);
+                    Arrays.fill(node.isCompartmentReplenished(), true);
+                });
+        Arrays.stream(nodes)
+                .filter(node -> node.getSiteType() == SiteType.REPLENISH && node.isCompartmentReplenished().length != nbrOfCompartments)
+                .forEach(node -> {
+                    boolean[] newOne = new boolean[nbrOfCompartments];
+                    Arrays.fill(newOne, true);
+                    System.arraycopy(node.isCompartmentReplenished(), 0, newOne, 0, node.isCompartmentReplenished().length);
+                    node.setIsCompartmentReplenished(newOne);
+                });
     }
 
     private static void adjustNodes(Node[] nodes, int nbrOfCompartments) {

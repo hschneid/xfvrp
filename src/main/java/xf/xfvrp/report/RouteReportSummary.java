@@ -37,7 +37,6 @@ public class RouteReportSummary {
 	private float delay = 0;
 
 	// Capacity values per compartment
-	private final CompartmentLoad[] amounts;
 	private final float[] pickups;
 	private final float[] deliveries;
 	private final float[] overloads;
@@ -49,8 +48,6 @@ public class RouteReportSummary {
 		pickups = new float[nbrOfCompartments];
 		deliveries = new float[nbrOfCompartments];
 		overloads = new float[nbrOfCompartments];
-
-		amounts = CompartmentLoadBuilder.createCompartmentLoads(model.getCompartments());
 	}
 
 	/**
@@ -82,14 +79,14 @@ public class RouteReportSummary {
 		nbrOfEvents++;
 
 		for (int i = 0; i < context.getAmountsOfRoute().length; i++) {
-			if (e.getSiteType() == SiteType.REPLENISH) {
-				amounts[i].replenish();
+			if (e.getSiteType() == SiteType.REPLENISH && context.getCurrentNode().isCompartmentReplenished()[i]) {
+				context.getAmountsOfRoute()[i].replenish();
 			} else if (e.getSiteType() == SiteType.CUSTOMER) {
-				amounts[i].addAmount(e.getAmounts(), e.getLoadType());
+				context.getAmountsOfRoute()[i].addAmount(e.getAmounts(), e.getLoadType());
 				if(e.getLoadType() == LoadType.PICKUP) pickups[i] += e.getAmounts()[i];
 				if(e.getLoadType() == LoadType.DELIVERY) deliveries[i] += e.getAmounts()[i];
 			}
-			overloads[i] = amounts[i].checkCapacity(vehicle.getCapacity());
+			overloads[i] = context.getAmountsOfRoute()[i].checkCapacity(vehicle.getCapacity());
 		}
 
 		setNbrOfStops(e);

@@ -329,7 +329,7 @@ class ReportBuilderCapacitySpec extends Specification {
 		then:
 		result != null
 
-		result.getSummary().getOverloads()[0] == 3
+		result.getSummary().getOverloads()[0] == 2
 		result.getSummary().getOverloads()[1] == 0
 		result.getRoutes().size() == 1
 		result.getRoutes().get(0).getSummary().getDeliveries()[0] == 3
@@ -433,11 +433,11 @@ class ReportBuilderCapacitySpec extends Specification {
 		result.getRoutes().get(0).getSummary().getPickups()[0] == 3
 		result.getRoutes().get(0).getSummary().getPickups()[1] == 1
 
-		checkAmount(result, 0, 4, LoadType.PICKUP)
+		checkAmount(result, 0, 4, LoadType.PRELOAD_AT_DEPOT)
 		checkAmount(result, 1, 1, LoadType.DELIVERY)
 		checkAmount(result, 2, 2, LoadType.DELIVERY)
 		checkAmount(result, 3, 1, LoadType.DELIVERY)
-		checkAmount(result, 4, 0, LoadType.PICKUP)
+		checkAmount(result, 4, 0, LoadType.PRELOAD_AT_DEPOT)
 		checkAmount(result, 5, 3, LoadType.PICKUP)
 		checkAmount(result, 6, 0, LoadType.UNDEF)
 	}

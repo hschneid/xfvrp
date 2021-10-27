@@ -110,6 +110,11 @@ public class Context {
 
 	public void resetAmountsOfRoute() throws XFVRPException {
 		for (int i = amountsOfRoute.length - 1; i >= 0; i--) {
+			// If replenishment is not necessary, do not
+			if (currentNode.getSiteType() == SiteType.REPLENISH && !currentNode.isCompartmentReplenished()[i]) {
+				continue;
+			}
+
 			// Reset amounts to zero only for compartments, where parameter is set to true
 			if (currentNode.getSiteType() == SiteType.REPLENISH) {
 				amountsOfRoute[i].replenish();

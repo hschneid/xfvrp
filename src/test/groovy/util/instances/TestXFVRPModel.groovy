@@ -42,4 +42,15 @@ class TestXFVRPModel {
                 parameter
         )
     }
+
+    public static XFVRPModel get(Node[] nodeArr, CompartmentType[] compartmentTypes, InternalMetric metric, InternalMetric optMetric, Vehicle vehicle, XFVRPParameter parameter) {
+        return new XFVRPModel(
+                nodeArr,
+                compartmentTypes,
+                metric,
+                optMetric,
+                vehicle,
+                parameter
+        )
+    }
 }

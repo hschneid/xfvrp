@@ -131,10 +131,12 @@ public class ReportBuilder {
 
         switch(context.getCurrentNode().getSiteType()) {
             case REPLENISH:
-                setAmountsToEvent(e,
-                        context.getRouteInfo().getDeliveryAmount().getAmounts(),
-                        LoadType.PRELOAD_AT_DEPOT
-                );
+                if(context.getRouteInfo() != null) {
+                    setAmountsToEvent(e,
+                            context.getRouteInfo().getDeliveryAmount().getAmounts(),
+                            LoadType.PRELOAD_AT_DEPOT
+                    );
+                }
                 break;
             case CUSTOMER:
                 setAmountsToEvent(e,

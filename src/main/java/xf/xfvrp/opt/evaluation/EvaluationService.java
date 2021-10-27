@@ -137,14 +137,18 @@ public class EvaluationService {
 	 * Load, Unload or Replenish the amount on vehicle
 	 */
 	private void loadAmounts(Context context) {
+		if(context.getCurrentNode().getSiteType() == SiteType.REPLENISH) {
+			context.resetAmountsOfRoute();
+			return;
+		}
+
 		CompartmentLoad[] amounts = context.getAmountsOfRoute();
 		for (int i = amounts.length - 1; i >= 0; i--) {
-			if(context.getCurrentNode().getSiteType() == SiteType.REPLENISH) {
-				amounts[i].replenish();
-			} else if(context.getCurrentNode().getSiteType() == SiteType.CUSTOMER) {
+			Node currentNode = context.getCurrentNode();
+			if(currentNode.getSiteType() == SiteType.CUSTOMER) {
 				amounts[i].addAmount(
-						context.getCurrentNode().getDemand(),
-						context.getCurrentNode().getLoadType()
+						currentNode.getDemand(),
+						currentNode.getLoadType()
 				);
 			}
 		}

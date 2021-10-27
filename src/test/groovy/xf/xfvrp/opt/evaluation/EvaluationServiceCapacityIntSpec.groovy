@@ -111,13 +111,14 @@ class EvaluationServiceCapacityIntSpec extends Specification {
 	def "Check with replenishment"() {
 		XFVRP vrp = build()
 		vrp.addOptType(XFVRPOptType.ILS)
+		// vrp.getParameters().nbrOfILSLoops = 100
 		vrp.addVehicle().setName('V').setCapacity([3, 2, 3] as float[])
 		vrp.addCompartment(CompartmentType.DELIVERY)
 		vrp.addCompartment(CompartmentType.PICKUP)
 		vrp.addCompartment(CompartmentType.MIXED)
 
 		vrp.addDepot().setExternID('nD')
-		vrp.addReplenishment().setExternID('nR').setXlong(102).setYlat(102)
+		vrp.addReplenishment().setExternID('nR').setXlong(80).setYlat(80)
 		vrp.addCustomer().setExternID('n11').setXlong(100).setYlat(100).setDemand([1,0,1] as float[]).setLoadType(LoadType.DELIVERY)
 		vrp.addCustomer().setExternID('n12').setXlong(101).setYlat(101).setDemand([0,1,1] as float[]).setLoadType(LoadType.PICKUP)
 		vrp.addCustomer().setExternID('n13').setXlong(102).setYlat(102).setDemand([1,0,1] as float[]).setLoadType(LoadType.DELIVERY)
@@ -132,7 +133,7 @@ class EvaluationServiceCapacityIntSpec extends Specification {
 		when:
 		vrp.executeRoutePlanning()
 		def result = vrp.getReport()
-
+		println StringWriter.write(result)
 		then:
 		result.routes.size() == 1
 		result.routes[0].vehicle.name == 'V'

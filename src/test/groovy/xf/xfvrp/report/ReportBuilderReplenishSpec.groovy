@@ -5,6 +5,7 @@ import util.instances.TestNode
 import util.instances.TestVehicle
 import util.instances.TestXFVRPModel
 import xf.xfvrp.base.*
+import xf.xfvrp.base.compartment.CompartmentType
 import xf.xfvrp.base.metric.EucledianMetric
 import xf.xfvrp.base.metric.internal.AcceleratedMetricTransformator
 import xf.xfvrp.opt.Solution
@@ -122,9 +123,9 @@ class ReportBuilderReplenishSpec extends Specification {
 		def result = service.getReport(new XFVRPSolution(sol, model))
 
 		then:
-		result.getSummary().getOverloads()[0] > 0
-		result.getSummary().getOverloads()[1] > 0
-		result.getSummary().getOverloads()[2] > 0
+		result.getSummary().getOverloads()[0] == 1
+		result.getSummary().getOverloads()[1] == 1
+		result.getSummary().getOverloads()[2] == 1
 	}
 
 	private static void checkAmount(Report result, int eventIdx, List<Float> amountVal, LoadType type) {
@@ -189,7 +190,12 @@ class ReportBuilderReplenishSpec extends Specification {
 
 		def iMetric = new AcceleratedMetricTransformator().transform(metric, nodes, v)
 
-		return TestXFVRPModel.get(nodes, iMetric, iMetric, v, parameter)
+		def types = new CompartmentType[isCompartmentReplenished.length]
+		for (i in 0..<types.length) {
+			types[i] = (isCompartmentReplenished[i]) ? CompartmentType.MIXED : CompartmentType.MIXED_NO_REPLENISH
+		}
+
+		return TestXFVRPModel.get(nodes, types, iMetric, iMetric, v, parameter)
 	}
 
 	void createReplenishmentNode(boolean[] isCompartmentReplenished) {

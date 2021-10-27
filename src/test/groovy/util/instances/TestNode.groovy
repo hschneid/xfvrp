@@ -32,6 +32,11 @@ class TestNode {
 	boolean[] isCompartmentReplenished
 
 	Node getNode() {
+		if(isCompartmentReplenished == null) {
+			isCompartmentReplenished = new boolean[demand.length]
+			Arrays.fill(isCompartmentReplenished, true)
+		}
+
 		Node node = new Node(
 				globalIdx,
 				externID,
