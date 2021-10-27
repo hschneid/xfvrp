@@ -8,6 +8,8 @@ import xf.xfvrp.base.metric.Metrics
 import xf.xfvrp.opt.XFVRPOptType
 import xf.xfvrp.report.StringWriter
 
+import java.util.stream.Collectors
+
 class EvaluationServiceCapacityIntSpec extends Specification {
 
 	def "Check capacities with different compartment types - all fit on 1 truck"() {
@@ -127,11 +129,36 @@ class EvaluationServiceCapacityIntSpec extends Specification {
 		when:
 		vrp.executeRoutePlanning()
 		def result = vrp.getReport()
-		println StringWriter.write(result)
+
 		then:
 		result.routes.size() == 1
 		result.routes[0].vehicle.name == 'V'
 		result.routes[0].events.get(6).getID() == 'nR'
+	}
+
+	def "Check with inactive replenishment and presets"() {
+		XFVRP vrp = build()
+		vrp.addOptType(XFVRPOptType.ILS)
+		vrp.addVehicle().setName('V').setCapacity([5, 3] as float[])
+		vrp.addCompartment(CompartmentType.MIXED_NO_REPLENISH)
+		vrp.addCompartment(CompartmentType.MIXED)
+
+		vrp.addDepot().setExternID('DD')
+
+		vrp.addReplenishment().setExternID('R').setXlong(80).setYlat(80)
+		vrp.addCustomer().setExternID('A').setXlong(101).setYlat(101).setDemand([2,1] as float[]).setLoadType(LoadType.PICKUP).setPresetBlockName('A').setPresetBlockPos(1)
+		vrp.addCustomer().setExternID('B').setXlong(100).setYlat(100).setDemand([1,2] as float[]).setLoadType(LoadType.DELIVERY).setPresetBlockName('A').setPresetBlockPos(2)
+		vrp.addCustomer().setExternID('C').setXlong(103).setYlat(103).setDemand([2,2] as float[]).setLoadType(LoadType.PICKUP).setPresetBlockName('B').setPresetBlockPos(1)
+		vrp.addCustomer().setExternID('D').setXlong(102).setYlat(102).setDemand([1,1] as float[]).setLoadType(LoadType.DELIVERY).setPresetBlockName('B').setPresetBlockPos(2)
+
+		when:
+		vrp.executeRoutePlanning()
+		def result = vrp.getReport()
+		println StringWriter.write(result)
+		then:
+		result.routes.size() == 1
+		result.routes[0].vehicle.name == 'V'
+		result.routes[0].events.stream().map(n -> n.getID()).collect( Collectors.joining( "" ) ) == 'DDABRCDDD'
 	}
 
 	def "Check without replenishment"() {

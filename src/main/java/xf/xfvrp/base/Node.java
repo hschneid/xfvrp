@@ -76,7 +76,7 @@ public class Node implements Cloneable {
 		externID = "";
 		globalIdx = 0;
 		
-		demand = new float[3];
+		demand = new float[1];
 
 		loadType = LoadType.DELIVERY;
 		xlong = 0;

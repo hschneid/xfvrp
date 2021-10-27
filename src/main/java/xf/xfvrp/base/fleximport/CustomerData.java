@@ -31,7 +31,7 @@ public class CustomerData extends NodeData {
 	
 	/** Basic XFVRP - parameter **/
 	protected LoadType loadType = LoadType.PICKUP;
-	protected float[] demand = new float[]{0, 0, 0};
+	protected float[] demand = new float[]{0};
 	protected float serviceTime = 0;
 	protected float serviceTimeForSite = 0;
 	protected String shipID = "";

@@ -195,7 +195,7 @@ public class CheckService {
 		int idx = 0;
 		
 		route[idx++] = Util.createIdNode(depot, 0);
-		for (int j = nodesOfBlock.size() - 1; j >= 0; j--) {
+		for (int j = 0; j < nodesOfBlock.size(); j++) {
 			if(nodesOfBlock.get(j).getSiteType() == SiteType.CUSTOMER)
 				route[idx++] = nodesOfBlock.get(j); 
 		}
