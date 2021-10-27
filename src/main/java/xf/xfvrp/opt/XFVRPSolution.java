@@ -18,12 +18,10 @@ import xf.xfvrp.base.XFVRPModel;
  */
 public class XFVRPSolution {
 
-	protected Solution solution;
-	protected XFVRPModel model;
+	private final Solution solution;
 
 	public XFVRPSolution(Solution solution) {
 		this.solution = solution;
-		this.model = solution.getModel();
 	}
 
 	public Solution getSolution() {
@@ -31,6 +29,6 @@ public class XFVRPSolution {
 	}
 
 	public XFVRPModel getModel() {
-		return model;
+		return solution.getModel();
 	}
 }

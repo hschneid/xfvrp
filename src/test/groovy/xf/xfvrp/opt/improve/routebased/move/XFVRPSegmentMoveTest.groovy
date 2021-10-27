@@ -25,7 +25,7 @@ class XFVRPSegmentMoveTest extends Specification {
     def n9 = new Node(externID: "9", siteType: SiteType.CUSTOMER)
     def n10 = new Node(externID: "10", siteType: SiteType.CUSTOMER)
 
-    def sol
+    def sol = new Solution()
 
     def "change - reset - different routes"() {
         sol.setGiantRoute([n1, n2, n3, n4, n5, n6, n7, n8] as Node[])

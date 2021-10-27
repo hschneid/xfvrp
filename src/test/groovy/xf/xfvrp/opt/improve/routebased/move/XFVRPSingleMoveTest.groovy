@@ -20,7 +20,7 @@ class XFVRPSingleMoveTest extends Specification {
     def n7 = new Node(externID: "7", siteType: SiteType.DEPOT)
 
     def "change - reset - different routes"() {
-        def sol = new Solution(model)
+        def sol = new Solution()
         sol.setGiantRoute([n1, n2, n3, n4, n5, n6, n7] as Node[])
         def parameter = [-1, 0, 1, 1, 2, 0, 0] as float[]
 
@@ -39,7 +39,7 @@ class XFVRPSingleMoveTest extends Specification {
     }
 
     def "change - reset - same routes - src > dst"() {
-        def sol = new Solution(model)
+        def sol = new Solution()
         sol.setGiantRoute([n1, n2, n3, n5, n6, n7] as Node[])
         def parameter = [-1, 0, 0, 1, 3, 0, 0] as float[]
 
@@ -57,7 +57,7 @@ class XFVRPSingleMoveTest extends Specification {
     }
 
     def "change - reset - same routes - src < dst"() {
-        def sol = new Solution(model)
+        def sol = new Solution()
         sol.setGiantRoute([n1, n2, n3, n5, n6, n7] as Node[])
         def parameter = [-1, 0, 0, 4, 1, 0, 0] as float[]
 

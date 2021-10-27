@@ -213,31 +213,16 @@ class NormalizeSpec extends Specification {
 		result[15].externID == "1"
 	}
 	
-	def "Irregular normalize - model null"() {
+	def "Irregular normalize - giant route null"() {
 		def model = createModel()
 		def n = model.getNodes()
 		def sol = new Solution(model)
 		sol.setGiantRoute([n[0], n[3], n[4], n[1], n[5], n[6], n[7], n[1]] as Node[])
 				
 		when:
-		sol = service.normalizeRoute(sol)
-		
-		sol.getGiantRoute()
-		
-		then:
-		thrown NullPointerException
-	}
-	
-	def "Irregular normalize - giant route null"() {
-		def model = createModel()
-		def n = model.getNodes()
-		def sol = new Solution()
-		sol.setGiantRoute([n[0], n[3], n[4], n[1], n[5], n[6], n[7], n[1]] as Node[])
-				
-		when:
 		sol = service.normalizeRoute(null)
 		
-		def result = sol.getGiantRoute()
+		sol.getGiantRoute()
 		
 		then:
 		thrown NullPointerException
