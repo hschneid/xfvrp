@@ -38,11 +38,11 @@ class EvaluationServiceStopSpec extends Specification {
 		def model = initScen(v)
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[3], nr, n[4], n[5], nd] as Node[])
 
 		when:
-		def result = service.check(sol, model)
+		def result = service.check(sol)
 
 		then:
 		result != null
@@ -54,11 +54,11 @@ class EvaluationServiceStopSpec extends Specification {
 		def model = initScen(v)
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[3], nr, n[4], n[5], nd] as Node[])
 
 		when:
-		def result = service.check(sol, model)
+		def result = service.check(sol)
 
 		then:
 		result != null
@@ -70,11 +70,11 @@ class EvaluationServiceStopSpec extends Specification {
 		def model = initScen(v)
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[4], nr, n[3], n[5], nd] as Node[])
 
 		when:
-		def result = service.check(sol, model)
+		def result = service.check(sol)
 
 		then:
 		result != null
@@ -86,11 +86,11 @@ class EvaluationServiceStopSpec extends Specification {
 		def model = initScen(v)
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[4], nr, n[3], n[5], nd] as Node[])
 
 		when:
-		def result = service.check(sol, model)
+		def result = service.check(sol)
 
 		then:
 		result != null

@@ -4,8 +4,10 @@ import spock.lang.Specification
 import util.instances.TestNode
 import util.instances.TestVehicle
 import util.instances.TestXFVRPModel
-import xf.xfvrp.base.*
-import xf.xfvrp.base.metric.EucledianMetric
+import xf.xfvrp.base.LoadType
+import xf.xfvrp.base.Node
+import xf.xfvrp.base.SiteType
+import xf.xfvrp.base.XFVRPModel
 import xf.xfvrp.opt.Solution
 
 class XFVRPSegmentSwapTest extends Specification {
@@ -16,14 +18,11 @@ class XFVRPSegmentSwapTest extends Specification {
 
     def sol
 
-    def parameter = new XFVRPParameter()
-    def metric = new EucledianMetric()
-
     def "improve by segment swap"() {
         def model = initScen()
         segmentService.setModel(model)
         def n = model.getNodes()
-        sol = new Solution()
+        sol = new Solution(model)
         sol.setGiantRoute([nd, n[5], n[2], n[4], nd2, n[6], n[3], n[7], nd2] as Node[])
 
         when:
@@ -45,7 +44,7 @@ class XFVRPSegmentSwapTest extends Specification {
         def model = initScen()
         singleService.setModel(model)
         def n = model.getNodes()
-        sol = new Solution()
+        sol = new Solution(model)
         sol.setGiantRoute([nd, n[5], n[2], n[4], nd2, n[6], n[3], n[7], nd2] as Node[])
 
         when:
@@ -67,7 +66,7 @@ class XFVRPSegmentSwapTest extends Specification {
         def model = initScen()
         exchangeService.setModel(model)
         def n = model.getNodes()
-        sol = new Solution()
+        sol = new Solution(model)
         sol.setGiantRoute([nd, n[5], n[3], n[7], nd2, n[6], n[2], n[4], nd2] as Node[])
 
         when:

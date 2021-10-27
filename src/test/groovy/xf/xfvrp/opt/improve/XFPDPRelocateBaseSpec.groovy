@@ -33,7 +33,7 @@ class XFPDPRelocateBaseSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[1], n[2], n[3], n[4], n[5], n[6], nd] as Node[])
 		def route = sol.getGiantRoute()
 
@@ -56,7 +56,7 @@ class XFPDPRelocateBaseSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[1], n[2], n[3], nd, n[4], n[5], n[6], nd] as Node[])
 		def route = sol.getGiantRoute()
 
@@ -80,7 +80,7 @@ class XFPDPRelocateBaseSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[3], n[1], n[4], n[5], n[6], n[2], nd] as Node[])
 		
 		when:
@@ -104,7 +104,7 @@ class XFPDPRelocateBaseSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[3], n[1], n[4], n[5], n[6], n[2], nd] as Node[])
 
 		when:
@@ -128,7 +128,7 @@ class XFPDPRelocateBaseSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[4], n[1], n[6], n[2], n[3], n[5], nd] as Node[])
 
 		when:
@@ -152,7 +152,7 @@ class XFPDPRelocateBaseSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[1], n[3], n[5], n[6], n[4], nd] as Node[])
 
 		when:
@@ -176,7 +176,7 @@ class XFPDPRelocateBaseSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[4], n[1], n[5], n[6], n[3], nd] as Node[])
 
 		when:
@@ -200,7 +200,7 @@ class XFPDPRelocateBaseSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[1], n[3], n[4], n[6], n[5], nd] as Node[])
 
 		when:
@@ -224,7 +224,7 @@ class XFPDPRelocateBaseSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[3], n[1], n[2], n[5], n[6], n[4], nd] as Node[])
 
 		when:
@@ -248,7 +248,7 @@ class XFPDPRelocateBaseSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[1], n[2], n[3], n[4], nd] as Node[])
 
 		when:

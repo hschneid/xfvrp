@@ -33,7 +33,7 @@ public abstract class XFILS extends XFVRPOptBase {
 			Solution newSolution = currentSolution.copy();
 
 			// Variation
-			newSolution = randomChangeService.change(newSolution, model);
+			newSolution = randomChangeService.change(newSolution);
 
 			// Intensification
 			newSolution = localSearch(newSolution);
@@ -53,7 +53,7 @@ public abstract class XFILS extends XFVRPOptBase {
 			}
 		}
 
-		return NormalizeSolutionService.normalizeRoute(bestSolution, model);
+		return NormalizeSolutionService.normalizeRoute(bestSolution);
 	}
 
 	/**

@@ -33,8 +33,6 @@ class XFVRPFirstBestInsertSpecInt extends Specification {
 	timeWindow: [[0,99],[2,99]]
 	).getNode()
 
-	def sol
-
 	def parameter = new XFVRPParameter()
 
 	def metric = new EucledianMetric()
@@ -44,7 +42,7 @@ class XFVRPFirstBestInsertSpecInt extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		def solution = new Solution()
+		def solution = new Solution(model)
 
 		when:
 		def newSol = service.execute(solution)
@@ -74,7 +72,7 @@ class XFVRPFirstBestInsertSpecInt extends Specification {
 		service.setModel(model)
 		parameter.setNbrOfILSLoops(3)
 
-		def solution = new Solution()
+		def solution = new Solution(model)
 
 		when:
 		def newSol = service.execute(solution)

@@ -35,16 +35,16 @@ class XFPDPRelocateIntSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[1], n[2], nd, n[3], n[4], nd] as Node[])
 
-		def currentQuality = evalService.check(sol, model)
+		def currentQuality = evalService.check(sol)
 		
 		when:
 		def newQuality = service.improve(sol, currentQuality)
 		
-		sol = NormalizeSolutionService.normalizeRoute(sol, model)
-		def checkedQuality = evalService.check(sol, model)
+		sol = NormalizeSolutionService.normalizeRoute(sol)
+		def checkedQuality = evalService.check(sol)
 		def newGiantRoute = sol.getGiantRoute()
 		
 		then:

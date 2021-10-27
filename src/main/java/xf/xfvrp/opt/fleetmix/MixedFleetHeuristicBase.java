@@ -80,7 +80,7 @@ public abstract class MixedFleetHeuristicBase {
 				})
 				.toArray(Node[]::new);
 
-		return new XFVRPSolution(getSolution(giantRoute, model), model);
+		return new XFVRPSolution(getSolution(giantRoute, model));
 	}
 
 	protected XFVRPSolution insertUnplannedNodes(
@@ -123,9 +123,8 @@ public abstract class MixedFleetHeuristicBase {
 		Solution solution = buildGiantRouteForInvalidNodes(unplannedCustomers, nodes[0], model, statusManager);
 
 		return new XFVRPSolution(
-				solution,
-				model
-		);
+				solution
+        );
 	}
 
 	/**

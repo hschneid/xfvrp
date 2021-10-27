@@ -26,7 +26,7 @@ public class ReportBuilder {
 
     public Report getReport(XFVRPSolution solution) throws XFVRPException {
         XFVRPModel model = solution.getModel();
-        Report rep = new Report(solution.getSolution(), model);
+        Report rep = new Report(solution.getSolution());
 
         Context context = ContextBuilder.build(model);
         for (Node[] route : solution.getSolution()) {

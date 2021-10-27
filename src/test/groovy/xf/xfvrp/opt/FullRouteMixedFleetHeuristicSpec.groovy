@@ -331,7 +331,7 @@ class FullRouteMixedFleetHeuristicSpec extends Specification {
 		when:
 		def result = service.execute(nodes, types.toArray(new CompartmentType[0]), vehicles,
 				{routingDataBag ->
-			return new XFVRPSolution(solution, TestXFVRPModel.get(nodes, routingDataBag.vehicle))
+			return new XFVRPSolution(solution)
 		}, metric, parameter, statusManager)
 
 		then:

@@ -125,11 +125,11 @@ public class XFVRP extends XFVRPData {
 			}
 
 			// Normalization of last result
-			NormalizeSolutionService.normalizeRoute(solution, model);
+			NormalizeSolutionService.normalizeRoute(solution);
 		}
 
 		lastModel = model;
-		return new XFVRPSolution(solution, model);
+		return new XFVRPSolution(solution);
 	}
 
 	/**

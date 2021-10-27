@@ -40,11 +40,11 @@ class ReportBuilderReplenishSpec extends Specification {
 		def model = initScen(v, new boolean[] {true, true, true})
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[3], nr, n[4], n[5], nd] as Node[])
 
 		when:
-		def result = service.getReport(new XFVRPSolution(sol, model))
+		def result = service.getReport(new XFVRPSolution(sol))
 
 		then:
 		for (i in 0..<3) {
@@ -71,11 +71,11 @@ class ReportBuilderReplenishSpec extends Specification {
 		def model = initScen(v, new boolean[] {true, false, true})
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[3], nr, n[4], n[5], nd] as Node[])
 
 		when:
-		def result = service.getReport(new XFVRPSolution(sol, model))
+		def result = service.getReport(new XFVRPSolution(sol))
 
 		then:
 		result.getSummary().getOverloads()[0] == 0
@@ -88,11 +88,11 @@ class ReportBuilderReplenishSpec extends Specification {
 		def model = initScen(v, new boolean[] {true, false, true})
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[3], nr, n[4], n[5], nd] as Node[])
 
 		when:
-		def result = service.getReport(new XFVRPSolution(sol, model))
+		def result = service.getReport(new XFVRPSolution(sol))
 
 		then:
 		result.getSummary().getOverloads()[1] == 0
@@ -103,11 +103,11 @@ class ReportBuilderReplenishSpec extends Specification {
 		def model = initScen(v, new boolean[] {false, false, false})
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[3], nr, n[4], n[5], nd] as Node[])
 
 		when:
-		def result = service.getReport(new XFVRPSolution(sol, model))
+		def result = service.getReport(new XFVRPSolution(sol))
 
 		then:
 		result.getSummary().getOverloads()[0] == 0
@@ -120,11 +120,11 @@ class ReportBuilderReplenishSpec extends Specification {
 		def model = initScen(v, new boolean[] {false, false, false})
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[3], nr, n[4], n[5], nd] as Node[])
 
 		when:
-		def result = service.getReport(new XFVRPSolution(sol, model))
+		def result = service.getReport(new XFVRPSolution(sol))
 
 		then:
 		result.getSummary().getOverloads()[0] == 1

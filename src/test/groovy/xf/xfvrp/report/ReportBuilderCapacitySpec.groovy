@@ -5,7 +5,6 @@ import util.instances.TestNode
 import util.instances.TestVehicle
 import util.instances.TestXFVRPModel
 import xf.xfvrp.base.*
-import xf.xfvrp.base.metric.EucledianMetric
 import xf.xfvrp.opt.Solution
 import xf.xfvrp.opt.XFVRPSolution
 import xf.xfvrp.report.build.ReportBuilder
@@ -30,19 +29,15 @@ class ReportBuilderCapacitySpec extends Specification {
 
 	def sol
 
-	def parameter = new XFVRPParameter()
-
-	def metric = new EucledianMetric()
-
 	def "Distance"() {
 		def v = new TestVehicle(name: "V1", capacity: [3, 3]).getVehicle()
 		def model = initScen1(v, LoadType.DELIVERY)
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[1], n[2], n[3], nd] as Node[])
 
-		def solution = new XFVRPSolution(sol, model)
+		def solution = new XFVRPSolution(sol)
 
 		when:
 		def result = service.getReport(solution)
@@ -66,10 +61,10 @@ class ReportBuilderCapacitySpec extends Specification {
 		def model = initScen1(v, LoadType.DELIVERY)
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[1], n[2], n[3], nd] as Node[])
 
-		def solution = new XFVRPSolution(sol, model)
+		def solution = new XFVRPSolution(sol)
 
 		when:
 		def result = service.getReport(solution)
@@ -99,10 +94,10 @@ class ReportBuilderCapacitySpec extends Specification {
 		def model = initScen1(v, LoadType.DELIVERY)
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[1], n[2], n[3], nd] as Node[])
 
-		def solution = new XFVRPSolution(sol, model)
+		def solution = new XFVRPSolution(sol)
 
 		when:
 		def result = service.getReport(solution)
@@ -134,10 +129,10 @@ class ReportBuilderCapacitySpec extends Specification {
 		def model = initScen1(v, LoadType.DELIVERY)
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[1], n[2], n[3], nd] as Node[])
 
-		def solution = new XFVRPSolution(sol, model)
+		def solution = new XFVRPSolution(sol)
 
 		when:
 		def result = service.getReport(solution)
@@ -170,10 +165,10 @@ class ReportBuilderCapacitySpec extends Specification {
 		def model = initScen1(v, LoadType.PICKUP)
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[1], n[2], n[3], nd] as Node[])
 
-		def solution = new XFVRPSolution(sol, model)
+		def solution = new XFVRPSolution(sol)
 
 		when:
 		def result = service.getReport(solution)
@@ -204,10 +199,10 @@ class ReportBuilderCapacitySpec extends Specification {
 		def model = initScen1(v, LoadType.PICKUP)
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[1], n[2], n[3], nd] as Node[])
 
-		def solution = new XFVRPSolution(sol, model)
+		def solution = new XFVRPSolution(sol)
 
 		when:
 		def result = service.getReport(solution)
@@ -238,10 +233,10 @@ class ReportBuilderCapacitySpec extends Specification {
 		def model = initScen1(v, LoadType.PICKUP)
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[1], n[2], n[3], nd] as Node[])
 
-		def solution = new XFVRPSolution(sol, model)
+		def solution = new XFVRPSolution(sol)
 
 		when:
 		def result = service.getReport(solution)
@@ -272,10 +267,10 @@ class ReportBuilderCapacitySpec extends Specification {
 		def model = initScen2(v)
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[1], n[3], n[2], nd] as Node[])
 
-		def solution = new XFVRPSolution(sol, model)
+		def solution = new XFVRPSolution(sol)
 
 		when:
 		def result = service.getReport(solution)
@@ -317,10 +312,10 @@ class ReportBuilderCapacitySpec extends Specification {
 		def model = initScen2(v)
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[1], n[2], n[3], nd] as Node[])
 
-		def solution = new XFVRPSolution(sol, model)
+		def solution = new XFVRPSolution(sol)
 
 		when:
 		def result = service.getReport(solution)
@@ -348,10 +343,10 @@ class ReportBuilderCapacitySpec extends Specification {
 		def model = initScen3(v)
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[4], nr, n[6], n[3], nd] as Node[])
 
-		def solution = new XFVRPSolution(sol, model)
+		def solution = new XFVRPSolution(sol)
 
 		when:
 		def result = service.getReport(solution)
@@ -380,10 +375,10 @@ class ReportBuilderCapacitySpec extends Specification {
 		def model = initScen3(v)
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[4], nr, n[3], n[5], nd] as Node[])
 
-		def solution = new XFVRPSolution(sol, model)
+		def solution = new XFVRPSolution(sol)
 
 		when:
 		def result = service.getReport(solution)
@@ -413,10 +408,10 @@ class ReportBuilderCapacitySpec extends Specification {
 		def model = initScen3(v)
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[4], n[6], nr, n[3], nd] as Node[])
 
-		def solution = new XFVRPSolution(sol, model)
+		def solution = new XFVRPSolution(sol)
 
 		when:
 		def result = service.getReport(solution)
@@ -446,10 +441,10 @@ class ReportBuilderCapacitySpec extends Specification {
 		def model = initScen3(v)
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[4], n[5], n[2], nr, n[6], n[3], nd] as Node[])
 
-		def solution = new XFVRPSolution(sol, model)
+		def solution = new XFVRPSolution(sol)
 
 		when:
 		def result = service.getReport(solution)

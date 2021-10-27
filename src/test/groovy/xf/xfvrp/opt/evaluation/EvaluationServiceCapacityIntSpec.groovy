@@ -6,7 +6,6 @@ import xf.xfvrp.base.LoadType
 import xf.xfvrp.base.compartment.CompartmentType
 import xf.xfvrp.base.metric.Metrics
 import xf.xfvrp.opt.XFVRPOptType
-import xf.xfvrp.report.StringWriter
 
 import java.util.stream.Collectors
 
@@ -154,7 +153,7 @@ class EvaluationServiceCapacityIntSpec extends Specification {
 		when:
 		vrp.executeRoutePlanning()
 		def result = vrp.getReport()
-		println StringWriter.write(result)
+
 		then:
 		result.routes.size() == 1
 		result.routes[0].vehicle.name == 'V'
@@ -193,8 +192,6 @@ class EvaluationServiceCapacityIntSpec extends Specification {
 		result.routes[0].events.size() == 7
 		result.routes[1].events.size() == 7
 		result.routes.stream().flatMap(r -> r.events.stream()).filter(f -> f.getID() == 'nR').count() == 0
-
-		println StringWriter.write(result)
 	}
 
 	XFVRP build() {

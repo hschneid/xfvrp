@@ -4,8 +4,10 @@ import spock.lang.Specification
 import util.instances.TestNode
 import util.instances.TestVehicle
 import util.instances.TestXFVRPModel
-import xf.xfvrp.base.*
-import xf.xfvrp.base.metric.EucledianMetric
+import xf.xfvrp.base.LoadType
+import xf.xfvrp.base.Node
+import xf.xfvrp.base.SiteType
+import xf.xfvrp.base.XFVRPModel
 
 class XFVRPSolutionSpec extends Specification {
 
@@ -39,18 +41,13 @@ class XFVRPSolutionSpec extends Specification {
 		timeWindow: [[0,99],[2,99]]
 		).getNode()
 
-	def parameter = new XFVRPParameter()
-
-	def metric = new EucledianMetric()
-	
 	def "Const"() {
 		def model = initScen()
-		def n = model.getNodes()
-		
-		def sol = new Solution()
+
+		def sol = new Solution(model)
 		
 		when:
-		def solution = new XFVRPSolution(sol, model)
+		def solution = new XFVRPSolution(sol)
 		
 		then:
 		solution.solution == sol

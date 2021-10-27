@@ -71,7 +71,7 @@ class FullRouteMixedFleetSelectorSpec extends Specification {
 		solution.getGiantRoute() >> []
 
 		def model = TestXFVRPModel.get([], testVehicle.getVehicle())
-		def report = new Report(solution, model)
+		def report = new Report(solution)
 		def routeReport1 = new RouteReport(testVehicle.getVehicle())
 		routeReport1.getSummary().duration = 1234
 		routeReport1.getSummary().pickups[0] = 555
@@ -121,7 +121,7 @@ class FullRouteMixedFleetSelectorSpec extends Specification {
 		def solution = Stub Solution
 		solution.getGiantRoute() >> []
 		
-		def report = new Report(solution, null)
+		def report = new Report(solution)
 		
 		when:
 		def result = service.getBestRoutes(testVehicle.getVehicle(), report)

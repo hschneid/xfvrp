@@ -47,11 +47,11 @@ class EvaluationServicePresetsSpec extends Specification {
 		def model = initScen(v, [2, 2, 3] as int[])
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[1], n[2], n[3], nd] as Node[])
 
 		when:
-		def result = service.check(sol, model)
+		def result = service.check(sol)
 
 		then:
 		result != null
@@ -64,11 +64,11 @@ class EvaluationServicePresetsSpec extends Specification {
 		def model = initScen(v, [2, 2, 3] as int[])
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[1], n[3], nd, n[2], nd] as Node[])
 
 		when:
-		def result = service.check(sol, model)
+		def result = service.check(sol)
 
 		then:
 		result != null
@@ -81,11 +81,11 @@ class EvaluationServicePresetsSpec extends Specification {
 		def model = initScen(v, [2, 2, 3] as int[])
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[1], n[3], nd] as Node[])
 
 		when:
-		def result = service.check(sol, model)
+		def result = service.check(sol)
 
 		then:
 		result != null
@@ -98,11 +98,11 @@ class EvaluationServicePresetsSpec extends Specification {
 		def model = initScenWithRanks(v, [2, 3, 2] as int[], [1, 1, 2] as int[])
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[1], n[2], n[3], nd] as Node[])
 
 		when:
-		def result = service.check(sol, model)
+		def result = service.check(sol)
 
 		then:
 		result != null
@@ -115,11 +115,11 @@ class EvaluationServicePresetsSpec extends Specification {
 		def model = initScenWithRanks(v, [2, 3, 2] as int[], [2, 1, 1] as int[])
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[1], n[2], n[3], nd] as Node[])
 
 		when:
-		def result = service.check(sol, model)
+		def result = service.check(sol)
 
 		then:
 		result != null
@@ -132,11 +132,11 @@ class EvaluationServicePresetsSpec extends Specification {
 		def model = initScenWithPos(v, [2, 2, 2] as int[], [1, 2, 3] as int[])
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[1], n[2], n[3], nd] as Node[])
 
 		when:
-		def result = service.check(sol, model)
+		def result = service.check(sol)
 
 		then:
 		result != null
@@ -149,11 +149,11 @@ class EvaluationServicePresetsSpec extends Specification {
 		def model = initScenWithPos(v, [2, 3, 2] as int[], [2, 1, 3] as int[])
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[1], n[2], n[3], nd] as Node[])
 
 		when:
-		def result = service.check(sol, model)
+		def result = service.check(sol)
 
 		then:
 		result != null
@@ -166,11 +166,11 @@ class EvaluationServicePresetsSpec extends Specification {
 		def model = initScenWithPos(v, [0, 3, 0] as int[], [2, 1, 3] as int[])
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[1], n[2], n[3], nd] as Node[])
 
 		when:
-		def result = service.check(sol, model)
+		def result = service.check(sol)
 
 		then:
 		result != null
@@ -183,11 +183,11 @@ class EvaluationServicePresetsSpec extends Specification {
 		def model = initScenWithPos(v, [2, 2, 2] as int[], [1, 3, 2] as int[])
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[1], n[2], n[3], nd] as Node[])
 
 		when:
-		def result = service.check(sol, model)
+		def result = service.check(sol)
 
 		then:
 		result != null
@@ -200,11 +200,11 @@ class EvaluationServicePresetsSpec extends Specification {
 		def model = initScenWithDepots(v, [0, 4, 0] as int[])
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], nd2, n[3], nd, n[4], nd] as Node[])
 
 		when:
-		def result = service.check(sol, model)
+		def result = service.check(sol)
 
 		then:
 		result != null
@@ -217,11 +217,11 @@ class EvaluationServicePresetsSpec extends Specification {
 		def model = initScenWithDepots(v, [0, 0, 4] as int[])
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], nd2, n[3], nd, n[4], nd] as Node[])
 
 		when:
-		def result = service.check(sol, model)
+		def result = service.check(sol)
 
 		then:
 		result != null
@@ -234,11 +234,11 @@ class EvaluationServicePresetsSpec extends Specification {
 		def model = initScenWithVehicles(v, [1, 1, 1] as int[])
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[1], n[2], n[3], nd] as Node[])
 
 		when:
-		def result = service.check(sol, model)
+		def result = service.check(sol)
 
 		then:
 		result != null
@@ -251,11 +251,11 @@ class EvaluationServicePresetsSpec extends Specification {
 		def model = initScenWithVehicles(v, [1, 2, 1] as int[])
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[1], n[2], n[3], nd] as Node[])
 
 		when:
-		def result = service.check(sol, model)
+		def result = service.check(sol)
 
 		then:
 		result != null
@@ -268,11 +268,11 @@ class EvaluationServicePresetsSpec extends Specification {
 		def model = initScenWithBlackNodes(v, [-1, 3, 2] as int[])
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[1], n[2], nd, n[3], nd] as Node[])
 
 		when:
-		def result = service.check(sol, model)
+		def result = service.check(sol)
 
 		then:
 		result != null
@@ -285,11 +285,11 @@ class EvaluationServicePresetsSpec extends Specification {
 		def model = initScenWithBlackNodes(v, [-1, 3, 2] as int[])
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[1], n[2], n[3], nd] as Node[])
 
 		when:
-		def result = service.check(sol, model)
+		def result = service.check(sol)
 
 		then:
 		result != null

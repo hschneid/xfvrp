@@ -74,7 +74,7 @@ public class XFVRPConst extends XFVRPOptBase {
 
 		Solution newSolution = new Solution(model);
 		newSolution.setGiantRoute(giantList.toArray(new Node[giantList.size()]));
-		return NormalizeSolutionService.normalizeRoute(newSolution, model);
+		return NormalizeSolutionService.normalizeRoute(newSolution);
 	}
 
 	private ListMap<Integer, Node> allocateNearestDepot(Solution solution) throws XFVRPException {

@@ -21,28 +21,15 @@ public class XFVRPSolution {
 	protected Solution solution;
 	protected XFVRPModel model;
 
-	/**
-	 * 
-	 * @param solution
-	 * @param model
-	 */
-	public XFVRPSolution(Solution solution, XFVRPModel model) {
+	public XFVRPSolution(Solution solution) {
 		this.solution = solution;
-		this.model = model;
+		this.model = solution.getModel();
 	}
-	
-	
 
 	public Solution getSolution() {
 		return solution;
 	}
 
-
-
-	/**
-	 * 
-	 * @return
-	 */
 	public XFVRPModel getModel() {
 		return model;
 	}

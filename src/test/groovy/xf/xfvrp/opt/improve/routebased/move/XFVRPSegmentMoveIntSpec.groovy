@@ -42,15 +42,15 @@ class XFVRPSegmentMoveIntSpec extends Specification {
 		def model = initSDScen()
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[1], nd, n[3], n[4], nd] as Node[])
 
-		def currentQuality = evalService.check(sol, model)
+		def currentQuality = evalService.check(sol)
 		
 		when:
 		def newQuality = service.improve(sol, currentQuality, model)
-		sol = NormalizeSolutionService.normalizeRoute(sol, model)
-		def checkedQuality = evalService.check(sol, model)
+		sol = NormalizeSolutionService.normalizeRoute(sol)
+		def checkedQuality = evalService.check(sol)
 		def newGiantRoute = sol.getGiantRoute()
 		
 		then:
@@ -72,15 +72,15 @@ class XFVRPSegmentMoveIntSpec extends Specification {
 		def model = initMDScen()
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[3], n[2], nd, n[4], n[5], nd] as Node[])
 
-		def currentQuality = evalService.check(sol, model)
+		def currentQuality = evalService.check(sol)
 
 		when:
 		def newQuality = service.improve(sol, currentQuality, model)
-		sol = NormalizeSolutionService.normalizeRoute(sol, model)
-		def checkedQuality = evalService.check(sol, model)
+		sol = NormalizeSolutionService.normalizeRoute(sol)
+		def checkedQuality = evalService.check(sol)
 		def newGiantRoute = sol.getGiantRoute()
 		
 		then:
@@ -103,10 +103,10 @@ class XFVRPSegmentMoveIntSpec extends Specification {
 		def model = initMDScen()
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[4], n[2], n[3], n[5], nd, nd] as Node[])
 
-		def currentQuality = evalService.check(sol, model)
+		def currentQuality = evalService.check(sol)
 
 		when:
 		def newQuality = service.improve(sol, currentQuality, model)

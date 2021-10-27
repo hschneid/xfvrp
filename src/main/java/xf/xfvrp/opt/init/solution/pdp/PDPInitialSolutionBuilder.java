@@ -27,7 +27,7 @@ public class PDPInitialSolutionBuilder {
 
 		Solution solution = buildSolution(shipments, model);
 
-		return NormalizeSolutionService.normalizeRoute(solution, model);
+		return NormalizeSolutionService.normalizeRoute(solution);
 	}
 
 	private Solution buildSolution(Map<Integer, Node[]> shipments, XFVRPModel model) {

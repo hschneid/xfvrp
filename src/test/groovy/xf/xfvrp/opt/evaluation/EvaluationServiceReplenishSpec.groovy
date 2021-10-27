@@ -40,11 +40,11 @@ class EvaluationServiceReplenishSpec extends Specification {
 		def model = initScen(v, null)
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[3], nr, n[4], n[5], nd] as Node[])
 
 		when:
-		def result = service.check(sol, model)
+		def result = service.check(sol)
 
 		then:
 		result.getPenalty() == 0
@@ -58,11 +58,11 @@ class EvaluationServiceReplenishSpec extends Specification {
 		def model = initScen(v, new boolean[]{true, true, true})
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[3], nr, n[4], n[5], nd] as Node[])
 
 		when:
-		def result = service.check(sol, model)
+		def result = service.check(sol)
 
 		then:
 		result.getPenalty() == 0
@@ -76,11 +76,11 @@ class EvaluationServiceReplenishSpec extends Specification {
 		def model = initScen(v, new boolean[]{true, false, true})
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[3], nr, n[4], n[5], nd] as Node[])
 
 		when:
-		def result = service.check(sol, model)
+		def result = service.check(sol)
 
 		then:
 		result.getPenalty() > 0
@@ -92,11 +92,11 @@ class EvaluationServiceReplenishSpec extends Specification {
 		def model = initScen(v, new boolean[]{true, false, true})
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[3], nr, n[4], n[5], nd] as Node[])
 
 		when:
-		def result = service.check(sol, model)
+		def result = service.check(sol)
 
 		then:
 		result.getPenalty() == 0
@@ -107,11 +107,11 @@ class EvaluationServiceReplenishSpec extends Specification {
 		def model = initScen(v, new boolean[]{false, false, false})
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[3], nr, n[4], n[5], nd] as Node[])
 
 		when:
-		def result = service.check(sol, model)
+		def result = service.check(sol)
 
 		then:
 		result.getPenalty() == 0
@@ -125,11 +125,11 @@ class EvaluationServiceReplenishSpec extends Specification {
 		def model = initScen(v, new boolean[]{false, false, false})
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[3], nr, n[4], n[5], nd] as Node[])
 
 		when:
-		def result = service.check(sol, model)
+		def result = service.check(sol)
 
 		then:
 		result.getPenalty() > 0

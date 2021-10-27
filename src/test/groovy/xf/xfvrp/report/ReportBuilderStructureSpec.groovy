@@ -42,10 +42,10 @@ class ReportBuilderStructureSpec extends Specification {
 		def model = initScen1(v, LoadType.DELIVERY)
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([n[2], nd, n[3], n[4], nd] as Node[])
 
-		def solution = new XFVRPSolution(sol, model)
+		def solution = new XFVRPSolution(sol)
 
 		when:
 		def result = service.getReport(solution)
@@ -59,10 +59,10 @@ class ReportBuilderStructureSpec extends Specification {
 		def model = initScen1(v, LoadType.DELIVERY)
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[3], n[4]] as Node[])
 
-		def solution = new XFVRPSolution(sol, model)
+		def solution = new XFVRPSolution(sol)
 
 		when:
 		service.getReport(solution)
@@ -76,10 +76,10 @@ class ReportBuilderStructureSpec extends Specification {
 		def model = initScen1(v, LoadType.DELIVERY)
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], null, n[4]] as Node[])
 
-		def solution = new XFVRPSolution(sol, model)
+		def solution = new XFVRPSolution(sol)
 
 		when:
 		service.getReport(solution)
@@ -93,10 +93,10 @@ class ReportBuilderStructureSpec extends Specification {
 		def model = initScen1(v, LoadType.DELIVERY)
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, nd] as Node[])
 
-		def solution = new XFVRPSolution(sol, model)
+		def solution = new XFVRPSolution(sol)
 
 		when:
 		def result = service.getReport(solution)
@@ -111,10 +111,10 @@ class ReportBuilderStructureSpec extends Specification {
 		def model = initScen1(v, LoadType.DELIVERY)
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([] as Node[])
 
-		def solution = new XFVRPSolution(sol, model)
+		def solution = new XFVRPSolution(sol)
 
 		when:
 		def result = service.getReport(solution)
@@ -128,10 +128,10 @@ class ReportBuilderStructureSpec extends Specification {
 		def model = initScen1(v, LoadType.DELIVERY)
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute(null)
 
-		def solution = new XFVRPSolution(sol, model)
+		def solution = new XFVRPSolution(sol)
 
 		when:
 		def result = service.getReport(solution)
@@ -145,10 +145,10 @@ class ReportBuilderStructureSpec extends Specification {
 		def model = initScen1(v, LoadType.DELIVERY)
 		def n = model.getNodes()
 
-		def sol = new Solution()
+		def sol = new Solution(model)
 		sol.setGiantRoute([nd, nd, nr, nr, n[2], n[3], n[4], nr, nd, nd] as Node[])
 
-		def solution = new XFVRPSolution(sol, model)
+		def solution = new XFVRPSolution(sol)
 		
 		when:
 		def result = service.getReport(solution)

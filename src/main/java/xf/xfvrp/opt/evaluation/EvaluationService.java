@@ -30,8 +30,8 @@ public class EvaluationService {
 	 * is evaluated always as closed route with same starting and ending depot. The
 	 * starting depot of a route stands also for the ending depot, in any case. 
 	 */
-	public Quality check(Solution solution, XFVRPModel model) throws XFVRPException {
-		Context context = ContextBuilder.build(model);
+	public Quality check(Solution solution) throws XFVRPException {
+		Context context = ContextBuilder.build(solution.getModel());
 
 		checkRoutes(solution, context);
 
