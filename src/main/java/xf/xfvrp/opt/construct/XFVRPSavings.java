@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 
-/** 
+/**
  * Copyright (c) 2012-2021 Holger Schneider
  * All rights reserved.
  *
@@ -24,7 +24,7 @@ import java.util.stream.Stream;
  *
  * Contains the Savings optimization procedure with
  * acceptance value lamda. 
- * 
+ *
  * @author hschneid
  *
  */
@@ -41,7 +41,7 @@ public class XFVRPSavings extends XFVRPOptBase {
 
 		final Node depot = giantRoute[0];
 
-		SavingsDataBag dataBag = buildRoutes(giantRoute);
+		SavingsDataBag dataBag = buildRoutes(solution);
 
 		prepare(dataBag);
 
@@ -154,7 +154,7 @@ public class XFVRPSavings extends XFVRPOptBase {
 		int routeLengthDst = routes[routeIdxDst].length;
 
 		// Aktualisiere die Datenstrukturen
-		if(routeIdxForStartNode[srcNodeIdx] != -1) { 
+		if(routeIdxForStartNode[srcNodeIdx] != -1) {
 			routeIdxForStartNode[srcNodeIdx] = -1;
 			routeIdxForStartNode[routes[routeIdxSrc][routeLengthSrc - 1].getIdx()] = routeIdxSrc;
 			routeIdxForEndNode[routes[routeIdxSrc][routeLengthSrc - 1].getIdx()] = -1;
@@ -269,35 +269,18 @@ public class XFVRPSavings extends XFVRPOptBase {
 
 	/**
 	 * Creates the initial list of lists where each
-	 * sub list is a route. Each savings route contains only Customer nodes.
+	 * sub list is a route of customers. Each savings route contains only Customer nodes.
 	 */
 	private SavingsDataBag buildRoutes(Solution solution) {
-		SavingsDataBag dataBag = new SavingsDataBag();
-
-		Node[][] routeArr = new Node[solution.getRoutes().length][];
-
-
-
-		int idx = 0;
-		for (int i = 0; i < giantRoute.length; i++) {
-			if(giantRoute[i].getSiteType() == SiteType.DEPOT)
-				continue;
-			if(giantRoute[i].getSiteType() == SiteType.REPLENISH)
-				continue;
-
-			List<Node> list = new ArrayList<>();
-			for (int j = i; j < giantRoute.length; j++) {
-				if(giantRoute[j].getSiteType() == SiteType.DEPOT)
-					break;
-
-				list.add(giantRoute[j]);
-				i++;
-			}
-			routeArr[idx++] = list.toArray(new Node[0]);
-		}
-
-		dataBag.setRoutes(Arrays.copyOf(routeArr, idx));
-
-		return dataBag;
+		return new SavingsDataBag(
+				Arrays.stream(solution.getRoutes())
+						.map(route -> Arrays
+								.stream(route)
+								.filter(node -> node.getSiteType() == SiteType.CUSTOMER)
+								.toArray(Node[]::new)
+						)
+						.filter(route -> route.length > 0)
+						.toArray(Node[][]::new)
+		);
 	}
 }
