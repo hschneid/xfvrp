@@ -44,7 +44,7 @@ class XFPDPFirstBestInsertSpecInt extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 		
-		def solution = new Solution()
+		def solution = new Solution(model)
 
 		when:
 		def newSol = service.execute(solution)
@@ -72,7 +72,7 @@ class XFPDPFirstBestInsertSpecInt extends Specification {
 		service.setModel(model)
 		parameter.setNbrOfILSLoops(3)
 		
-		def solution = new Solution()
+		def solution = new Solution(model)
 
 		when:
 		def newSol = service.execute(solution)

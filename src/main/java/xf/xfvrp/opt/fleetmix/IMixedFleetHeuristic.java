@@ -8,17 +8,17 @@ import xf.xfvrp.base.compartment.CompartmentType;
 import xf.xfvrp.base.exception.XFVRPException;
 import xf.xfvrp.base.metric.Metric;
 import xf.xfvrp.base.monitor.StatusManager;
-import xf.xfvrp.opt.XFVRPSolution;
+import xf.xfvrp.opt.Solution;
 
 import java.util.List;
 
 public interface IMixedFleetHeuristic {
 
 	interface RoutePlanningFunction {
-		XFVRPSolution apply(RoutingDataBag bag) throws XFVRPException;
+		Solution apply(RoutingDataBag bag) throws XFVRPException;
 	}
 	
-	List<XFVRPSolution> execute(
+	List<Solution> execute(
 			Node[] nodes,
 			CompartmentType[] compartmentTypes,
 			Vehicle[] vehicles,

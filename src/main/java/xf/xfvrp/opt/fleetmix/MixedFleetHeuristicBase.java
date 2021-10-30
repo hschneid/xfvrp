@@ -12,7 +12,6 @@ import xf.xfvrp.base.monitor.StatusCode;
 import xf.xfvrp.base.monitor.StatusManager;
 import xf.xfvrp.base.preset.BlockNameConverter;
 import xf.xfvrp.opt.Solution;
-import xf.xfvrp.opt.XFVRPSolution;
 import xf.xfvrp.opt.fleetmix.IMixedFleetHeuristic.RoutePlanningFunction;
 import xf.xfvrp.report.Event;
 import xf.xfvrp.report.RouteReport;
@@ -61,7 +60,7 @@ public abstract class MixedFleetHeuristicBase {
 	/**
 	 * This method transforms an optimization result (report) into an input for new optimization
 	 */
-	protected XFVRPSolution reconstructGiantRoute(List<RouteReport> routes, XFVRPModel model) {
+	protected Solution reconstructGiantRoute(List<RouteReport> routes, XFVRPModel model) {
 		Map<String, Node> nodeMap = Arrays.stream(model.getNodes()).collect(Collectors.toMap(Node::getExternID, node -> node, (v1, v2) -> v1));
 
 		// Remove empty routes
@@ -86,22 +85,25 @@ public abstract class MixedFleetHeuristicBase {
 					.toArray(Node[]::new);
 		}
 
-		return new XFVRPSolution(getSolution(giantRoute, model));
+		return getSolution(newRoutes, model);
 	}
 
-	protected XFVRPSolution insertUnplannedNodes(
+	protected Solution insertUnplannedNodes(
 			List<Node> unplannedNodes,
 			CompartmentType[] compartmentTypes,
 			Metric metric,
 			XFVRPParameter parameter,
 			StatusManager statusManager) throws XFVRPException {
-		// Get unplanned or invalid customers
-		List<Node> unplannedCustomers = getCustomers(unplannedNodes);
-		if (unplannedCustomers.size() == 0) {
+
+		// Get unplanned or invalid nodes
+		List<Node> unplannedCustomers = unplannedNodes.stream()
+				.filter(n -> n.getSiteType() == SiteType.CUSTOMER)
+				.collect(Collectors.toList());
+
+		if(unplannedCustomers.size() == 0) {
+			statusManager.fireMessage(StatusCode.RUNNING, "Invalid or unplanned nodes are inserted in result. (nbr of invalid nodes = 0)");
 			return null;
 		}
-
-		statusManager.fireMessage(StatusCode.RUNNING, String.format("Invalid or unplanned nodes are inserted in result. (nbr of invalid nodes = %d)", unplannedCustomers.size()));
 
 		// Set unplanned reason, for valid nodes
 		unplannedCustomers.stream()
@@ -109,14 +111,10 @@ public abstract class MixedFleetHeuristicBase {
 				.forEach(n -> n.setInvalidReason(InvalidReason.UNPLANNED));
 
 		// Create solution with single routes for each invalid node
-		// Set local index
 		Node[] nodes = unplannedNodes.toArray(new Node[0]);
 		IntStream.range(0, nodes.length).forEach(i -> nodes[i].setIdx(i));
-		XFVRPModel model = createModelForInvalids(metric, parameter, unplannedCustomers, nodes);
-
 		Vehicle invalidVehicle = InvalidVehicle.createInvalid(unplannedCustomers.get(0).getDemand().length);
 		InternalMetric internalMetric = AcceleratedMetricTransformator.transform(metric, nodes, invalidVehicle);
-
 		XFVRPModel model = new XFVRPModel(
 				nodes,
 				compartmentTypes,
@@ -126,11 +124,7 @@ public abstract class MixedFleetHeuristicBase {
 				parameter
 		);
 
-		Solution solution = buildGiantRouteForInvalidNodes(unplannedCustomers, nodes[0], model, statusManager);
-
-		return new XFVRPSolution(
-				solution
-        );
+		return buildSolutionForInvalidNodes(unplannedCustomers, nodes[0], model, statusManager);
 	}
 
 	/**
@@ -140,17 +134,15 @@ public abstract class MixedFleetHeuristicBase {
 	 * For a given set of invalid nodes, a new route is created, where each invalid
 	 * node is on a single route.
 	 */
-	public Solution buildGiantRouteForInvalidNodes(List<Node> unplannedNodes, Node depot, XFVRPModel model, StatusManager statusManager) {
-		if (unplannedNodes.size() == 0)
+	protected Solution buildSolutionForInvalidNodes(List<Node> unplannedNodes, Node depot, XFVRPModel model, StatusManager statusManager) {
+		if(unplannedNodes.size() == 0)
 			return getSolution(null, null);
-
-		Node[] giantRoute = new Node[unplannedNodes.size() * 2 + 2];
 
 		// Cluster blocked nodes
 		List<Node> unplannedSingles = new ArrayList<>();
 		ListMap<Integer, Node> unplannedBlocks = ListMap.create();
 		unplannedNodes.forEach(node -> {
-			if (node.getPresetBlockIdx() != BlockNameConverter.DEFAULT_BLOCK_IDX)
+			if(node.getPresetBlockIdx() != BlockNameConverter.DEFAULT_BLOCK_IDX)
 				unplannedBlocks.put(node.getPresetBlockIdx(), node);
 			else
 				unplannedSingles.add(node);
@@ -188,7 +180,7 @@ public abstract class MixedFleetHeuristicBase {
 			invalidRoutes.add(route);
 		}
 
-		return getSolution(Arrays.copyOf(giantRoute, i), model);
+		return getSolution(invalidRoutes.toArray(new Node[0][]), model);
 	}
 
 	protected List<Node> getCustomers(List<Node> allNodes) {
@@ -199,22 +191,16 @@ public abstract class MixedFleetHeuristicBase {
 
 	public ReportBuilder getReportBuilder() {
 		return reportBuilder;
-		return getSolution(invalidRoutes.toArray(new Node[0][]), model);
 	}
 
 	private Solution getSolution(Node[][] routes, XFVRPModel model) {
 		if(routes == null)
 			routes = new Node[0][0];
-	private Solution getSolution(Node[] giantRoute, XFVRPModel model) {
-		if (giantRoute == null)
-			giantRoute = new Node[0];
 
 		Solution solution = new Solution(model);
 		for (Node[] route : routes) {
 			solution.addRoute(route);
 		}
-		Solution solution = new Solution(model);
-		solution.setGiantRoute(giantRoute);
 		return solution;
 	}
 

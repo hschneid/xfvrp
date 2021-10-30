@@ -75,7 +75,7 @@ public class XFVRP extends XFVRPData {
 			throw new XFVRPException(XFVRPExceptionType.ILLEGAL_INPUT, "No vehicle information are present.");
 		}
 
-		List<XFVRPSolution> solutions = getParameters()
+		List<Solution> solutions = getParameters()
 				.getMixedFleetHeuristic()
 				.execute(
 						nodes,

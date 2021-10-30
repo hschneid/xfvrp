@@ -36,14 +36,6 @@ public class Solution implements Iterable<Node[]> {
 		return model;
 	}
 
-	public Solution(XFVRPModel model) {
-		this.model = model;
-	}
-
-	public XFVRPModel getModel() {
-		return model;
-	}
-
 	public Node[][] getRoutes() {
 		return routes;
 	}

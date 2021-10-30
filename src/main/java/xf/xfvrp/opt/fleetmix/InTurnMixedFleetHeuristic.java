@@ -11,7 +11,7 @@ import xf.xfvrp.base.metric.Metric;
 import xf.xfvrp.base.monitor.StatusCode;
 import xf.xfvrp.base.monitor.StatusManager;
 import xf.xfvrp.base.preset.VehiclePriorityInitialiser;
-import xf.xfvrp.opt.XFVRPSolution;
+import xf.xfvrp.opt.Solution;
 import xf.xfvrp.report.Report;
 import xf.xfvrp.report.RouteReport;
 
@@ -25,13 +25,13 @@ import java.util.stream.Collectors;
  */
 public class InTurnMixedFleetHeuristic extends MixedFleetHeuristicBase implements IMixedFleetHeuristic {
 
-	private List<XFVRPSolution> vehicleSolutions;
+	private List<Solution> vehicleSolutions;
 	private String fallbackVehicleName;
 	private Vehicle fallbackVehicle;
 	
 	@Override
-	public List<XFVRPSolution> execute(Node[] nodes, CompartmentType[] compartmentTypes, Vehicle[] vehicles, RoutePlanningFunction routePlanningFunction,
-									   Metric metric, XFVRPParameter parameter, StatusManager statusManager)
+	public List<Solution> execute(Node[] nodes, CompartmentType[] compartmentTypes, Vehicle[] vehicles, RoutePlanningFunction routePlanningFunction,
+								  Metric metric, XFVRPParameter parameter, StatusManager statusManager)
 	throws XFVRPException {
 		List<Node> unplannedNodes = Arrays.asList(nodes);
 		
@@ -66,7 +66,7 @@ public class InTurnMixedFleetHeuristic extends MixedFleetHeuristicBase implement
 		}
 		
 		// Insert invalid and unplanned nodes into solution
-		XFVRPSolution unplannedNodesSolution = insertUnplannedNodes(unplannedNodes, compartmentTypes, metric, parameter, statusManager);
+		Solution unplannedNodesSolution = insertUnplannedNodes(unplannedNodes, compartmentTypes, metric, parameter, statusManager);
 		if(unplannedNodesSolution != null)
 			vehicleSolutions.add(unplannedNodesSolution);
 		
@@ -75,7 +75,7 @@ public class InTurnMixedFleetHeuristic extends MixedFleetHeuristicBase implement
 	
 	private List<Node> route(RoutePlanningFunction routePlanningFunction, List<Node> unplannedNodes, CompartmentType[] compartmentTypes, Vehicle instance) {
 		// Optimize all nodes with current vehicle type
-		XFVRPSolution solution = routePlanningFunction.apply(new RoutingDataBag(unplannedNodes.toArray(new Node[0]), compartmentTypes, instance));
+		Solution solution = routePlanningFunction.apply(new RoutingDataBag(unplannedNodes.toArray(new Node[0]), compartmentTypes, instance));
 		
 		// Point out best routes for this vehicle type
 		InTurnMixedFleetSelector selector = getSelector();

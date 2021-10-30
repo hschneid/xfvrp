@@ -13,7 +13,7 @@ class XFVRPOptSplitterIntSpec extends Specification {
 
 	def "Optimize with activated route splitting"() {
 		XFVRP xfvrp = build()
-		xfvrp.allowsRoutePlanSplitting()
+		xfvrp.parameters.isRouteSplittingAllowed()
 
 		when:
 		xfvrp.executeRoutePlanning()
