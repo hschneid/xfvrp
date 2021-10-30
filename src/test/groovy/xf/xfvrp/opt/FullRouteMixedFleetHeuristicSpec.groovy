@@ -1,6 +1,5 @@
 package xf.xfvrp.opt
 
-
 import spock.lang.Specification
 import util.instances.TestNode
 import util.instances.TestVehicle
@@ -10,11 +9,9 @@ import xf.xfvrp.base.compartment.CompartmentInitializer
 import xf.xfvrp.base.compartment.CompartmentLoadBuilder
 import xf.xfvrp.base.compartment.CompartmentType
 import xf.xfvrp.base.metric.Metric
-import xf.xfvrp.base.metric.internal.AcceleratedMetric
 import xf.xfvrp.base.monitor.StatusManager
 import xf.xfvrp.base.preset.BlockNameConverter
 import xf.xfvrp.opt.evaluation.Context
-import xf.xfvrp.opt.evaluation.ContextBuilder
 import xf.xfvrp.opt.fleetmix.DefaultMixedFleetHeuristic
 import xf.xfvrp.report.Event
 import xf.xfvrp.report.RouteReport

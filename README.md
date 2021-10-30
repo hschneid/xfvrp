@@ -1,6 +1,6 @@
 [![MIT License](https://img.shields.io/apm/l/atomic-design-ui.svg?)](https://github.com/tterb/atomic-design-ui/blob/master/LICENSEs)
 [![BCH compliance](https://bettercodehub.com/edge/badge/hschneid/xfvrp?branch=master)](https://bettercodehub.com/)
-![alt text](https://img.shields.io/static/v1?label=version&message=11.4.4.1&color=-)
+![alt text](https://img.shields.io/static/v1?label=version&message=11.4.5&color=-)
 
 xfvrp
 ======
@@ -71,6 +71,7 @@ As a general purpose solver, XFVRP is not fully compatable with single problem s
   In example, a compartment is declared, where only pickups shall happen. But the vehicle capacity is declared with 3 compartments, so 2 additional compartments are added with default compartment.
   The demand of the customer has only 2 compartments declared, which means, that third compartment is filled with default value = 0.
 - Reverted some of the changes for compartments from 11.4.0 due to many side-effects. If someone needs this feature, please ping us.
+- More refactorings due to giant route
 
 ### 11.4.4.1
 - Introduced new Mixed Fleet Heuristic
