@@ -1,8 +1,8 @@
-package xf.xfvrp.opt;
+package xf.xfvrp.opt.fleetmix;
 
 import util.collection.ListMap;
-import xf.xfvrp.RoutingDataBag;
 import xf.xfvrp.base.*;
+import xf.xfvrp.base.compartment.CompartmentType;
 import xf.xfvrp.base.exception.XFVRPException;
 import xf.xfvrp.base.fleximport.InvalidVehicle;
 import xf.xfvrp.base.metric.InternalMetric;
@@ -11,83 +11,38 @@ import xf.xfvrp.base.metric.internal.AcceleratedMetricTransformator;
 import xf.xfvrp.base.monitor.StatusCode;
 import xf.xfvrp.base.monitor.StatusManager;
 import xf.xfvrp.base.preset.BlockNameConverter;
-import xf.xfvrp.base.preset.VehiclePriorityInitialiser;
+import xf.xfvrp.opt.Solution;
+import xf.xfvrp.opt.XFVRPSolution;
+import xf.xfvrp.opt.fleetmix.IMixedFleetHeuristic.RoutePlanningFunction;
 import xf.xfvrp.report.Event;
 import xf.xfvrp.report.RouteReport;
 import xf.xfvrp.report.build.ReportBuilder;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-/**
- * Copyright (c) 2012-2021 Holger Schneider
- * All rights reserved.
- *
- * This source code is licensed under the MIT License (MIT) found in the
- * LICENSE file in the root directory of this source tree.
- *
- * Mixed fleet heuristic
- *
- * Choose biggest vehicle type and optimize with no
- * fleet size limitation. Afterwards the k best
- * routes are chosen. The customers on the trashed
- * routes are the base for the next run with next
- * vehicle type.
- *
- * @author hschneid
- *
- */
-public class FullRouteMixedFleetHeuristic {
+public abstract class MixedFleetHeuristicBase {
 
-	private FullRouteMixedFleetSelector selector = new FullRouteMixedFleetSelector();
 	private final ReportBuilder reportBuilder = new ReportBuilder();
 
-	public List<Solution> execute(
+	public abstract IMixedFleetSelector getSelector();
+
+	public abstract List<Solution> execute(
 			Node[] nodes,
+			CompartmentType[] compartmentTypes,
 			Vehicle[] vehicles,
-			Function<RoutingDataBag, Solution> routePlanningFunction,
+			RoutePlanningFunction routePlanningFunction,
 			Metric metric,
 			XFVRPParameter parameter,
-			StatusManager statusManager) throws XFVRPException {
-		List<Node> unplannedNodes = Arrays.asList(nodes);
-
-		vehicles = VehiclePriorityInitialiser.execute(vehicles);
-
-		List<Solution> vehicleSolutions = new ArrayList<>();
-		for (Vehicle veh : vehicles) {
-			statusManager.fireMessage(StatusCode.RUNNING, "Run with vehicle "+veh.name+" started.");
-
-			// Optimize all nodes with current vehicle type
-			Solution solution = routePlanningFunction.apply(new RoutingDataBag(unplannedNodes.toArray(new Node[0]), veh));
-
-			// Point out best routes for this vehicle type
-			List<RouteReport> bestRoutes = selector.getBestRoutes(veh, reportBuilder.getReport(solution));
-
-			if(bestRoutes.size() > 0) {
-				// Add selected routes to overall best solution
-				vehicleSolutions.add(reconstructSolution(bestRoutes, solution.getModel()));
-
-				// Remove customers from best routes for next planning stage
-				unplannedNodes = getUnusedNodes(bestRoutes, unplannedNodes);
-			}
-		}
-
-		// Insert invalid and unplanned nodes into solution
-		Solution unplannedNodesSolution = insertUnplannedNodes(unplannedNodes, metric, parameter, statusManager);
-		if(unplannedNodesSolution != null)
-			vehicleSolutions.add(unplannedNodesSolution);
-
-		return vehicleSolutions;
-	}
+			StatusManager statusManager) throws XFVRPException;
 
 	/**
 	 * This method removes customers which are found in the given solution
 	 * from the nodeList object, which is managed by executeRoutePlanning() method.
 	 */
-	private List<Node> getUnusedNodes(List<RouteReport> routes, List<Node> unplannedNodes) {
+	protected List<Node> getUnusedNodes(List<RouteReport> routes, List<Node> unplannedNodes) {
 		Map<String, Node> nodeIdxMap = unplannedNodes.stream().collect(Collectors.toMap(Node::getExternID, node -> node, (v1, v2) -> v1));
 
 		List<Node> usedNodes = routes.stream()
@@ -106,7 +61,7 @@ public class FullRouteMixedFleetHeuristic {
 	/**
 	 * This method transforms an optimization result (report) into an input for new optimization
 	 */
-	private Solution reconstructSolution(List<RouteReport> routes, XFVRPModel model) {
+	protected XFVRPSolution reconstructGiantRoute(List<RouteReport> routes, XFVRPModel model) {
 		Map<String, Node> nodeMap = Arrays.stream(model.getNodes()).collect(Collectors.toMap(Node::getExternID, node -> node, (v1, v2) -> v1));
 
 		// Remove empty routes
@@ -131,24 +86,22 @@ public class FullRouteMixedFleetHeuristic {
 					.toArray(Node[]::new);
 		}
 
-		return getSolution(newRoutes, model);
+		return new XFVRPSolution(getSolution(giantRoute, model));
 	}
 
-	private Solution insertUnplannedNodes(
+	protected XFVRPSolution insertUnplannedNodes(
 			List<Node> unplannedNodes,
+			CompartmentType[] compartmentTypes,
 			Metric metric,
 			XFVRPParameter parameter,
 			StatusManager statusManager) throws XFVRPException {
-
-		// Get unplanned or invalid nodes
-		List<Node> unplannedCustomers = unplannedNodes.stream()
-				.filter(n -> n.getSiteType() == SiteType.CUSTOMER)
-				.collect(Collectors.toList());
-
-		if(unplannedCustomers.size() == 0) {
-			statusManager.fireMessage(StatusCode.RUNNING, "Invalid or unplanned nodes are inserted in result. (nbr of invalid nodes = 0)");
+		// Get unplanned or invalid customers
+		List<Node> unplannedCustomers = getCustomers(unplannedNodes);
+		if (unplannedCustomers.size() == 0) {
 			return null;
 		}
+
+		statusManager.fireMessage(StatusCode.RUNNING, String.format("Invalid or unplanned nodes are inserted in result. (nbr of invalid nodes = %d)", unplannedCustomers.size()));
 
 		// Set unplanned reason, for valid nodes
 		unplannedCustomers.stream()
@@ -161,37 +114,43 @@ public class FullRouteMixedFleetHeuristic {
 		IntStream.range(0, nodes.length).forEach(i -> nodes[i].setIdx(i));
 		XFVRPModel model = createModelForInvalids(metric, parameter, unplannedCustomers, nodes);
 
-		return buildSolutionForInvalidNodes(unplannedCustomers, nodes[0], model, statusManager);
-	}
-
-	private XFVRPModel createModelForInvalids(Metric metric, XFVRPParameter parameter, List<Node> unplannedCustomers, Node[] nodes) {
 		Vehicle invalidVehicle = InvalidVehicle.createInvalid(unplannedCustomers.get(0).getDemand().length);
 		InternalMetric internalMetric = AcceleratedMetricTransformator.transform(metric, nodes, invalidVehicle);
-		return new XFVRPModel(
+
+		XFVRPModel model = new XFVRPModel(
 				nodes,
+				compartmentTypes,
 				internalMetric,
 				internalMetric,
 				invalidVehicle,
 				parameter
 		);
+
+		Solution solution = buildGiantRouteForInvalidNodes(unplannedCustomers, nodes[0], model, statusManager);
+
+		return new XFVRPSolution(
+				solution
+        );
 	}
 
 	/**
 	 * Invalid customers are excluded from optimization. Afterwards they
 	 * have to be included to the result. This method builds a solution with
-	 * the excluded customer nodes. 
+	 * the excluded customer nodes.
 	 * For a given set of invalid nodes, a new route is created, where each invalid
 	 * node is on a single route.
 	 */
-	private Solution buildSolutionForInvalidNodes(List<Node> unplannedNodes, Node depot, XFVRPModel model, StatusManager statusManager) {
-		if(unplannedNodes.size() == 0)
+	public Solution buildGiantRouteForInvalidNodes(List<Node> unplannedNodes, Node depot, XFVRPModel model, StatusManager statusManager) {
+		if (unplannedNodes.size() == 0)
 			return getSolution(null, null);
+
+		Node[] giantRoute = new Node[unplannedNodes.size() * 2 + 2];
 
 		// Cluster blocked nodes
 		List<Node> unplannedSingles = new ArrayList<>();
 		ListMap<Integer, Node> unplannedBlocks = ListMap.create();
 		unplannedNodes.forEach(node -> {
-			if(node.getPresetBlockIdx() != BlockNameConverter.DEFAULT_BLOCK_IDX)
+			if (node.getPresetBlockIdx() != BlockNameConverter.DEFAULT_BLOCK_IDX)
 				unplannedBlocks.put(node.getPresetBlockIdx(), node);
 			else
 				unplannedSingles.add(node);
@@ -229,17 +188,33 @@ public class FullRouteMixedFleetHeuristic {
 			invalidRoutes.add(route);
 		}
 
+		return getSolution(Arrays.copyOf(giantRoute, i), model);
+	}
+
+	protected List<Node> getCustomers(List<Node> allNodes) {
+		return allNodes.stream()
+				.filter(n -> n.getSiteType() == SiteType.CUSTOMER)
+				.collect(Collectors.toList());
+	}
+
+	public ReportBuilder getReportBuilder() {
+		return reportBuilder;
 		return getSolution(invalidRoutes.toArray(new Node[0][]), model);
 	}
 
 	private Solution getSolution(Node[][] routes, XFVRPModel model) {
 		if(routes == null)
 			routes = new Node[0][0];
+	private Solution getSolution(Node[] giantRoute, XFVRPModel model) {
+		if (giantRoute == null)
+			giantRoute = new Node[0];
 
 		Solution solution = new Solution(model);
 		for (Node[] route : routes) {
 			solution.addRoute(route);
 		}
+		Solution solution = new Solution(model);
+		solution.setGiantRoute(giantRoute);
 		return solution;
 	}
 

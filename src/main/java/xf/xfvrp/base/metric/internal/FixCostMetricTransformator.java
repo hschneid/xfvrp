@@ -46,7 +46,7 @@ public class FixCostMetricTransformator {
 						(srcType == SiteType.DEPOT && dstType != SiteType.DEPOT) ||
 						(srcType != SiteType.DEPOT && dstType == SiteType.DEPOT)
 						) {
-					dist += vehicle.fixCost;
+					dist += vehicle.getFixCost();
 				}
 				
 				optMetric.setDistance(src, dst, dist);

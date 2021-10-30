@@ -8,20 +8,20 @@ import xf.xfvrp.opt.improve.routebased.move.XFVRPMoveUtil
 
 class XFVRPMoveUtilNodeMoveSpec extends Specification {
 
-	def n1 = new Node(externID: "1", siteType: SiteType.DEPOT);
-	def n2 = new Node(externID: "2", siteType: SiteType.CUSTOMER);
-	def n3 = new Node(externID: "3", siteType: SiteType.CUSTOMER);
-	def n4 = new Node(externID: "4", siteType: SiteType.DEPOT);
-	def n5 = new Node(externID: "5", siteType: SiteType.CUSTOMER);
-	def n6 = new Node(externID: "6", siteType: SiteType.CUSTOMER);
-	def n7 = new Node(externID: "7", siteType: SiteType.DEPOT);
+	def n1 = new Node(externID: "1", siteType: SiteType.DEPOT)
+	def n2 = new Node(externID: "2", siteType: SiteType.CUSTOMER)
+	def n3 = new Node(externID: "3", siteType: SiteType.CUSTOMER)
+	def n4 = new Node(externID: "4", siteType: SiteType.DEPOT)
+	def n5 = new Node(externID: "5", siteType: SiteType.CUSTOMER)
+	def n6 = new Node(externID: "6", siteType: SiteType.CUSTOMER)
+	def n7 = new Node(externID: "7", siteType: SiteType.DEPOT)
 
 	def "Regular move - between 2 routes"() {
 		def sol = new Solution()
 		sol.setGiantRoute([n1, n2, n3, n4, n5, n6, n7] as Node[])
 
 		when:
-		XFVRPMoveUtil.move(sol, 0, 1, 1, 1, 2);
+		XFVRPMoveUtil.move(sol, 0, 1, 1, 1, 2)
 		def result = sol.getGiantRoute()
 		
 		then:
@@ -39,7 +39,7 @@ class XFVRPMoveUtilNodeMoveSpec extends Specification {
 		sol.setGiantRoute([n1, n2, n3, n4, n5, n6, n7] as Node[])
 
 		when:
-		XFVRPMoveUtil.move(sol, 0, 0, 1, 1, 3);
+		XFVRPMoveUtil.move(sol, 0, 0, 1, 1, 3)
 		def result = sol.getGiantRoute()
 
 		then:
@@ -57,7 +57,7 @@ class XFVRPMoveUtilNodeMoveSpec extends Specification {
 		sol.setGiantRoute([n1, n2, n3, n5, n6, n7] as Node[])
 
 		when:
-		XFVRPMoveUtil.move(sol, 0, 0, 3, 3, 1);
+		XFVRPMoveUtil.move(sol, 0, 0, 3, 3, 1)
 		def result = sol.getGiantRoute()
 
 		then:
@@ -74,7 +74,7 @@ class XFVRPMoveUtilNodeMoveSpec extends Specification {
 		sol.setGiantRoute([n1, n2, n3, n4, n5, n6, n7] as Node[])
 
 		when:
-		XFVRPMoveUtil.move(sol, 0, 0, 1, 1, 1);
+		XFVRPMoveUtil.move(sol, 0, 0, 1, 1, 1)
 		def result = sol.getGiantRoute()
 
 		then:
@@ -92,7 +92,7 @@ class XFVRPMoveUtilNodeMoveSpec extends Specification {
 		sol.setGiantRoute([n1, n2, n3, n4, n5, n6, n7] as Node[])
 
 		when:
-		XFVRPMoveUtil.move(sol, 0, 0, 1, 1, 2);
+		XFVRPMoveUtil.move(sol, 0, 0, 1, 1, 2)
 		def result = sol.getGiantRoute()
 
 		then:
@@ -110,7 +110,7 @@ class XFVRPMoveUtilNodeMoveSpec extends Specification {
 		sol.setGiantRoute([n1, n2, n3, n4, n5, n6, n7] as Node[])
 
 		when:
-		XFVRPMoveUtil.move(sol, 0, 1, 0, 0, 2);
+		XFVRPMoveUtil.move(sol, 0, 1, 0, 0, 2)
 
 		then:
 		thrown(XFVRPException)
@@ -121,7 +121,7 @@ class XFVRPMoveUtilNodeMoveSpec extends Specification {
 		sol.setGiantRoute([n1, n2, n3, n4, n5, n6, n7] as Node[])
 
 		when:
-		XFVRPMoveUtil.move(sol, 0, 1, 2, 2, 0);
+		XFVRPMoveUtil.move(sol, 0, 1, 2, 2, 0)
 
 		then:
 		thrown(XFVRPException)

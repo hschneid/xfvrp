@@ -3,9 +3,11 @@ package xf.xfvrp.opt.improve.routebased.swap
 import spock.lang.Specification
 import util.instances.TestNode
 import util.instances.TestVehicle
-import xf.xfvrp.base.*
-import xf.xfvrp.base.metric.EucledianMetric
-import xf.xfvrp.base.metric.internal.AcceleratedMetricTransformator
+import util.instances.TestXFVRPModel
+import xf.xfvrp.base.LoadType
+import xf.xfvrp.base.Node
+import xf.xfvrp.base.SiteType
+import xf.xfvrp.base.XFVRPModel
 import xf.xfvrp.opt.Solution
 
 class XFVRPSegmentSwapTest extends Specification {
@@ -15,9 +17,6 @@ class XFVRPSegmentSwapTest extends Specification {
     def singleService = new XFVRPSingleSwap()
 
     def sol
-
-    def parameter = new XFVRPParameter()
-    def metric = new EucledianMetric()
 
     def "improve by segment swap"() {
         def model = initScen()
@@ -180,8 +179,6 @@ class XFVRPSegmentSwapTest extends Specification {
 
         def nodes = [nd, nd2, n1, n2, n3, n4, n5, n6] as Node[]
 
-        def iMetric = new AcceleratedMetricTransformator().transform(metric, nodes, v)
-
-        return new XFVRPModel(nodes, iMetric, iMetric, v, parameter)
+        return TestXFVRPModel.get(Arrays.asList(nodes), v)
     }
 }

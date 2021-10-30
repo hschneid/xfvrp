@@ -3,7 +3,10 @@ package xf.xfvrp.opt.evaluation
 import spock.lang.Specification
 import util.instances.TestNode
 import util.instances.TestVehicle
+import util.instances.TestXFVRPModel
 import xf.xfvrp.base.*
+import xf.xfvrp.base.compartment.CompartmentInitializer
+import xf.xfvrp.base.compartment.CompartmentType
 import xf.xfvrp.base.metric.EucledianMetric
 import xf.xfvrp.base.metric.internal.AcceleratedMetricTransformator
 import xf.xfvrp.base.monitor.StatusManager
@@ -13,7 +16,7 @@ import xf.xfvrp.opt.init.ModelBuilder
 class EvaluationServicePresetsSpec extends Specification {
 
 	def statusManager = Stub StatusManager
-	def service = new EvaluationService();
+	def service = new EvaluationService()
 
 	def nd = new TestNode(
 	externID: "DEP",
@@ -33,7 +36,7 @@ class EvaluationServicePresetsSpec extends Specification {
 		timeWindow: [[0,99],[2,99]]
 		).getNode()
 
-	def sol;
+	def sol
 
 	def parameter = new XFVRPParameter()
 
@@ -44,11 +47,11 @@ class EvaluationServicePresetsSpec extends Specification {
 		def model = initScen(v, [2, 2, 3] as int[])
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[1], n[2], n[3], nd] as Node[])
 
 		when:
-		def result = service.check(sol, model)
+		def result = service.check(sol)
 
 		then:
 		result != null
@@ -61,11 +64,11 @@ class EvaluationServicePresetsSpec extends Specification {
 		def model = initScen(v, [2, 2, 3] as int[])
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[1], n[3], nd, n[2], nd] as Node[])
 
 		when:
-		def result = service.check(sol, model)
+		def result = service.check(sol)
 
 		then:
 		result != null
@@ -73,16 +76,16 @@ class EvaluationServicePresetsSpec extends Specification {
 		Math.abs(result.getCost() - 6.242) < 0.001
 	}
 	
-	def "Block Count Preset - Not Okay"() {
+	def "Solution does not contain full block in route"() {
 		def v = new TestVehicle(name: "V1", capacity: [3, 3]).getVehicle()
 		def model = initScen(v, [2, 2, 3] as int[])
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[1], n[3], nd] as Node[])
 
 		when:
-		def result = service.check(sol, model)
+		def result = service.check(sol)
 
 		then:
 		result != null
@@ -95,11 +98,11 @@ class EvaluationServicePresetsSpec extends Specification {
 		def model = initScenWithRanks(v, [2, 3, 2] as int[], [1, 1, 2] as int[])
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[1], n[2], n[3], nd] as Node[])
 
 		when:
-		def result = service.check(sol, model)
+		def result = service.check(sol)
 
 		then:
 		result != null
@@ -112,11 +115,11 @@ class EvaluationServicePresetsSpec extends Specification {
 		def model = initScenWithRanks(v, [2, 3, 2] as int[], [2, 1, 1] as int[])
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[1], n[2], n[3], nd] as Node[])
 
 		when:
-		def result = service.check(sol, model)
+		def result = service.check(sol)
 
 		then:
 		result != null
@@ -129,11 +132,11 @@ class EvaluationServicePresetsSpec extends Specification {
 		def model = initScenWithPos(v, [2, 2, 2] as int[], [1, 2, 3] as int[])
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[1], n[2], n[3], nd] as Node[])
 
 		when:
-		def result = service.check(sol, model)
+		def result = service.check(sol)
 
 		then:
 		result != null
@@ -146,11 +149,11 @@ class EvaluationServicePresetsSpec extends Specification {
 		def model = initScenWithPos(v, [2, 3, 2] as int[], [2, 1, 3] as int[])
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[1], n[2], n[3], nd] as Node[])
 
 		when:
-		def result = service.check(sol, model)
+		def result = service.check(sol)
 
 		then:
 		result != null
@@ -163,11 +166,11 @@ class EvaluationServicePresetsSpec extends Specification {
 		def model = initScenWithPos(v, [0, 3, 0] as int[], [2, 1, 3] as int[])
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[1], n[2], n[3], nd] as Node[])
 
 		when:
-		def result = service.check(sol, model)
+		def result = service.check(sol)
 
 		then:
 		result != null
@@ -180,11 +183,11 @@ class EvaluationServicePresetsSpec extends Specification {
 		def model = initScenWithPos(v, [2, 2, 2] as int[], [1, 3, 2] as int[])
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[1], n[2], n[3], nd] as Node[])
 
 		when:
-		def result = service.check(sol, model)
+		def result = service.check(sol)
 
 		then:
 		result != null
@@ -197,11 +200,11 @@ class EvaluationServicePresetsSpec extends Specification {
 		def model = initScenWithDepots(v, [0, 4, 0] as int[])
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], nd2, n[3], nd, n[4], nd] as Node[])
 
 		when:
-		def result = service.check(sol, model)
+		def result = service.check(sol)
 
 		then:
 		result != null
@@ -214,11 +217,11 @@ class EvaluationServicePresetsSpec extends Specification {
 		def model = initScenWithDepots(v, [0, 0, 4] as int[])
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], nd2, n[3], nd, n[4], nd] as Node[])
 
 		when:
-		def result = service.check(sol, model)
+		def result = service.check(sol)
 
 		then:
 		result != null
@@ -231,11 +234,11 @@ class EvaluationServicePresetsSpec extends Specification {
 		def model = initScenWithVehicles(v, [1, 1, 1] as int[])
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[1], n[2], n[3], nd] as Node[])
 
 		when:
-		def result = service.check(sol, model)
+		def result = service.check(sol)
 
 		then:
 		result != null
@@ -248,11 +251,11 @@ class EvaluationServicePresetsSpec extends Specification {
 		def model = initScenWithVehicles(v, [1, 2, 1] as int[])
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[1], n[2], n[3], nd] as Node[])
 
 		when:
-		def result = service.check(sol, model)
+		def result = service.check(sol)
 
 		then:
 		result != null
@@ -265,11 +268,11 @@ class EvaluationServicePresetsSpec extends Specification {
 		def model = initScenWithBlackNodes(v, [-1, 3, 2] as int[])
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[1], n[2], nd, n[3], nd] as Node[])
 
 		when:
-		def result = service.check(sol, model)
+		def result = service.check(sol)
 
 		then:
 		result != null
@@ -282,11 +285,11 @@ class EvaluationServicePresetsSpec extends Specification {
 		def model = initScenWithBlackNodes(v, [-1, 3, 2] as int[])
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[1], n[2], n[3], nd] as Node[])
 
 		when:
-		def result = service.check(sol, model)
+		def result = service.check(sol)
 
 		then:
 		result != null
@@ -365,16 +368,17 @@ class EvaluationServicePresetsSpec extends Specification {
 				loadType: LoadType.DELIVERY)
 				.getNode()
 
-		nd.setIdx(0);
-		n1.setIdx(1);
-		n2.setIdx(2);
-		n3.setIdx(3);
+		nd.setIdx(0)
+		n1.setIdx(1)
+		n2.setIdx(2)
+		n3.setIdx(3)
 
-		def nodes = [nd, n1, n2, n3] as Node[];
+		def nodes = [nd, n1, n2, n3] as Node[]
 
-		def iMetric = new AcceleratedMetricTransformator().transform(metric, nodes, v);
+		List<CompartmentType> types = new ArrayList<>()
+		CompartmentInitializer.check(nodes, types, new Vehicle[]{v})
 
-		return new ModelBuilder().build(nodes, v, metric, parameter, statusManager)
+		return new ModelBuilder().build(nodes, types.toArray(new CompartmentType[0]), v, metric, parameter, new StatusManager())
 	}
 	
 	XFVRPModel initMultiDepotScenAbstract(Vehicle v, int[] presetBlocks, int[] presetRanks, int[] presetPos, int[] presetDepots) {
@@ -427,10 +431,10 @@ class EvaluationServicePresetsSpec extends Specification {
 		n2.setIdx(3)
 		n3.setIdx(4)
 
-		def nodes = [nd, nd2, n1, n2, n3] as Node[];
+		def nodes = [nd, nd2, n1, n2, n3] as Node[]
 
-		def iMetric = new AcceleratedMetricTransformator().transform(metric, nodes, v);
+		def iMetric = new AcceleratedMetricTransformator().transform(metric, nodes, v)
 
-		return new XFVRPModel(nodes, iMetric, iMetric, v, parameter)
+		return TestXFVRPModel.get(nodes, iMetric, iMetric, v, parameter)
 	}
 }

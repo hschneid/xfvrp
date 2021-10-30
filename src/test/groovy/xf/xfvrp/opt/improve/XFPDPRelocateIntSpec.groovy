@@ -3,6 +3,7 @@ package xf.xfvrp.opt.improve
 import spock.lang.Specification
 import util.instances.TestNode
 import util.instances.TestVehicle
+import util.instances.TestXFVRPModel
 import xf.xfvrp.base.*
 import xf.xfvrp.base.fleximport.CustomerData
 import xf.xfvrp.base.metric.EucledianMetric
@@ -37,13 +38,13 @@ class XFPDPRelocateIntSpec extends Specification {
 		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[1], n[2], nd, n[3], n[4], nd] as Node[])
 
-		def currentQuality = evalService.check(sol, model)
+		def currentQuality = evalService.check(sol)
 		
 		when:
 		def newQuality = service.improve(sol, currentQuality)
 		
-		sol = NormalizeSolutionService.normalizeRoute(sol, model)
-		def checkedQuality = evalService.check(sol, model)
+		sol = NormalizeSolutionService.normalizeRoute(sol)
+		def checkedQuality = evalService.check(sol)
 		def newGiantRoute = sol.getGiantRoute()
 		
 		then:
@@ -153,7 +154,9 @@ class XFPDPRelocateIntSpec extends Specification {
 		def iMetric = new AcceleratedMetricTransformator().transform(metric, nodes, v)
 		new ShipmentConverter().convert(nodes, customers)
 
-		return new XFVRPModel(nodes, iMetric, iMetric, v, parameter)
+		parameter.setWithPDP(true)
+
+		return TestXFVRPModel.get(nodes, iMetric, iMetric, v, parameter)
 	}
 
 }

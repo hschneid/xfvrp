@@ -1,6 +1,8 @@
 package xf.xfvrp.opt.init.check.vrp;
 
-import xf.xfvrp.base.*;
+import xf.xfvrp.base.InvalidReason;
+import xf.xfvrp.base.Node;
+import xf.xfvrp.base.XFVRPModel;
 import xf.xfvrp.base.exception.XFVRPException;
 import xf.xfvrp.base.exception.XFVRPExceptionType;
 import xf.xfvrp.base.preset.BlockPositionConverter;
@@ -66,7 +68,7 @@ public class CheckCustomerService {
 
 			// Check route duration with this customer
 			float time = travelTime + travelTime2 + cust.getServiceTime();
-			if(time > model.getVehicle().maxRouteDuration){
+			if(time > model.getVehicle().getMaxRouteDuration()){
 				cust.setInvalidReason(InvalidReason.TRAVEL_TIME, "Customer " + cust.getExternID() + " - Traveltime required: " + time);
 				continue;
 			}
@@ -92,13 +94,11 @@ public class CheckCustomerService {
 
 	private boolean checkDemands(Node cust, XFVRPModel model) {
 		float[] demands = cust.getDemand();
-		float[] capacities = model.getVehicle().capacity;
+		float[] capacities = model.getVehicle().getCapacity();
 
-		int length = Math.min(demands.length, (capacities.length / CompartmentLoadType.NBR_OF_LOAD_TYPES));
+		int length = Math.min(demands.length, capacities.length);
 		for (int compartment = 0; compartment < length; compartment++) {
-			int loadType = (cust.getLoadType() == LoadType.DELIVERY) ? CompartmentLoadType.DELIVERY.index() :
-					(cust.getLoadType() == LoadType.PICKUP) ? CompartmentLoadType.PICKUP.index() : -1;
-			float capacity = capacities[compartment * CompartmentLoadType.NBR_OF_LOAD_TYPES + loadType];
+			float capacity = capacities[compartment];
 			if(demands[compartment] > capacity) {
 				cust.setInvalidReason(
 						InvalidReason.CAPACITY,

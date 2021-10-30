@@ -3,6 +3,7 @@ package xf.xfvrp.opt.init.check.vrp
 import spock.lang.Specification
 import util.instances.TestNode
 import util.instances.TestVehicle
+import util.instances.TestXFVRPModel
 import xf.xfvrp.base.InvalidReason
 import xf.xfvrp.base.Node
 import xf.xfvrp.base.SiteType
@@ -13,7 +14,7 @@ import xf.xfvrp.opt.init.solution.vrp.SolutionBuilderDataBag
 class CheckCustomerServiceSpec extends Specification {
 
 	def modelStub = Stub XFVRPModel
-	def service = new CheckCustomerService();
+	def service = new CheckCustomerService()
 
 	def "Check presets - Okay"() {
 		def customer = new TestNode(
@@ -22,13 +23,13 @@ class CheckCustomerServiceSpec extends Specification {
 				presetBlockIdx: 1,
 				presetBlockRank: 2,
 				presetBlockPos: 2
-				).getNode();
+				).getNode()
 
 		def dataBag = new SolutionBuilderDataBag()
 		dataBag.knownSequencePositions = [1] as Set<Integer>
 
 		when:
-		def result = service.checkPresets(customer, dataBag)
+		service.checkPresets(customer, dataBag)
 		then:
 		noExceptionThrown()
 	}
@@ -40,13 +41,13 @@ class CheckCustomerServiceSpec extends Specification {
 				presetBlockIdx: 1,
 				presetBlockRank: 2,
 				presetBlockPos: -1
-				).getNode();
+				).getNode()
 
 		def dataBag = new SolutionBuilderDataBag()
 		dataBag.knownSequencePositions = [1] as Set<Integer>
 
 		when:
-		def result = service.checkPresets(customer, dataBag)
+		service.checkPresets(customer, dataBag)
 		then:
 		thrown XFVRPException
 	}
@@ -58,12 +59,12 @@ class CheckCustomerServiceSpec extends Specification {
 				presetBlockIdx: 1,
 				presetBlockRank: -1,
 				presetBlockPos: 2
-				).getNode();
+				).getNode()
 
 		def dataBag = new SolutionBuilderDataBag()
 
 		when:
-		def result = service.checkPresets(customer, dataBag)
+		service.checkPresets(customer, dataBag)
 		then:
 		thrown XFVRPException
 	}
@@ -75,13 +76,13 @@ class CheckCustomerServiceSpec extends Specification {
 				presetBlockIdx: 1,
 				presetBlockRank: 2,
 				presetBlockPos: 2
-				).getNode();
+				).getNode()
 
 		def dataBag = new SolutionBuilderDataBag()
 		dataBag.knownSequencePositions = [2] as Set<Integer>
 
 		when:
-		def result = service.checkPresets(customer, dataBag)
+		service.checkPresets(customer, dataBag)
 
 		then:
 		thrown XFVRPException
@@ -92,10 +93,10 @@ class CheckCustomerServiceSpec extends Specification {
 				externID: "1",
 				siteType: SiteType.CUSTOMER,
 				demand: [1, 2, 3] as float[]
-				).getNode();
+				).getNode()
 
 		def v = new TestVehicle(capacity: [3, 3, 3] as float[]).getVehicle()
-		def model = new XFVRPModel(new Node[0], null, null, v, null)
+		def model = TestXFVRPModel.get(new Node[0], null, null, v, null)
 
 		when:
 		def result = service.checkDemands(customer, model)
@@ -109,10 +110,10 @@ class CheckCustomerServiceSpec extends Specification {
 				externID: "1",
 				siteType: SiteType.CUSTOMER,
 				demand: [1, 2, 3] as float[]
-				).getNode();
+				).getNode()
 
 		def v = new TestVehicle(capacity: [3, 1, 3] as float[]).getVehicle()
-		def model = new XFVRPModel(new Node[0], null, null, v, null)
+		def model = TestXFVRPModel.get(new Node[0], null, null, v, null)
 
 		when:
 		def result = service.checkDemands(customer, model)
@@ -126,10 +127,10 @@ class CheckCustomerServiceSpec extends Specification {
 				externID: "1",
 				siteType: SiteType.CUSTOMER,
 				demand: [1, 2, 3] as float[]
-				).getNode();
+				).getNode()
 
 		def v = new TestVehicle(capacity: [3, 3] as float[]).getVehicle()
-		def model = new XFVRPModel(new Node[0], null, null, v, null)
+		def model = TestXFVRPModel.get(new Node[0], null, null, v, null)
 
 		when:
 		def result = service.checkDemands(customer, model)
@@ -143,13 +144,13 @@ class CheckCustomerServiceSpec extends Specification {
 				externID: "DEP",
 				siteType: SiteType.DEPOT,
 				timeWindow: [[0, 20]] as float[][]
-				).getNode();
+				).getNode()
 		def customer = new TestNode(
 				externID: "1",
 				siteType: SiteType.CUSTOMER,
 				timeWindow: [[10, 20], [30, 40]] as float[][],
 				serviceTime: 5
-				).getNode();
+				).getNode()
 
 		def v = new TestVehicle(maxRouteDuration: 20).getVehicle()
 		modelStub.getTime(_, _) >> 5
@@ -169,13 +170,13 @@ class CheckCustomerServiceSpec extends Specification {
 				externID: "DEP",
 				siteType: SiteType.DEPOT,
 				timeWindow: [[0, 20]] as float[][]
-				).getNode();
+				).getNode()
 		def customer = new TestNode(
 				externID: "1",
 				siteType: SiteType.CUSTOMER,
 				timeWindow: [[10, 20], [30, 40]] as float[][],
 				serviceTime: 5
-				).getNode();
+				).getNode()
 
 		def v = new TestVehicle(maxRouteDuration: 10).getVehicle()
 		modelStub.getTime(_, _) >> 5
@@ -195,13 +196,13 @@ class CheckCustomerServiceSpec extends Specification {
 				externID: "DEP",
 				siteType: SiteType.DEPOT,
 				timeWindow: [[0, 30]] as float[][]
-				).getNode();
+				).getNode()
 		def customer = new TestNode(
 				externID: "1",
 				siteType: SiteType.CUSTOMER,
 				timeWindow: [[2, 4], [5, 8]] as float[][],
 				serviceTime: 5
-				).getNode();
+				).getNode()
 
 		def v = new TestVehicle(maxRouteDuration: 25).getVehicle()
 		modelStub.getTime(_, _) >> 9
@@ -221,13 +222,13 @@ class CheckCustomerServiceSpec extends Specification {
 				externID: "DEP",
 				siteType: SiteType.DEPOT,
 				timeWindow: [[0, 15]] as float[][]
-				).getNode();
+				).getNode()
 		def customer = new TestNode(
 				externID: "1",
 				siteType: SiteType.CUSTOMER,
 				timeWindow: [[10, 20], [30, 40]] as float[][],
 				serviceTime: 5
-				).getNode();
+				).getNode()
 
 		def v = new TestVehicle(maxRouteDuration: 20).getVehicle()
 		modelStub.getTime(_, _) >> 5
@@ -247,19 +248,19 @@ class CheckCustomerServiceSpec extends Specification {
 				externID: "DEP",
 				siteType: SiteType.DEPOT,
 				timeWindow: [[0, 15]] as float[][]
-				).getNode();
+				).getNode()
 		def depot2 = new TestNode(
 				externID: "DEP2",
 				siteType: SiteType.DEPOT,
 				timeWindow: [[0, 30]] as float[][]
-				).getNode();
+				).getNode()
 
 		def customer = new TestNode(
 				externID: "1",
 				siteType: SiteType.CUSTOMER,
 				timeWindow: [[10, 20], [30, 40]] as float[][],
 				serviceTime: 5
-				).getNode();
+				).getNode()
 
 		def v = new TestVehicle(maxRouteDuration: 20).getVehicle()
 		modelStub.getTime(_, _) >> 5
@@ -279,7 +280,7 @@ class CheckCustomerServiceSpec extends Specification {
 				externID: "DEP",
 				siteType: SiteType.DEPOT,
 				timeWindow: [[0, 20]] as float[][]
-				).getNode();
+				).getNode()
 		def customer = new TestNode(
 				externID: "1",
 				siteType: SiteType.CUSTOMER,
@@ -290,7 +291,7 @@ class CheckCustomerServiceSpec extends Specification {
 				presetBlockRank: 2,
 				presetBlockPos: 2
 
-				).getNode();
+				).getNode()
 
 		def dataBag = new SolutionBuilderDataBag()
 		dataBag.knownSequencePositions = [1] as Set<Integer>
@@ -313,7 +314,7 @@ class CheckCustomerServiceSpec extends Specification {
 				externID: "DEP",
 				siteType: SiteType.DEPOT,
 				timeWindow: [[0, 15]] as float[][]
-				).getNode();
+				).getNode()
 		def customer = new TestNode(
 				externID: "1",
 				siteType: SiteType.CUSTOMER,
@@ -324,7 +325,7 @@ class CheckCustomerServiceSpec extends Specification {
 				presetBlockRank: 2,
 				presetBlockPos: 2
 
-				).getNode();
+				).getNode()
 
 		def dataBag = new SolutionBuilderDataBag()
 		dataBag.knownSequencePositions = [1] as Set<Integer>
@@ -347,7 +348,7 @@ class CheckCustomerServiceSpec extends Specification {
 				externID: "DEP",
 				siteType: SiteType.DEPOT,
 				timeWindow: [[0, 20]] as float[][]
-				).getNode();
+				).getNode()
 		def customer = new TestNode(
 				externID: "1",
 				siteType: SiteType.CUSTOMER,
@@ -358,7 +359,7 @@ class CheckCustomerServiceSpec extends Specification {
 				presetBlockRank: 2,
 				presetBlockPos: 2
 
-				).getNode();
+				).getNode()
 
 		def dataBag = new SolutionBuilderDataBag()
 		dataBag.knownSequencePositions = [1] as Set<Integer>

@@ -57,6 +57,8 @@ public class ActiveNodeAnalyzer {
 				lastNodeIdx = i;
 			}
 		}
+		// Start depot is always active
+		activeFlags[0] = true;
 
 		return extract(route, activeFlags);
 	}

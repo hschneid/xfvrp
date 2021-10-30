@@ -29,7 +29,6 @@ class TestNode {
 	int presetVehicleIdx2 = -1
 	int presetBlackNodeIdx = -1
 	InvalidReason invalidReason = InvalidReason.NONE
-	boolean[] isCompartmentReplenished
 
 	Node getNode() {
 		Node node = new Node(
@@ -45,8 +44,7 @@ class TestNode {
 				serviceTimeForSite,
 				loadType,
 				presetBlockRank,
-				shipID,
-				isCompartmentReplenished
+				shipID
 				)
 		node.setPresetBlockIdx(presetBlockIdx)
 		node.setPresetBlockPos(presetBlockPos)

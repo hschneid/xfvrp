@@ -26,7 +26,15 @@ public class Solution implements Iterable<Node[]> {
 	private RouteQuality[] routeQualities = new RouteQuality[] { new RouteQuality(0, null) };
 	private Quality totalQuality = new Quality(null);
 
-	private List<RouteQuality> invalidatedRoutesQualities = new ArrayList<>();
+	private final List<RouteQuality> invalidatedRoutesQualities = new ArrayList<>();
+
+	public Solution(XFVRPModel model) {
+		this.model = model;
+	}
+
+	public XFVRPModel getModel() {
+		return model;
+	}
 
 	public Solution(XFVRPModel model) {
 		this.model = model;

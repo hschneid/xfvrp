@@ -2,20 +2,22 @@ package xf.xfvrp.base
 
 import spock.lang.Specification
 import util.instances.TestNode
+import util.instances.TestVehicle
+import util.instances.TestXFVRPModel
 import xf.xfvrp.base.fleximport.CustomerData
 
 class ShipmentConverterSpec extends Specification {
 
-	def service = new ShipmentConverter();
+	def service = new ShipmentConverter()
 
 	def customers
 	
 	def "Convert shipment - successfull"() {
 		def model = createModel()
-		def n = model.getNodes();
+		def n = model.getNodes()
 				
 		when:
-		service.convert(n, customers);
+		service.convert(n, customers)
 		
 		then:
 		n[0].shipmentIdx == -1
@@ -39,19 +41,17 @@ class ShipmentConverterSpec extends Specification {
 			new CustomerData(externID: "8")
 			] as List<CustomerData>
 		
-		def n1 = new TestNode(externID: "1", siteType: SiteType.DEPOT).getNode();
-		def n2 = new TestNode(externID: "2", siteType: SiteType.CUSTOMER, shipID: "A").getNode();
-		def n3 = new TestNode(externID: "3", siteType: SiteType.CUSTOMER, shipID: "A").getNode();
-		def n4 = new TestNode(externID: "4", siteType: SiteType.DEPOT).getNode();
-		def n5 = new TestNode(externID: "5", siteType: SiteType.CUSTOMER, shipID: "B").getNode();
-		def n6 = new TestNode(externID: "6", siteType: SiteType.CUSTOMER, shipID: "B").getNode();
-		def n7 = new TestNode(externID: "7", siteType: SiteType.CUSTOMER, shipID: "C").getNode();
-		def n8 = new TestNode(externID: "8", siteType: SiteType.CUSTOMER).getNode();
-		def n9 = new TestNode(externID: "9", siteType: SiteType.DEPOT).getNode();
+		def n1 = new TestNode(externID: "1", siteType: SiteType.DEPOT).getNode()
+		def n2 = new TestNode(externID: "2", siteType: SiteType.CUSTOMER, shipID: "A").getNode()
+		def n3 = new TestNode(externID: "3", siteType: SiteType.CUSTOMER, shipID: "A").getNode()
+		def n4 = new TestNode(externID: "4", siteType: SiteType.DEPOT).getNode()
+		def n5 = new TestNode(externID: "5", siteType: SiteType.CUSTOMER, shipID: "B").getNode()
+		def n6 = new TestNode(externID: "6", siteType: SiteType.CUSTOMER, shipID: "B").getNode()
+		def n7 = new TestNode(externID: "7", siteType: SiteType.CUSTOMER, shipID: "C").getNode()
+		def n8 = new TestNode(externID: "8", siteType: SiteType.CUSTOMER).getNode()
+		def n9 = new TestNode(externID: "9", siteType: SiteType.DEPOT).getNode()
 		
-		def model = new XFVRPModel([n1, n4, n9, n2, n3, n5, n6, n7, n8] as Node[], null, null, null, null);
-
-		return model
+		return TestXFVRPModel.get([n1, n4, n9, n2, n3, n5, n6, n7, n8], new TestVehicle().getVehicle())
 	}
 	
 }

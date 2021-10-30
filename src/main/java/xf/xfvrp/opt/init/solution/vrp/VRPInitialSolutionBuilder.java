@@ -36,7 +36,7 @@ public class VRPInitialSolutionBuilder {
 
 		Solution solution = buildSolution(validNodes, model, statusManager);
 
-		NormalizeSolutionService.normalizeRoute(solution, model);
+		NormalizeSolutionService.normalizeRoute(solution);
 
 		return solution;
 	}

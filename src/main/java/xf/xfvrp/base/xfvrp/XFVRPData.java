@@ -1,5 +1,6 @@
 package xf.xfvrp.base.xfvrp;
 
+import xf.xfvrp.base.compartment.CompartmentType;
 import xf.xfvrp.base.exception.XFVRPException;
 import xf.xfvrp.base.exception.XFVRPExceptionType;
 import xf.xfvrp.base.fleximport.*;
@@ -14,7 +15,7 @@ import xf.xfvrp.base.monitor.StatusCode;
  * LICENSE file in the root directory of this source tree.
  *
  **/
-public class XFVRP_Data extends XFVRP_Base {
+public class XFVRPData extends XFVRPBase {
 
 	/* Importer and data warehouse */
 	protected FlexiImporter importer = new FlexiImporter();
@@ -25,8 +26,8 @@ public class XFVRP_Data extends XFVRP_Base {
 	/**
 	 * Akquire a customer data object to insert data for
 	 * a new customer. The next call of this method will
-	 * finalize the before akquired customer data object. 
-	 * 
+	 * finalize the before akquired customer data object.
+	 *
 	 * @return Customer data object
 	 */
 	public CustomerData addCustomer() {
@@ -36,8 +37,8 @@ public class XFVRP_Data extends XFVRP_Base {
 	/**
 	 * Akquire a depot data object to insert data for
 	 * a new depot. The next call of this method will
-	 * finalize the before akquired depot data object. 
-	 * 
+	 * finalize the before akquired depot data object.
+	 *
 	 * @return Depot data object
 	 */
 	public DepotData addDepot() {
@@ -47,8 +48,8 @@ public class XFVRP_Data extends XFVRP_Base {
 	/**
 	 * Akquire a replenish data object to insert data for
 	 * a new replenishing depot. The next call of this method will
-	 * finalize the before akquired replenish data object. 
-	 * 
+	 * finalize the before akquired replenish data object.
+	 *
 	 * @return Replenish data object
 	 */
 	public ReplenishData addReplenishment() {
@@ -59,23 +60,33 @@ public class XFVRP_Data extends XFVRP_Base {
 	 * Akquire a vehicle data object to insert data for
 	 * a new vehicle. The next call of this method will
 	 * finalize the before akquired vehicle data object.
-	 * 
+	 *
 	 * The call of this method means, that default vehicle
-	 * parameters are not valid any longer. In this case they 
+	 * parameters are not valid any longer. In this case they
 	 * have to be inserted in such a vehicle data object.
-	 * 
+	 *
 	 * @return Container data object
 	 */
 	public VehicleData addVehicle() {
 		return importer.getVehicleData();
 	}
+
+	/**
+	 * Adds a compartment to XFVRP. The number of added compartments must
+	 * fit to given capacities and demands in customers.
+	 *
+	 * If no compartments are given, XFVRP will choose a default compartment.
+	 */
+	public void addCompartment(CompartmentType type) {
+		importer.addCompartmentType(type);
+	}
 	
 	/**
 	 * Sets a metric, whereby the optimization can get
 	 * information about the distance or time between nodes.
-	 * 
+	 *
 	 * Metrics can relay on coordinates or on pre-calculated data.
-	 * 
+	 *
 	 * @param metric
 	 */
 	public void setMetric(Metric metric) {
@@ -106,11 +117,11 @@ public class XFVRP_Data extends XFVRP_Base {
 	
 	/**
 	 * Sets the maximal allowed capacity of a vehicle
-	 * 
+	 *
 	 * This procedure is only available for single vehicle VRPs, which means, that
 	 * all already inserted vehicles will be removed and replaced
 	 * by this default value.
-	 * 
+	 *
 	 * @param capacity Upper bound of amount, which can be transported on a route.
 	 */
 	public void setCapactiy(float capacity) throws XFVRPException {
@@ -127,11 +138,11 @@ public class XFVRP_Data extends XFVRP_Base {
 
 	/**
 	 * Sets the maximal allowed route duration
-	 * 
+	 *
 	 * This procedure is only available for single vehicle VRPs, which means, that
 	 * all already inserted vehicles will be removed and replaced
 	 * by a default value.
-	 * 
+	 *
 	 * @param maxRouteDuration Upper bound of time, which can be traveled on a route.
 	 */
 	public void setMaxRouteDuration(int maxRouteDuration) throws XFVRPException {
@@ -147,11 +158,11 @@ public class XFVRP_Data extends XFVRP_Base {
 
 	/**
 	 * Sets the maximal number of routes
-	 * 
+	 *
 	 * This procedure is only available for single vehicle VRPs, which means, that
 	 * all already inserted vehicles will be removed and replaced
 	 * by a default value.
-	 * 
+	 *
 	 */
 	public void setMaxNumberOfRoutes(int maxNumberOfRoutes) throws XFVRPException {
 		if(maxNumberOfRoutes <= 0) {
@@ -166,11 +177,11 @@ public class XFVRP_Data extends XFVRP_Base {
 
 	/**
 	 * Sets the maximal number of stops
-	 * 
+	 *
 	 * This procedure is only available for single vehicle VRPs, which means, that
 	 * all already inserted vehicles will be removed and replaced
 	 * by a default value.
-	 * 
+	 *
 	 */
 	public void setMaxNumberOfStopsPerRoute(int maxNbrOfStops) throws XFVRPException {
 		if(maxNbrOfStops <= 1) {
@@ -181,5 +192,13 @@ public class XFVRP_Data extends XFVRP_Base {
 		importer.clearVehicles();
 		// Den Parameter des default-Fahrzeugs anpassen
 		importer.defaultVehicle.setMaxStopCount(maxNbrOfStops);
+	}
+	
+	public FlexiImporter getImporter() {
+		return importer;
+	}
+	
+	public Metric getMetric() {
+		return metric;
 	}
 }

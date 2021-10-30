@@ -2,6 +2,8 @@ package xf.xfvrp.opt.evaluation;
 
 import xf.xfvrp.base.Node;
 
+import java.util.Objects;
+
 /**
  * Copyright (c) 2012-2021 Holger Schneider
  * All rights reserved.
@@ -35,8 +37,16 @@ public class RouteInfo {
 		pickupAmount.add(demand);
 	}
 
+	public void addPickUpAmount(float[] demand, int compartmentIdx) {
+		pickupAmount.add(demand, compartmentIdx);
+	}
+
 	public void addDeliveryAmount(float[] demand) {
 		deliveryAmount.add(demand);
+	}
+
+	public void addDeliveryAmount(float[] demand, int compartmentIdx) {
+		deliveryAmount.add(demand, compartmentIdx);
 	}
 
 	public float getLoadingServiceTime() {
@@ -57,5 +67,18 @@ public class RouteInfo {
 
 	public Amount getPickupAmount() {
 		return pickupAmount;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		RouteInfo routeInfo = (RouteInfo) o;
+		return Objects.equals(depot.getIdx(), routeInfo.depot.getIdx());
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(depot.getIdx());
 	}
 }

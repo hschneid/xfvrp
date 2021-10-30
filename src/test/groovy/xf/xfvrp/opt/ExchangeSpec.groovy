@@ -7,19 +7,19 @@ import xf.xfvrp.opt.improve.routebased.move.XFVRPSingleMove
 
 class ExchangeSpec extends Specification {
 
-	def service = new XFVRPSingleMove();
+	def service = new XFVRPSingleMove()
 	
 	def "Regular exchange - same position"() {
-		def n1 = new Node(externID: "1", siteType: SiteType.DEPOT);
-		def n2 = new Node(externID: "2", siteType: SiteType.CUSTOMER);
-		def n3 = new Node(externID: "3", siteType: SiteType.CUSTOMER);
-		def n4 = new Node(externID: "4", siteType: SiteType.DEPOT);
+		def n1 = new Node(externID: "1", siteType: SiteType.DEPOT)
+		def n2 = new Node(externID: "2", siteType: SiteType.CUSTOMER)
+		def n3 = new Node(externID: "3", siteType: SiteType.CUSTOMER)
+		def n4 = new Node(externID: "4", siteType: SiteType.DEPOT)
 		
 		def sol = new Solution()
 		sol.setGiantRoute([n1, n2, n3, n4] as Node[])
 		
 		when:
-		service.exchange(sol, 1, 1);
+		service.exchange(sol, 1, 1)
 		
 		def result = sol.getGiantRoute()
 		
@@ -31,16 +31,16 @@ class ExchangeSpec extends Specification {
 	}
 	
 	def "Regular exchange - one route"() {
-		def n1 = new Node(externID: "1", siteType: SiteType.DEPOT);
-		def n2 = new Node(externID: "2", siteType: SiteType.CUSTOMER);
-		def n3 = new Node(externID: "3", siteType: SiteType.CUSTOMER);
-		def n4 = new Node(externID: "4", siteType: SiteType.DEPOT);
+		def n1 = new Node(externID: "1", siteType: SiteType.DEPOT)
+		def n2 = new Node(externID: "2", siteType: SiteType.CUSTOMER)
+		def n3 = new Node(externID: "3", siteType: SiteType.CUSTOMER)
+		def n4 = new Node(externID: "4", siteType: SiteType.DEPOT)
 		
 		def sol = new Solution()
 		sol.setGiantRoute([n1, n2, n3, n4] as Node[])
 		
 		when:
-		service.exchange(sol, 1, 2);
+		service.exchange(sol, 1, 2)
 		
 		def result = sol.getGiantRoute()
 		
@@ -52,19 +52,19 @@ class ExchangeSpec extends Specification {
 	}
 	
 	def "Regular exchange - two routes"() {
-		def n1 = new Node(externID: "1", siteType: SiteType.DEPOT);
-		def n2 = new Node(externID: "2", siteType: SiteType.CUSTOMER);
-		def n3 = new Node(externID: "3", siteType: SiteType.CUSTOMER);
-		def n4 = new Node(externID: "4", siteType: SiteType.DEPOT);
-		def n5 = new Node(externID: "5", siteType: SiteType.CUSTOMER);
-		def n6 = new Node(externID: "6", siteType: SiteType.CUSTOMER);
-		def n7 = new Node(externID: "7", siteType: SiteType.DEPOT);
+		def n1 = new Node(externID: "1", siteType: SiteType.DEPOT)
+		def n2 = new Node(externID: "2", siteType: SiteType.CUSTOMER)
+		def n3 = new Node(externID: "3", siteType: SiteType.CUSTOMER)
+		def n4 = new Node(externID: "4", siteType: SiteType.DEPOT)
+		def n5 = new Node(externID: "5", siteType: SiteType.CUSTOMER)
+		def n6 = new Node(externID: "6", siteType: SiteType.CUSTOMER)
+		def n7 = new Node(externID: "7", siteType: SiteType.DEPOT)
 
 		def sol = new Solution()
 		sol.setGiantRoute([n1, n2, n3, n4, n5, n6, n7] as Node[])
 		
 		when:
-		service.exchange(sol, 2, 4);
+		service.exchange(sol, 2, 4)
 		
 		def result = sol.getGiantRoute()
 		
@@ -79,16 +79,16 @@ class ExchangeSpec extends Specification {
 	}
 	
 	def "Exchange - at the border"() {
-		def n1 = new Node(externID: "1", siteType: SiteType.DEPOT);
-		def n2 = new Node(externID: "2", siteType: SiteType.CUSTOMER);
-		def n3 = new Node(externID: "3", siteType: SiteType.CUSTOMER);
-		def n4 = new Node(externID: "4", siteType: SiteType.DEPOT);
+		def n1 = new Node(externID: "1", siteType: SiteType.DEPOT)
+		def n2 = new Node(externID: "2", siteType: SiteType.CUSTOMER)
+		def n3 = new Node(externID: "3", siteType: SiteType.CUSTOMER)
+		def n4 = new Node(externID: "4", siteType: SiteType.DEPOT)
 		
 		def sol = new Solution()
 		sol.setGiantRoute([n1, n2, n3, n4] as Node[])
 		
 		when:
-		service.exchange(sol, 1, 0);
+		service.exchange(sol, 1, 0)
 		
 		def result = sol.getGiantRoute()
 		
@@ -100,16 +100,16 @@ class ExchangeSpec extends Specification {
 	}
 
 	def "Exchange - with exception"() {
-		def n1 = new Node(externID: "1", siteType: SiteType.DEPOT);
-		def n2 = new Node(externID: "2", siteType: SiteType.CUSTOMER);
-		def n3 = new Node(externID: "3", siteType: SiteType.CUSTOMER);
-		def n4 = new Node(externID: "4", siteType: SiteType.DEPOT);
+		def n1 = new Node(externID: "1", siteType: SiteType.DEPOT)
+		def n2 = new Node(externID: "2", siteType: SiteType.CUSTOMER)
+		def n3 = new Node(externID: "3", siteType: SiteType.CUSTOMER)
+		def n4 = new Node(externID: "4", siteType: SiteType.DEPOT)
 		
 		def sol = new Solution()
 		sol.setGiantRoute([n1, n2, n3, n4] as Node[])
 		
 		when:
-		service.exchange(sol, 2, 4);
+		service.exchange(sol, 2, 4)
 		
 		def result = sol.getGiantRoute()
 		

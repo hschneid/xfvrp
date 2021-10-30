@@ -112,13 +112,12 @@ public class DepotData extends NodeData {
 				xlong,
 				ylat,
 				geoId,
-				new float[]{0,0,0},
+				new float[0],
 				timeWindowList.toArray(new float[0][]),
 				0,
 				0,
 				null, 0,
-				"",
-				null
+				""
 		);
 	}
 }

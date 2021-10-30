@@ -57,7 +57,7 @@ public class XFPDPFirstBestInsert extends XFVRPOptBase {
 
 		Solution newSolution = new Solution(solution.getModel());
 		newSolution.setGiantRoute(giantRoute);
-		return NormalizeSolutionService.normalizeRoute(newSolution, model);
+		return NormalizeSolutionService.normalizeRoute(newSolution);
 	}
 
 	/**
@@ -95,7 +95,7 @@ public class XFPDPFirstBestInsert extends XFVRPOptBase {
 				newSolution.setGiantRoute(newGiantRoute);
 				Quality qq = check(newSolution);
 				if(qq.getPenalty() == 0) {
-					giantRoute = NormalizeSolutionService.normalizeRoute(newSolution, model).getGiantRoute();
+					giantRoute = NormalizeSolutionService.normalizeRoute(newSolution).getGiantRoute();
 					break;
 				}
 			}
@@ -148,7 +148,7 @@ public class XFPDPFirstBestInsert extends XFVRPOptBase {
 				newSolution.setGiantRoute(newGiantRoute);
 				Quality qq = check(newSolution);
 				if(qq.getPenalty() == 0) {
-					giantRoute = NormalizeSolutionService.normalizeRoute(newSolution, model).getGiantRoute();
+					giantRoute = NormalizeSolutionService.normalizeRoute(newSolution).getGiantRoute();
 					reducedGiantRoute = new Node[giantRoute.length - 2];
 					break;
 				}
@@ -277,7 +277,7 @@ public class XFPDPFirstBestInsert extends XFVRPOptBase {
 
 		Solution newSolution = new Solution(model);
 		newSolution.setGiantRoute(route);
-		return NormalizeSolutionService.normalizeRoute(newSolution, model).getGiantRoute();
+		return NormalizeSolutionService.normalizeRoute(newSolution).getGiantRoute();
 	}
 
 	/**

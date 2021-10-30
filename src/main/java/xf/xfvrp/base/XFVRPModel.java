@@ -1,5 +1,6 @@
 package xf.xfvrp.base;
 
+import xf.xfvrp.base.compartment.CompartmentType;
 import xf.xfvrp.base.metric.InternalMetric;
 import xf.xfvrp.base.preset.BlockNameConverter;
 
@@ -27,6 +28,7 @@ public class XFVRPModel {
 	protected final Node[] nodeArr;
 	protected final InternalMetric metric;
 	protected final InternalMetric optMetric;
+	protected final CompartmentType[] compartments;
 
 	protected final Vehicle vehicle;
 
@@ -46,17 +48,15 @@ public class XFVRPModel {
 		vehicle = null;
 		parameter = null;
 		blockCountArr = null;
+		compartments = null;
 		maxGlobalNodeIdx = -1;
 	}
 
 	/**
 	 * Initialize an optimization model object with the given input data. It contains the general
 	 * parameter for all optimization procedures. It holds no solution information.
-	 *
-	 * @param metric Metric that will be used to evaluate solutions
-	 * @param optMetric Metric that will be used for optimization processes
 	 */
-	public XFVRPModel(Node[] nodeArr, InternalMetric metric, InternalMetric optMetric, Vehicle vehicle, XFVRPParameter parameter) {
+	public XFVRPModel(Node[] nodeArr, CompartmentType[] compartmentTypes, InternalMetric metric, InternalMetric optMetric, Vehicle vehicle, XFVRPParameter parameter) {
 		this.nodeArr = nodeArr;
 		this.metric = metric;
 		this.optMetric = optMetric;
@@ -85,6 +85,8 @@ public class XFVRPModel {
 		this.maxGlobalNodeIdx = maxGlobalNodeIdx;
 		this.nbrOfDepots = nbrOfDepots;
 		this.nbrOfReplenish = nbrOfReplenish;
+
+		this.compartments = compartmentTypes;
 	}
 
 	/**
@@ -159,6 +161,10 @@ public class XFVRPModel {
 
 	public Node[] getNodes() {
 		return nodeArr;
+	}
+
+	public CompartmentType[] getCompartments() {
+		return compartments;
 	}
 
 	public int getNbrOfBlocks() {

@@ -3,7 +3,9 @@ package xf.xfvrp.report
 import spock.lang.Specification
 import util.instances.TestNode
 import util.instances.TestVehicle
+import util.instances.TestXFVRPModel
 import xf.xfvrp.base.*
+import xf.xfvrp.base.compartment.CompartmentType
 import xf.xfvrp.base.metric.EucledianMetric
 import xf.xfvrp.base.metric.internal.AcceleratedMetricTransformator
 import xf.xfvrp.opt.Solution
@@ -11,7 +13,7 @@ import xf.xfvrp.report.build.ReportBuilder
 
 class ReportBuilderReplenishSpec extends Specification {
 
-	def service = new ReportBuilder();
+	def service = new ReportBuilder()
 
 	def nd = new TestNode(
 			externID: "DEP",
@@ -19,8 +21,12 @@ class ReportBuilderReplenishSpec extends Specification {
 			demand: [0, 0, 0],
 			timeWindow: [[0,99],[2,99]]
 	).getNode()
-
-	Node nr
+	def nr = new TestNode(
+			externID: "REP",
+			siteType: SiteType.REPLENISH,
+			demand: [0, 0, 0],
+			timeWindow: [[0,99],[2,99]]
+	).getNode()
 
 	def sol
 
@@ -44,13 +50,13 @@ class ReportBuilderReplenishSpec extends Specification {
 			assert result.getSummary().getOverloads()[i] == 0
 		}
 		// Depot - Loading Deliveries
-		checkAmount(result, 0, [2, 20, 200], LoadType.PICKUP)
+		checkAmount(result, 0, [2, 20, 200], LoadType.PRELOAD_AT_DEPOT)
 
 		checkAmount(result, 1, [3, 30, 300], LoadType.PICKUP)
 		checkAmount(result, 2, [2, 20, 200], LoadType.DELIVERY)
 
 		// Replenish - Loading Deliveries
-		checkAmount(result, 3, [1, 10, 100], LoadType.PICKUP)
+		checkAmount(result, 3, [1, 10, 100], LoadType.PRELOAD_AT_DEPOT)
 
 		checkAmount(result, 4, [4, 40, 400], LoadType.PICKUP)
 		checkAmount(result, 5, [1, 10, 100], LoadType.DELIVERY)
@@ -120,9 +126,9 @@ class ReportBuilderReplenishSpec extends Specification {
 		def result = service.getReport(sol)
 
 		then:
-		result.getSummary().getOverloads()[0] > 0
-		result.getSummary().getOverloads()[1] > 0
-		result.getSummary().getOverloads()[2] > 0
+		result.getSummary().getOverloads()[0] == 1
+		result.getSummary().getOverloads()[1] == 1
+		result.getSummary().getOverloads()[2] == 1
 	}
 
 	private static void checkAmount(Report result, int eventIdx, List<Float> amountVal, LoadType type) {
@@ -133,8 +139,6 @@ class ReportBuilderReplenishSpec extends Specification {
 	}
 
 	XFVRPModel initScen(Vehicle v, boolean[] isCompartmentReplenished) {
-		createReplenishmentNode(isCompartmentReplenished)
-
 		def n1 = new TestNode(
 				globalIdx: 1,
 				externID: "1",
@@ -187,17 +191,12 @@ class ReportBuilderReplenishSpec extends Specification {
 
 		def iMetric = new AcceleratedMetricTransformator().transform(metric, nodes, v)
 
-		return new XFVRPModel(nodes, iMetric, iMetric, v, parameter)
-	}
+		def types = new CompartmentType[isCompartmentReplenished.length]
+		for (i in 0..<types.length) {
+			types[i] = (isCompartmentReplenished[i]) ? CompartmentType.MIXED : CompartmentType.MIXED_NO_REPLENISH
+		}
 
-	void createReplenishmentNode(boolean[] isCompartmentReplenished) {
-		nr = new TestNode(
-				externID: "REP",
-				siteType: SiteType.REPLENISH,
-				demand: [0, 0, 0],
-				timeWindow: [[0,99],[2,99]],
-				isCompartmentReplenished: isCompartmentReplenished
-		).getNode()
+		return TestXFVRPModel.get(nodes, types, iMetric, iMetric, v, parameter)
 	}
 
 }

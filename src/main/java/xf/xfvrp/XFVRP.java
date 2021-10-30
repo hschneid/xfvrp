@@ -1,13 +1,10 @@
 package xf.xfvrp;
 
-import xf.xfvrp.base.Node;
-import xf.xfvrp.base.NormalizeSolutionService;
-import xf.xfvrp.base.Vehicle;
-import xf.xfvrp.base.XFVRPModel;
+import xf.xfvrp.base.*;
 import xf.xfvrp.base.exception.XFVRPException;
 import xf.xfvrp.base.exception.XFVRPExceptionType;
 import xf.xfvrp.base.monitor.StatusCode;
-import xf.xfvrp.base.xfvrp.XFVRP_Parameter;
+import xf.xfvrp.base.xfvrp.XFVRPData;
 import xf.xfvrp.opt.*;
 import xf.xfvrp.opt.init.ModelBuilder;
 import xf.xfvrp.opt.init.precheck.PreCheckService;
@@ -18,7 +15,7 @@ import xf.xfvrp.report.build.ReportBuilder;
 import java.util.ArrayList;
 import java.util.List;
 
-/** 
+/**
  * Copyright (c) 2012-2021 Holger Schneider
  * All rights reserved.
  *
@@ -29,16 +26,18 @@ import java.util.List;
  * XFVRP is central user interface for this suite. 
  * It combines all methods for data import, optimization execution, parameters and
  * retrieval of solutions.
- * 
+ *
  * The modeling of this class represents a state machine, where iteratively several 
  * methods must be called. The execution method take all inserted data and parameters
  * and start the optimizers.
- * 
- * 
+ *
+ *
  * @author hschneid
- * 
+ *
  */
-public class XFVRP extends XFVRP_Parameter {
+public class XFVRP extends XFVRPData {
+
+	private final XFVRPParameter parameters = new XFVRPParameter();
 
 	/* List of optimization procedures */
 	private final List<XFVRPOptBase> optList = new ArrayList<>();
@@ -76,18 +75,21 @@ public class XFVRP extends XFVRP_Parameter {
 			throw new XFVRPException(XFVRPExceptionType.ILLEGAL_INPUT, "No vehicle information are present.");
 		}
 
-		vehicleSolutionList.addAll(
-				new FullRouteMixedFleetHeuristic().execute(
+		List<XFVRPSolution> solutions = getParameters()
+				.getMixedFleetHeuristic()
+				.execute(
 						nodes,
+						importer.getCompartmentTypes(),
 						vehicles,
 						this::executeRoutePlanning,
 						metric,
-						parameter,
-						statusManager)
+						parameters,
+						statusManager
 				);
 
+		vehicleSolutionList.addAll(solutions);
 
-		statusManager.fireMessage(StatusCode.FINISHED, "XFVRP finished sucessfully.");
+		statusManager.fireMessage(StatusCode.FINISHED, "XFVRP finished successfully.");
 	}
 
 	/**
@@ -95,9 +97,9 @@ public class XFVRP extends XFVRP_Parameter {
 	 * announced optimization procedures.
 	 */
 	private Solution executeRoutePlanning(RoutingDataBag dataBag) throws XFVRPException {
-		Node[] nodes = new PreCheckService().precheck(dataBag.nodes, dataBag.vehicle, parameter);
-		XFVRPModel model = new ModelBuilder().build(nodes, dataBag.vehicle, metric, parameter, statusManager);
-		Solution solution = new InitialSolutionBuilder().build(model, parameter, statusManager);
+		Node[] nodes = new PreCheckService().precheck(dataBag.nodes, dataBag.vehicle, parameters);
+		XFVRPModel model = new ModelBuilder().build(nodes, dataBag.compartmentTypes, dataBag.vehicle, metric, parameters, statusManager);
+		Solution solution = new InitialSolutionBuilder().build(model, parameters, statusManager);
 
 		// VRP optimizations, if initiated solution has appropriate length
 		if (solution.isValid()) {
@@ -113,7 +115,7 @@ public class XFVRP extends XFVRP_Parameter {
 				statusManager.fireMessage(StatusCode.RUNNING, "Optimization for algorithm " + xfvrp.getClass().getSimpleName() + " started.");
 
 				try {
-					if (parameter.isRouteSplittingAllowed() && xfvrp.isSplittable)
+					if (parameters.isRouteSplittingAllowed() && xfvrp.isSplittable)
 						solution = splitter.execute(solution, model, statusManager, xfvrp);
 					else
 						solution = xfvrp.execute(solution, model, statusManager);
@@ -123,7 +125,7 @@ public class XFVRP extends XFVRP_Parameter {
 			}
 
 			// Normalization of last result
-			NormalizeSolutionService.normalizeRoute(solution, model);
+			NormalizeSolutionService.normalizeRoute(solution);
 		}
 
 		lastModel = model;
@@ -133,9 +135,9 @@ public class XFVRP extends XFVRP_Parameter {
 	/**
 	 * Uses the last planned solution and turns it
 	 * into a report representation.
-	 * 
+	 *
 	 * All route plan informations can be akquired by this report.
-	 * 
+	 *
 	 * @return A report data structure with detailed information about the route plan or null if no solution was calculated.
 	 */
 	public Report getReport() throws XFVRPException {
@@ -154,7 +156,7 @@ public class XFVRP extends XFVRP_Parameter {
 	 * Adds a certain optimization algorithm out
 	 * of the spectrum of accessible methods in
 	 * the enumeration XFVRPOptType.
-	 * 
+	 *
 	 * @param type algorithm type. it can't be null.
 	 */
 	public void addOptType(XFVRPOptType type) throws XFVRPException {
@@ -167,5 +169,14 @@ public class XFVRP extends XFVRP_Parameter {
 	 */
 	public void clearOptTypes() {
 		optList.clear();
+	}
+
+	public XFVRPParameter getParameters() {
+		return parameters;
+	}
+
+	// TODO: Obsolete
+	public XFVRPData getData() {
+		return this;
 	}
 }

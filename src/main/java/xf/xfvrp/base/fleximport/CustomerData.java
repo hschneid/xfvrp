@@ -31,7 +31,7 @@ public class CustomerData extends NodeData {
 	
 	/** Basic XFVRP - parameter **/
 	protected LoadType loadType = LoadType.PICKUP;
-	protected float[] demand = new float[]{0, 0, 0};
+	protected float[] demand = new float[]{0};
 	protected float serviceTime = 0;
 	protected float serviceTimeForSite = 0;
 	protected String shipID = "";
@@ -244,10 +244,14 @@ public class CustomerData extends NodeData {
 
 	///////////////////////////////////////
 
+	public float[] getDemand() {
+		return demand;
+	}
+
 	/**
 	 * @return the serviceTime
 	 */
-	float getServiceTime() {
+	public float getServiceTime() {
 		return serviceTime;
 	}
 
@@ -313,8 +317,7 @@ public class CustomerData extends NodeData {
 				serviceTimeForSite,
 				loadType,
 				presetBlockRank,
-				shipID,
-				null
+				shipID
 		);
 	}
 }

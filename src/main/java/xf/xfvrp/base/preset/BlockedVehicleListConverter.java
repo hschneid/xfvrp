@@ -58,7 +58,7 @@ public class BlockedVehicleListConverter {
 	}
 
 	private static Map<String, Integer> getVehicleMapping(Vehicle[] vehicles) {
-		return Arrays.stream(vehicles).collect(Collectors.toMap(k -> k.name, v -> v.idx, (v1, v2) -> v1));
+		return Arrays.stream(vehicles).collect(Collectors.toMap(k -> k.getName(), v -> v.getIdx(), (v1, v2) -> v1));
 	}
 
 	private static Map<String, Node> getNodeMapping(Node[] nodes) {

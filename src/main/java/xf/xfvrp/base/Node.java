@@ -64,9 +64,6 @@ public class Node implements Cloneable {
 	/** If customer is invalid for whole route plan, the reason is written to invalid states **/
 	private InvalidReason invalidReason = InvalidReason.NONE;
 
-	/** For Replenishment nodes: Trigger, if a certain compartment is replenished (true) or not (false). **/
-	private final boolean[] isCompartmentReplenished;
-
 	private String invalidArguments = "";
 
 	/**
@@ -76,7 +73,7 @@ public class Node implements Cloneable {
 		externID = "";
 		globalIdx = 0;
 		
-		demand = new float[3];
+		demand = new float[1];
 
 		loadType = LoadType.DELIVERY;
 		xlong = 0;
@@ -86,7 +83,6 @@ public class Node implements Cloneable {
 		serviceTimeForSite = 0;
 
 		shipID = "";
-		isCompartmentReplenished = null;
 	}
 
 	/**
@@ -106,8 +102,7 @@ public class Node implements Cloneable {
 			float serviceTimeForSite,
 			LoadType loadType,
 			int presetBlockRank,
-			String shipID,
-			boolean[] isCompartmentReplenished
+			String shipID
 			) {
 		this.globalIdx = globalIdx;
 		this.externID = externID;
@@ -122,7 +117,6 @@ public class Node implements Cloneable {
 		this.geoId = geoId;
 		this.presetBlockRank = presetBlockRank;
 		this.shipID = shipID;
-		this.isCompartmentReplenished = isCompartmentReplenished;
 	}
 
 	/**
@@ -285,9 +279,6 @@ public class Node implements Cloneable {
 		this.presetBlockRank = presetBlockRank;
 	}
 
-	/**
-	 * @return the presetBlockVehicleList
-	 */
 	public Set<Integer> getPresetBlockVehicleList() {
 		return presetBlockVehicleList;
 	}
@@ -368,9 +359,5 @@ public class Node implements Cloneable {
 
 	public void setDemands(float[] demands) {
 		this.demand = demands;
-	}
-
-	public boolean[] isCompartmentReplenished() {
-		return isCompartmentReplenished;
 	}
 }

@@ -3,9 +3,9 @@ package xf.xfvrp.opt.improve
 import spock.lang.Specification
 import util.instances.TestNode
 import util.instances.TestVehicle
+import util.instances.TestXFVRPModel
 import xf.xfvrp.base.*
 import xf.xfvrp.base.metric.EucledianMetric
-import xf.xfvrp.base.metric.internal.AcceleratedMetricTransformator
 import xf.xfvrp.opt.Solution
 import xf.xfvrp.opt.improve.giantroute.XFVRP2OptIntra
 
@@ -13,7 +13,7 @@ import java.util.stream.Collectors
 
 class XFVRP2OptIntraSpec extends Specification {
 
-	def service = new XFVRP2OptIntra();
+	def service = new XFVRP2OptIntra()
 
 	def nd = new TestNode(
 	externID: "DEP",
@@ -33,7 +33,7 @@ class XFVRP2OptIntraSpec extends Specification {
 	timeWindow: [[0,99],[2,99]]
 	).getNode()
 
-	def sol;
+	def sol
 
 	def parameter = new XFVRPParameter()
 
@@ -115,17 +115,15 @@ class XFVRP2OptIntraSpec extends Specification {
 				loadType: LoadType.DELIVERY)
 				.getNode()
 
-		nd.setIdx(0);
-		nd2.setIdx(1);
-		n1.setIdx(2);
-		n2.setIdx(3);
-		n3.setIdx(4);
-		n4.setIdx(5);
+		nd.setIdx(0)
+		nd2.setIdx(1)
+		n1.setIdx(2)
+		n2.setIdx(3)
+		n3.setIdx(4)
+		n4.setIdx(5)
 
-		def nodes = [nd, nd2, n1, n2, n3, n4] as Node[];
+		def nodes = [nd, nd2, n1, n2, n3, n4] as Node[]
 
-		def iMetric = new AcceleratedMetricTransformator().transform(metric, nodes, v);
-
-		return new XFVRPModel(nodes, iMetric, iMetric, v, parameter)
+		return TestXFVRPModel.get(Arrays.asList(nodes), v)
 	}
 }

@@ -161,7 +161,7 @@ public abstract class XFVRPOptBase extends XFVRPBase<XFVRPModel> {
 	 * Processes a check evaluation.
 	 */
 	public Quality check(Solution solution) throws XFVRPException {
-		return evaluationService.check(solution, solution.getModel());
+		return evaluationService.check(solution);
 	}
 
 	/**

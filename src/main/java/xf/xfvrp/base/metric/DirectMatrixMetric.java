@@ -41,7 +41,7 @@ public class DirectMatrixMetric implements Metric {
 	 */
 	@Override
 	public float getDistance(Node src, Node dst, Vehicle veh) {
-		return matrix[veh.vehicleMetricId][src.getIdx()][dst.getIdx()][0];
+		return matrix[veh.getVehicleMetricId()][src.getIdx()][dst.getIdx()][0];
 	}
 
 	/*
@@ -50,7 +50,7 @@ public class DirectMatrixMetric implements Metric {
 	 */
 	@Override
 	public float getTime(Node src, Node dst, Vehicle veh) {
-		return matrix[veh.vehicleMetricId][src.getIdx()][dst.getIdx()][1];
+		return matrix[veh.getVehicleMetricId()][src.getIdx()][dst.getIdx()][1];
 	}
 	
 	/*
@@ -59,7 +59,7 @@ public class DirectMatrixMetric implements Metric {
 	 */
 	@Override
 	public float[] getDistanceAndTime(Node src, Node dst, Vehicle veh) {
-		return matrix[veh.vehicleMetricId][src.getIdx()][dst.getIdx()];
+		return matrix[veh.getVehicleMetricId()][src.getIdx()][dst.getIdx()];
 	}
 	
 	/**

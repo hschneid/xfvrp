@@ -1,49 +1,50 @@
 package xf.xfvrp.opt
 
+
 import spock.lang.Specification
 import util.instances.TestNode
 import util.instances.TestVehicle
+import util.instances.TestXFVRPModel
 import xf.xfvrp.base.*
+import xf.xfvrp.base.compartment.CompartmentInitializer
+import xf.xfvrp.base.compartment.CompartmentLoadBuilder
+import xf.xfvrp.base.compartment.CompartmentType
 import xf.xfvrp.base.metric.Metric
-import xf.xfvrp.base.metric.internal.AcceleratedMetric
 import xf.xfvrp.base.monitor.StatusManager
 import xf.xfvrp.base.preset.BlockNameConverter
 import xf.xfvrp.opt.evaluation.Context
+import xf.xfvrp.opt.fleetmix.DefaultMixedFleetHeuristic
 import xf.xfvrp.report.Event
 import xf.xfvrp.report.RouteReport
 
 class FullRouteMixedFleetHeuristicSpec extends Specification {
 
-	def selector = Stub FullRouteMixedFleetSelector
-	def service = new FullRouteMixedFleetHeuristic(selector: selector)
+	def service = new DefaultMixedFleetHeuristic()
 
 	def testVehicle
-	def routeReport
-
 
 	def setup() {
 		testVehicle = new TestVehicle(
 				fixCost: 11,
-				varCost: 5
-				)
-		routeReport = new RouteReport(testVehicle.getVehicle())
-		routeReport.getSummary().duration = 1234
-		routeReport.getSummary().pickups = [555]
-		routeReport.getSummary().deliveries = [666]
-		routeReport.getSummary().delay = 0
+				varCost: 5,
+				capacity: [0]
+		)
 	}
 
 	def "Get unused nodes - normal"() {
 		def nodes = [
-			new TestNode(externID: 'n0', siteType: SiteType.CUSTOMER).getNode(),
-			new TestNode(externID: 'n1', siteType: SiteType.CUSTOMER).getNode(),
-			new TestNode(externID: 'n2', siteType: SiteType.CUSTOMER).getNode(),
-			new TestNode(externID: 'n3', siteType: SiteType.CUSTOMER).getNode(),
-			new TestNode(externID: 'n4', siteType: SiteType.CUSTOMER).getNode(),
-			new TestNode(externID: 'n5', siteType: SiteType.CUSTOMER).getNode()
+				new TestNode(externID: 'n0', siteType: SiteType.CUSTOMER).getNode(),
+				new TestNode(externID: 'n1', siteType: SiteType.CUSTOMER).getNode(),
+				new TestNode(externID: 'n2', siteType: SiteType.CUSTOMER).getNode(),
+				new TestNode(externID: 'n3', siteType: SiteType.CUSTOMER).getNode(),
+				new TestNode(externID: 'n4', siteType: SiteType.CUSTOMER).getNode(),
+				new TestNode(externID: 'n5', siteType: SiteType.CUSTOMER).getNode()
 		] as List<Node>
 
+		def model = TestXFVRPModel.get(nodes, testVehicle.getVehicle())
+
 		def context = new Context()
+		context.amountsOfRoute = CompartmentLoadBuilder.createCompartmentLoads(model.getCompartments());
 
 		def routeReport1 = new RouteReport(testVehicle.getVehicle())
 		routeReport1.add(new Event(nodes[1]), context)
@@ -67,8 +68,8 @@ class FullRouteMixedFleetHeuristicSpec extends Specification {
 
 	def "Get unused nodes - no routes"() {
 		def nodes = [
-			new TestNode(externID: 'n0', siteType: SiteType.CUSTOMER).getNode(),
-			new TestNode(externID: 'n1', siteType: SiteType.CUSTOMER).getNode(),
+				new TestNode(externID: 'n0', siteType: SiteType.CUSTOMER).getNode(),
+				new TestNode(externID: 'n1', siteType: SiteType.CUSTOMER).getNode(),
 		] as List<Node>
 
 		def routes = [] as List<RouteReport>
@@ -85,6 +86,7 @@ class FullRouteMixedFleetHeuristicSpec extends Specification {
 
 	def "Get unused nodes - no nodes"() {
 		def nodes = [] as List<Node>
+		def model = TestXFVRPModel.get(nodes, testVehicle.getVehicle())
 
 		def routeReport1 = new RouteReport(testVehicle.getVehicle())
 
@@ -102,18 +104,18 @@ class FullRouteMixedFleetHeuristicSpec extends Specification {
 
 	def "Reconstruct giant route - normal"() {
 		def nodes = [
-			new TestNode(externID: 'n0', siteType: SiteType.CUSTOMER).getNode(),
-			new TestNode(externID: 'n1', siteType: SiteType.CUSTOMER).getNode(),
-			new TestNode(externID: 'n2', siteType: SiteType.CUSTOMER).getNode(),
-			new TestNode(externID: 'n3', siteType: SiteType.CUSTOMER).getNode(),
-			new TestNode(externID: 'n4', siteType: SiteType.CUSTOMER).getNode(),
-			new TestNode(externID: 'n5', siteType: SiteType.CUSTOMER).getNode(),
-			new TestNode(externID: 'nD', siteType: SiteType.DEPOT).getNode()
+				new TestNode(externID: 'n0', siteType: SiteType.CUSTOMER).getNode(),
+				new TestNode(externID: 'n1', siteType: SiteType.CUSTOMER).getNode(),
+				new TestNode(externID: 'n2', siteType: SiteType.CUSTOMER).getNode(),
+				new TestNode(externID: 'n3', siteType: SiteType.CUSTOMER).getNode(),
+				new TestNode(externID: 'n4', siteType: SiteType.CUSTOMER).getNode(),
+				new TestNode(externID: 'n5', siteType: SiteType.CUSTOMER).getNode(),
+				new TestNode(externID: 'nD', siteType: SiteType.DEPOT).getNode()
 		]
-		def model = Stub XFVRPModel
-		model.getNodes() >> nodes
-		model.getVehicle() >> testVehicle.getVehicle()
+		def model = TestXFVRPModel.get(nodes, testVehicle.getVehicle())
+
 		def context = new Context()
+		context.amountsOfRoute = CompartmentLoadBuilder.createCompartmentLoads(model.getCompartments());
 
 		def routeReport1 = new RouteReport(testVehicle.getVehicle())
 		routeReport1.add(new Event(nodes[6]), context)
@@ -151,13 +153,13 @@ class FullRouteMixedFleetHeuristicSpec extends Specification {
 
 	def "Reconstruct giant route - empty routes"() {
 		def nodes = [
-			new TestNode(externID: 'n0', siteType: SiteType.CUSTOMER).getNode(),
-			new TestNode(externID: 'n1', siteType: SiteType.CUSTOMER).getNode(),
-			new TestNode(externID: 'n2', siteType: SiteType.CUSTOMER).getNode(),
-			new TestNode(externID: 'n3', siteType: SiteType.CUSTOMER).getNode(),
-			new TestNode(externID: 'n4', siteType: SiteType.CUSTOMER).getNode(),
-			new TestNode(externID: 'n5', siteType: SiteType.CUSTOMER).getNode(),
-			new TestNode(externID: 'nD', siteType: SiteType.DEPOT).getNode()
+				new TestNode(externID: 'n0', siteType: SiteType.CUSTOMER).getNode(),
+				new TestNode(externID: 'n1', siteType: SiteType.CUSTOMER).getNode(),
+				new TestNode(externID: 'n2', siteType: SiteType.CUSTOMER).getNode(),
+				new TestNode(externID: 'n3', siteType: SiteType.CUSTOMER).getNode(),
+				new TestNode(externID: 'n4', siteType: SiteType.CUSTOMER).getNode(),
+				new TestNode(externID: 'n5', siteType: SiteType.CUSTOMER).getNode(),
+				new TestNode(externID: 'nD', siteType: SiteType.DEPOT).getNode()
 		]
 		def model = Stub XFVRPModel
 		model.getNodes() >> nodes
@@ -178,12 +180,14 @@ class FullRouteMixedFleetHeuristicSpec extends Specification {
 	def "Build solution For Invalid Nodes - normal"() {
 		def statusManager = Stub StatusManager
 		def depot = new TestNode(externID: 'nD', siteType: SiteType.DEPOT).getNode()
-		def n1 = new TestNode(externID: 'n1', siteType: SiteType.CUSTOMER).getNode()
-		def n2 = new TestNode(externID: 'n2', siteType: SiteType.CUSTOMER).getNode()
-		def model = Stub XFVRPModel
+		def nodes = [
+				new TestNode(externID: 'n1', siteType: SiteType.CUSTOMER).getNode(),
+				new TestNode(externID: 'n2', siteType: SiteType.CUSTOMER).getNode()
+		]
+		def model = TestXFVRPModel.get(nodes, testVehicle.getVehicle())
 
 		when:
-		def result = service.buildSolutionForInvalidNodes([n1, n2] as List<Node>, depot, model, statusManager)
+		def result = service.buildSolutionForInvalidNodes(nodes, depot, model, statusManager)
 		def gT = result.getGiantRoute()
 
 		then:
@@ -204,10 +208,9 @@ class FullRouteMixedFleetHeuristicSpec extends Specification {
 		def n1 = new TestNode(externID: 'n1', siteType: SiteType.CUSTOMER, presetBlockIdx: 2).getNode()
 		def n2 = new TestNode(externID: 'n2', siteType: SiteType.CUSTOMER, presetBlockIdx: BlockNameConverter.DEFAULT_BLOCK_IDX).getNode()
 		def n3 = new TestNode(externID: 'n3', siteType: SiteType.CUSTOMER, presetBlockIdx: 2).getNode()
-		def model = Stub XFVRPModel
 
 		when:
-		def result = service.buildSolutionForInvalidNodes([n1, n2, n3] as List<Node>, depot, model, statusManager)
+		def result = service.buildSolutionForInvalidNodes(nodes, depot, model, statusManager)
 		def gT = result.getGiantRoute()
 
 		then:
@@ -227,6 +230,8 @@ class FullRouteMixedFleetHeuristicSpec extends Specification {
 		def depot = new TestNode(externID: 'nD', siteType: SiteType.DEPOT).getNode()
 		def model = Stub XFVRPModel
 
+		def model = TestXFVRPModel.get([], testVehicle.getVehicle())
+
 		when:
 		def result = service.buildSolutionForInvalidNodes([] as List<Node>, depot, model, statusManager)
 		def gT = result.getGiantRoute()
@@ -244,13 +249,22 @@ class FullRouteMixedFleetHeuristicSpec extends Specification {
 		metric.getDistanceAndTime(_, _, _) >> [1, 1]
 
 		def nodes = [
-			new TestNode(externID: 'nD', siteType: SiteType.DEPOT).getNode(),
-			new TestNode(externID: 'n1', siteType: SiteType.CUSTOMER, invalidReason: InvalidReason.TIME_WINDOW).getNode(),
-			new TestNode(externID: 'n2', siteType: SiteType.CUSTOMER).getNode()
+				new TestNode(externID: 'nD', siteType: SiteType.DEPOT).getNode(),
+				new TestNode(externID: 'n1', siteType: SiteType.CUSTOMER, invalidReason: InvalidReason.TIME_WINDOW).getNode(),
+				new TestNode(externID: 'n2', siteType: SiteType.CUSTOMER).getNode()
 		]
+		def vehicles = [testVehicle.getVehicle()] as Vehicle[]
+		def types = []
+		CompartmentInitializer.check(nodes.toArray(new Node[0]), types, vehicles)
 
 		when:
-		def result = service.insertUnplannedNodes(nodes, metric, parameter, statusManager)
+		def result = service.insertUnplannedNodes(
+				nodes,
+				types.toArray(new CompartmentType[0]),
+				metric,
+				parameter,
+				statusManager
+		)
 		def gT = result.getGiantRoute()
 
 		then:
@@ -276,11 +290,14 @@ class FullRouteMixedFleetHeuristicSpec extends Specification {
 		metric.getDistanceAndTime(_, _, _) >> [1, 1]
 
 		def nodes = [
-			new TestNode(externID: 'nD', siteType: SiteType.DEPOT).getNode()
+				new TestNode(externID: 'nD', siteType: SiteType.DEPOT).getNode()
 		]
+		def vehicles = [testVehicle.getVehicle()] as Vehicle[]
+		def types = []
+		CompartmentInitializer.check(nodes.toArray(new Node[0]), types, vehicles)
 
 		when:
-		def result = service.insertUnplannedNodes(nodes, metric, parameter, statusManager)
+		def result = service.insertUnplannedNodes(nodes, types.toArray(new CompartmentType[0]), metric, parameter, statusManager)
 
 		then:
 		result == null
@@ -338,9 +355,7 @@ class FullRouteMixedFleetHeuristicSpec extends Specification {
 		when:
 		def result = service.execute(nodes, vehicles, {routingDataBag ->
 			def model = new XFVRPModel(nodes, iMetric, iMetric, routingDataBag.vehicle, parameter)
-			def sol = new Solution(model)
-			sol.setGiantRoute(solution.getGiantRoute())
-			return sol
+			return new XFVRPSolution(solution, model)
 		}, metric, parameter, statusManager)
 
 		def s1 = result.stream().filter({f -> f.getModel().getVehicle().name == 'V1'}).findFirst().get()
@@ -350,47 +365,49 @@ class FullRouteMixedFleetHeuristicSpec extends Specification {
 		then:
 		result != null
 		result.size() == 3
-		s1.getGiantRoute()[0].externID == 'nD'
-		s1.getGiantRoute()[1].externID == 'n1'
-		s1.getGiantRoute()[2].externID == 'n2'
-		s1.getGiantRoute()[3].externID == 'nD'
-		s1.getGiantRoute()[4].externID == 'n3'
-		s1.getGiantRoute()[5].externID == 'n4'
-		s1.getGiantRoute()[6].externID == 'nD'
-		s2.getGiantRoute()[0].externID == 'nD'
-		s2.getGiantRoute()[1].externID == 'n5'
-		s2.getGiantRoute()[2].externID == 'nD'
-		s3.getGiantRoute()[0].externID == 'nD'
-		s3.getGiantRoute()[1].externID == 'n6'
-		s3.getGiantRoute()[2].externID == 'nD'
+		s1.getSolution().getGiantRoute()[0].externID == 'nD'
+		s1.getSolution().getGiantRoute()[1].externID == 'n1'
+		s1.getSolution().getGiantRoute()[2].externID == 'n2'
+		s1.getSolution().getGiantRoute()[3].externID == 'nD'
+		s1.getSolution().getGiantRoute()[4].externID == 'nD'
+		s1.getSolution().getGiantRoute()[5].externID == 'n3'
+		s1.getSolution().getGiantRoute()[6].externID == 'n4'
+		s1.getSolution().getGiantRoute()[7].externID == 'nD'
+		s2.getSolution().getGiantRoute()[0].externID == 'nD'
+		s2.getSolution().getGiantRoute()[1].externID == 'n5'
+		s2.getSolution().getGiantRoute()[2].externID == 'nD'
+		s3.getSolution().getGiantRoute()[0].externID == 'nD'
+		s3.getSolution().getGiantRoute()[1].externID == 'n6'
+		s3.getSolution().getGiantRoute()[2].externID == 'nD'
 	}
 	
 	def "Execute - no vehicles"() {
 		def parameter = Stub XFVRPParameter
 		def statusManager = Stub StatusManager
 		def metric = Stub Metric
-		def iMetric = Spy(AcceleratedMetric, constructorArgs: [1])
 		metric.getDistanceAndTime(_, _, _) >> [1, 1]
 		def solution = Stub Solution
 
 		def nodes = [
-			new TestNode(externID: 'nD', siteType: SiteType.DEPOT).getNode(),
-			new TestNode(externID: 'n1', siteType: SiteType.CUSTOMER).getNode(),
-			new TestNode(externID: 'n2', siteType: SiteType.CUSTOMER).getNode(),
-			new TestNode(externID: 'n3', siteType: SiteType.CUSTOMER).getNode(),
-			new TestNode(externID: 'n4', siteType: SiteType.CUSTOMER).getNode(),
-			new TestNode(externID: 'n5', siteType: SiteType.CUSTOMER).getNode(),
-			new TestNode(externID: 'n6', siteType: SiteType.CUSTOMER).getNode()
+				new TestNode(externID: 'nD', siteType: SiteType.DEPOT).getNode(),
+				new TestNode(externID: 'n1', siteType: SiteType.CUSTOMER).getNode(),
+				new TestNode(externID: 'n2', siteType: SiteType.CUSTOMER).getNode(),
+				new TestNode(externID: 'n3', siteType: SiteType.CUSTOMER).getNode(),
+				new TestNode(externID: 'n4', siteType: SiteType.CUSTOMER).getNode(),
+				new TestNode(externID: 'n5', siteType: SiteType.CUSTOMER).getNode(),
+				new TestNode(externID: 'n6', siteType: SiteType.CUSTOMER).getNode()
 		] as Node[]
 
 		solution.getGiantRoute() >> [nodes[0], nodes[0]]
 
 		def vehicles = [] as Vehicle[]
+		def types = []
+		CompartmentInitializer.check(nodes, types, vehicles)
 
 		when:
 		def result = service.execute(nodes, vehicles, {routingDataBag ->
 			def model = new XFVRPModel(nodes, iMetric, iMetric, routingDataBag.vehicle, parameter)
-			return solution
+			return new XFVRPSolution(solution, model)
 		}, metric, parameter, statusManager)
 
 		then:

@@ -10,7 +10,7 @@ import xf.xfvrp.base.monitor.StatusManager
 
 class PresetDepotConverterSpec extends Specification {
 
-	def service = new PresetDepotConverter();
+	def service = new PresetDepotConverter()
 	def statusManager = Mock StatusManager
 	
 	def "Set blocked depot index"() {
