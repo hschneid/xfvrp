@@ -82,7 +82,7 @@ public class CheckService {
 			List<Node> nodesOfBlock = entry.getValue();
 			solutionBuilderDataBag.resetKnownSequencePositions();
 
-			nodesOfBlock.sort(Comparator.comparingInt(Node::getPresetBlockPos));
+			nodesOfBlock.sort(Comparator.comparingInt(Node::getPresetBlockPos).thenComparingInt(Node::getPresetBlockRank));
 
 			boolean isValid = checkNodesOfBlock(blockIdx, nodesOfBlock, solutionBuilderDataBag, invalidNodes, model);
 			if(!isValid) 

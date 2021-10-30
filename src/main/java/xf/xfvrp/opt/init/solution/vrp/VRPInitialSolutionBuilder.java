@@ -32,7 +32,7 @@ import java.util.*;
 public class VRPInitialSolutionBuilder {
 
 	public Solution build(XFVRPModel model, List<Node> invalidNodes, StatusManager statusManager) throws XFVRPException {
-		List<Node> validNodes = getValidCustomers(model, invalidNodes); 
+		List<Node> validNodes = getValidCustomers(model, invalidNodes);
 
 		Solution solution = buildSolution(validNodes, model, statusManager);
 
@@ -43,7 +43,7 @@ public class VRPInitialSolutionBuilder {
 
 	/**
 	 * Builds the giant tour. All invalid nodes are filtered out before.
-	 * 
+	 *
 	 * @param nodes List of nodes which are valid
 	 * @param model Current model of nodes, distances and parameters
 	 * @return Current route plan of single trips per customer
@@ -52,22 +52,22 @@ public class VRPInitialSolutionBuilder {
 		if(nodes == null) {
 			return new Solution(model);
 		}
-		
+
 		// If user has given a predefined solution
 		if(model.getParameter().getPredefinedSolutionString() != null)
 			return new PresetSolutionBuilder().build(nodes, model, statusManager);
-	
+
 		return generateSolution(nodes, model);
 	}
 
 	private Solution generateSolution(List<Node> nodes, XFVRPModel model) {
 		List<Node> gL = new ArrayList<>();
-	
+
 		// GlobalIndex -> Depot
 		Map<Integer, Node> depotMap = new HashMap<>();
 		for (int i = 0; i < model.getNbrOfDepots(); i++)
 			depotMap.put(nodes.get(i).getGlobalIdx(), nodes.get(i));
-	
+
 		// Create single routes for each block or single customer without block
 		int depotIdx = 0;
 		int maxIdx = 0;
@@ -79,10 +79,10 @@ public class VRPInitialSolutionBuilder {
 			depots.add(dep.getGlobalIdx());
 		for (int i = model.getNbrOfDepots() + model.getNbrOfReplenish(); i < nodes.size(); i++) {
 			Node currNode = nodes.get(i);
-	
+
 			// Reduce allowed depots to preset allowed depots
 			List<Integer> allowedDepots = getAllowedDepots(currNode, depots);
-	
+
 			// Add a depot after each change of block or unblocked customer
 			final int blockIdx = currNode.getPresetBlockIdx();
 			if(blockIdx == BlockNameConverter.DEFAULT_BLOCK_IDX || blockIdx != lastBlockIdx) {
@@ -129,6 +129,7 @@ public class VRPInitialSolutionBuilder {
 				Comparator
 						.comparingInt(Node::getPresetBlockIdx)
 						.thenComparingInt(Node::getPresetBlockPos)
+						.thenComparingInt(Node::getPresetBlockRank)
 		);
 
 		List<Node> validNodes = new ArrayList<>();

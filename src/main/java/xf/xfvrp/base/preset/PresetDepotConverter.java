@@ -43,7 +43,7 @@ public class PresetDepotConverter {
 			if(presetMap.containsKey(node.getExternID())) {
 				presetMap.get(node.getExternID()).forEach(id -> {
 					if(!depotIdxMap.containsKey(id))
-						st.fireMessage(StatusCode.EXCEPTION, "Could not found preset depot extern id "+id+" in depots.");
+						st.fireMessage(StatusCode.EXCEPTION, "Could not find the preset depot extern id "+id+" in given depots.");
 					else
 						node.addPresetDepot(depotIdxMap.get(id));
 				});

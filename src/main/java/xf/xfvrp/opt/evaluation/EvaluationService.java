@@ -205,7 +205,7 @@ public class EvaluationService {
 			q.addPenalty(penalty, Quality.PENALTY_REASON_PRESETTING);
 		}
 
-		// Set information for black listed nodes restriction (currenty only for customer)
+		// Set information for black listed nodes restriction (currently only for customer)
 		context.setPresetRouting();
 
 		// Check PresetPosition restriction

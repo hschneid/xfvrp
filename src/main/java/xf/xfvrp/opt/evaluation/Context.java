@@ -5,7 +5,6 @@ import xf.xfvrp.base.compartment.CompartmentLoad;
 import xf.xfvrp.base.exception.XFVRPException;
 import xf.xfvrp.base.exception.XFVRPExceptionType;
 import xf.xfvrp.base.preset.BlockNameConverter;
-import xf.xfvrp.base.preset.BlockPositionConverter;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -271,15 +270,17 @@ public class Context {
 	}
 
 	public int checkPresetPosition() {
-		if (currentNode.getPresetBlockPos() > BlockPositionConverter.UNDEF_POSITION)
-			// 1 is the first setted block position. The second block pos needs to be checked at first.
-			if(currentNode.getPresetBlockPos() > 1)
-				if (currentNode.getPresetBlockIdx() > BlockNameConverter.DEFAULT_BLOCK_IDX)
-					if (currentNode.getPresetBlockIdx() == lastNode.getPresetBlockIdx()) {
-						if (lastNode.getPresetBlockPos() != currentNode.getPresetBlockPos() - 1)
-							return 1;
-					} else
+		// curr node must have a preset block position greater than 1 (1 is first position)
+		if(currentNode.getPresetBlockPos() > 1)
+			// AND must have a dedicated block
+			if (currentNode.getPresetBlockIdx() > BlockNameConverter.DEFAULT_BLOCK_IDX)
+				// If curr node and last node have same block
+				if (currentNode.getPresetBlockIdx() == lastNode.getPresetBlockIdx()) {
+					// than diff of positions must be 1
+					if (currentNode.getPresetBlockPos() - lastNode.getPresetBlockPos() != 1)
 						return 1;
+				} else
+					return 1;
 
 		return 0;
 	}

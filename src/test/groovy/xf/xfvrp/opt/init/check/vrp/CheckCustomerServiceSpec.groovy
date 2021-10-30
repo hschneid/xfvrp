@@ -8,85 +8,12 @@ import xf.xfvrp.base.InvalidReason
 import xf.xfvrp.base.Node
 import xf.xfvrp.base.SiteType
 import xf.xfvrp.base.XFVRPModel
-import xf.xfvrp.base.exception.XFVRPException
 import xf.xfvrp.opt.init.solution.vrp.SolutionBuilderDataBag
 
 class CheckCustomerServiceSpec extends Specification {
 
 	def modelStub = Stub XFVRPModel
 	def service = new CheckCustomerService()
-
-	def "Check presets - Okay"() {
-		def customer = new TestNode(
-				externID: "1",
-				siteType: SiteType.CUSTOMER,
-				presetBlockIdx: 1,
-				presetBlockRank: 2,
-				presetBlockPos: 2
-				).getNode()
-
-		def dataBag = new SolutionBuilderDataBag()
-		dataBag.knownSequencePositions = [1] as Set<Integer>
-
-		when:
-		service.checkPresets(customer, dataBag)
-		then:
-		noExceptionThrown()
-	}
-	
-	def "Check presets - Pos not okay"() {
-		def customer = new TestNode(
-				externID: "1",
-				siteType: SiteType.CUSTOMER,
-				presetBlockIdx: 1,
-				presetBlockRank: 2,
-				presetBlockPos: -1
-				).getNode()
-
-		def dataBag = new SolutionBuilderDataBag()
-		dataBag.knownSequencePositions = [1] as Set<Integer>
-
-		when:
-		service.checkPresets(customer, dataBag)
-		then:
-		thrown XFVRPException
-	}
-
-	def "Check presets - Rank not okay"() {
-		def customer = new TestNode(
-				externID: "1",
-				siteType: SiteType.CUSTOMER,
-				presetBlockIdx: 1,
-				presetBlockRank: -1,
-				presetBlockPos: 2
-				).getNode()
-
-		def dataBag = new SolutionBuilderDataBag()
-
-		when:
-		service.checkPresets(customer, dataBag)
-		then:
-		thrown XFVRPException
-	}
-
-	def "Check presets - Pos duplicate"() {
-		def customer = new TestNode(
-				externID: "1",
-				siteType: SiteType.CUSTOMER,
-				presetBlockIdx: 1,
-				presetBlockRank: 2,
-				presetBlockPos: 2
-				).getNode()
-
-		def dataBag = new SolutionBuilderDataBag()
-		dataBag.knownSequencePositions = [2] as Set<Integer>
-
-		when:
-		service.checkPresets(customer, dataBag)
-
-		then:
-		thrown XFVRPException
-	}
 
 	def "Check demands - Okay"() {
 		def customer = new TestNode(
