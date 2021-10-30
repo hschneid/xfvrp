@@ -35,12 +35,12 @@ This software is licenced under [MIT License] (https://opensource.org/licenses/M
     <dependency>
       <groupId>com.github.hschneid</groupId>
       <artifactId>xfvrp</artifactId>
-      <version>11.3.0-RELEASE</version>
+      <version>11.4.5-RELEASE</version>
     </dependency>
     ```
   * Gradle:
     ```
-    implementation 'com.github.hschneid:xfvrp:11.3.0-RELEASE'
+    implementation 'com.github.hschneid:xfvrp:11.4.5-RELEASE'
     ```
 
 A simple example for a capacitated vehicle route planning:
@@ -60,6 +60,17 @@ report.getSummary().getDistance();
 As a general purpose solver, XFVRP is not fully compatable with single problem solvers. But even though it can prove its relevance by [benchmarks](BENCHMARKS.md).
 
 ## Change log
+
+### 11.4.5
+- Introduced compartments as explicit resource. User can control the way, how demands are checked for capacity constraint. Default compartment is the mixed pickup and delivery.
+  ```
+    xfvrp.addCompartment(CompartmentType.PICKUP);
+    xfvrp.addVehicle().setCapacity(new float[]{50, 5, 10});
+    xfvrp.addCustomer().setLoadType(LoadType.PICKUP).setDemand(new float[]{13, 4}); 
+  ```
+  In example, a compartment is declared, where only pickups shall happen. But the vehicle capacity is declared with 3 compartments, so 2 additional compartments are added with default compartment.
+  The demand of the customer has only 2 compartments declared, which means, that third compartment is filled with default value = 0.
+- Reverted some of the changes for compartments from 11.4.0 due to many side-effects. If someone needs this feature, please ping us.
 
 ### 11.4.4.1
 - Introduced new Mixed Fleet Heuristic
