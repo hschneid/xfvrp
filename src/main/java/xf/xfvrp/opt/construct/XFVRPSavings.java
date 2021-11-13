@@ -1,9 +1,6 @@
 package xf.xfvrp.opt.construct;
 
-import xf.xfvrp.base.Node;
-import xf.xfvrp.base.Quality;
-import xf.xfvrp.base.SiteType;
-import xf.xfvrp.base.Util;
+import xf.xfvrp.base.*;
 import xf.xfvrp.base.exception.XFVRPException;
 import xf.xfvrp.opt.Solution;
 import xf.xfvrp.opt.XFVRPOptBase;
@@ -23,7 +20,7 @@ import java.util.stream.Stream;
  *
  *
  * Contains the Savings optimization procedure with
- * acceptance value lamda. 
+ * acceptance value lambda = 1.
  *
  * @author hschneid
  *
@@ -37,9 +34,7 @@ public class XFVRPSavings extends XFVRPOptBase {
 	 */
 	@Override
 	public Solution execute(Solution solution) throws XFVRPException {
-		Node[] giantRoute = solution.getGiantRoute();
-
-		final Node depot = giantRoute[0];
+		final Node depot = solution.getRoutes()[0][0];
 
 		SavingsDataBag dataBag = buildRoutes(solution);
 
@@ -49,9 +44,7 @@ public class XFVRPSavings extends XFVRPOptBase {
 
 		improve(depot, dataBag);
 
-		Solution newSolution = new Solution(solution.getModel());
-		newSolution.setGiantRoute(buildGiantRoute(dataBag, depot));
-		return newSolution;
+		return createSolution(depot, dataBag, solution.getModel());
 	}
 
 	private void prepare(SavingsDataBag dataBag) {
@@ -247,27 +240,6 @@ public class XFVRPSavings extends XFVRPOptBase {
 	}
 
 	/**
-	 * Converts a list of lists into a giant route representation
-	 */
-	private Node[] buildGiantRoute(SavingsDataBag dataBag, Node depot) {
-		Node[][] routeArr = dataBag.getRoutes();
-
-		int maxId = 0;
-		List<Node> giantList = new ArrayList<>();
-		for (int i = 0; i < routeArr.length; i++) {
-			if (routeArr[i] == null)
-				continue;
-
-			giantList.add(Util.createIdNode(depot, maxId++));
-			giantList.addAll(Arrays.asList(routeArr[i]));
-
-		}
-		giantList.add(Util.createIdNode(depot, maxId));
-
-		return giantList.toArray(new Node[0]);
-	}
-
-	/**
 	 * Creates the initial list of lists where each
 	 * sub list is a route of customers. Each savings route contains only Customer nodes.
 	 */
@@ -282,5 +254,25 @@ public class XFVRPSavings extends XFVRPOptBase {
 						.filter(route -> route.length > 0)
 						.toArray(Node[][]::new)
 		);
+	}
+
+	private Solution createSolution(Node depot, SavingsDataBag dataBag, XFVRPModel model) {
+		Solution newSolution = new Solution(model);
+
+		int depotId = 0;
+		for (int i = 0; i < dataBag.getRoutes().length; i++) {
+			Node[] customers = dataBag.getRoutes()[i];
+			if(customers != null) {
+				Node[] route = new Node[customers.length + 2];
+
+				route[0] = Util.createIdNode(depot, depotId++);
+				System.arraycopy(customers, 0, route, 1, customers.length);
+				route[route.length - 1] = Util.createIdNode(depot, depotId++);
+
+				newSolution.addRoute(route);
+			}
+		}
+
+		return newSolution;
 	}
 }

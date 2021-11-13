@@ -74,7 +74,8 @@ public class Solution implements Iterable<Node[]> {
 
 	public void addRoutes(Node[][] newRoutes) {
 		for (int i = 0; i < newRoutes.length; i++) {
-			addRoute(newRoutes[i]);
+			if(newRoutes[i] != null)
+				addRoute(newRoutes[i]);
 		}
 	}
 
