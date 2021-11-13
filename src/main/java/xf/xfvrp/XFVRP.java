@@ -164,7 +164,7 @@ public class XFVRP extends XFVRPData {
 	 */
 	public void addOptType(XFVRPOptType type) throws XFVRPException {
 		if(type != null)
-			optList.add(type.createInstance());
+			optList.add(type.create());
 	}
 
 	/**

@@ -6,7 +6,7 @@ import xf.xfvrp.base.preset.BlockNameConverter;
 import xf.xfvrp.base.preset.BlockPositionConverter;
 import xf.xfvrp.opt.Solution;
 import xf.xfvrp.opt.XFVRPOptBase;
-import xf.xfvrp.opt.XFVRPOptType;
+import xf.xfvrp.opt.XFVRPOptTypes;
 import xf.xfvrp.opt.init.solution.vrp.SolutionBuilderDataBag;
 
 import java.util.Arrays;
@@ -45,7 +45,7 @@ import java.util.stream.Collectors;
  */
 public class CheckService {
 
-	private XFVRPOptBase optimizationMethod = XFVRPOptType.RELOCATE.createInstance();
+	private XFVRPOptBase optimizationMethod = XFVRPOptTypes.RELOCATE.create();
 	private CheckCustomerService checkCustomerService = new CheckCustomerService();
 
 	public CheckService() throws XFVRPException {

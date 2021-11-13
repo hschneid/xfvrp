@@ -40,9 +40,9 @@ class XFVRPOptSplitterIntSpec extends Specification {
 					.setServiceTime(5)
 		}
 
-		xfvrp.addOptType(XFVRPOptType.SAVINGS)
-		xfvrp.addOptType(XFVRPOptType.RELOCATE)
-		xfvrp.addOptType(XFVRPOptType.SWAP)
+		xfvrp.addOptType(XFVRPOptTypes.SAVINGS)
+		xfvrp.addOptType(XFVRPOptTypes.RELOCATE)
+		xfvrp.addOptType(XFVRPOptTypes.SWAP)
 		//xfvrp.addOptType(XFVRPOptType.PATH_RELOCATE)
 		//xfvrp.addOptType(XFVRPOptType.PATH_EXCHANGE)
 

@@ -5,7 +5,7 @@ import xf.xfvrp.XFVRP
 import xf.xfvrp.base.LoadType
 import xf.xfvrp.base.compartment.CompartmentType
 import xf.xfvrp.base.metric.Metrics
-import xf.xfvrp.opt.XFVRPOptType
+import xf.xfvrp.opt.XFVRPOptTypes
 
 import java.util.stream.Collectors
 
@@ -105,7 +105,7 @@ class EvaluationServiceCapacityIntSpec extends Specification {
 
 	def "Check with replenishment"() {
 		XFVRP vrp = build()
-		vrp.addOptType(XFVRPOptType.ILS)
+		vrp.addOptType(XFVRPOptTypes.ILS)
 		// vrp.getParameters().nbrOfILSLoops = 100
 		vrp.addVehicle().setName('V').setCapacity([3, 2, 3] as float[])
 		vrp.addCompartment(CompartmentType.DELIVERY)
@@ -137,7 +137,7 @@ class EvaluationServiceCapacityIntSpec extends Specification {
 
 	def "Check with inactive replenishment and presets"() {
 		XFVRP vrp = build()
-		vrp.addOptType(XFVRPOptType.ILS)
+		vrp.addOptType(XFVRPOptTypes.ILS)
 		vrp.addVehicle().setName('V').setCapacity([5, 3] as float[])
 		vrp.addCompartment(CompartmentType.MIXED_NO_REPLENISH)
 		vrp.addCompartment(CompartmentType.MIXED)
@@ -162,7 +162,7 @@ class EvaluationServiceCapacityIntSpec extends Specification {
 
 	def "Check without replenishment"() {
 		XFVRP vrp = build()
-		vrp.addOptType(XFVRPOptType.ILS)
+		vrp.addOptType(XFVRPOptTypes.ILS)
 		vrp.addVehicle().setName('V').setCapacity([3, 2, 3] as float[])
 		vrp.addCompartment(CompartmentType.DELIVERY_NO_REPLENISH)
 		vrp.addCompartment(CompartmentType.PICKUP_NO_REPLENISH)
@@ -197,7 +197,7 @@ class EvaluationServiceCapacityIntSpec extends Specification {
 	XFVRP build() {
 		XFVRP vrp = new XFVRP()
 		vrp.setMetric(Metrics.EUCLEDIAN.get())
-		vrp.addOptType(XFVRPOptType.RELOCATE)
+		vrp.addOptType(XFVRPOptTypes.RELOCATE)
 		return vrp
 	}
 }

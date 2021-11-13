@@ -70,7 +70,7 @@ class FullRouteMixedFleetIntSpec extends Specification {
 		xfvrp.addVehicle().setName('V2').setCapacity([3] as float[]).setFixCost(11).setVarCost(5).setCount(1)
 		xfvrp.addVehicle().setName('V3').setCapacity([2] as float[]).setFixCost(14).setVarCost(6).setCount(1)
 		xfvrp.setMetric(Metrics.EUCLEDIAN.get())
-		xfvrp.addOptType(XFVRPOptType.RELOCATE)
+		xfvrp.addOptType(XFVRPOptTypes.RELOCATE)
 		xfvrp.addDepot().setExternID('nD')
 		return xfvrp
 	}
@@ -124,8 +124,8 @@ class FullRouteMixedFleetIntSpec extends Specification {
 		})
 		println "Added " + counter + " demands."
 
-		xfvrp.addOptType(XFVRPOptType.SAVINGS)
-		xfvrp.addOptType(XFVRPOptType.RELOCATE)
+		xfvrp.addOptType(XFVRPOptTypes.SAVINGS)
+		xfvrp.addOptType(XFVRPOptTypes.RELOCATE)
 		//xfvrp.addOptType(XFVRPOptType.PATH_RELOCATE)
 		//xfvrp.addOptType(XFVRPOptType.PATH_EXCHANGE)
 

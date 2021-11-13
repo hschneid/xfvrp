@@ -86,8 +86,6 @@ public class XFVRPData extends XFVRPBase {
 	 * information about the distance or time between nodes.
 	 *
 	 * Metrics can relay on coordinates or on pre-calculated data.
-	 *
-	 * @param metric
 	 */
 	public void setMetric(Metric metric) {
 		this.metric = metric;

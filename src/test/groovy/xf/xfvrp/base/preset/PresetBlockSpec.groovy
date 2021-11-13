@@ -5,7 +5,7 @@ import xf.xfvrp.XFVRP
 import xf.xfvrp.base.exception.XFVRPException
 import xf.xfvrp.base.metric.EucledianMetric
 import xf.xfvrp.base.monitor.DefaultStatusMonitor
-import xf.xfvrp.opt.XFVRPOptType
+import xf.xfvrp.opt.XFVRPOptTypes
 import xf.xfvrp.report.Report
 
 import java.util.stream.Collectors
@@ -145,7 +145,7 @@ class PresetBlockSpec extends Specification {
 		xfvrp.addVehicle().setCapacity(100).setName("V")
 		xfvrp.addDepot().setExternID("DD")
 
-		xfvrp.addOptType(XFVRPOptType.ILS)
+		xfvrp.addOptType(XFVRPOptTypes.ILS)
 
 		xfvrp.setMetric(new EucledianMetric())
 

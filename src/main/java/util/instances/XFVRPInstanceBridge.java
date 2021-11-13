@@ -10,7 +10,7 @@ import xf.xfvrp.base.LoadType;
 import xf.xfvrp.base.exception.XFVRPException;
 import xf.xfvrp.base.metric.EucledianMetric;
 import xf.xfvrp.base.monitor.DefaultStatusMonitor;
-import xf.xfvrp.opt.XFVRPOptType;
+import xf.xfvrp.opt.XFVRPOptTypes;
 import xf.xfvrp.report.Report;
 
 import javax.xml.bind.JAXBException;
@@ -78,7 +78,7 @@ public class XFVRPInstanceBridge {
 		/*vrp.addOptType(XFVRPOptType.RELOCATE);
 		vrp.addOptType(XFVRPOptType.SWAP);
 		vrp.addOptType(XFVRPOptType.PATH_RELOCATE);*/
-		vrp.addOptType(XFVRPOptType.ILS);
+		vrp.addOptType(XFVRPOptTypes.ILS);
 		vrp.getParameters().setNbrOfILSLoops(20000);
 
 		/*vrp.setPredefinedSolutionString(

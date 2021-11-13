@@ -8,7 +8,7 @@ import xf.xfvrp.XFVRP
 import xf.xfvrp.base.LoadType
 import xf.xfvrp.base.metric.EucledianMetric
 import xf.xfvrp.base.monitor.DefaultStatusMonitor
-import xf.xfvrp.opt.XFVRPOptType
+import xf.xfvrp.opt.XFVRPOptTypes
 import xf.xfvrp.report.RouteReport
 
 import java.util.concurrent.atomic.AtomicInteger
@@ -88,8 +88,8 @@ class Hackstein extends Specification {
         })
         println "Added " + counter + " demands."
 
-        xfvrp.addOptType(XFVRPOptType.SAVINGS)
-        xfvrp.addOptType(XFVRPOptType.RELOCATE)
+        xfvrp.addOptType(XFVRPOptTypes.SAVINGS)
+        xfvrp.addOptType(XFVRPOptTypes.RELOCATE)
         //xfvrp.addOptType(XFVRPOptType.PATH_RELOCATE)
         //xfvrp.addOptType(XFVRPOptType.PATH_EXCHANGE)
 
