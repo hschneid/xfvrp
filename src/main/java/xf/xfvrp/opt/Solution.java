@@ -56,6 +56,7 @@ public class Solution implements Iterable<Node[]> {
 	}
 
 	public void addRoute(Node[] newRoute) {
+		// Replace empty slot with new route, if available
 		for (int i = 0; i < routes.length; i++) {
 			if(routes[i].length == 0) {
 				routes[i] = newRoute;
@@ -63,11 +64,18 @@ public class Solution implements Iterable<Node[]> {
 			}
 		}
 
+		// Otherwise, enlarge routes and place new route at the end
 		routes = Arrays.copyOf(routes, routes.length + 1);
 		routes[routes.length - 1] = newRoute;
 
 		routeQualities = Arrays.copyOf(routeQualities, routeQualities.length + 1);
 		routeQualities[routeQualities.length - 1] = new RouteQuality(routeQualities.length - 1, null);
+	}
+
+	public void addRoutes(Node[][] newRoutes) {
+		for (int i = 0; i < newRoutes.length; i++) {
+			addRoute(newRoutes[i]);
+		}
 	}
 
 	public void setRoute(int routeIndex, Node[] route) {

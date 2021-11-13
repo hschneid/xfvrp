@@ -62,6 +62,11 @@ As a general purpose solver, XFVRP is not fully compatable with single problem s
 ## Change log
 
 ### 11.4.5
+#### Breaking Changes
+- Renamed XFVRPOptType -> XFVRPOptTypes  
+  - Changed optimization types from enum to simple list. With this, it is possible to inject own optimization logic into XFVRP.
+
+#### Changes
 - Introduced compartments as explicit resource. User can control the way, how demands are checked for capacity constraint. Default compartment is the mixed pickup and delivery.
   ```
     xfvrp.addCompartment(CompartmentType.PICKUP);
@@ -71,8 +76,8 @@ As a general purpose solver, XFVRP is not fully compatable with single problem s
   In example, a compartment is declared, where only pickups shall happen. But the vehicle capacity is declared with 3 compartments, so 2 additional compartments are added with default compartment.
   The demand of the customer has only 2 compartments declared, which means, that third compartment is filled with default value = 0.
 - Reverted some of the changes for compartments from 11.4.0 due to many side-effects. If someone needs this feature, please ping us.
-- Changed optimization types from enum to simple list. With this, it is possible to inject own optimization types into XFVRP.
 - More refactorings due to giant route
+- Fixed, that construction heuristic does not consider allowed-depots constraint correctly
 
 ### 11.4.4.1
 - Introduced new Mixed Fleet Heuristic

@@ -12,6 +12,7 @@ import xf.xfvrp.opt.init.PresetSolutionBuilder;
 import xf.xfvrp.opt.init.check.vrp.CheckService;
 
 import java.util.*;
+import java.util.function.Function;
 
 /**
  * Copyright (c) 2012-2021 Holger Schneider
@@ -104,6 +105,58 @@ public class VRPInitialSolutionBuilder {
 		Solution solution = new Solution(model);
 		solution.setGiantRoute(gL.toArray(new Node[0]));
 		return solution;
+	}
+
+	public Solution generateSolution(Node depot, List<Node> customers, XFVRPModel model) {
+		Map<Integer, List<Node>> customerGroups = group(customers, Node::getPresetBlockIdx);
+
+		Solution solution = new Solution(model);
+
+		// Add unblocked customers
+		int maxIdx = 0;
+		List<Node> unblockedCustomers = customerGroups.get(BlockNameConverter.DEFAULT_BLOCK_IDX);
+		for (Node customer : unblockedCustomers) {
+			solution.addRoute(new Node[]{
+					Util.createIdNode(depot, maxIdx++),
+					customer,
+					Util.createIdNode(depot, maxIdx++)
+			});
+		}
+		customerGroups.remove(BlockNameConverter.DEFAULT_BLOCK_IDX);
+
+		// Add blocked customers
+		for (List<Node> group : customerGroups.values()) {
+			Node[] route = new Node[group.size() + 2];
+			route[0] = Util.createIdNode(depot, maxIdx++);
+			for (int customerIdx = 0; customerIdx < group.size(); customerIdx++) {
+				route[customerIdx + 1] = group.get(customerIdx);
+			}
+			route[route.length - 1] = Util.createIdNode(depot, maxIdx++);
+
+			solution.addRoute(route);
+		}
+
+		return solution;
+	}
+
+	private <K, V> Map<K, List<V>> group(List<V> values, Function<V, K> keyMapping) {
+		Map<K, List<V>> map = new HashMap<>();
+		for (int i = values.size() - 1; i >= 0; i--) {
+			V value = values.get(i);
+			if(value == null)
+				continue;
+			K key = keyMapping.apply(value);
+			if(key == null)
+				continue;
+
+			if(!map.containsKey(key)) {
+				map.put(key, new ArrayList<>());
+			}
+
+			map.get(key).add(value);
+		}
+
+		return map;
 	}
 
 	private List<Integer> getAllowedDepots(Node currNode, Set<Integer> depots) {

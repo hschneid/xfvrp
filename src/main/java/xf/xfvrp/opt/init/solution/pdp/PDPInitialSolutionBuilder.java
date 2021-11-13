@@ -7,9 +7,7 @@ import xf.xfvrp.base.XFVRPModel;
 import xf.xfvrp.opt.Solution;
 import xf.xfvrp.opt.init.check.pdp.PDPCheckService;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -32,34 +30,31 @@ public class PDPInitialSolutionBuilder {
 
 	private Solution buildSolution(Map<Integer, Node[]> shipments, XFVRPModel model) {
 		Node[] nodes = model.getNodes();
-		PDPCheckService checkService = new PDPCheckService();
-		
 		if (nodes.length == 0) {
 			return new Solution(model);
 		}
-		
-		List<Node> gL = new ArrayList<>();
+
 		int[] depotIdx = new int[]{0};
 		int[] maxIdx = new int[]{0};
 
+		Solution solution = new Solution(model);
+
+		PDPCheckService checkService = new PDPCheckService();
 		shipments.values().forEach(shipment -> {
 			if(!checkService.check(model, shipment)) {
 				return;
 			}
 
 			// Create a trivial route with a depot, pickup and delivery.
-			gL.add(Util.createIdNode(nodes[depotIdx[0]], maxIdx[0]++));
-			gL.add(shipment[0]);
-			gL.add(shipment[1]);
+			solution.addRoute(new Node[] {
+					Util.createIdNode(nodes[depotIdx[0]], maxIdx[0]++),
+					shipment[0],
+					shipment[1],
+					Util.createIdNode(nodes[depotIdx[0]], maxIdx[0]++)
+			});
 
 			depotIdx[0] = ((depotIdx[0] + 1) % model.getNbrOfDepots());
 		});
-
-		if (gL.size() > 0) 
-			gL.add(Util.createIdNode(nodes[depotIdx[0]], maxIdx[0]++));
-
-		Solution solution = new Solution(model);
-		solution.setGiantRoute(gL.toArray(new Node[0]));
 		return solution;
 	}
 
@@ -79,6 +74,5 @@ public class PDPInitialSolutionBuilder {
 					return pair;
 				})
 				.collect(Collectors.toMap(k -> k[0].getShipmentIdx(), v -> v, (v1, v2) -> v1));
-
 	}
 }
