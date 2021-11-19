@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 /** 
@@ -41,6 +42,8 @@ public class XFVRPOptSplitter {
 
 	private static final int ALLOWED_NBR_OF_CUSTOMERS_IN_BLOCK = 250;
 	private static final int ALLOWED_NBR_OF_NON_IMPROVES = 2;
+
+	private final ExecutorService ex = Executors.newFixedThreadPool(4);
 
 	/**
 	 * Executes the optimization by splitting a big route plan into smaller
@@ -81,13 +84,21 @@ public class XFVRPOptSplitter {
 
 	private Solution optimizeBlocks(XFVRPModel model, StatusManager statusManager, XFVRPOptBase opt, List<Solution> blocks) throws XFVRPException {
 		Solution newSolution = new Solution(model);
+
+		List<Callable<Solution>> tasksList = new ArrayList<>();
 		for (Solution block : blocks) {
-			// Optimize block
-			opt.execute(block, model, statusManager);
-			// Join block to new solution
-			for (Node[] routes : block) {
-				newSolution.addRoute(routes);
+			// Execute optimization in "Future"
+			tasksList.add(() -> opt.execute(block, model, statusManager));
+		}
+
+		// Optimize block
+		try {
+			List<Future<Solution>> results = ex.invokeAll(tasksList);
+			for(Future<Solution> result : results) {
+				newSolution.addRoutes(result.get().getRoutes());
 			}
+		} catch (InterruptedException | ExecutionException e) {
+			e.printStackTrace();
 		}
 
 		return newSolution;
@@ -139,7 +150,7 @@ public class XFVRPOptSplitter {
 	 * Returns the cost of route plan by building up a report.
 	 */
 	private float getCost(Solution solution, XFVRPOptBase optBase) throws XFVRPException {
-		Quality quality = optBase.check(solution);	
+		Quality quality = optBase.check(solution);
 		return quality.getCost();
 	}
 }

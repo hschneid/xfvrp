@@ -29,6 +29,10 @@ public class XFVRPSavings extends XFVRPOptBase {
 
 	protected float lamda = 1;
 
+	public XFVRPSavings() {
+		super.isSplittable = true;
+	}
+
 	/**
 	 * Executes the Savings routing
 	 */

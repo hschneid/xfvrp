@@ -228,6 +228,11 @@ public class Solution implements Iterable<Node[]> {
 	}
 
 	public boolean isValid() {
-		return routes.length > 0 && routes[0].length > 0;
+		return routes.length > 0 &&
+				routes[0].length > 0 &&
+				// Has customers
+				Arrays.stream(routes)
+						.flatMap(Arrays::stream)
+						.anyMatch(n -> n.getSiteType() == SiteType.CUSTOMER);
 	}
 }

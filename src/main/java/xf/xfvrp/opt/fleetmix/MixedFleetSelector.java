@@ -5,6 +5,7 @@ import xf.xfvrp.report.Report;
 import xf.xfvrp.report.RouteReport;
 import xf.xfvrp.report.RouteReportSummary;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,15 +31,9 @@ public class MixedFleetSelector implements IMixedFleetSelector {
 	public List<RouteReport> getBestRoutes(Vehicle veh, Report rep) {
 		return rep.getRoutes().stream()
 				// Get the quality of routes by the report informations
-				.map(route -> getQuality(route))
+				.map(this::getQuality)
 				// Sort the routes by their quality
-				.sorted((o1, o2) -> {
-					double v1 = o1.quality;
-					double v2 = o2.quality;
-					if(v1 > v2) return 1;
-					if(v1 < v2) return -1;
-					return 0;
-				})
+				.sorted(Comparator.comparing((RouteQuality r) -> r.quality))
 				// Reduce routes to the n best routes
 				.map(val -> val.route)
 				.limit(veh.getNbrOfAvailableVehicles())
