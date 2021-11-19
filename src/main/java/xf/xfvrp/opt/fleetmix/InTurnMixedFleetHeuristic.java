@@ -46,17 +46,18 @@ public class InTurnMixedFleetHeuristic extends MixedFleetHeuristicBase implement
 		int[] vehCounts = Arrays.stream(vehicles).mapToInt(Vehicle::getNbrOfAvailableVehicles).toArray();
 		int i = 0;
 		while (countCustomersLeft(unplannedNodes) > 0 && countVehiclesLeft(vehCounts) > 0) {
-			if (vehCounts[i] == 0) continue;
-			
-			Vehicle veh = vehicles[i];
-			statusManager.fireMessage(StatusCode.RUNNING, "Run with vehicle " + veh.getName() + " started.");
-			
-			Vehicle instance = new Vehicle(veh);
-			instance.setNbrOfAvailableVehicles(1);
-			
-			unplannedNodes = route(routePlanningFunction, unplannedNodes, compartmentTypes, instance);
-			
-			vehCounts[i] = vehCounts[i] - 1;
+			if (vehCounts[i] > 0) {
+
+				Vehicle veh = vehicles[i];
+				statusManager.fireMessage(StatusCode.RUNNING, "Run with vehicle " + veh.getName() + " started.");
+
+				Vehicle instance = new Vehicle(veh);
+				instance.setNbrOfAvailableVehicles(1);
+
+				unplannedNodes = route(routePlanningFunction, unplannedNodes, compartmentTypes, instance);
+
+				vehCounts[i] = vehCounts[i] - 1;
+			}
 			i = (i+1) % vehicles.length;
 		}
 		
