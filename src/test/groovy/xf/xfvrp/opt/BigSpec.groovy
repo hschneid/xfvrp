@@ -18,7 +18,7 @@ import java.nio.file.Path
 
 class BigSpec extends Specification {
 
-	//@Ignore
+	@Ignore
 	def "Do a big test with lots of constraints and data"() {
 		def vrp = read()
 
@@ -35,6 +35,21 @@ class BigSpec extends Specification {
 			if(rr.vehicle.name != 'INVALID')
 				println rr.events.size() - 2
 		}
+	}
+
+	//@Ignore
+	def "Savings speed test"() {
+		def vrp = build2()
+
+		when:
+		vrp.executeRoutePlanning()
+
+		def rep = vrp.getReport()
+		def routes = rep.routes
+		// println StringWriter.write(rep)
+		println rep.summary.getDistance()
+		then:
+		rep != null
 	}
 
 	private XFVRP read() {
@@ -70,11 +85,11 @@ class BigSpec extends Specification {
 			vrp.addVehicle()
 					.setName(v.get("name").toString())
 					.setCount(v.get("count").asInt() * 5)
-					.setCapacity(
+					.setCapacity([
 							v.get("capacity").get("fresh_water").asDouble().floatValue(),
 							v.get("capacity").get("grey_water").asDouble().floatValue(),
 							v.get("capacity").get("cabin_units").asDouble().floatValue()
-					)
+					] as float[])
 					.setMaxRouteDuration(root.get("max_duration").asDouble().floatValue())
 		}
 	}
@@ -102,5 +117,34 @@ class BigSpec extends Specification {
 		vrp.addCompartment(CompartmentType.DELIVERY)
 		vrp.addCompartment(CompartmentType.PICKUP)
 		vrp.addCompartment(CompartmentType.MIXED)
+	}
+
+	XFVRP build2() {
+		def rand = new Random(1234)
+
+		def vrp = new XFVRP()
+		vrp.addDepot().setExternID("DEP1").setXlong(50).setYlat(33)
+		vrp.addDepot().setExternID("DEP2").setXlong(33).setYlat(66)
+		vrp.addDepot().setExternID("DEP3").setXlong(66).setYlat(66)
+
+		for (i in 0..<1000) {
+			vrp.addCustomer()
+					.setExternID("C"+i)
+					.setXlong(rand.nextInt(100))
+					.setYlat(rand.nextInt(100))
+					.setDemand([rand.nextInt(100)] as float[])
+					.setServiceTime(rand.nextInt(5))
+		}
+
+		vrp.addVehicle()
+				.setName("VEH")
+				.setCapacity([1000] as float[])
+				.setMaxRouteDuration(400)
+
+		vrp.setMetric(Metrics.EUCLEDIAN.get())
+		vrp.addOptType(XFVRPOptTypes.SAVINGS)
+		vrp.setStatusMonitor(new DefaultStatusMonitor())
+
+		return vrp
 	}
 }
