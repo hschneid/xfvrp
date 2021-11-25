@@ -49,8 +49,9 @@ XFVRP xfvrp = new XFVRP();
 xfvrp.addDepot().setXlong(5.667);
 xfvrp.addCustomer().setXlong(1.002).setDemand(new float[]{1.5, 0, 2.3});
 xfvrp.setVehicle().setName("Truck").setCapacity(new float[]{3, 2, 5});
+xfvrp.addCompartment(CompartmentType.DELIVERY)
 xfvrp.setMetric(new EucledianMetric());
-xfvrp.setOptType(XFVRPOptType.RELOCATE);
+xfvrp.setOptType(XFVRPOptTypes.RELOCATE);
 
 Report report = xfvrp.executeRoutePlanning();
 report.getSummary().getDistance();
@@ -63,7 +64,7 @@ As a general purpose solver, XFVRP is not fully compatable with single problem s
 
 ### 11.4.5
 #### Breaking Changes
-- Renamed XFVRPOptType -> XFVRPOptTypes  
+- Renamed XFVRPOptType >> XFVRPOptTypes  
   - Changed optimization types from enum to simple list. With this, it is possible to inject own optimization logic into XFVRP.
 
 #### Changes
@@ -78,6 +79,7 @@ As a general purpose solver, XFVRP is not fully compatable with single problem s
 - Reverted some of the changes for compartments from 11.4.0 due to many side-effects. If someone needs this feature, please ping us.
 - More refactorings due to giant route
 - Fixed, that construction heuristic does not consider allowed-depots constraint correctly
+- Fixed, that evaluation was not considering disallowed replenishment correctly
 
 ### 11.4.4.1
 - Introduced new Mixed Fleet Heuristic

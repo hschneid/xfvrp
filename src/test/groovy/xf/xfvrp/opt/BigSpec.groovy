@@ -9,9 +9,7 @@ import xf.xfvrp.base.LoadType
 import xf.xfvrp.base.compartment.CompartmentType
 import xf.xfvrp.base.metric.Metrics
 import xf.xfvrp.base.monitor.DefaultStatusMonitor
-import xf.xfvrp.opt.fleetmix.InTurnMixedFleetHeuristic
 import xf.xfvrp.report.RouteReport
-import xf.xfvrp.report.RouteReportSummary
 
 import java.nio.file.Files
 import java.nio.file.Path

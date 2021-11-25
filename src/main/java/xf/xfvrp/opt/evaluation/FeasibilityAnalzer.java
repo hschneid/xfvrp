@@ -5,9 +5,6 @@ import xf.xfvrp.base.SiteType;
 import xf.xfvrp.base.exception.XFVRPException;
 import xf.xfvrp.base.exception.XFVRPExceptionType;
 
-import java.util.Arrays;
-import java.util.Objects;
-
 /**
  * Copyright (c) 2012-2021 Holger Schneider
  * All rights reserved.
