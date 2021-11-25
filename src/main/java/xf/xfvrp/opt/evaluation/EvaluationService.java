@@ -20,6 +20,8 @@ import xf.xfvrp.opt.Solution;
  */
 public class EvaluationService {
 
+	private final ContextBuilder contextBuilder = new ContextBuilder();
+
 	/**
 	 * Evaluates the costs and validates the restrictions of the 
 	 * given solution. The costs are equal to the driven distance.
@@ -31,7 +33,7 @@ public class EvaluationService {
 	 * starting depot of a route stands also for the ending depot, in any case. 
 	 */
 	public Quality check(Solution solution) throws XFVRPException {
-		Context context = ContextBuilder.build(solution.getModel());
+		Context context = contextBuilder.build(solution.getModel());
 
 		checkRoutes(solution, context);
 
@@ -44,7 +46,7 @@ public class EvaluationService {
 	 * Here only 2 routes are checked, which are changed by neighborhood search.
 	 */
 	public Quality check(Solution solution, XFVRPModel model, int routeIdxA, int routeIdxB) throws XFVRPException {
-		Context context = ContextBuilder.build(model);
+		Context context = contextBuilder.build(model);
 
 		solution.invalidateRouteQuality(routeIdxA);
 		checkAndUpdateRoutes(routeIdxA, solution, context);

@@ -14,6 +14,32 @@ public class Amount {
 	public Amount() {
 	}
 
+	public static Amount ofDelivery(RouteInfo[] routeInfos) {
+		Amount a = new Amount();
+		float[]  amounts = new float[routeInfos.length];
+		for (int i = 0; i < routeInfos.length; i++) {
+			if(routeInfos[i] != null)
+				amounts[i] = routeInfos[i].getDeliveryAmount();
+		}
+
+		a.setAmounts(amounts);
+
+		return a;
+	}
+
+	public static Amount ofPickup(RouteInfo[] routeInfos) {
+		Amount a = new Amount();
+		float[]  amounts = new float[routeInfos.length];
+		for (int i = 0; i < routeInfos.length; i++) {
+			if(routeInfos[i] != null)
+				amounts[i] = routeInfos[i].getPickupAmount();
+		}
+
+		a.setAmounts(amounts);
+
+		return a;
+	}
+
 	public void add(float[] otherAmount) {
 		init(otherAmount);
 

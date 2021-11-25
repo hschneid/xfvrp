@@ -32,7 +32,7 @@ public class Context {
 	private boolean[] presetRoutingNodeList;
 
 	// Pre-evaluated infos of a route (service times and amounts)
-	private Map<Node, RouteInfo> routeInfos;
+	private Map<Node, RouteInfo[]> routeInfos;
 
 	private Node currentDepot;
 	private Node currentNode;
@@ -109,35 +109,44 @@ public class Context {
 	}
 
 	public void resetAmountsOfRoute() throws XFVRPException {
-		for (int i = amountsOfRoute.length - 1; i >= 0; i--) {
+		// Assumption: currentNode = DEPOT or REPLENISH
+
+		for (int compartmentIdx = amountsOfRoute.length - 1; compartmentIdx >= 0; compartmentIdx--) {
 			// If replenishment is not allowed, ignore rest
-			if (currentNode.getSiteType() == SiteType.REPLENISH && !model.getCompartments()[i].isReplenished()) {
+			if (currentNode.getSiteType() == SiteType.REPLENISH && !model.getCompartments()[compartmentIdx].isReplenished()) {
 				continue;
 			}
 
 			if (currentNode.getSiteType() == SiteType.REPLENISH) {
-				amountsOfRoute[i].replenish();
+				amountsOfRoute[compartmentIdx].replenish();
 			} else {
-				amountsOfRoute[i].clear();
+				amountsOfRoute[compartmentIdx].clear();
 			}
 
 			// Init delivery amount on the route
 			if(!routeInfos.containsKey(currentNode))
 				throw new XFVRPException(XFVRPExceptionType.ILLEGAL_ARGUMENT, "Could not find route infos for depot id " + currentNode.getDepotId());
 
-			Amount deliveryOfRoute = routeInfos.get(currentNode).getDeliveryAmount();
-			if(deliveryOfRoute.getAmounts() != null) {
-				amountsOfRoute[i].addAmount(deliveryOfRoute.getAmounts(), LoadType.PRELOAD_AT_DEPOT);
-			}
+			// The Compartment object searches itself for correct value from deliveryOfRoute.getAmounts()
+			Amount deliveryOfRoute = Amount.ofDelivery(routeInfos.get(currentNode));
+			amountsOfRoute[compartmentIdx].addAmount(deliveryOfRoute.getAmounts(), LoadType.PRELOAD_AT_DEPOT);
 		}
 	}
 
 	public float getLoadingServiceTimeAtDepot() {
-		return routeInfos.get(currentDepot).getLoadingServiceTime();
+		float maxServiceTime = 0;
+		for (int compartmentIdx = 0; compartmentIdx < amountsOfRoute.length; compartmentIdx++) {
+			maxServiceTime = Math.max(maxServiceTime, routeInfos.get(currentDepot)[compartmentIdx].getLoadingServiceTime());
+		}
+		return maxServiceTime;
 	}
 
 	public float getUnLoadingServiceTimeAtDepot() {
-		return routeInfos.get(currentDepot).getUnLoadingServiceTime();
+		float maxServiceTime = 0;
+		for (int compartmentIdx = 0; compartmentIdx < amountsOfRoute.length; compartmentIdx++) {
+			maxServiceTime = Math.max(maxServiceTime, routeInfos.get(currentDepot)[compartmentIdx].getUnLoadingServiceTime());
+		}
+		return maxServiceTime;
 	}
 
 	public void addToTime(float addedTime) {
@@ -196,7 +205,7 @@ public class Context {
 		this.presetRoutingNodeList = presetRoutingNodeList;
 	}
 
-	public void setRouteInfos(Map<Node, RouteInfo> routeDepotServiceMap) {
+	public void setRouteInfos(Map<Node, RouteInfo[]> routeDepotServiceMap) {
 		this.routeInfos = routeDepotServiceMap;
 	}
 
@@ -263,8 +272,10 @@ public class Context {
 
 	public void setPresetRouting() {
 		if(currentNode.getSiteType() == SiteType.CUSTOMER) {
-			for (int bn : currentNode.getPresetRoutingBlackList())
-				presetRoutingBlackList[bn] = true;
+			int[] routingBlackList = currentNode.getPresetRoutingBlackList();
+			for (int i = 0, routingBlackListLength = routingBlackList.length; i < routingBlackListLength; i++) {
+				presetRoutingBlackList[routingBlackList[i]] = true;
+			}
 			presetRoutingNodeList[currentNode.getGlobalIdx()] = true;
 		}
 	}
@@ -343,7 +354,7 @@ public class Context {
 		return routeVar[LENGTH];
 	}
 
-	public RouteInfo getRouteInfo() {
+	public RouteInfo[] getRouteInfo() {
 		return routeInfos.get(currentNode);
 	}
 }

@@ -59,7 +59,7 @@ public class Node implements Cloneable {
 	/** A list of depot node ids (global idx), where this customer must be allocated to one these depots. **/
 	private final Set<Integer> presetDepotList = new HashSet<>();
 	/** A list of node ids (global idx), which must not be routed with this node. **/
-	private final Set<Integer> presetRoutingBlackList = new HashSet<>();
+	private int[] presetRoutingBlackList = new int[0];
 
 	/** If customer is invalid for whole route plan, the reason is written to invalid states **/
 	private InvalidReason invalidReason = InvalidReason.NONE;
@@ -297,12 +297,12 @@ public class Node implements Cloneable {
 	 * 
 	 * @return node id black list for routing on one route
 	 */
-	public Set<Integer> getPresetRoutingBlackList() {
+	public int[] getPresetRoutingBlackList() {
 		return presetRoutingBlackList;
 	}
 
-	public void addToBlacklist(int globalIdx){
-		presetRoutingBlackList.add(globalIdx);
+	public void setPresetRoutingBlackList(int[] presetRoutingBlackList) {
+		this.presetRoutingBlackList = presetRoutingBlackList;
 	}
 
 	public int getShipmentIdx() {

@@ -37,19 +37,19 @@ class BigSpec extends Specification {
 		}
 	}
 
-	//@Ignore
+	@Ignore
 	def "Savings speed test"() {
-		def vrp = build2()
-
 		when:
-		vrp.executeRoutePlanning()
+		def nano = System.nanoTime()
+		for (i in 0..<10) {
+			def vrp = build2()
+			vrp.executeRoutePlanning()
+		}
+		def diff = ((System.nanoTime() - nano) / 1_000_000_000.0) / 10.0
+		println 'XXX ' + diff
 
-		def rep = vrp.getReport()
-		def routes = rep.routes
-		// println StringWriter.write(rep)
-		println rep.summary.getDistance()
 		then:
-		rep != null
+		diff > 0
 	}
 
 	private XFVRP read() {
@@ -123,11 +123,12 @@ class BigSpec extends Specification {
 		def rand = new Random(1234)
 
 		def vrp = new XFVRP()
-		vrp.addDepot().setExternID("DEP1").setXlong(50).setYlat(33)
-		vrp.addDepot().setExternID("DEP2").setXlong(33).setYlat(66)
-		vrp.addDepot().setExternID("DEP3").setXlong(66).setYlat(66)
+		vrp.addDepot().setExternID("DEP1").setXlong(50).setYlat(50)
+		// vrp.addDepot().setExternID("DEP1").setXlong(50).setYlat(33)
+		// vrp.addDepot().setExternID("DEP2").setXlong(33).setYlat(66)
+		// vrp.addDepot().setExternID("DEP3").setXlong(66).setYlat(66)
 
-		for (i in 0..<1000) {
+		for (i in 0..<600) {
 			vrp.addCustomer()
 					.setExternID("C"+i)
 					.setXlong(rand.nextInt(100))
@@ -142,7 +143,9 @@ class BigSpec extends Specification {
 				.setMaxRouteDuration(400)
 
 		vrp.setMetric(Metrics.EUCLEDIAN.get())
-		vrp.addOptType(XFVRPOptTypes.SAVINGS)
+		// vrp.addOptType(XFVRPOptTypes.SAVINGS)
+		// vrp.addOptType(XFVRPOptTypes.RELOCATE)
+		vrp.addOptType(XFVRPOptTypes.PATH_RELOCATE)
 		vrp.setStatusMonitor(new DefaultStatusMonitor())
 
 		return vrp

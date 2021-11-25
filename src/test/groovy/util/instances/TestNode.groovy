@@ -52,7 +52,7 @@ class TestNode {
 		if(presetDepotGlobalIdx > -1) node.addPresetDepot(presetDepotGlobalIdx)
 		if(presetVehicleIdx > -1) node.addPresetVehicle(presetVehicleIdx)
 		if(presetVehicleIdx2 > -1) node.addPresetVehicle(presetVehicleIdx2)
-		if(presetBlackNodeIdx > -1) node.addToBlacklist(presetBlackNodeIdx)
+		if(presetBlackNodeIdx > -1) node.setPresetRoutingBlackList(new int[]{presetBlackNodeIdx})
 		node.invalidReason = invalidReason
 
 		return node

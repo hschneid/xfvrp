@@ -13,16 +13,18 @@ import java.util.Objects;
  **/
 public class RouteInfo {
 
+	private final int compartmentIdx;
 	private final Node depot;
 	
 	private float loadingServiceTime = 0;
 	private float unLoadingServiceTime = 0;
 	
-	private Amount deliveryAmount = new Amount();
-	private Amount pickupAmount = new Amount();
+	private float deliveryAmount = 0;
+	private float pickupAmount = 0;
 	
-	public RouteInfo(Node depot) {
+	public RouteInfo(Node depot, int compartmentIdx) {
 		this.depot = depot;
+		this.compartmentIdx = compartmentIdx;
 	}
 	
 	public void addLoadingServiceTime(float time) {
@@ -33,20 +35,12 @@ public class RouteInfo {
 		unLoadingServiceTime += time;
 	}
 
-	public void addPickUpAmount(float[] demand) {
-		pickupAmount.add(demand);
+	public void addPickUpAmount(float demand) {
+		pickupAmount += demand;
 	}
 
-	public void addPickUpAmount(float[] demand, int compartmentIdx) {
-		pickupAmount.add(demand, compartmentIdx);
-	}
-
-	public void addDeliveryAmount(float[] demand) {
-		deliveryAmount.add(demand);
-	}
-
-	public void addDeliveryAmount(float[] demand, int compartmentIdx) {
-		deliveryAmount.add(demand, compartmentIdx);
+	public void addDeliveryAmount(float demand) {
+		deliveryAmount += demand;
 	}
 
 	public float getLoadingServiceTime() {
@@ -61,11 +55,11 @@ public class RouteInfo {
 		return depot;
 	}
 
-	public Amount getDeliveryAmount() {
+	public float getDeliveryAmount() {
 		return deliveryAmount;
 	}
 
-	public Amount getPickupAmount() {
+	public float getPickupAmount() {
 		return pickupAmount;
 	}
 

@@ -95,7 +95,7 @@ public class XFVRPSavings extends XFVRPOptBase {
 
 		int savingsIdx = savingsMatrix.size() - 1;
 
-		// Bestimme das beste gültige Saving
+		// Search for best valid saving
 		for (int i = savingsIdx; i >= 0; i--) {
 			savingsIdx--;
 			float[] saving = savingsMatrix.get(i);
@@ -112,7 +112,7 @@ public class XFVRPSavings extends XFVRPOptBase {
 
 			// Check
 			Solution smallSolution = new Solution(model);
-			smallSolution.setGiantRoute(newRoute);
+			smallSolution.addRoute(newRoute);
 			Quality q = check(smallSolution);
 
 			if(q.getPenalty() == 0) {
@@ -205,9 +205,11 @@ public class XFVRPSavings extends XFVRPOptBase {
 		if(routeIdxForEndNode[dstNodeIdx] != -1)
 			this.swap(r2, 0, r2.length - 1);
 
-		return Stream
-				.concat(Arrays.stream(r1), Arrays.stream(r2))
-				.toArray(Node[]::new);
+		// Concat both routes
+		Node[] newRoute = new Node[r1.length + r2.length];
+		System.arraycopy(r1, 0, newRoute, 0, r1.length);
+		System.arraycopy(r2, 0, newRoute, r1.length, r2.length);
+		return newRoute;
 	}
 
 	private void createSavingsMatrix(Node depot, SavingsDataBag dataBag) {

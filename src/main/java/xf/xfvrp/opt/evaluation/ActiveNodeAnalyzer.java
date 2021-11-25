@@ -2,9 +2,6 @@ package xf.xfvrp.opt.evaluation;
 
 import xf.xfvrp.base.Node;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import static xf.xfvrp.base.SiteType.DEPOT;
 import static xf.xfvrp.base.SiteType.REPLENISH;
 
@@ -34,23 +31,25 @@ public class ActiveNodeAnalyzer {
 		int lastNodeIdx = 0;
 		Node lastNode = route[lastNodeIdx];
 		activeFlags[0] = true;
+		int nbrOfInactiveNodes = 0;
 		for (int i = 1; i < activeFlags.length; i++) {
 			activeFlags[i] = true;
 
 			Node currNode = route[i];
 
-			if(currNode.getSiteType() == DEPOT && 
-					lastNode.getSiteType() == DEPOT)
-				activeFlags[lastNodeIdx] = false;
-			else if(currNode.getSiteType() == REPLENISH &&
-					lastNode.getSiteType() == REPLENISH)
-				activeFlags[lastNodeIdx] = false;
-			else if(currNode.getSiteType() == DEPOT &&
-					lastNode.getSiteType() == REPLENISH)
-				activeFlags[lastNodeIdx] = false;
-			else if(currNode.getSiteType() == REPLENISH &&
-					lastNode.getSiteType() == DEPOT)
-				activeFlags[i] = false;
+			if(currNode.getSiteType() == DEPOT &&
+					lastNode.getSiteType() == DEPOT) {
+				activeFlags[lastNodeIdx] = false; nbrOfInactiveNodes++;
+			} else if(currNode.getSiteType() == REPLENISH &&
+					lastNode.getSiteType() == REPLENISH) {
+				activeFlags[lastNodeIdx] = false; nbrOfInactiveNodes++;
+			} else if(currNode.getSiteType() == DEPOT &&
+					lastNode.getSiteType() == REPLENISH) {
+				activeFlags[lastNodeIdx] = false; nbrOfInactiveNodes++;
+			} else if(currNode.getSiteType() == REPLENISH &&
+					lastNode.getSiteType() == DEPOT) {
+				activeFlags[i] = false; nbrOfInactiveNodes++;
+			}
 
 			if(activeFlags[i]) {
 				lastNode = currNode;
@@ -58,18 +57,22 @@ public class ActiveNodeAnalyzer {
 			}
 		}
 		// Start depot is always active
+		if(!activeFlags[0]) nbrOfInactiveNodes--;
 		activeFlags[0] = true;
 
-		return extract(route, activeFlags);
+
+		return extract(route, activeFlags, nbrOfInactiveNodes);
 	}
 
-	private static Node[] extract(Node[] route, boolean[] activeFlags) {
-		List<Node> activeNodes = new ArrayList<>(); 
-		for (int i = 0; i < route.length; i++) {
-			if(activeFlags[i])
-				activeNodes.add(route[i]);
+	private static Node[] extract(Node[] route, boolean[] activeFlags, int nbrOfInactiveNodes) {
+		Node[] activeRoute = new Node[route.length - nbrOfInactiveNodes];
+
+		int activeRouteIdx = 0;
+		for (int oldRouteIdx = 0; oldRouteIdx < route.length; oldRouteIdx++) {
+			if(activeFlags[oldRouteIdx])
+				activeRoute[activeRouteIdx++] = route[oldRouteIdx];
 		}
-		
-		return activeNodes.toArray(new Node[0]);
+
+		return activeRoute;
 	}
 }

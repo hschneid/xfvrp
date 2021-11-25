@@ -24,11 +24,13 @@ import xf.xfvrp.report.RouteReport;
  */
 public class ReportBuilder {
 
+    private final ContextBuilder contextBuilder = new ContextBuilder();
+
     public Report getReport(Solution solution) throws XFVRPException {
         XFVRPModel model = solution.getModel();
         Report rep = new Report(solution);
 
-        Context context = ContextBuilder.build(model);
+        Context context = contextBuilder.build(model);
         for (Node[] route : solution) {
             // Feasibility check
             FeasibilityAnalzer.checkFeasibility(route);
@@ -99,7 +101,7 @@ public class ReportBuilder {
         e.setLoadType(null);
         e.setTravelTime(0);
 
-        Amount deliveryAmount = context.getRouteInfo().getDeliveryAmount();
+        Amount deliveryAmount = Amount.ofDelivery(context.getRouteInfo());
         setAmountsToEvent(e,
                 deliveryAmount.getAmounts(),
                 LoadType.PRELOAD_AT_DEPOT
@@ -133,7 +135,7 @@ public class ReportBuilder {
             case REPLENISH:
                 if(context.getRouteInfo() != null) {
                     setAmountsToEvent(e,
-                            context.getRouteInfo().getDeliveryAmount().getAmounts(),
+                            Amount.ofDelivery(context.getRouteInfo()).getAmounts(),
                             LoadType.PRELOAD_AT_DEPOT
                     );
                 }

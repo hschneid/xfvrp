@@ -46,11 +46,12 @@ public class PresetBlacklistedNodeConverter {
 		for (Node n : nodes) {
 			if(blacklistedNodes.containsKey(n.getExternID())) {
 				// Translate black listed node name to node idx
-				blacklistedNodes.get(n.getExternID())
+				int[] blackList = blacklistedNodes.get(n.getExternID())
 					.stream()
 					.filter(indexes::containsKey)
-					.map(indexes::get)
-					.forEach(n::addToBlacklist);
+					.mapToInt(indexes::get)
+					.toArray();
+				n.setPresetRoutingBlackList(blackList);
 			}
 		}
 	}

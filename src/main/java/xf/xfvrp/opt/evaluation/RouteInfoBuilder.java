@@ -20,10 +20,11 @@ import java.util.Map;
  **/
 public class RouteInfoBuilder {
 
-	public static Map<Node, RouteInfo> build(Node[] route, Context context) throws XFVRPException {
-		Map<Node, RouteInfo> routeInfos = new HashMap<>();
-		RouteInfo[] routeInfoPerCompartment = new RouteInfo[route[0].getDemand().length];
+	public static Map<Node, RouteInfo[]> build(Node[] route, Context context) throws XFVRPException {
+		Map<Node, RouteInfo[]> routeInfos = new HashMap<>();
+		RouteInfo[] routeInfoPerCompartment = new RouteInfo[context.getModel().getCompartments().length];
 
+		// Go over all nodes in giant route (or single route)
 		for (int idx = 0; idx < route.length; idx++) {
 			createRouteInfo(route[idx], routeInfoPerCompartment, routeInfos, context);
 		}
@@ -31,7 +32,7 @@ public class RouteInfoBuilder {
 		return routeInfos;
 	}
 
-	private static void createRouteInfo(Node node, RouteInfo[] routeInfoPerCompartment, Map<Node, RouteInfo> routeInfos, Context context) throws XFVRPException {
+	private static void createRouteInfo(Node node, RouteInfo[] routeInfoPerCompartment, Map<Node, RouteInfo[]> routeInfos, Context context) throws XFVRPException {
 		switch(node.getSiteType()) {
 			case DEPOT :
 			case REPLENISH :
@@ -47,8 +48,7 @@ public class RouteInfoBuilder {
 		}
 	}
 
-	private static void beginNewInfo(Node node, RouteInfo[] routeInfoPerCompartment, Map<Node, RouteInfo> routeInfos, Context context) {
-		Map<Node, RouteInfo> newRouteInfos = new HashMap<>();
+	private static void beginNewInfo(Node node, RouteInfo[] routeInfoPerCompartment, Map<Node, RouteInfo[]> routeInfos, Context context) {
 		for (int compartmentIdx = node.getDemand().length - 1; compartmentIdx >= 0; compartmentIdx--) {
 			// Compartments without replenishment
 			if(node.getSiteType() == SiteType.REPLENISH && !context.getModel().getCompartments()[compartmentIdx].isReplenished()) {
@@ -57,14 +57,14 @@ public class RouteInfoBuilder {
 
 			// Finish old route info
 			if(routeInfoPerCompartment[compartmentIdx] != null) {
-				routeInfos.put(routeInfoPerCompartment[compartmentIdx].getDepot(), routeInfoPerCompartment[compartmentIdx]);
+				routeInfos.get(routeInfoPerCompartment[compartmentIdx].getDepot())[compartmentIdx] = routeInfoPerCompartment[compartmentIdx];
 			}
 
 			// Start new route info
-			if(!newRouteInfos.containsKey(node)) {
-				newRouteInfos.put(node, new RouteInfo(node));
+			if(!routeInfos.containsKey(node)) {
+				routeInfos.put(node, new RouteInfo[context.getModel().getCompartments().length]);
 			}
-			routeInfoPerCompartment[compartmentIdx] = newRouteInfos.get(node);
+			routeInfoPerCompartment[compartmentIdx] = new RouteInfo(node, compartmentIdx);
 		}
 	}
 
@@ -72,22 +72,14 @@ public class RouteInfoBuilder {
 		LoadType loadType = node.getLoadType();
 		for (int compartmentIdx = node.getDemand().length - 1; compartmentIdx >= 0; compartmentIdx--) {
 			if(loadType == LoadType.PICKUP) {
-				routeInfoPerCompartment[compartmentIdx].addPickUpAmount(node.getDemand(), compartmentIdx);
+				routeInfoPerCompartment[compartmentIdx].addPickUpAmount(node.getDemand()[compartmentIdx]);
+				routeInfoPerCompartment[compartmentIdx].addUnLoadingServiceTime(node.getServiceTime());
 			} else if(loadType == LoadType.DELIVERY) {
-				routeInfoPerCompartment[compartmentIdx].addDeliveryAmount(node.getDemand(), compartmentIdx);
+				routeInfoPerCompartment[compartmentIdx].addDeliveryAmount(node.getDemand()[compartmentIdx]);
+				routeInfoPerCompartment[compartmentIdx].addLoadingServiceTime(node.getServiceTime());
 			} else
 				throw new XFVRPException(XFVRPExceptionType.ILLEGAL_STATE ,"Found unexpected load type ("+loadType.toString()+")");
 		}
-
-		// Service times only once per routeInfo-Node
-		new HashSet<>(Arrays.asList(routeInfoPerCompartment))
-				.forEach(rI -> {
-					if(loadType == LoadType.PICKUP) {
-						rI.addUnLoadingServiceTime(node.getServiceTime());
-					} else if(loadType == LoadType.DELIVERY) {
-						rI.addLoadingServiceTime(node.getServiceTime());
-					}
-				});
 	}
 
 }

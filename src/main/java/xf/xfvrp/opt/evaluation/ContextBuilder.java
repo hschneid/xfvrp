@@ -14,14 +14,16 @@ import java.util.Arrays;
  **/
 public class ContextBuilder {
 
-	public static Context build(XFVRPModel model) {
+	private final CompartmentLoadBuilder compartmentLoadBuilder = new CompartmentLoadBuilder();
+
+	public Context build(XFVRPModel model) {
 		Context context = new Context(model);
 
 		// Variables
 		context.setMaxGlobalNodeIdx(model.getMaxGlobalNodeIdx() + 1);
 
 		// Amounts - Which amounts must be stored during checking - Each compartment and each load type - So same like vehicle capacities
-		context.setAmountArr(CompartmentLoadBuilder.createCompartmentLoads(model.getCompartments()));
+		context.setAmountArr(compartmentLoadBuilder.createCompartmentLoads(model.getCompartments()));
 
 		context.setBlockPresetArr(new int[model.getNbrOfBlocks()]);
 		Arrays.fill(context.getBlockPresetArr(), -1);

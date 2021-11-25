@@ -19,6 +19,7 @@ import xf.xfvrp.report.RouteReport
 class FullRouteMixedFleetHeuristicSpec extends Specification {
 
 	def service = new DefaultMixedFleetHeuristic()
+	def compartmentLoadBuilder = new CompartmentLoadBuilder()
 
 	def testVehicle
 
@@ -43,7 +44,7 @@ class FullRouteMixedFleetHeuristicSpec extends Specification {
 		def model = TestXFVRPModel.get(nodes, testVehicle.getVehicle())
 
 		def context = new Context()
-		context.amountsOfRoute = CompartmentLoadBuilder.createCompartmentLoads(model.getCompartments());
+		context.amountsOfRoute = compartmentLoadBuilder.createCompartmentLoads(model.getCompartments());
 
 		def routeReport1 = new RouteReport(testVehicle.getVehicle())
 		routeReport1.add(new Event(nodes[1]), context)
@@ -114,7 +115,7 @@ class FullRouteMixedFleetHeuristicSpec extends Specification {
 		def model = TestXFVRPModel.get(nodes, testVehicle.getVehicle())
 
 		def context = new Context()
-		context.amountsOfRoute = CompartmentLoadBuilder.createCompartmentLoads(model.getCompartments());
+		context.amountsOfRoute = compartmentLoadBuilder.createCompartmentLoads(model.getCompartments());
 
 		def routeReport1 = new RouteReport(testVehicle.getVehicle())
 		routeReport1.add(new Event(nodes[6]), context)
