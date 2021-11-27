@@ -3,6 +3,7 @@ package xf.xfvrp.opt.improve
 import spock.lang.Specification
 import util.instances.TestNode
 import util.instances.TestVehicle
+import util.instances.TestXFVRPModel
 import xf.xfvrp.base.*
 import xf.xfvrp.base.metric.EucledianMetric
 import xf.xfvrp.base.metric.internal.AcceleratedMetricTransformator
@@ -49,7 +50,7 @@ class XFVRP3OptSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[6], n[5], n[1], n[4], n[8], n[7], n[3], nd] as Node[])
 
 		when:
@@ -66,7 +67,7 @@ class XFVRP3OptSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[7], n[8], n[4], n[1], n[5], n[6], n[3], nd] as Node[])
 		
 		when:
@@ -83,7 +84,7 @@ class XFVRP3OptSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[1], n[5], n[6], n[4], n[8], n[7], n[3], nd] as Node[])
 
 		def changeMove = [1, 4, 7, 0] as float[]
@@ -111,7 +112,7 @@ class XFVRP3OptSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[6], n[5], n[1], n[7], n[8], n[4], n[3], nd] as Node[])
 
 		def changeMove = [1, 4, 7, 1] as float[]
@@ -139,7 +140,7 @@ class XFVRP3OptSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[4], n[8], n[7], n[1], n[5], n[6], n[3], nd] as Node[])
 
 		def changeMove = [1, 4, 7, 4] as float[]
@@ -167,7 +168,7 @@ class XFVRP3OptSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[7], n[8], n[4], n[6], n[5], n[1], n[3], nd] as Node[])
 
 		def changeMove = [1, 4, 7, 5] as float[]
@@ -195,7 +196,7 @@ class XFVRP3OptSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[4], n[8], n[7], n[6], n[5], n[1], n[3], nd] as Node[])
 
 		def changeMove = [1, 4, 7, 6] as float[]
@@ -223,7 +224,7 @@ class XFVRP3OptSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[6], n[5], n[1], n[4], n[8], n[7], n[3], nd] as Node[])
 
 		def changeMove = [1, 4, 7, 2] as float[]
@@ -251,7 +252,7 @@ class XFVRP3OptSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[7], n[8], n[4], n[1], n[5], n[6], n[3], nd] as Node[])
 
 		def changeMove = [1, 4, 7, 3] as float[]
@@ -279,7 +280,7 @@ class XFVRP3OptSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[1], n[5], n[6], n[7], n[8], n[4], n[3], nd] as Node[])
 
 		def changeMove = [1, 4, 7, 2] as float[]
@@ -307,7 +308,7 @@ class XFVRP3OptSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[1], n[5], n[6], n[7], n[8], n[4], n[3], nd] as Node[])
 
 		def changeMove = [1, 4, 7, 3] as float[]
@@ -335,7 +336,7 @@ class XFVRP3OptSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[1], n[5], n[6], n[7], n[8], n[4], n[3], nd] as Node[])
 
 		def changeMove = [1, 4, 7, 4] as float[]
@@ -363,7 +364,7 @@ class XFVRP3OptSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[1], n[5], n[6], n[7], n[8], n[4], n[3], nd] as Node[])
 
 		def changeMove = [1, 4, 7, 5] as float[]
@@ -483,6 +484,6 @@ class XFVRP3OptSpec extends Specification {
 
 		def iMetric = new AcceleratedMetricTransformator().transform(metric, nodes, v)
 
-		return new XFVRPModel(nodes, iMetric, iMetric, v, parameter)
+		return TestXFVRPModel.get(nodes, iMetric, iMetric, v, parameter)
 	}
 }

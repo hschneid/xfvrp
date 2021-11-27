@@ -2,6 +2,7 @@ package xf.xfvrp.opt.evaluation;
 
 import xf.xfvrp.base.LoadType;
 import xf.xfvrp.base.Node;
+import xf.xfvrp.base.SiteType;
 import xf.xfvrp.base.exception.XFVRPException;
 import xf.xfvrp.base.exception.XFVRPExceptionType;
 
@@ -17,48 +18,66 @@ import java.util.Map;
  **/
 public class RouteInfoBuilder {
 
-	public static Map<Node, RouteInfo> build(Node[] route) throws XFVRPException {
-		Map<Node, RouteInfo> routeInfos = new HashMap<>();
-		RouteInfo routeInfo = null;
-		
+	public static Map<Node, RouteInfo[]> build(Node[] route, Context context) throws XFVRPException {
+		Map<Node, RouteInfo[]> routeInfos = new HashMap<>();
+		RouteInfo[] routeInfoPerCompartment = new RouteInfo[context.getModel().getCompartments().length];
+
+		// Go over all nodes in giant route (or single route)
 		for (int idx = 0; idx < route.length; idx++) {
-			Node node = route[idx];
-			
-			routeInfo = createRouteInfo(routeInfos, routeInfo, node);
+			createRouteInfo(route[idx], routeInfoPerCompartment, routeInfos, context);
 		}
-		
+
 		return routeInfos;
 	}
 
-	private static RouteInfo createRouteInfo(Map<Node, RouteInfo> routeInfos, RouteInfo routeInfo, Node node) throws XFVRPException {
+	private static void createRouteInfo(Node node, RouteInfo[] routeInfoPerCompartment, Map<Node, RouteInfo[]> routeInfos, Context context) throws XFVRPException {
 		switch(node.getSiteType()) {
 			case DEPOT :
 			case REPLENISH :
-				if(routeInfo != null) {
-					routeInfos.put(routeInfo.getDepot(), routeInfo);
-				}
-				return new RouteInfo(node);
+				beginNewInfo(node, routeInfoPerCompartment, routeInfos, context);
+				break;
 			case CUSTOMER : {
-				changeRouteInfo(node, routeInfo);
-				return routeInfo;
+				updateInfo(node, routeInfoPerCompartment);
+				break;
 			}
 			default : {
 				throw new XFVRPException(XFVRPExceptionType.ILLEGAL_ARGUMENT, "Found unexpected site type ("+node.getSiteType().toString()+")");
 			}
-		}			
+		}
 	}
 
-	private static void changeRouteInfo(Node node, RouteInfo routeInfo) throws XFVRPException {
-		LoadType loadType = node.getLoadType();
-		
-		if(loadType == LoadType.PICKUP) {
-			routeInfo.addUnLoadingServiceTime(node.getServiceTime());
-			routeInfo.addPickUpAmount(node.getDemand());
-		} else if(loadType == LoadType.DELIVERY) {
-			routeInfo.addLoadingServiceTime(node.getServiceTime());
-			routeInfo.addDeliveryAmount(node.getDemand());
-		} else
-			throw new XFVRPException(XFVRPExceptionType.ILLEGAL_STATE ,"Found unexpected load type ("+loadType.toString()+")");
+	private static void beginNewInfo(Node node, RouteInfo[] routeInfoPerCompartment, Map<Node, RouteInfo[]> routeInfos, Context context) {
+		for (int compartmentIdx = node.getDemand().length - 1; compartmentIdx >= 0; compartmentIdx--) {
+			// Compartments without replenishment
+			if(node.getSiteType() == SiteType.REPLENISH && !context.getModel().getCompartments()[compartmentIdx].isReplenished()) {
+				continue;
+			}
+
+			// Finish old route info
+			if(routeInfoPerCompartment[compartmentIdx] != null) {
+				routeInfos.get(routeInfoPerCompartment[compartmentIdx].getDepot())[compartmentIdx] = routeInfoPerCompartment[compartmentIdx];
+			}
+
+			// Start new route info
+			if(!routeInfos.containsKey(node)) {
+				routeInfos.put(node, new RouteInfo[context.getModel().getCompartments().length]);
+			}
+			routeInfoPerCompartment[compartmentIdx] = new RouteInfo(node, compartmentIdx);
+		}
 	}
-	
+
+	private static void updateInfo(Node node, RouteInfo[] routeInfoPerCompartment) throws XFVRPException {
+		LoadType loadType = node.getLoadType();
+		for (int compartmentIdx = node.getDemand().length - 1; compartmentIdx >= 0; compartmentIdx--) {
+			if(loadType == LoadType.PICKUP) {
+				routeInfoPerCompartment[compartmentIdx].addPickUpAmount(node.getDemand()[compartmentIdx]);
+				routeInfoPerCompartment[compartmentIdx].addUnLoadingServiceTime(node.getServiceTime());
+			} else if(loadType == LoadType.DELIVERY) {
+				routeInfoPerCompartment[compartmentIdx].addDeliveryAmount(node.getDemand()[compartmentIdx]);
+				routeInfoPerCompartment[compartmentIdx].addLoadingServiceTime(node.getServiceTime());
+			} else
+				throw new XFVRPException(XFVRPExceptionType.ILLEGAL_STATE ,"Found unexpected load type ("+loadType.toString()+")");
+		}
+	}
+
 }

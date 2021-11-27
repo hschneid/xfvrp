@@ -3,7 +3,6 @@ package xf.xfvrp.opt.improve.ils;
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.Quality;
 import xf.xfvrp.base.SiteType;
-import xf.xfvrp.base.XFVRPModel;
 import xf.xfvrp.base.exception.XFVRPException;
 import xf.xfvrp.opt.Solution;
 import xf.xfvrp.opt.XFVRPOptBase;
@@ -31,8 +30,8 @@ public class XFPDPRandomChangeService extends XFVRPOptBase implements XFRandomCh
 	 * @see xf.xfvrp.opt.improve.ils.XFRandomChangeService#change(xf.xfvrp.opt.Solution, xf.xfvrp.base.XFVRPModel)
 	 */
 	@Override
-	public Solution change(Solution solution, XFVRPModel model) {
-		this.setModel(model);
+	public Solution change(Solution solution) {
+		this.setModel(solution.getModel());
 
 		return this.execute(solution);
 	}
@@ -181,9 +180,6 @@ public class XFPDPRandomChangeService extends XFVRPOptBase implements XFRandomCh
 		int srcDeliveryIdx;
 		int dstPickupIdx;
 		int dstDeliveryIdx;
-
-		public Choice() {
-		}
 
 		public float[] toArray() {
 			return new float[] {srcPickupIdx, srcDeliveryIdx, dstPickupIdx, dstDeliveryIdx};

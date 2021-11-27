@@ -3,6 +3,7 @@ package xf.xfvrp.opt.evaluation
 import spock.lang.Specification
 import util.instances.TestNode
 import util.instances.TestVehicle
+import util.instances.TestXFVRPModel
 import xf.xfvrp.base.*
 import xf.xfvrp.base.metric.EucledianMetric
 import xf.xfvrp.base.metric.internal.AcceleratedMetricTransformator
@@ -37,11 +38,11 @@ class EvaluationServiceStopSpec extends Specification {
 		def model = initScen(v)
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[3], nr, n[4], n[5], nd] as Node[])
 
 		when:
-		def result = service.check(sol, model)
+		def result = service.check(sol)
 
 		then:
 		result != null
@@ -53,11 +54,11 @@ class EvaluationServiceStopSpec extends Specification {
 		def model = initScen(v)
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[3], nr, n[4], n[5], nd] as Node[])
 
 		when:
-		def result = service.check(sol, model)
+		def result = service.check(sol)
 
 		then:
 		result != null
@@ -69,11 +70,11 @@ class EvaluationServiceStopSpec extends Specification {
 		def model = initScen(v)
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[4], nr, n[3], n[5], nd] as Node[])
 
 		when:
-		def result = service.check(sol, model)
+		def result = service.check(sol)
 
 		then:
 		result != null
@@ -85,11 +86,11 @@ class EvaluationServiceStopSpec extends Specification {
 		def model = initScen(v)
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[4], nr, n[3], n[5], nd] as Node[])
 
 		when:
-		def result = service.check(sol, model)
+		def result = service.check(sol)
 
 		then:
 		result != null
@@ -149,7 +150,7 @@ class EvaluationServiceStopSpec extends Specification {
 
 		def iMetric = new AcceleratedMetricTransformator().transform(metric, nodes, v)
 
-		return new XFVRPModel(nodes, iMetric, iMetric, v, parameter)
+		return TestXFVRPModel.get(nodes, iMetric, iMetric, v, parameter)
 	}
 
 }

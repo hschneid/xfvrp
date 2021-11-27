@@ -26,11 +26,7 @@ public class PDPCheckService {
 		if(!isValid)
 			return false;
 		
-		isValid = checkTimeWindows(model, depot, pick, deli);
-		if(!isValid)
-			return false;
-
-		return true;
+		return checkTimeWindows(model, depot, pick, deli);
 	}
 
 	private boolean checkTimeWindows(XFVRPModel model, Node depot, Node pick, Node deli) {

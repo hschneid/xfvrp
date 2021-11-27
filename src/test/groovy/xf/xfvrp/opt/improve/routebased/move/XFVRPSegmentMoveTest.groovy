@@ -3,6 +3,7 @@ package xf.xfvrp.opt.improve.routebased.move
 import spock.lang.Specification
 import util.instances.TestNode
 import util.instances.TestVehicle
+import util.instances.TestXFVRPModel
 import xf.xfvrp.base.*
 import xf.xfvrp.base.metric.EucledianMetric
 import xf.xfvrp.base.metric.internal.AcceleratedMetricTransformator
@@ -142,7 +143,7 @@ class XFVRPSegmentMoveTest extends Specification {
         def model = initScen()
         def n = model.getNodes()
 
-        def sol = new Solution()
+        def sol = new Solution(model)
         sol.setGiantRoute([n[0], n[1], n[2], n[5], n[6], n[3], n[4], n[7], n[0]] as Node[])
 
         when:
@@ -165,7 +166,7 @@ class XFVRPSegmentMoveTest extends Specification {
         def model = initScen()
         def n = model.getNodes()
 
-        def sol = new Solution()
+        def sol = new Solution(model)
         sol.setGiantRoute([n[0], n[1], n[2], n[7], n[6], n[5], n[3], n[4], n[0]] as Node[])
 
         when:
@@ -188,7 +189,7 @@ class XFVRPSegmentMoveTest extends Specification {
         def model = initScen()
         def n = model.getNodes()
 
-        def sol = new Solution()
+        def sol = new Solution(model)
         sol.setGiantRoute([n[0], n[1], n[2], n[3], n[4], n[5], n[6], n[7], n[0]] as Node[])
 
         when:
@@ -305,6 +306,6 @@ class XFVRPSegmentMoveTest extends Specification {
 
         def iMetric = new AcceleratedMetricTransformator().transform(new EucledianMetric(), nodes, v)
 
-        return new XFVRPModel(nodes, iMetric, iMetric, v, new XFVRPParameter())
+        return TestXFVRPModel.get(nodes, iMetric, iMetric, v, new XFVRPParameter())
     }
 }

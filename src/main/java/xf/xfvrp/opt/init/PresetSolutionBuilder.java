@@ -40,7 +40,7 @@ public class PresetSolutionBuilder {
 		// Put the unassigned customers with single routes in the giant route
 		addUnassignedNodes(dataBag, giantRoute);
 
-		Solution solution = new Solution();
+		Solution solution = new Solution(model);
 		solution.setGiantRoute(giantRoute.toArray(new Node[0]));
 		return solution;
 	}

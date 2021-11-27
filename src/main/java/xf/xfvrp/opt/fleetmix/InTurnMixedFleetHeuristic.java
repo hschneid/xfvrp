@@ -5,12 +5,13 @@ import xf.xfvrp.base.Node;
 import xf.xfvrp.base.SiteType;
 import xf.xfvrp.base.Vehicle;
 import xf.xfvrp.base.XFVRPParameter;
+import xf.xfvrp.base.compartment.CompartmentType;
 import xf.xfvrp.base.exception.XFVRPException;
 import xf.xfvrp.base.metric.Metric;
 import xf.xfvrp.base.monitor.StatusCode;
 import xf.xfvrp.base.monitor.StatusManager;
 import xf.xfvrp.base.preset.VehiclePriorityInitialiser;
-import xf.xfvrp.opt.XFVRPSolution;
+import xf.xfvrp.opt.Solution;
 import xf.xfvrp.report.Report;
 import xf.xfvrp.report.RouteReport;
 
@@ -18,18 +19,25 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
+ * Copyright (c) 2012-2021 Holger Schneider
+ * All rights reserved.
+ *
+ * This source code is licensed under the MIT License (MIT) found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @author hschneid
+ *
  * InTurnMixedFleetHeuristic aims to distribute the set of generated routes fairly to the set of different vehicles
- *
- *
  */
-public class InTurnMixedFleetHeuristic extends MixedFleetHeuristicBase implements IMixedFleetHeuristic{
-	List<XFVRPSolution> vehicleSolutions;
-	String fallbackVehicleName;
-	Vehicle fallbackVehicle;
+public class InTurnMixedFleetHeuristic extends MixedFleetHeuristicBase implements IMixedFleetHeuristic {
+
+	private List<Solution> vehicleSolutions;
+	private String fallbackVehicleName;
+	private Vehicle fallbackVehicle;
 	
 	@Override
-	public List<XFVRPSolution> execute(Node[] nodes, Vehicle[] vehicles, RoutePlanningFunction routePlanningFunction,
-									   Metric metric, XFVRPParameter parameter, StatusManager statusManager)
+	public List<Solution> execute(Node[] nodes, CompartmentType[] compartmentTypes, Vehicle[] vehicles, RoutePlanningFunction routePlanningFunction,
+								  Metric metric, XFVRPParameter parameter, StatusManager statusManager)
 	throws XFVRPException {
 		List<Node> unplannedNodes = Arrays.asList(nodes);
 		
@@ -44,36 +52,37 @@ public class InTurnMixedFleetHeuristic extends MixedFleetHeuristicBase implement
 		int[] vehCounts = Arrays.stream(vehicles).mapToInt(Vehicle::getNbrOfAvailableVehicles).toArray();
 		int i = 0;
 		while (countCustomersLeft(unplannedNodes) > 0 && countVehiclesLeft(vehCounts) > 0) {
-			if (vehCounts[i] == 0) continue;
-			
-			Vehicle veh = vehicles[i];
-			statusManager.fireMessage(StatusCode.RUNNING, "Run with vehicle " + veh.getName() + " started.");
-			
-			Vehicle instance = new Vehicle(veh);
-			instance.setNbrOfAvailableVehicles(1);
-			
-			unplannedNodes = route(routePlanningFunction, unplannedNodes, instance);
-			
-			vehCounts[i] = vehCounts[i] - 1;
+			if (vehCounts[i] > 0) {
+
+				Vehicle veh = vehicles[i];
+				statusManager.fireMessage(StatusCode.RUNNING, "Run with vehicle " + veh.getName() + " started.");
+
+				Vehicle instance = new Vehicle(veh);
+				instance.setNbrOfAvailableVehicles(1);
+
+				unplannedNodes = route(routePlanningFunction, unplannedNodes, compartmentTypes, instance);
+
+				vehCounts[i] = vehCounts[i] - 1;
+			}
 			i = (i+1) % vehicles.length;
 		}
 		
 		if (countCustomersLeft(unplannedNodes) > 0 && fallbackVehicleName != null) {
 			statusManager.fireMessage(StatusCode.RUNNING, "No vehicle left and not every customer assigned -> using fallback vehicle");
-			unplannedNodes = route(routePlanningFunction, unplannedNodes, fallbackVehicle);
+			unplannedNodes = route(routePlanningFunction, unplannedNodes, compartmentTypes, fallbackVehicle);
 		}
 		
 		// Insert invalid and unplanned nodes into solution
-		XFVRPSolution unplannedNodesSolution = insertUnplannedNodes(unplannedNodes, metric, parameter, statusManager);
+		Solution unplannedNodesSolution = insertUnplannedNodes(unplannedNodes, compartmentTypes, metric, parameter, statusManager);
 		if(unplannedNodesSolution != null)
 			vehicleSolutions.add(unplannedNodesSolution);
 		
 		return vehicleSolutions;
 	}
 	
-	private List<Node> route(RoutePlanningFunction routePlanningFunction, List<Node> unplannedNodes, Vehicle instance) {
+	private List<Node> route(RoutePlanningFunction routePlanningFunction, List<Node> unplannedNodes, CompartmentType[] compartmentTypes, Vehicle instance) {
 		// Optimize all nodes with current vehicle type
-		XFVRPSolution solution = routePlanningFunction.apply(new RoutingDataBag(unplannedNodes.toArray(new Node[0]), instance));
+		Solution solution = routePlanningFunction.apply(new RoutingDataBag(unplannedNodes.toArray(new Node[0]), compartmentTypes, instance));
 		
 		// Point out best routes for this vehicle type
 		InTurnMixedFleetSelector selector = getSelector();
@@ -89,10 +98,6 @@ public class InTurnMixedFleetHeuristic extends MixedFleetHeuristicBase implement
 			unplannedNodes = getUnusedNodes(bestRoutes, unplannedNodes);
 		}
 		return unplannedNodes;
-	}
-	
-	public void setFallbackVehicleName(String vehicleName) {
-		this.fallbackVehicleName = vehicleName;
 	}
 	
 	private int countVehiclesLeft(int[] vehCounts) {

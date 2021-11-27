@@ -4,7 +4,10 @@ package xf.xfvrp.opt.evaluation
 import spock.lang.Specification
 import util.instances.TestNode
 import util.instances.TestVehicle
+import util.instances.TestXFVRPModel
 import xf.xfvrp.base.*
+import xf.xfvrp.base.compartment.CompartmentInitializer
+import xf.xfvrp.base.compartment.CompartmentType
 import xf.xfvrp.base.metric.EucledianMetric
 import xf.xfvrp.base.metric.internal.AcceleratedMetricTransformator
 import xf.xfvrp.opt.Solution
@@ -19,8 +22,12 @@ class EvaluationServiceReplenishSpec extends Specification {
 			demand: [0, 0, 0],
 			timeWindow: [[0,99],[2,99]]
 	).getNode()
-
-	Node nr
+	def nr = new TestNode(
+			externID: "REP",
+			siteType: SiteType.REPLENISH,
+			demand: [0, 0, 0],
+			timeWindow: [[0,99],[2,99]]
+	).getNode()
 
 	def sol
 
@@ -28,20 +35,22 @@ class EvaluationServiceReplenishSpec extends Specification {
 
 	def metric = new EucledianMetric()
 
-	def "Valid - Replenish all compartments by default values"() {
+	def "Valid - Replenish all compartments was initiated by default values"() {
 		def v = new TestVehicle(name: "V1", capacity: [5, 50, 500]).getVehicle()
 		def model = initScen(v, null)
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[3], nr, n[4], n[5], nd] as Node[])
 
 		when:
-		def result = service.check(sol, model)
+		def result = service.check(sol)
 
 		then:
 		result.getPenalty() == 0
-		nr.isCompartmentReplenished() == null
+		model.getCompartments()[0].isReplenished()
+		model.getCompartments()[1].isReplenished()
+		model.getCompartments()[2].isReplenished()
 	}
 
 	def "Valid - Replenish all compartments by defined values"() {
@@ -49,17 +58,17 @@ class EvaluationServiceReplenishSpec extends Specification {
 		def model = initScen(v, new boolean[]{true, true, true})
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[3], nr, n[4], n[5], nd] as Node[])
 
 		when:
-		def result = service.check(sol, model)
+		def result = service.check(sol)
 
 		then:
 		result.getPenalty() == 0
-		nr.isCompartmentReplenished()[0]
-		nr.isCompartmentReplenished()[1]
-		nr.isCompartmentReplenished()[2]
+		model.getCompartments()[0].isReplenished()
+		model.getCompartments()[1].isReplenished()
+		model.getCompartments()[2].isReplenished()
 	}
 
 	def "Invalid - One compartment is not replenished and exceed capacity"() {
@@ -67,15 +76,15 @@ class EvaluationServiceReplenishSpec extends Specification {
 		def model = initScen(v, new boolean[]{true, false, true})
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[3], nr, n[4], n[5], nd] as Node[])
 
 		when:
-		def result = service.check(sol, model)
+		def result = service.check(sol)
 
 		then:
 		result.getPenalty() > 0
-		!nr.isCompartmentReplenished()[1]
+		!model.getCompartments()[1].isReplenished()
 	}
 
 	def "Valid - One compartment is not replenished but it is enough capacity"() {
@@ -83,11 +92,11 @@ class EvaluationServiceReplenishSpec extends Specification {
 		def model = initScen(v, new boolean[]{true, false, true})
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[3], nr, n[4], n[5], nd] as Node[])
 
 		when:
-		def result = service.check(sol, model)
+		def result = service.check(sol)
 
 		then:
 		result.getPenalty() == 0
@@ -98,17 +107,17 @@ class EvaluationServiceReplenishSpec extends Specification {
 		def model = initScen(v, new boolean[]{false, false, false})
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[3], nr, n[4], n[5], nd] as Node[])
 
 		when:
-		def result = service.check(sol, model)
+		def result = service.check(sol)
 
 		then:
 		result.getPenalty() == 0
-		!nr.isCompartmentReplenished()[0]
-		!nr.isCompartmentReplenished()[1]
-		!nr.isCompartmentReplenished()[2]
+		!model.getCompartments()[0].isReplenished()
+		!model.getCompartments()[1].isReplenished()
+		!model.getCompartments()[2].isReplenished()
 	}
 
 	def "Invalid - All compartments are not replenished and it exceeds capacity"() {
@@ -116,19 +125,17 @@ class EvaluationServiceReplenishSpec extends Specification {
 		def model = initScen(v, new boolean[]{false, false, false})
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[3], nr, n[4], n[5], nd] as Node[])
 
 		when:
-		def result = service.check(sol, model)
+		def result = service.check(sol)
 
 		then:
 		result.getPenalty() > 0
 	}
 
 	XFVRPModel initScen(Vehicle v, boolean[] isCompartmentReplenished) {
-		createReplenishmentNode(isCompartmentReplenished)
-
 		def n1 = new TestNode(
 				globalIdx: 1,
 				externID: "1",
@@ -181,17 +188,15 @@ class EvaluationServiceReplenishSpec extends Specification {
 
 		def iMetric = new AcceleratedMetricTransformator().transform(metric, nodes, v)
 
-		return new XFVRPModel(nodes, iMetric, iMetric, v, parameter)
-	}
+		List<CompartmentType> types = []
+		if(isCompartmentReplenished != null) {
+			for (i in 0..<isCompartmentReplenished.length) {
+				types[i] = (isCompartmentReplenished[i]) ? CompartmentType.MIXED : CompartmentType.MIXED_NO_REPLENISH
+			}
+		}
+		CompartmentInitializer.check(nodes, types, [v] as Vehicle[])
 
-	void createReplenishmentNode(boolean[] isCompartmentReplenished) {
-		nr = new TestNode(
-				externID: "REP",
-				siteType: SiteType.REPLENISH,
-				demand: [0, 0, 0],
-				timeWindow: [[0,99],[2,99]],
-				isCompartmentReplenished: isCompartmentReplenished
-		).getNode()
+		return TestXFVRPModel.get(nodes, types.toArray(new CompartmentType[0]), iMetric, iMetric, v, parameter)
 	}
 
 }

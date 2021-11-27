@@ -3,6 +3,7 @@ package xf.xfvrp.opt.improve.ils
 import spock.lang.Specification
 import util.instances.TestNode
 import util.instances.TestVehicle
+import util.instances.TestXFVRPModel
 import xf.xfvrp.base.*
 import xf.xfvrp.base.metric.EucledianMetric
 import xf.xfvrp.base.metric.internal.AcceleratedMetricTransformator
@@ -151,7 +152,7 @@ class XFVRPILSSpec extends Specification {
 		def betterQuality = new Quality(cost: 80, penalty: 0)
 		evaluationService.check(_ as Solution, _) >>> [quality, betterQuality]
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[5], n[4], nd, nd, n[3], nd] as Node[])
 
 		opt1.execute(_ ,_ , _) >> sol
@@ -219,6 +220,6 @@ class XFVRPILSSpec extends Specification {
 
 		def iMetric = new AcceleratedMetricTransformator().transform(metric, nodes, v)
 
-		return new XFVRPModel(nodes, iMetric, iMetric, v, parameter)
+		return TestXFVRPModel.get(nodes, iMetric, iMetric, v, parameter)
 	}
 }

@@ -19,23 +19,14 @@ import java.util.List;
  */
 public class StatusManager {
 
-	private List<StatusMonitor> observerList = new ArrayList<>();
+	private final List<StatusMonitor> observerList = new ArrayList<>();
 	
 	private long startTime = 0;
 	
-	/**
-	 * 
-	 * @param mon
-	 */
 	public void addObserver(StatusMonitor mon) {
 		observerList.add(mon);
 	}
 	
-	/**
-	 * 
-	 * @param code
-	 * @param message
-	 */
 	public void fireMessage(StatusCode code, String message) {
 		for (StatusMonitor mon : observerList)
 			mon.getMessage(code, message);

@@ -2,6 +2,8 @@ package xf.xfvrp.base
 
 import spock.lang.Specification
 import util.instances.TestNode
+import util.instances.TestVehicle
+import util.instances.TestXFVRPModel
 import xf.xfvrp.base.fleximport.CustomerData
 
 class ShipmentConverterSpec extends Specification {
@@ -49,9 +51,7 @@ class ShipmentConverterSpec extends Specification {
 		def n8 = new TestNode(externID: "8", siteType: SiteType.CUSTOMER).getNode()
 		def n9 = new TestNode(externID: "9", siteType: SiteType.DEPOT).getNode()
 		
-		def model = new XFVRPModel([n1, n4, n9, n2, n3, n5, n6, n7, n8] as Node[], null, null, null, null)
-
-		return model
+		return TestXFVRPModel.get([n1, n4, n9, n2, n3, n5, n6, n7, n8], new TestVehicle().getVehicle())
 	}
 	
 }

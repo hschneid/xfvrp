@@ -1,9 +1,6 @@
 package xf.xfvrp.opt.construct;
 
-import xf.xfvrp.base.Node;
-import xf.xfvrp.base.Quality;
-import xf.xfvrp.base.SiteType;
-import xf.xfvrp.base.Util;
+import xf.xfvrp.base.*;
 import xf.xfvrp.base.exception.XFVRPException;
 import xf.xfvrp.opt.Solution;
 import xf.xfvrp.opt.XFVRPOptBase;
@@ -11,10 +8,9 @@ import xf.xfvrp.opt.XFVRPOptBase;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Stream;
 
 
-/** 
+/**
  * Copyright (c) 2012-2021 Holger Schneider
  * All rights reserved.
  *
@@ -23,8 +19,8 @@ import java.util.stream.Stream;
  *
  *
  * Contains the Savings optimization procedure with
- * acceptance value lamda. 
- * 
+ * acceptance value lambda = 1.
+ *
  * @author hschneid
  *
  */
@@ -32,16 +28,18 @@ public class XFVRPSavings extends XFVRPOptBase {
 
 	protected float lamda = 1;
 
+	public XFVRPSavings() {
+		super.isSplittable = true;
+	}
+
 	/**
 	 * Executes the Savings routing
 	 */
 	@Override
 	public Solution execute(Solution solution) throws XFVRPException {
-		Node[] giantRoute = solution.getGiantRoute();
+		final Node depot = solution.getRoutes()[0][0];
 
-		final Node depot = giantRoute[0];
-
-		SavingsDataBag dataBag = buildRoutes(giantRoute);
+		SavingsDataBag dataBag = buildRoutes(solution);
 
 		prepare(dataBag);
 
@@ -49,9 +47,7 @@ public class XFVRPSavings extends XFVRPOptBase {
 
 		improve(depot, dataBag);
 
-		Solution newSolution = new Solution();
-		newSolution.setGiantRoute(buildGiantRoute(dataBag, depot));
-		return newSolution;
+		return createSolution(depot, dataBag, solution.getModel());
 	}
 
 	private void prepare(SavingsDataBag dataBag) {
@@ -98,7 +94,7 @@ public class XFVRPSavings extends XFVRPOptBase {
 
 		int savingsIdx = savingsMatrix.size() - 1;
 
-		// Bestimme das beste gültige Saving
+		// Search for best valid saving
 		for (int i = savingsIdx; i >= 0; i--) {
 			savingsIdx--;
 			float[] saving = savingsMatrix.get(i);
@@ -114,8 +110,8 @@ public class XFVRPSavings extends XFVRPOptBase {
 			Node[] newRoute = addDepots(coreRoute, depotStart, depotEnd);
 
 			// Check
-			Solution smallSolution = new Solution();
-			smallSolution.setGiantRoute(newRoute);
+			Solution smallSolution = new Solution(model);
+			smallSolution.addRoute(newRoute);
 			Quality q = check(smallSolution);
 
 			if(q.getPenalty() == 0) {
@@ -154,7 +150,7 @@ public class XFVRPSavings extends XFVRPOptBase {
 		int routeLengthDst = routes[routeIdxDst].length;
 
 		// Aktualisiere die Datenstrukturen
-		if(routeIdxForStartNode[srcNodeIdx] != -1) { 
+		if(routeIdxForStartNode[srcNodeIdx] != -1) {
 			routeIdxForStartNode[srcNodeIdx] = -1;
 			routeIdxForStartNode[routes[routeIdxSrc][routeLengthSrc - 1].getIdx()] = routeIdxSrc;
 			routeIdxForEndNode[routes[routeIdxSrc][routeLengthSrc - 1].getIdx()] = -1;
@@ -208,9 +204,11 @@ public class XFVRPSavings extends XFVRPOptBase {
 		if(routeIdxForEndNode[dstNodeIdx] != -1)
 			this.swap(r2, 0, r2.length - 1);
 
-		return Stream
-				.concat(Arrays.stream(r1), Arrays.stream(r2))
-				.toArray(Node[]::new);
+		// Concat both routes
+		Node[] newRoute = new Node[r1.length + r2.length];
+		System.arraycopy(r1, 0, newRoute, 0, r1.length);
+		System.arraycopy(r2, 0, newRoute, r1.length, r2.length);
+		return newRoute;
 	}
 
 	private void createSavingsMatrix(Node depot, SavingsDataBag dataBag) {
@@ -247,55 +245,39 @@ public class XFVRPSavings extends XFVRPOptBase {
 	}
 
 	/**
-	 * Converts a list of lists into a giant route representation
+	 * Creates the initial list of lists where each
+	 * sub list is a route of customers. Each savings route contains only Customer nodes.
 	 */
-	private Node[] buildGiantRoute(SavingsDataBag dataBag, Node depot) {
-		Node[][] routeArr = dataBag.getRoutes();
-
-		int maxId = 0;
-		List<Node> giantList = new ArrayList<>();
-		for (int i = 0; i < routeArr.length; i++) {
-			if (routeArr[i] == null)
-				continue;
-
-			giantList.add(Util.createIdNode(depot, maxId++));
-			giantList.addAll(Arrays.asList(routeArr[i]));
-
-		}
-		giantList.add(Util.createIdNode(depot, maxId));
-
-		return giantList.toArray(new Node[0]);
+	private SavingsDataBag buildRoutes(Solution solution) {
+		return new SavingsDataBag(
+				Arrays.stream(solution.getRoutes())
+						.map(route -> Arrays
+								.stream(route)
+								.filter(node -> node.getSiteType() == SiteType.CUSTOMER)
+								.toArray(Node[]::new)
+						)
+						.filter(route -> route.length > 0)
+						.toArray(Node[][]::new)
+		);
 	}
 
-	/**
-	 * Creates the initial list of lists where each
-	 * sub list is a route.
-	 */
-	private SavingsDataBag buildRoutes(Node[] giantRoute) {
-		SavingsDataBag dataBag = new SavingsDataBag();
+	private Solution createSolution(Node depot, SavingsDataBag dataBag, XFVRPModel model) {
+		Solution newSolution = new Solution(model);
 
-		Node[][] routeArr = new Node[giantRoute.length][];
+		int depotId = 0;
+		for (int i = 0; i < dataBag.getRoutes().length; i++) {
+			Node[] customers = dataBag.getRoutes()[i];
+			if(customers != null) {
+				Node[] route = new Node[customers.length + 2];
 
-		int idx = 0;
-		for (int i = 0; i < giantRoute.length; i++) {
-			if(giantRoute[i].getSiteType() == SiteType.DEPOT)
-				continue;
-			if(giantRoute[i].getSiteType() == SiteType.REPLENISH)
-				continue;
+				route[0] = Util.createIdNode(depot, depotId++);
+				System.arraycopy(customers, 0, route, 1, customers.length);
+				route[route.length - 1] = Util.createIdNode(depot, depotId++);
 
-			List<Node> list = new ArrayList<>();
-			for (int j = i; j < giantRoute.length; j++) {
-				if(giantRoute[j].getSiteType() == SiteType.DEPOT)
-					break;
-
-				list.add(giantRoute[j]);
-				i++;
+				newSolution.addRoute(route);
 			}
-			routeArr[idx++] = list.toArray(new Node[0]);
 		}
 
-		dataBag.setRoutes(Arrays.copyOf(routeArr, idx));
-
-		return dataBag;
+		return newSolution;
 	}
 }

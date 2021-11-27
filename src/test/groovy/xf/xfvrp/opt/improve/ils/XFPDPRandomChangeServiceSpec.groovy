@@ -4,6 +4,7 @@ package xf.xfvrp.opt.improve.ils
 import spock.lang.Specification
 import util.instances.TestNode
 import util.instances.TestVehicle
+import util.instances.TestXFVRPModel
 import xf.xfvrp.base.*
 import xf.xfvrp.base.metric.EucledianMetric
 import xf.xfvrp.base.metric.internal.AcceleratedMetricTransformator
@@ -51,7 +52,7 @@ class XFPDPRandomChangeServiceSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[3], n[4], n[5], nd] as Node[])
 
 		def choice = new Choice()
@@ -69,7 +70,7 @@ class XFPDPRandomChangeServiceSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], nd, n[3], n[4], n[5], nd] as Node[])
 
 		def choice = new Choice()
@@ -87,7 +88,7 @@ class XFPDPRandomChangeServiceSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[3], n[4], n[5], nd] as Node[])
 
 		def choice = new Choice()
@@ -105,7 +106,7 @@ class XFPDPRandomChangeServiceSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[4], n[5], n[3], nd] as Node[])
 
 		def choice = new Choice()
@@ -125,7 +126,7 @@ class XFPDPRandomChangeServiceSpec extends Specification {
 
 		n[3].setShipmentIdx(12)
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[4], n[5], n[3], nd] as Node[])
 
 		def choice = new Choice()
@@ -144,7 +145,7 @@ class XFPDPRandomChangeServiceSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[3], n[4], n[5], nd] as Node[])
 
 		def choice = new Choice()
@@ -164,7 +165,7 @@ class XFPDPRandomChangeServiceSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[3], n[4], n[5], nd] as Node[])
 
 		def choice = new Choice()
@@ -184,7 +185,7 @@ class XFPDPRandomChangeServiceSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[3], n[4], n[5], nd] as Node[])
 
 		def choice = new Choice()
@@ -204,7 +205,7 @@ class XFPDPRandomChangeServiceSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[3], n[4], n[5], nd] as Node[])
 
 		def choice = new Choice()
@@ -225,7 +226,7 @@ class XFPDPRandomChangeServiceSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[3], n[4], n[5], nd] as Node[])
 
 		def choice = new Choice()
@@ -246,7 +247,7 @@ class XFPDPRandomChangeServiceSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[3], n[4], n[5], nd] as Node[])
 
 		def choice = new Choice()
@@ -267,7 +268,7 @@ class XFPDPRandomChangeServiceSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[3], n[4], n[5], nd] as Node[])
 
 		def choice = new Choice()
@@ -288,7 +289,7 @@ class XFPDPRandomChangeServiceSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[3], n[4], nd, n[5], nd] as Node[])
 
 		def choice = new Choice()
@@ -309,7 +310,7 @@ class XFPDPRandomChangeServiceSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[3], nd, n[4], n[5], nd] as Node[])
 
 		def choice = new Choice()
@@ -330,7 +331,7 @@ class XFPDPRandomChangeServiceSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[4], n[3], n[5], nd] as Node[])
 
 		def choice = new Choice()
@@ -358,7 +359,7 @@ class XFPDPRandomChangeServiceSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[4], n[3], n[5], nd] as Node[])
 
 		def choice = new Choice()
@@ -367,8 +368,7 @@ class XFPDPRandomChangeServiceSpec extends Specification {
 		choice.dstPickupIdx = 4
 		choice.dstDeliveryIdx = 5
 
-		def quality = new Quality(cost: 100, penalty: 1)
-		evaluationService.check(_,_) >> quality
+		evaluationService.check(_) >> new Quality(cost: 100, penalty: 1)
 		service.evaluationService = evaluationService
 
 		when:
@@ -376,7 +376,7 @@ class XFPDPRandomChangeServiceSpec extends Specification {
 		def gt = sol.getGiantRoute()
 
 		then:
-		result == false
+		!result
 		gt[0] == nd
 		gt[1] == n[2]
 		gt[2] == n[4]
@@ -392,7 +392,7 @@ class XFPDPRandomChangeServiceSpec extends Specification {
 
 		service.rand = realRandom
 
-		sol = new Solution()
+		sol = new Solution(model)
 
 		when:
 		def result = true
@@ -412,14 +412,14 @@ class XFPDPRandomChangeServiceSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[3], n[4], n[5], n[6], n[7], nd] as Node[])
 		// 0, 4,5,2,3,6,7
 		random.nextInt(_) >>> [2, 0, 0, 4, 0, 6]
 		service.NBR_OF_VARIATIONS = 2
 
 		when:
-		def result = service.change(sol, model)
+		def result = service.change(sol)
 		def gt = result.getGiantRoute()
 
 		then:
@@ -557,6 +557,6 @@ class XFPDPRandomChangeServiceSpec extends Specification {
 
 		parameter.setWithPDP(true)
 
-		return new XFVRPModel(nodes, iMetric, iMetric, v, parameter)
+		return TestXFVRPModel.get(nodes, iMetric, iMetric, v, parameter)
 	}
 }

@@ -1,14 +1,24 @@
 package xf.xfvrp.opt.evaluation;
 
 import xf.xfvrp.base.*;
+import xf.xfvrp.base.compartment.CompartmentLoad;
 import xf.xfvrp.base.exception.XFVRPException;
 import xf.xfvrp.base.exception.XFVRPExceptionType;
 import xf.xfvrp.base.preset.BlockNameConverter;
-import xf.xfvrp.base.preset.BlockPositionConverter;
 
 import java.util.Arrays;
 import java.util.Map;
 
+/**
+ * Copyright (c) 2012-2021 Holger Schneider
+ * All rights reserved.
+ *
+ * This source code is licensed under the MIT License (MIT) found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @author hschneid
+ *
+ */
 public class Context {
 
 	public static final int ROUTE_IDX = 0;
@@ -22,7 +32,7 @@ public class Context {
 	// Variables
 	private int maxGlobalNodeIdx;
 	private final float[] routeVar;
-	private float[] amountsOfRoute;
+	private CompartmentLoad[] amountsOfRoute;
 
 	private int[] blockPresetArr;
 	private int[] availablePresetCountArr;
@@ -32,7 +42,7 @@ public class Context {
 	private boolean[] presetRoutingNodeList;
 
 	// Pre-evaluated infos of a route (service times and amounts)
-	private Map<Node, RouteInfo> routeInfos;
+	private Map<Node, RouteInfo[]> routeInfos;
 
 	private Node currentDepot;
 	private Node currentNode;
@@ -40,9 +50,10 @@ public class Context {
 
 	private float[] lastDrivenDistance;
 
-	private XFVRPModel model;
+	private final XFVRPModel model;
 
-	public Context() {
+	public Context(XFVRPModel model) {
+		this.model = model;
 		routeVar = new float[7];
 		routeVar[ROUTE_IDX] = -1;
 	}
@@ -81,14 +92,14 @@ public class Context {
 		routeVar[DURATION] += vehicle.getWaitingTimeBetweenShifts();
 	}
 
-	public int createNewRoute(Node newDepot) throws XFVRPException {
+	public void createNewRoute(Node newDepot) throws XFVRPException {
 		routeVar[ROUTE_IDX]++;
 
 		setCurrentDepot(newDepot);
 
 		routeVar[DRIVING_TIME] = 0;
 		routeVar[NBR_OF_STOPS] = 0;
-		int penalty = resetAmountsOfRoute();
+		resetAmountsOfRoute();
 
 		routeVar[LENGTH] = 0;
 		routeVar[DELAY] = 0;
@@ -96,8 +107,6 @@ public class Context {
 		lastPresetSequenceRankArr[BlockNameConverter.DEFAULT_BLOCK_IDX] = Integer.MIN_VALUE;
 		Arrays.fill(presetRoutingBlackList, false);
 		Arrays.fill(presetRoutingNodeList, false);
-
-		return penalty;
 	}
 
 	public void setDepartureTimeAtDepot(float earliestDepartureTime, float loadingTimeAtDepot) {
@@ -109,44 +118,45 @@ public class Context {
 		routeVar[DURATION] = loadingTimeAtDepot;
 	}
 
-	public int resetAmountsOfRoute() throws XFVRPException {
-		// Reset amounts to zero only for compartments, where parameter is set to true
-		if(currentNode.isCompartmentReplenished() != null && currentNode.getSiteType() == SiteType.REPLENISH) {
-			for (int compartment = 0; compartment < getNbrOfCompartments(); compartment++) {
-				if(currentNode.isCompartmentReplenished()[compartment]) {
-					Arrays.fill(
-							amountsOfRoute,
-							compartment * CompartmentLoadType.NBR_OF_LOAD_TYPES,
-							compartment * CompartmentLoadType.NBR_OF_LOAD_TYPES + CompartmentLoadType.NBR_OF_LOAD_TYPES,
-							0
-					);
-				}
+	public void resetAmountsOfRoute() throws XFVRPException {
+		// Assumption: currentNode = DEPOT or REPLENISH
+
+		for (int compartmentIdx = amountsOfRoute.length - 1; compartmentIdx >= 0; compartmentIdx--) {
+			// If replenishment is not allowed, ignore rest
+			if (currentNode.getSiteType() == SiteType.REPLENISH && !model.getCompartments()[compartmentIdx].isReplenished()) {
+				continue;
 			}
-		} else {
-			Arrays.fill(amountsOfRoute, 0);
+
+			if (currentNode.getSiteType() == SiteType.REPLENISH) {
+				amountsOfRoute[compartmentIdx].replenish();
+			} else {
+				amountsOfRoute[compartmentIdx].clear();
+			}
+
+			// Init delivery amount on the route
+			if(!routeInfos.containsKey(currentNode))
+				throw new XFVRPException(XFVRPExceptionType.ILLEGAL_ARGUMENT, "Could not find route infos for depot id " + currentNode.getDepotId());
+
+			// The Compartment object searches itself for correct value from deliveryOfRoute.getAmounts()
+			Amount deliveryOfRoute = Amount.ofDelivery(routeInfos.get(currentNode));
+			amountsOfRoute[compartmentIdx].addAmount(deliveryOfRoute.getAmounts(), LoadType.PRELOAD_AT_DEPOT);
 		}
-
-		// Init delivery amount on the route
-		if(!routeInfos.containsKey(currentNode))
-			throw new XFVRPException(XFVRPExceptionType.ILLEGAL_ARGUMENT, "Could not find route infos for depot id " + currentNode.getDepotId());
-
-		Amount deliveryOfRoute = routeInfos.get(currentNode).getDeliveryAmount();
-		if(deliveryOfRoute.hasAmount()) {
-			for (int compartment = 0; compartment < getNbrOfCompartments(); compartment++)
-				amountsOfRoute[compartment * CompartmentLoadType.NBR_OF_LOAD_TYPES + CompartmentLoadType.MIXED.index()] += deliveryOfRoute.getAmounts()[compartment];
-
-			return checkCapacities();
-		}
-
-		return 0;
 	}
 
 	public float getLoadingServiceTimeAtDepot() {
-		return routeInfos.get(currentDepot).getLoadingServiceTime();
+		float maxServiceTime = 0;
+		for (int compartmentIdx = 0; compartmentIdx < amountsOfRoute.length; compartmentIdx++) {
+			maxServiceTime = Math.max(maxServiceTime, routeInfos.get(currentDepot)[compartmentIdx].getLoadingServiceTime());
+		}
+		return maxServiceTime;
 	}
 
 	public float getUnLoadingServiceTimeAtDepot() {
-		return routeInfos.get(currentDepot).getUnLoadingServiceTime();
+		float maxServiceTime = 0;
+		for (int compartmentIdx = 0; compartmentIdx < amountsOfRoute.length; compartmentIdx++) {
+			maxServiceTime = Math.max(maxServiceTime, routeInfos.get(currentDepot)[compartmentIdx].getUnLoadingServiceTime());
+		}
+		return maxServiceTime;
 	}
 
 	public void addToTime(float addedTime) {
@@ -169,11 +179,11 @@ public class Context {
 		return routeVar;
 	}
 
-	public float[] getAmountsOfRoute() {
+	public CompartmentLoad[] getAmountsOfRoute() {
 		return amountsOfRoute;
 	}
 
-	public void setAmountArr(float[] amountArr) {
+	public void setAmountArr(CompartmentLoad[] amountArr) {
 		this.amountsOfRoute = amountArr;
 	}
 
@@ -205,7 +215,7 @@ public class Context {
 		this.presetRoutingNodeList = presetRoutingNodeList;
 	}
 
-	public void setRouteInfos(Map<Node, RouteInfo> routeDepotServiceMap) {
+	public void setRouteInfos(Map<Node, RouteInfo[]> routeDepotServiceMap) {
 		this.routeInfos = routeDepotServiceMap;
 	}
 
@@ -254,18 +264,8 @@ public class Context {
 		Vehicle vehicle = model.getVehicle();
 
 		int sum = 0;
-		for (int compartment = 0; compartment < getNbrOfCompartments(); compartment++) {
-			int compartmentIdx = compartment * CompartmentLoadType.NBR_OF_LOAD_TYPES;
-
-			int pickupIdx = compartmentIdx + CompartmentLoadType.PICKUP.index();
-			int deliveryIdx = compartmentIdx + CompartmentLoadType.DELIVERY.index();
-			if(amountsOfRoute[pickupIdx] == 0 && amountsOfRoute[deliveryIdx] > 0) {
-				sum += (int) Math.ceil(Math.max(0, amountsOfRoute[deliveryIdx] - vehicle.getCapacity()[deliveryIdx]));
-			} else if(amountsOfRoute[pickupIdx] > 0 && amountsOfRoute[deliveryIdx] == 0) {
-				sum += (int) Math.ceil(Math.max(0, amountsOfRoute[pickupIdx] - vehicle.getCapacity()[pickupIdx]));
-			} else if(amountsOfRoute[pickupIdx] > 0 && amountsOfRoute[deliveryIdx] > 0) {
-				sum += (int) Math.ceil(Math.max(0, amountsOfRoute[compartmentIdx + CompartmentLoadType.MIXED.index()] - vehicle.getCapacity()[compartmentIdx + CompartmentLoadType.MIXED.index()]));
-			}
+		for (int compartment = 0; compartment < model.getCompartments().length; compartment++) {
+			sum += amountsOfRoute[compartment].checkCapacity(vehicle.getCapacity());
 		}
 
 		return sum;
@@ -282,22 +282,26 @@ public class Context {
 
 	public void setPresetRouting() {
 		if(currentNode.getSiteType() == SiteType.CUSTOMER) {
-			for (int bn : currentNode.getPresetRoutingBlackList())
-				presetRoutingBlackList[bn] = true;
+			int[] routingBlackList = currentNode.getPresetRoutingBlackList();
+			for (int i = 0, routingBlackListLength = routingBlackList.length; i < routingBlackListLength; i++) {
+				presetRoutingBlackList[routingBlackList[i]] = true;
+			}
 			presetRoutingNodeList[currentNode.getGlobalIdx()] = true;
 		}
 	}
 
 	public int checkPresetPosition() {
-		if (currentNode.getPresetBlockPos() > BlockPositionConverter.UNDEF_POSITION)
-			// 1 is the first setted block position. The second block pos needs to be checked at first. 
-			if(currentNode.getPresetBlockPos() > 1)
-				if (currentNode.getPresetBlockIdx() > BlockNameConverter.DEFAULT_BLOCK_IDX)
-					if (currentNode.getPresetBlockIdx() == lastNode.getPresetBlockIdx()) {
-						if (lastNode.getPresetBlockPos() != currentNode.getPresetBlockPos() - 1)
-							return 1;
-					} else
+		// curr node must have a preset block position greater than 1 (1 is first position)
+		if(currentNode.getPresetBlockPos() > 1)
+			// AND must have a dedicated block
+			if (currentNode.getPresetBlockIdx() > BlockNameConverter.DEFAULT_BLOCK_IDX)
+				// If curr node and last node have same block
+				if (currentNode.getPresetBlockIdx() == lastNode.getPresetBlockIdx()) {
+					// than diff of positions must be 1
+					if (currentNode.getPresetBlockPos() - lastNode.getPresetBlockPos() != 1)
 						return 1;
+				} else
+					return 1;
 
 		return 0;
 	}
@@ -360,15 +364,7 @@ public class Context {
 		return routeVar[LENGTH];
 	}
 
-	public void setModel(XFVRPModel model) {
-		this.model = model;
-	}
-
-	public RouteInfo getRouteInfo() {
+	public RouteInfo[] getRouteInfo() {
 		return routeInfos.get(currentNode);
-	}
-
-	public int getNbrOfCompartments() {
-		return amountsOfRoute.length / CompartmentLoadType.NBR_OF_LOAD_TYPES;
 	}
 }

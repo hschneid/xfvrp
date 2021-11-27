@@ -1,6 +1,6 @@
 [![MIT License](https://img.shields.io/apm/l/atomic-design-ui.svg?)](https://github.com/tterb/atomic-design-ui/blob/master/LICENSEs)
 [![BCH compliance](https://bettercodehub.com/edge/badge/hschneid/xfvrp?branch=master)](https://bettercodehub.com/)
-![alt text](https://img.shields.io/static/v1?label=version&message=11.4.4.1&color=-)
+![alt text](https://img.shields.io/static/v1?label=version&message=11.4.5&color=-)
 
 xfvrp
 ======
@@ -35,12 +35,12 @@ This software is licenced under [MIT License] (https://opensource.org/licenses/M
     <dependency>
       <groupId>com.github.hschneid</groupId>
       <artifactId>xfvrp</artifactId>
-      <version>11.3.0-RELEASE</version>
+      <version>11.4.5-RELEASE</version>
     </dependency>
     ```
   * Gradle:
     ```
-    implementation 'com.github.hschneid:xfvrp:11.3.0-RELEASE'
+    implementation 'com.github.hschneid:xfvrp:11.4.5-RELEASE'
     ```
 
 A simple example for a capacitated vehicle route planning:
@@ -49,8 +49,9 @@ XFVRP xfvrp = new XFVRP();
 xfvrp.addDepot().setXlong(5.667);
 xfvrp.addCustomer().setXlong(1.002).setDemand(new float[]{1.5, 0, 2.3});
 xfvrp.setVehicle().setName("Truck").setCapacity(new float[]{3, 2, 5});
+xfvrp.addCompartment(CompartmentType.DELIVERY)
 xfvrp.setMetric(new EucledianMetric());
-xfvrp.setOptType(XFVRPOptType.RELOCATE);
+xfvrp.setOptType(XFVRPOptTypes.RELOCATE);
 
 Report report = xfvrp.executeRoutePlanning();
 report.getSummary().getDistance();
@@ -60,6 +61,25 @@ report.getSummary().getDistance();
 As a general purpose solver, XFVRP is not fully compatable with single problem solvers. But even though it can prove its relevance by [benchmarks](BENCHMARKS.md).
 
 ## Change log
+
+### 11.4.5
+#### Breaking Changes
+- Renamed XFVRPOptType >> XFVRPOptTypes  
+  - Changed optimization types from enum to simple list. With this, it is possible to inject own optimization logic into XFVRP.
+
+#### Changes
+- Introduced compartments as explicit resource. User can control the way, how demands are checked for capacity constraint. Default compartment is the mixed pickup and delivery.
+  ```
+    xfvrp.addCompartment(CompartmentType.PICKUP);
+    xfvrp.addVehicle().setCapacity(new float[]{50, 5, 10});
+    xfvrp.addCustomer().setLoadType(LoadType.PICKUP).setDemand(new float[]{13, 4}); 
+  ```
+  In example, a compartment is declared, where only pickups shall happen. But the vehicle capacity is declared with 3 compartments, so 2 additional compartments are added with default compartment.
+  The demand of the customer has only 2 compartments declared, which means, that third compartment is filled with default value = 0.
+- Reverted some of the changes for compartments from 11.4.0 due to many side-effects. If someone needs this feature, please ping us.
+- More refactorings due to giant route
+- Fixed, that construction heuristic does not consider allowed-depots constraint correctly
+- Fixed, that evaluation was not considering disallowed replenishment correctly
 
 ### 11.4.4.1
 - Introduced new Mixed Fleet Heuristic

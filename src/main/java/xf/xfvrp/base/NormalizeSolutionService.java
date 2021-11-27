@@ -21,13 +21,13 @@ public class NormalizeSolutionService {
 	 * - Adding empty routes for each available depot (multi depot) 
 	 * - Reindex the depotIDs which are used for build a solution report
 	 */
-	public static Solution normalizeRoute(Solution solution, XFVRPModel model) {
+	public static Solution normalizeRoute(Solution solution) {
 		removeEmptyRoutes(solution);
 
 		int maxDepotId = 0;
-		maxDepotId = addEmptyRoutes(solution, model, maxDepotId);
+		maxDepotId = addEmptyRoutes(solution, maxDepotId);
 
-		addReplenishRoute(solution, model, maxDepotId);
+		addReplenishRoute(solution, maxDepotId);
 
 		return solution;
 	}
@@ -37,9 +37,9 @@ public class NormalizeSolutionService {
 	 * - Really remove empty routes
 	 * - Then call normalizing
 	 */
-	public static void normalizeRouteWithCleanup(Solution solution, XFVRPModel model) {
+	public static void normalizeRouteWithCleanup(Solution solution) {
 		shrinkRoutes(solution);
-		normalizeRoute(solution, model);
+		normalizeRoute(solution);
 	}
 
 	/**
@@ -63,7 +63,6 @@ public class NormalizeSolutionService {
 					Quality nonEmptyQuality = solution.getRouteQualities()[nextNonEmptyRoute];
 					solution.setRouteQuality(nextNonEmptyRoute, solution.getRouteQualities()[i]);
 					solution.setRouteQuality(i, new RouteQuality(i, nonEmptyQuality));
-
 
 				} else {
 					// No more non empty routes available
@@ -123,9 +122,9 @@ public class NormalizeSolutionService {
 		}
 	}
 
-	private static int addEmptyRoutes(Solution solution, XFVRPModel model, int maxDepotId) {
-		Node[] nodes = model.getNodes();
-		int nbrOfDepots = model.getNbrOfDepots();
+	private static int addEmptyRoutes(Solution solution, int maxDepotId) {
+		Node[] nodes = solution.getModel().getNodes();
+		int nbrOfDepots = solution.getModel().getNbrOfDepots();
 
 		// Erzeuge für jedes Depot eine leere Tour
 		for (int i = 0; i < nbrOfDepots; i++) {
@@ -136,18 +135,19 @@ public class NormalizeSolutionService {
 		return maxDepotId;
 	}
 
-	private static int addReplenishRoute(Solution solution, XFVRPModel model, int maxDepotId) {
+	private static void addReplenishRoute(Solution solution, int maxDepotId) {
+		XFVRPModel model = solution.getModel();
 		Node[] nodes = model.getNodes();
 		int idxOfFirstReplenishInNodes = model.getNbrOfDepots();
 		int idxOfLastReplenishInNodes = model.getNbrOfReplenish() + idxOfFirstReplenishInNodes;
 
 		if(model.getNbrOfReplenish() == 0) {
-			return maxDepotId;
+			return;
 		}
 
 		// Create additional empty route with all replenish nodes on it
 		Node[] newRoute = new Node[model.getNbrOfReplenish() + 2];
-		Node depot = Util.createIdNode(nodes[0], maxDepotId++);
+		Node depot = Util.createIdNode(nodes[0], maxDepotId);
 		int idx = 0;
 
 		newRoute[idx++] = depot;
@@ -157,8 +157,6 @@ public class NormalizeSolutionService {
 		newRoute[idx] = depot;
 
 		solution.addRoute(newRoute);
-
-		return maxDepotId;
 	}
 
 }

@@ -1,5 +1,6 @@
 package xf.xfvrp.base.xfvrp;
 
+import xf.xfvrp.base.compartment.CompartmentType;
 import xf.xfvrp.base.exception.XFVRPException;
 import xf.xfvrp.base.exception.XFVRPExceptionType;
 import xf.xfvrp.base.fleximport.*;
@@ -69,14 +70,22 @@ public class XFVRPData extends XFVRPBase {
 	public VehicleData addVehicle() {
 		return importer.getVehicleData();
 	}
+
+	/**
+	 * Adds a compartment to XFVRP. The number of added compartments must
+	 * fit to given capacities and demands in customers.
+	 *
+	 * If no compartments are given, XFVRP will choose a default compartment.
+	 */
+	public void addCompartment(CompartmentType type) {
+		importer.addCompartmentType(type);
+	}
 	
 	/**
 	 * Sets a metric, whereby the optimization can get
 	 * information about the distance or time between nodes.
 	 *
 	 * Metrics can relay on coordinates or on pre-calculated data.
-	 *
-	 * @param metric
 	 */
 	public void setMetric(Metric metric) {
 		this.metric = metric;

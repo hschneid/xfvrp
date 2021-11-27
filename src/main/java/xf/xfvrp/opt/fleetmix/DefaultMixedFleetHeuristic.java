@@ -4,12 +4,13 @@ import xf.xfvrp.RoutingDataBag;
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.Vehicle;
 import xf.xfvrp.base.XFVRPParameter;
+import xf.xfvrp.base.compartment.CompartmentType;
 import xf.xfvrp.base.exception.XFVRPException;
 import xf.xfvrp.base.metric.Metric;
 import xf.xfvrp.base.monitor.StatusCode;
 import xf.xfvrp.base.monitor.StatusManager;
 import xf.xfvrp.base.preset.VehiclePriorityInitialiser;
-import xf.xfvrp.opt.XFVRPSolution;
+import xf.xfvrp.opt.Solution;
 import xf.xfvrp.report.RouteReport;
 
 import java.util.ArrayList;
@@ -39,8 +40,9 @@ public class DefaultMixedFleetHeuristic extends MixedFleetHeuristicBase implemen
 	private final MixedFleetSelector selector = new MixedFleetSelector();
 	
 	@Override
-	public List<XFVRPSolution> execute(
+	public List<Solution> execute(
 			Node[] nodes,
+			CompartmentType[] compartmentTypes,
 			Vehicle[] vehicles,
 			RoutePlanningFunction routePlanningFunction,
 			Metric metric,
@@ -50,12 +52,12 @@ public class DefaultMixedFleetHeuristic extends MixedFleetHeuristicBase implemen
 
 		vehicles = VehiclePriorityInitialiser.execute(vehicles);
 
-		List<XFVRPSolution> vehicleSolutions = new ArrayList<>();
+		List<Solution> vehicleSolutions = new ArrayList<>();
 		for (Vehicle veh : vehicles) {
 			statusManager.fireMessage(StatusCode.RUNNING, "Run with vehicle "+ veh.getName() +" started.");
 
 			// Optimize all nodes with current vehicle type
-			XFVRPSolution solution = routePlanningFunction.apply(new RoutingDataBag(unplannedNodes.toArray(new Node[0]), veh));
+			Solution solution = routePlanningFunction.apply(new RoutingDataBag(unplannedNodes.toArray(new Node[0]), compartmentTypes, veh));
 
 			// Point out best routes for this vehicle type
 			List<RouteReport> bestRoutes = getSelector().getBestRoutes(veh, getReportBuilder().getReport(solution));
@@ -74,7 +76,7 @@ public class DefaultMixedFleetHeuristic extends MixedFleetHeuristicBase implemen
 		}
 
 		// Insert invalid and unplanned nodes into solution
-		XFVRPSolution unplannedNodesSolution = insertUnplannedNodes(unplannedNodes, metric, parameter, statusManager);
+		Solution unplannedNodesSolution = insertUnplannedNodes(unplannedNodes, compartmentTypes, metric, parameter, statusManager);
 		if(unplannedNodesSolution != null)
 			vehicleSolutions.add(unplannedNodesSolution);
 

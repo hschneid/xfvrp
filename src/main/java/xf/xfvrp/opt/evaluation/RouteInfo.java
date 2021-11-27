@@ -2,6 +2,8 @@ package xf.xfvrp.opt.evaluation;
 
 import xf.xfvrp.base.Node;
 
+import java.util.Objects;
+
 /**
  * Copyright (c) 2012-2021 Holger Schneider
  * All rights reserved.
@@ -11,16 +13,18 @@ import xf.xfvrp.base.Node;
  **/
 public class RouteInfo {
 
+	private final int compartmentIdx;
 	private final Node depot;
 	
 	private float loadingServiceTime = 0;
 	private float unLoadingServiceTime = 0;
 	
-	private Amount deliveryAmount = new Amount();
-	private Amount pickupAmount = new Amount();
+	private float deliveryAmount = 0;
+	private float pickupAmount = 0;
 	
-	public RouteInfo(Node depot) {
+	public RouteInfo(Node depot, int compartmentIdx) {
 		this.depot = depot;
+		this.compartmentIdx = compartmentIdx;
 	}
 	
 	public void addLoadingServiceTime(float time) {
@@ -31,12 +35,12 @@ public class RouteInfo {
 		unLoadingServiceTime += time;
 	}
 
-	public void addPickUpAmount(float[] demand) {
-		pickupAmount.add(demand);
+	public void addPickUpAmount(float demand) {
+		pickupAmount += demand;
 	}
 
-	public void addDeliveryAmount(float[] demand) {
-		deliveryAmount.add(demand);
+	public void addDeliveryAmount(float demand) {
+		deliveryAmount += demand;
 	}
 
 	public float getLoadingServiceTime() {
@@ -51,11 +55,24 @@ public class RouteInfo {
 		return depot;
 	}
 
-	public Amount getDeliveryAmount() {
+	public float getDeliveryAmount() {
 		return deliveryAmount;
 	}
 
-	public Amount getPickupAmount() {
+	public float getPickupAmount() {
 		return pickupAmount;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		RouteInfo routeInfo = (RouteInfo) o;
+		return Objects.equals(depot.getIdx(), routeInfo.depot.getIdx());
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(depot.getIdx());
 	}
 }

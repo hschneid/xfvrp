@@ -3,7 +3,6 @@ package xf.xfvrp.opt.improve.ils;
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.Quality;
 import xf.xfvrp.base.SiteType;
-import xf.xfvrp.base.XFVRPModel;
 import xf.xfvrp.base.exception.XFVRPException;
 import xf.xfvrp.base.preset.BlockNameConverter;
 import xf.xfvrp.base.preset.BlockPositionConverter;
@@ -28,8 +27,8 @@ public class XFVRPRandomChangeService extends XFVRPOptBase implements XFRandomCh
 	 * @see xf.xfvrp.opt.improve.ils.XFRandomChangeService#change(xf.xfvrp.opt.Solution, xf.xfvrp.base.XFVRPModel)
 	 */
 	@Override
-	public Solution change(Solution solution, XFVRPModel model) throws XFVRPException {
-		this.setModel(model);
+	public Solution change(Solution solution) throws XFVRPException {
+		this.setModel(solution.getModel());
 
 		return this.execute(solution);
 	}

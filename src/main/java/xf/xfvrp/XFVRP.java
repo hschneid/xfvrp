@@ -5,8 +5,10 @@ import xf.xfvrp.base.exception.XFVRPException;
 import xf.xfvrp.base.exception.XFVRPExceptionType;
 import xf.xfvrp.base.monitor.StatusCode;
 import xf.xfvrp.base.xfvrp.XFVRPData;
-import xf.xfvrp.opt.*;
-import xf.xfvrp.opt.fleetmix.IMixedFleetHeuristic;
+import xf.xfvrp.opt.Solution;
+import xf.xfvrp.opt.XFVRPOptBase;
+import xf.xfvrp.opt.XFVRPOptSplitter;
+import xf.xfvrp.opt.XFVRPOptType;
 import xf.xfvrp.opt.init.ModelBuilder;
 import xf.xfvrp.opt.init.precheck.PreCheckService;
 import xf.xfvrp.opt.init.solution.InitialSolutionBuilder;
@@ -14,10 +16,9 @@ import xf.xfvrp.report.Report;
 import xf.xfvrp.report.build.ReportBuilder;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
-/** 
+/**
  * Copyright (c) 2012-2021 Holger Schneider
  * All rights reserved.
  *
@@ -28,14 +29,14 @@ import java.util.List;
  * XFVRP is central user interface for this suite. 
  * It combines all methods for data import, optimization execution, parameters and
  * retrieval of solutions.
- * 
+ *
  * The modeling of this class represents a state machine, where iteratively several 
  * methods must be called. The execution method take all inserted data and parameters
  * and start the optimizers.
- * 
- * 
+ *
+ *
  * @author hschneid
- * 
+ *
  */
 public class XFVRP extends XFVRPData {
 
@@ -48,7 +49,7 @@ public class XFVRP extends XFVRPData {
 	private XFVRPModel lastModel;
 
 	/* Solutions - List of generated solutions per each vehicle type*/
-	private final List<XFVRPSolution> vehicleSolutionList = new ArrayList<>();
+	private final List<Solution> vehicleSolutionList = new ArrayList<>();
 
 	/**
 	 * Calculates the VRP with the before inserted data
@@ -76,11 +77,19 @@ public class XFVRP extends XFVRPData {
 			statusManager.fireMessage(StatusCode.ABORT, "No vehicle information are present.");
 			throw new XFVRPException(XFVRPExceptionType.ILLEGAL_INPUT, "No vehicle information are present.");
 		}
-		
-		IMixedFleetHeuristic heuristic = getParameters().getMixedFleetHeuristic();
-		Collection<XFVRPSolution> solutions = heuristic.execute(nodes, vehicles, this::executeRoutePlanning,
-				metric, parameters, statusManager);
-		
+
+		List<Solution> solutions = getParameters()
+				.getMixedFleetHeuristic()
+				.execute(
+						nodes,
+						importer.getCompartmentTypes(),
+						vehicles,
+						this::executeRoutePlanning,
+						metric,
+						parameters,
+						statusManager
+				);
+
 		vehicleSolutionList.addAll(solutions);
 
 		statusManager.fireMessage(StatusCode.FINISHED, "XFVRP finished successfully.");
@@ -90,13 +99,13 @@ public class XFVRP extends XFVRPData {
 	 * Calculates a single vehicle VRP for a given vehicle with all
 	 * announced optimization procedures.
 	 */
-	private XFVRPSolution executeRoutePlanning(RoutingDataBag dataBag) throws XFVRPException {
+	private Solution executeRoutePlanning(RoutingDataBag dataBag) throws XFVRPException {
 		Node[] nodes = new PreCheckService().precheck(dataBag.nodes, dataBag.vehicle, parameters);
-		XFVRPModel model = new ModelBuilder().build(nodes, dataBag.vehicle, metric, parameters, statusManager);
+		XFVRPModel model = new ModelBuilder().build(nodes, dataBag.compartmentTypes, dataBag.vehicle, metric, parameters, statusManager);
 		Solution solution = new InitialSolutionBuilder().build(model, parameters, statusManager);
 
 		// VRP optimizations, if initiated solution has appropriate length
-		if (solution.getGiantRoute().length > 0) {
+		if (solution.isValid()) {
 			/*
 			 * For each given optimization procedure the current
 			 * solution plan is searched for optimizations. If solution
@@ -113,32 +122,35 @@ public class XFVRP extends XFVRPData {
 						solution = splitter.execute(solution, model, statusManager, xfvrp);
 					else
 						solution = xfvrp.execute(solution, model, statusManager);
+
+					System.out.println("CCC "+solution.getQuality().toString());
 				} catch (UnsupportedOperationException usoex) {
 					statusManager.fireMessage(StatusCode.EXCEPTION, "Splitting encountert problem:\n" + usoex.getMessage());
 				}
 			}
 
 			// Normalization of last result
-			NormalizeSolutionService.normalizeRoute(solution, model);
+			NormalizeSolutionService.normalizeRoute(solution);
+
 		}
 
 		lastModel = model;
-		return new XFVRPSolution(solution, model);
+		return solution;
 	}
 
 	/**
 	 * Uses the last planned solution and turns it
 	 * into a report representation.
-	 * 
+	 *
 	 * All route plan informations can be akquired by this report.
-	 * 
+	 *
 	 * @return A report data structure with detailed information about the route plan or null if no solution was calculated.
 	 */
 	public Report getReport() throws XFVRPException {
 		if(vehicleSolutionList.size() > 0) {
 
 			Report rep = new Report(lastModel);
-			for (XFVRPSolution sol : vehicleSolutionList)
+			for (Solution sol : vehicleSolutionList)
 				rep.importReport(new ReportBuilder().getReport(sol));
 
 			return rep;
@@ -150,12 +162,12 @@ public class XFVRP extends XFVRPData {
 	 * Adds a certain optimization algorithm out
 	 * of the spectrum of accessible methods in
 	 * the enumeration XFVRPOptType.
-	 * 
+	 *
 	 * @param type algorithm type. it can't be null.
 	 */
 	public void addOptType(XFVRPOptType type) throws XFVRPException {
 		if(type != null)
-			optList.add(type.createInstance());
+			optList.add(type.create());
 	}
 
 	/**
@@ -164,7 +176,7 @@ public class XFVRP extends XFVRPData {
 	public void clearOptTypes() {
 		optList.clear();
 	}
-	
+
 	public XFVRPParameter getParameters() {
 		return parameters;
 	}

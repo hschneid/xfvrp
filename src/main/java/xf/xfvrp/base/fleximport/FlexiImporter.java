@@ -3,6 +3,8 @@ package xf.xfvrp.base.fleximport;
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.ShipmentConverter;
 import xf.xfvrp.base.Vehicle;
+import xf.xfvrp.base.compartment.CompartmentInitializer;
+import xf.xfvrp.base.compartment.CompartmentType;
 import xf.xfvrp.base.exception.XFVRPException;
 import xf.xfvrp.base.monitor.StatusManager;
 import xf.xfvrp.base.preset.*;
@@ -37,6 +39,7 @@ public class FlexiImporter {
 	private final List<CustomerData> customerList = new ArrayList<>();
 	private final List<ReplenishData> replenishList = new ArrayList<>();
 	private final List<VehicleData> vehicleList = new ArrayList<>();
+	private final List<CompartmentType> compartmentTypes = new ArrayList<>();
 
 	public final VehicleData defaultVehicle = VehicleData.createDefault();
 
@@ -83,7 +86,7 @@ public class FlexiImporter {
 		
 		// Convert external node data to internal node data
 		// Indexing, replacing, transforming
-		CompartmentInitializer.execute(nodes, vehicles);
+		CompartmentInitializer.check(nodes, compartmentTypes, vehicles);
 		BlockedVehicleListConverter.convert(nodes, customerList, vehicles, statusManager);
 		BlockNameConverter.convert(nodes, customerList);
 		BlockPositionConverter.convert(nodes, customerList);
@@ -187,17 +190,8 @@ public class FlexiImporter {
 		return lastVehicleData;
 	}
 
-	/**
-	 * Clears all internal data lists and reset the internal fields.
-	 */
-	public void clear() {
-		depotList.clear();
-		customerList.clear();
-		vehicleList.clear();
-
-		lastDepotData = null;
-		lastCustomerData = null;
-		lastVehicleData = null;
+	public void addCompartmentType(CompartmentType type) {
+		compartmentTypes.add(type);
 	}
 
 	/**
@@ -223,41 +217,20 @@ public class FlexiImporter {
 		vehicleList.add(defaultVehicle);
 	}
 
-	/**
-	 * 
-	 * @return the collected depots
-	 */
 	public List<DepotData> getDepotList() {
 		return depotList;
 	}
 
-	/**
-	 * 
-	 * @return the collected customers
-	 */
 	public List<CustomerData> getCustomerList() {
 		return customerList;
 	}
 
-	/**
-	 * 
-	 * @return the collected customers
-	 */
-	public List<ReplenishData> getReplenishList() {
-		return replenishList;
-	}
+	public CompartmentType[] getCompartmentTypes() {return compartmentTypes.toArray(new CompartmentType[0]);}
 
-	/**
-	 * 
-	 * @return the collected vehicles
-	 */
 	public Vehicle[] getVehicles() throws XFVRPException {
 		Vehicle[] vehicles = new Vehicle[vehicleList.size()];
-
-		int idx = 0;
-		for (VehicleData veh : vehicleList) {
-			vehicles[idx] = veh.createVehicle(idx);
-			idx++;
+		for (int i = 0; i < vehicleList.size(); i++) {
+			vehicles[i] = vehicleList.get(i).createVehicle(i);
 		}
 
 		return vehicles;

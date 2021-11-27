@@ -1,20 +1,23 @@
 package xf.xfvrp.base
 
 import spock.lang.Specification
+import util.instances.TestVehicle
+import util.instances.TestXFVRPModel
 import xf.xfvrp.opt.Solution
 
 class NormalizeSpec extends Specification {
 
 	def service = new NormalizeSolutionService()
-	def sol = new Solution()
+
 	
 	def "Regular normalize - no empty routes"() {
 		def model = createModel()
 		def n = model.getNodes()
+		def sol = new Solution(model)
 		sol.setGiantRoute([n[0], n[3], n[4], n[1], n[5], n[6], n[7], n[1]] as Node[])
 				
 		when:
-		sol = service.normalizeRoute(sol, model)
+		sol = service.normalizeRoute(sol)
 		
 		def result = sol.getGiantRoute()
 		
@@ -37,10 +40,11 @@ class NormalizeSpec extends Specification {
 		def model = createModel()
 
 		def n = model.getNodes()
+		def sol = new Solution(model)
 		sol.setGiantRoute([n[0], n[3], n[4], n[2], n[1], n[5], n[6], n[7], n[1]] as Node[])
 				
 		when:
-		sol = service.normalizeRoute(sol, model)
+		sol = service.normalizeRoute(sol)
 		
 		def result = sol.getGiantRoute()
 		
@@ -63,10 +67,11 @@ class NormalizeSpec extends Specification {
 		def model = createModel()
 
 		def n = model.getNodes()
+		def sol = new Solution(model)
 		sol.setGiantRoute([n[1], n[0], n[3], n[4], n[2], n[1], n[5], n[6], n[7], n[1]] as Node[])
 				
 		when:
-		sol = service.normalizeRoute(sol, model)
+		sol = service.normalizeRoute(sol)
 		
 		def result = sol.getGiantRoute()
 		
@@ -89,10 +94,11 @@ class NormalizeSpec extends Specification {
 		def model = createModel()
 
 		def n = model.getNodes()
+		def sol = new Solution(model)
 		sol.setGiantRoute([n[1], n[1], n[0], n[3], n[4], n[2], n[2], n[1], n[5], n[6], n[7], n[1]] as Node[])
 				
 		when:
-		sol = service.normalizeRoute(sol, model)
+		sol = service.normalizeRoute(sol)
 		
 		def result = sol.getGiantRoute()
 		
@@ -115,10 +121,11 @@ class NormalizeSpec extends Specification {
 		def model = createModelWithReplenishs()
 
 		def n = model.getNodes()
+		def sol = new Solution(model)
 		sol.setGiantRoute([n[0], n[5], n[3], n[6], n[1], n[7], n[4], n[8], n[9], n[1]] as Node[])
 				
 		when:
-		sol = service.normalizeRoute(sol, model)
+		sol = service.normalizeRoute(sol)
 		
 		def result = sol.getGiantRoute()
 		
@@ -146,10 +153,11 @@ class NormalizeSpec extends Specification {
 		def model = createModelWithReplenishs()
 
 		def n = model.getNodes()
+		def sol = new Solution(model)
 		sol.setGiantRoute([n[1], n[0], n[5], n[6], n[3], n[2], n[1], n[4], n[7], n[8], n[9], n[1]] as Node[])
 				
 		when:
-		sol = service.normalizeRoute(sol, model)
+		sol = service.normalizeRoute(sol)
 		
 		def result = sol.getGiantRoute()
 		
@@ -177,10 +185,11 @@ class NormalizeSpec extends Specification {
 		def model = createModelWithReplenishs()
 
 		def n = model.getNodes()
+		def sol = new Solution(model)
 		sol.setGiantRoute([n[1], n[0], n[5], n[3], n[3], n[6], n[2], n[1], n[4], n[7], n[8], n[9], n[1]] as Node[])
 				
 		when:
-		sol = service.normalizeRoute(sol, model)
+		sol = service.normalizeRoute(sol)
 		
 		def result = sol.getGiantRoute()
 		
@@ -204,29 +213,16 @@ class NormalizeSpec extends Specification {
 		result[15].externID == "1"
 	}
 	
-	def "Irregular normalize - model null"() {
-		def model = createModel()
-		def n = model.getNodes()
-		sol.setGiantRoute([n[0], n[3], n[4], n[1], n[5], n[6], n[7], n[1]] as Node[])
-				
-		when:
-		sol = service.normalizeRoute(sol, null)
-		
-		def result = sol.getGiantRoute()
-		
-		then:
-		thrown NullPointerException
-	}
-	
 	def "Irregular normalize - giant route null"() {
 		def model = createModel()
 		def n = model.getNodes()
+		def sol = new Solution(model)
 		sol.setGiantRoute([n[0], n[3], n[4], n[1], n[5], n[6], n[7], n[1]] as Node[])
 				
 		when:
-		sol = service.normalizeRoute(null, model)
+		sol = service.normalizeRoute(null)
 		
-		def result = sol.getGiantRoute()
+		sol.getGiantRoute()
 		
 		then:
 		thrown NullPointerException
@@ -234,11 +230,11 @@ class NormalizeSpec extends Specification {
 
 	def "Irregular normalize - empty giant route"() {
 		def model = createModel()
-		def n = model.getNodes()
+		def sol = new Solution(model)
 		sol.setGiantRoute([] as Node[])
 				
 		when:
-		sol = service.normalizeRoute(sol, model)
+		sol = service.normalizeRoute(sol)
 		
 		def result = sol.getGiantRoute()
 		
@@ -259,10 +255,8 @@ class NormalizeSpec extends Specification {
 		def n6 = new Node(externID: "6", siteType: SiteType.CUSTOMER)
 		def n7 = new Node(externID: "7", siteType: SiteType.CUSTOMER)
 		def n8 = new Node(externID: "8", siteType: SiteType.DEPOT)
-		
-		def model = new XFVRPModel([n1, n4, n8, n2, n3, n5, n6, n7] as Node[], null, null, null, null)
 
-		return model
+		return TestXFVRPModel.get([n1, n4, n8, n2, n3, n5, n6, n7], new TestVehicle(capacity: [3,3]).getVehicle())
 	}
 	
 	private XFVRPModel createModelWithReplenishs() {
@@ -277,7 +271,7 @@ class NormalizeSpec extends Specification {
 		def n9 = new Node(externID: "R1", siteType: SiteType.REPLENISH)
 		def n10 = new Node(externID: "R2", siteType: SiteType.REPLENISH)
 		
-		def model = new XFVRPModel([n1, n4, n8, n9, n10, n2, n3, n5, n6, n7] as Node[], null, null, null, null)
+		def model = TestXFVRPModel.get([n1, n4, n8, n9, n10, n2, n3, n5, n6, n7], new TestVehicle(capacity: [3,3]).getVehicle())
 
 		return model
 	}

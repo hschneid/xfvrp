@@ -4,7 +4,7 @@ import spock.lang.Ignore
 import spock.lang.Specification
 import xf.xfvrp.XFVRP
 import xf.xfvrp.base.metric.EucledianMetric
-import xf.xfvrp.opt.XFVRPOptType
+import xf.xfvrp.opt.XFVRPOptTypes
 import xf.xfvrp.report.Report
 
 import java.nio.file.Files
@@ -119,11 +119,11 @@ class Homberger extends Specification {
                     .setServiceTime(data[6])
         }
 
-        xfvrp.addOptType(XFVRPOptType.FIRST_BEST)
+        xfvrp.addOptType(XFVRPOptTypes.FIRST_BEST)
         xfvrp.setNbrOfLoopsForILS(10)
-        xfvrp.addOptType(XFVRPOptType.RELOCATE)
-        xfvrp.addOptType(XFVRPOptType.PATH_RELOCATE)
-        xfvrp.addOptType(XFVRPOptType.PATH_EXCHANGE)
+        xfvrp.addOptType(XFVRPOptTypes.RELOCATE)
+        xfvrp.addOptType(XFVRPOptTypes.PATH_RELOCATE)
+        xfvrp.addOptType(XFVRPOptTypes.PATH_EXCHANGE)
 
         xfvrp.setMetric(new EucledianMetric())
 
