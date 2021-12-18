@@ -32,6 +32,9 @@ import java.util.function.Function;
  */
 public class VRPInitialSolutionBuilder {
 
+	/**
+	 * Builds the first solution. All invalid nodes are filtered out before.
+	 */
 	public Solution build(XFVRPModel model, List<Node> invalidNodes, StatusManager statusManager) throws XFVRPException {
 		List<Node> validNodes = getValidCustomers(model, invalidNodes);
 
@@ -42,13 +45,6 @@ public class VRPInitialSolutionBuilder {
 		return solution;
 	}
 
-	/**
-	 * Builds the giant tour. All invalid nodes are filtered out before.
-	 *
-	 * @param nodes List of nodes which are valid
-	 * @param model Current model of nodes, distances and parameters
-	 * @return Current route plan of single trips per customer
-	 */
 	private Solution buildSolution(List<Node> nodes, XFVRPModel model, StatusManager statusManager) throws XFVRPException {
 		if(nodes == null) {
 			return new Solution(model);
@@ -62,7 +58,8 @@ public class VRPInitialSolutionBuilder {
 	}
 
 	private Solution generateSolution(List<Node> nodes, XFVRPModel model) {
-		List<Node> gL = new ArrayList<>();
+		Solution solution = new Solution(model);
+		List<Node> route = new ArrayList<>();
 
 		// GlobalIndex -> Depot
 		Map<Integer, Node> depotMap = new HashMap<>();
@@ -78,6 +75,7 @@ public class VRPInitialSolutionBuilder {
 		Set<Integer> depots = new HashSet<>();
 		for (Node dep : nodes.subList(0, model.getNbrOfDepots()))
 			depots.add(dep.getGlobalIdx());
+
 		for (int i = model.getNbrOfDepots() + model.getNbrOfReplenish(); i < nodes.size(); i++) {
 			Node currNode = nodes.get(i);
 
@@ -87,23 +85,31 @@ public class VRPInitialSolutionBuilder {
 			// Add a depot after each change of block or unblocked customer
 			final int blockIdx = currNode.getPresetBlockIdx();
 			if(blockIdx == BlockNameConverter.DEFAULT_BLOCK_IDX || blockIdx != lastBlockIdx) {
+				// Finish old route
+				if(route.size() > 0) {
+					route.add(Util.createIdNode(route.get(0), maxIdx++));
+					solution.addRoute(route.toArray(new Node[0]));
+					route = new ArrayList<>();
+				}
+
+				// Start new route
 				// Get an index for an element of allowed depots
 				int idx = depotIdx % allowedDepots.size();
 				// Add depot with new own id
-				gL.add(Util.createIdNode(depotMap.get(allowedDepots.get(idx)), maxIdx++));
+				route.add(Util.createIdNode(depotMap.get(allowedDepots.get(idx)), maxIdx++));
 			}
 
 			// Add customer
-			gL.add(currNode);
+			route.add(currNode);
 
 			depotIdx++;
 			lastBlockIdx = blockIdx;
 		}
-		// Add last depot
-		gL.add(Util.createIdNode(nodes.get(depotIdx % depots.size()), maxIdx));
 
-		Solution solution = new Solution(model);
-		solution.setGiantRoute(gL.toArray(new Node[0]));
+		// Add last depot
+		route.add(Util.createIdNode(route.get(0), maxIdx));
+		solution.addRoute(route.toArray(new Node[0]));
+
 		return solution;
 	}
 
