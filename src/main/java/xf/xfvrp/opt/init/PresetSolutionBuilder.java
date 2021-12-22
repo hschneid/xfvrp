@@ -11,9 +11,9 @@ import xf.xfvrp.opt.Solution;
 import xf.xfvrp.opt.init.solution.vrp.VRPInitialSolutionBuilder;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.stream.IntStream;
 
 /**
  * Copyright (c) 2012-2021 Holger Schneider
@@ -46,10 +46,9 @@ public class PresetSolutionBuilder {
 		}
 
 		// Put the unassigned customers with single routes into the solution
-		Solution unassigedSolution = initialSolutionBuilder.build(
-				dataBag.getAvailableCustomers().toArray(new Node[0]),
-				model,
-				statusManager
+		Solution unassigedSolution = initialSolutionBuilder.generateSolution(
+				new ArrayList<>(dataBag.getAvailableCustomers()),
+				model
 		);
 		solution.addRoutes(unassigedSolution.getRoutes());
 
@@ -60,12 +59,14 @@ public class PresetSolutionBuilder {
 		PresetSolutionBuilderDataBag dataBag = new PresetSolutionBuilderDataBag();
 
 		dataBag.setModel(model);
-		dataBag.setNodes(nodes);
+		dataBag.setNodes(Arrays.asList(model.getNodes()));
 
 		// Generate a map for each extern id to a node index
-		IntStream.range(0, nodes.size()).forEach(i -> dataBag.addNodeId(nodes.get(i), i));
+		for (Node node : model.getNodes()) {
+			dataBag.addNodeId(node, node.getIdx());
+		}
 
-		dataBag.setAvailableCustomers(new HashSet<>(nodes.subList(model.getNbrOfDepots() + model.getNbrOfReplenish(), nodes.size())));
+		dataBag.setAvailableCustomers(new HashSet<>(nodes));
 		return dataBag;
 	}
 
