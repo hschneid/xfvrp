@@ -37,16 +37,13 @@ class CheckServiceSpec extends Specification {
 
 		def dataBag = new SolutionBuilderDataBag()
 
-		def invalidNodes = new ArrayList<Node>()
-
-		checkCustomerService.checkCustomer(_, model, dataBag) >> true
+		checkCustomerService.checkCustomer(_ as Node, model, dataBag) >> true
 
 		when:
-		def result = service.checkNodesOfBlock(1, nodesOfBlock, dataBag, invalidNodes, model)
+		def result = service.checkNodesOfBlock(1, nodesOfBlock, dataBag, model)
 		
 		then:
 		result
-		invalidNodes.size() == 0
 		dataBag.validDepots.size() == 2
 		dataBag.validDepots.contains(nodes[0])
 		dataBag.validDepots.contains(nodes[1])
@@ -63,16 +60,13 @@ class CheckServiceSpec extends Specification {
 
 		def dataBag = new SolutionBuilderDataBag()
 
-		def invalidNodes = new ArrayList<Node>()
-
 		checkCustomerService.checkCustomer(_, model, dataBag) >> true
 
 		when:
-		def result = service.checkNodesOfBlock(1, nodesOfBlock, dataBag, invalidNodes, model)
+		def result = service.checkNodesOfBlock(1, nodesOfBlock, dataBag, model)
 		
 		then:
 		result
-		invalidNodes.size() == 0
 		dataBag.getValidReplenish().size() == 2
 		dataBag.getValidReplenish().contains(nodes[0])
 		dataBag.getValidReplenish().contains(nodes[1])
@@ -83,8 +77,6 @@ class CheckServiceSpec extends Specification {
 		def nodes = getNodes()
 		def model = build(nodes)
 
-		def invalidNodes = new ArrayList<Node>()
-
 		checkCustomerService.checkCustomer(_, model, _ as SolutionBuilderDataBag) >>> [true]
 		
 		def blocks = [
@@ -94,10 +86,9 @@ class CheckServiceSpec extends Specification {
 			]
 
 		when:
-		def dataBag = service.checkBlocks(blocks, invalidNodes, model)
+		def dataBag = service.checkBlocks(blocks, model)
 		
 		then:
-		invalidNodes.size() == 0
 		dataBag.validDepots.size() == 1
 		dataBag.validCustomers.size() == 4
 	}
@@ -105,8 +96,6 @@ class CheckServiceSpec extends Specification {
 	def "Check blocks - One not okay"() {
 		def nodes = getNodes()
 		def model = build(nodes)
-
-		def invalidNodes = new ArrayList<Node>()
 
 		checkCustomerService.checkCustomer(_, model, _ as SolutionBuilderDataBag) >>> [true, true, true, false]
 		
@@ -117,13 +106,12 @@ class CheckServiceSpec extends Specification {
 			]
 
 		when:
-		def dataBag = service.checkBlocks(blocks, invalidNodes, model)
+		def dataBag = service.checkBlocks(blocks, model)
 		
 		then:
-		invalidNodes.size() == 1
-		invalidNodes.contains(nodes[3])
 		dataBag.validDepots.size() == 1
 		dataBag.validCustomers.size() == 3
+		dataBag.validCustomers.count {n -> n == nodes[3]} == 0
 	}
 
 	XFVRPModel build(Node[] nodes) {

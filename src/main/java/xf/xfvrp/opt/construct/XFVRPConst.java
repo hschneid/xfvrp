@@ -55,7 +55,7 @@ public class XFVRPConst extends XFVRPOptBase {
 							.thenComparingInt(Node::getPresetBlockPos)
 			);
 
-			// Create temp giant tour with only one depot and allocated customers
+			// Create temp solution with only one depot and allocated customers
 			Solution savingsSolution = solutionBuilder.generateSolution(dep, customers, this.model);
 
 			// Run optimizers for each piece and choose best
