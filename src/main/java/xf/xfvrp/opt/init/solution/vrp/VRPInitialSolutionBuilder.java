@@ -33,10 +33,10 @@ import java.util.function.Function;
 public class VRPInitialSolutionBuilder {
 
 	/**
-	 * Builds the first solution. All invalid nodes are filtered out before.
+	 * Builds the first solution.
 	 */
-	public Solution build(XFVRPModel model, List<Node> invalidNodes, StatusManager statusManager) throws XFVRPException {
-		List<Node> validNodes = getValidCustomers(model, invalidNodes);
+	public Solution build(Node[] customerNodes, XFVRPModel model, StatusManager statusManager) throws XFVRPException {
+		List<Node> validNodes = getValidCustomers(customerNodes, model);
 
 		Solution solution = buildSolution(validNodes, model, statusManager);
 
@@ -45,42 +45,38 @@ public class VRPInitialSolutionBuilder {
 		return solution;
 	}
 
-	private Solution buildSolution(List<Node> nodes, XFVRPModel model, StatusManager statusManager) throws XFVRPException {
-		if(nodes == null) {
+	private Solution buildSolution(List<Node> customers, XFVRPModel model, StatusManager statusManager) throws XFVRPException {
+		if(customers == null) {
 			return new Solution(model);
 		}
 
 		// If user has given a predefined solution
 		if(model.getParameter().getPredefinedSolutionString() != null)
-			return new PresetSolutionBuilder().build(nodes, model, statusManager);
+			return new PresetSolutionBuilder().build(customers, model, statusManager);
 
-		return generateSolution(nodes, model);
+		return generateSolution(customers, model);
 	}
 
-	private Solution generateSolution(List<Node> nodes, XFVRPModel model) {
+	private Solution generateSolution(List<Node> customers, XFVRPModel model) {
 		Solution solution = new Solution(model);
 		List<Node> route = new ArrayList<>();
 
+		// Create single routes for each block or single customer without block
+		// Consider preset depot
 		// GlobalIndex -> Depot
 		Map<Integer, Node> depotMap = new HashMap<>();
 		for (int i = 0; i < model.getNbrOfDepots(); i++)
-			depotMap.put(nodes.get(i).getGlobalIdx(), nodes.get(i));
+			depotMap.put(model.getNodes()[i].getGlobalIdx(), model.getNodes()[i]);
 
 		// Create single routes for each block or single customer without block
 		int depotIdx = 0;
 		int maxIdx = 0;
 		int lastBlockIdx = Integer.MAX_VALUE;
-		// Create single routes for each block or single customer without block
-		// Consider preset depot
-		Set<Integer> depots = new HashSet<>();
-		for (Node dep : nodes.subList(0, model.getNbrOfDepots()))
-			depots.add(dep.getGlobalIdx());
-
-		for (int i = model.getNbrOfDepots() + model.getNbrOfReplenish(); i < nodes.size(); i++) {
-			Node currNode = nodes.get(i);
+		for (int i = 0; i < customers.size(); i++) {
+			Node currNode = customers.get(i);
 
 			// Reduce allowed depots to preset allowed depots
-			List<Integer> allowedDepots = getAllowedDepots(currNode, depots);
+			List<Integer> allowedDepots = getAllowedDepots(currNode, depotMap.keySet());
 
 			// Add a depot after each change of block or unblocked customer
 			final int blockIdx = currNode.getPresetBlockIdx();
@@ -120,15 +116,17 @@ public class VRPInitialSolutionBuilder {
 
 		// Add unblocked customers
 		int maxIdx = 0;
-		List<Node> unblockedCustomers = customerGroups.get(BlockNameConverter.DEFAULT_BLOCK_IDX);
-		for (Node customer : unblockedCustomers) {
-			solution.addRoute(new Node[]{
-					Util.createIdNode(depot, maxIdx++),
-					customer,
-					Util.createIdNode(depot, maxIdx++)
-			});
+		if(customerGroups.containsKey(BlockNameConverter.DEFAULT_BLOCK_IDX)) {
+			List<Node> unblockedCustomers = customerGroups.get(BlockNameConverter.DEFAULT_BLOCK_IDX);
+			for (Node customer : unblockedCustomers) {
+				solution.addRoute(new Node[]{
+						Util.createIdNode(depot, maxIdx++),
+						customer,
+						Util.createIdNode(depot, maxIdx++)
+				});
+			}
+			customerGroups.remove(BlockNameConverter.DEFAULT_BLOCK_IDX);
 		}
-		customerGroups.remove(BlockNameConverter.DEFAULT_BLOCK_IDX);
 
 		// Add blocked customers
 		for (List<Node> group : customerGroups.values()) {
@@ -175,8 +173,8 @@ public class VRPInitialSolutionBuilder {
 		return new ArrayList<>(depots);
 	}
 
-	private List<Node> getValidCustomers(XFVRPModel model, List<Node> invalidNodes) throws XFVRPException {
-		SolutionBuilderDataBag solutionBuilderDataBag = new CheckService().check(model, invalidNodes);
+	private List<Node> getValidCustomers(Node[] customers, XFVRPModel model) throws XFVRPException {
+		SolutionBuilderDataBag solutionBuilderDataBag = new CheckService().check(customers, model);
 
 		// If all customers are invalid for this vehicle and parameters optimization has to be skipped.
 		if(solutionBuilderDataBag.getValidCustomers().size() == 0) {

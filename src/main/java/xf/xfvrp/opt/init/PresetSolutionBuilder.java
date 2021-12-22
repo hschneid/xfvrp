@@ -8,6 +8,7 @@ import xf.xfvrp.base.exception.XFVRPExceptionType;
 import xf.xfvrp.base.monitor.StatusCode;
 import xf.xfvrp.base.monitor.StatusManager;
 import xf.xfvrp.opt.Solution;
+import xf.xfvrp.opt.init.solution.vrp.VRPInitialSolutionBuilder;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -23,6 +24,13 @@ import java.util.stream.IntStream;
  **/
 public class PresetSolutionBuilder {
 
+	private final VRPInitialSolutionBuilder initialSolutionBuilder = new VRPInitialSolutionBuilder();
+
+	/**
+	 * Creates a first/initial solution from given preset information.
+	 *
+	 * This builder is used, when user enters own solution data in input.
+	 */
 	public Solution build(List<Node> nodes, XFVRPModel model, StatusManager statusManager) throws XFVRPException {
 		String predefinedSolutionString = model.getParameter().getPredefinedSolutionString();
 
@@ -32,38 +40,33 @@ public class PresetSolutionBuilder {
 		PresetSolutionBuilderDataBag dataBag = prepare(nodes, model);
 
 		// Separate the solution string into the blocks
-		List<Node> giantRoute = new ArrayList<>();
-		for (String block : split(predefinedSolutionString)) {
-			readBlock(block, giantRoute, dataBag, statusManager);
+		Solution solution = new Solution(model);
+		for (String presetBlock : split(predefinedSolutionString)) {
+			readPresetBlock(presetBlock, solution, dataBag, statusManager);
 		}
 
-		// Put the unassigned customers with single routes in the giant route
-		addUnassignedNodes(dataBag, giantRoute);
+		// Put the unassigned customers with single routes into the solution
+		Solution unassigedSolution = initialSolutionBuilder.build(
+				dataBag.getAvailableCustomers().toArray(new Node[0]),
+				model,
+				statusManager
+		);
+		solution.addRoutes(unassigedSolution.getRoutes());
 
-		Solution solution = new Solution(model);
-		solution.setGiantRoute(giantRoute.toArray(new Node[0]));
 		return solution;
 	}
 
 	private PresetSolutionBuilderDataBag prepare(List<Node> nodes, XFVRPModel model) {
 		PresetSolutionBuilderDataBag dataBag = new PresetSolutionBuilderDataBag();
-		
+
 		dataBag.setModel(model);
 		dataBag.setNodes(nodes);
-		
+
 		// Generate a map for each extern id to a node index
 		IntStream.range(0, nodes.size()).forEach(i -> dataBag.addNodeId(nodes.get(i), i));
 
 		dataBag.setAvailableCustomers(new HashSet<>(nodes.subList(model.getNbrOfDepots() + model.getNbrOfReplenish(), nodes.size())));
 		return dataBag;
-	}
-
-	private void addUnassignedNodes(PresetSolutionBuilderDataBag dataBag, List<Node> giantRoute) {
-		for (Node customer : dataBag.getAvailableCustomers()) {
-			giantRoute.add(dataBag.getNextDepot());
-			giantRoute.add(customer);
-		}
-		giantRoute.add(dataBag.getNextDepot());
 	}
 
 	private String[] split(String predefinedSolutionString) {
@@ -74,38 +77,50 @@ public class PresetSolutionBuilder {
 		return predefinedBlocks;
 	}
 
-	private void readBlock(String block, List<Node> giantRoute, PresetSolutionBuilderDataBag dataBag, StatusManager statusManager) {
+	private void readPresetBlock(String block, Solution solution, PresetSolutionBuilderDataBag dataBag, StatusManager statusManager) {
 		String[] entries = block.split(",");
 
 		if(entries.length == 0)
 			return;
-		
+
 		// Every block has to start with a any depot
-		giantRoute.add(dataBag.getNextDepot());
+		List<Node> route = new ArrayList<>();
+		route.add(dataBag.getNextDepot());
 
 		// A block can hold customers and depots
 		for (int i = 0; i < entries.length; i++) {
-			if(dataBag.containsNode(entries[i])) {
-				addEntry(giantRoute, dataBag, entries, i, statusManager);
+			if(dataBag.containsNode(entries[i].trim())) {
+				addEntry(route, dataBag, entries[i], solution, statusManager);
 			} else {
 				statusManager.fireMessage(StatusCode.RUNNING, " Init warning - Node "+entries[i]+" is no valid customer (unknown).");
 			}
 		}
 
 		// Every block has to end with a depot
-		giantRoute.add(dataBag.getNextDepot());
+		route.add(dataBag.getNextDepot(route.get(0)));
+
+		solution.addRoute(route.toArray(new Node[0]));
 	}
 
-	private void addEntry(List<Node> giantRoute, PresetSolutionBuilderDataBag dataBag, String[] entries, int i, StatusManager statusManager) {
-		Node n = dataBag.getNode(entries[i]);
-		
+	/**
+	 * Adds a preset block to the solution
+	 *
+	 * Each block is placed on one route. If block contains depots, if block is splited
+	 * into further single routes.
+	 */
+	private void addEntry(List<Node> route, PresetSolutionBuilderDataBag dataBag, String entry, Solution solution, StatusManager statusManager) {
+		Node n = dataBag.getNode(entry);
+
 		if(n.getSiteType() == SiteType.DEPOT) {
-			giantRoute.add(dataBag.getNextDepot(n));
+			route.add(dataBag.getNextDepot(route.get(0)));
+			solution.addRoute(route.toArray(new Node[0]));
+			route.clear();
+			route.add(dataBag.getNextDepot(n));
 		} else if (dataBag.getAvailableCustomers().contains(n)) {
-			giantRoute.add(n);
+			route.add(n);
 			dataBag.getAvailableCustomers().remove(n);
 		} else {
-			statusManager.fireMessage(StatusCode.RUNNING, " Init warning - Node "+entries[i]+" is already in the solution.");
+			statusManager.fireMessage(StatusCode.RUNNING, " Init warning - Node "+entry+" is already in the solution.");
 		}
 	}
 

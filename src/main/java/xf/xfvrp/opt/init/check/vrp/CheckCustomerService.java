@@ -29,20 +29,20 @@ public class CheckCustomerService {
 	 *
 	 * If a customer leads to an invalid route plan, then the cause for this is written into the invalid reason at the customer object 
 	 *
-	 * @param cust Customer node
+	 * @param customer Customer node
 	 * @param model Model with all necessary data
 	 * @return Can the customer be served within given constraints?
 	 */
-	public boolean checkCustomer(Node cust, XFVRPModel model, SolutionBuilderDataBag solutionBuilderDataBag) throws XFVRPException {
-		checkPresets(cust, solutionBuilderDataBag);
+	public boolean checkCustomer(Node customer, XFVRPModel model, SolutionBuilderDataBag solutionBuilderDataBag) throws XFVRPException {
+		checkPresets(customer, solutionBuilderDataBag);
 
 		// Time Windows or duration
-		boolean isValid = checkTimeWindows(cust, model);
+		boolean isValid = checkTimeWindows(customer, model);
 		if(!isValid)
 			return false;
 
 		// Capacities
-		return checkDemands(cust, model);
+		return checkDemands(customer, model);
 	}
 
 	private void checkPresets(Node cust, SolutionBuilderDataBag solutionBuilderDataBag) throws XFVRPException {

@@ -62,19 +62,19 @@ public class CheckService {
 	 * Multiple depots are inserted in a alternating sequence.
 	 * 
 	 */
-	public SolutionBuilderDataBag check(XFVRPModel model, List<Node> invalidNodes) throws XFVRPException {
-		Map<Integer, List<Node>> blocks = getBlocks(model);
+	public SolutionBuilderDataBag check(Node[] customers, XFVRPModel model) throws XFVRPException {
+		Map<Integer, List<Node>> blocks = getCustomersInBlocks(customers);
 
-		return checkBlocks(blocks, invalidNodes, model);
+		return checkBlocks(blocks, model);
 	}
 
-	private Map<Integer, List<Node>> getBlocks(XFVRPModel model) {
+	private Map<Integer, List<Node>> getCustomersInBlocks(Node[] customers) {
 		return Arrays
-				.stream(model.getNodes())
+				.stream(customers)
 				.collect(Collectors.groupingBy(Node::getPresetBlockIdx));
 	}
 
-	private SolutionBuilderDataBag checkBlocks(Map<Integer, List<Node>> blocks, List<Node> invalidNodes, XFVRPModel model) throws XFVRPException {
+	private SolutionBuilderDataBag checkBlocks(Map<Integer, List<Node>> blocks, XFVRPModel model) throws XFVRPException {
 		SolutionBuilderDataBag solutionBuilderDataBag = new SolutionBuilderDataBag();
 
 		for (Map.Entry<Integer, List<Node>> entry : blocks.entrySet()) {
@@ -84,12 +84,12 @@ public class CheckService {
 
 			nodesOfBlock.sort(Comparator.comparingInt(Node::getPresetBlockPos).thenComparingInt(Node::getPresetBlockRank));
 
-			boolean isValid = checkNodesOfBlock(blockIdx, nodesOfBlock, solutionBuilderDataBag, invalidNodes, model);
+			boolean isValid = checkNodesOfBlock(blockIdx, nodesOfBlock, solutionBuilderDataBag, model);
 			if(!isValid) 
 				continue;
 
 			// Check non default blocks
-			checkBlock(solutionBuilderDataBag, invalidNodes, model, blockIdx, nodesOfBlock);
+			checkBlock(solutionBuilderDataBag, model, blockIdx, nodesOfBlock);
 
 			checkMaxWaiting(nodesOfBlock, model);
 		}
@@ -97,7 +97,7 @@ public class CheckService {
 		return solutionBuilderDataBag;
 	}
 
-	private boolean checkNodesOfBlock(int blockIdx, List<Node> nodesOfBlock, SolutionBuilderDataBag solutionBuilderDataBag, List<Node> invalidNodes, XFVRPModel model) throws XFVRPException {
+	private boolean checkNodesOfBlock(int blockIdx, List<Node> nodesOfBlock, SolutionBuilderDataBag solutionBuilderDataBag, XFVRPModel model) throws XFVRPException {
 		for (Node node : nodesOfBlock) {
 			if(node.getSiteType() == SiteType.DEPOT)
 				solutionBuilderDataBag.getValidDepots().add(node);
@@ -114,13 +114,11 @@ public class CheckService {
 				// of this block is invalid, then all nodes are
 				// set to invalid.
 				if(blockIdx != BlockNameConverter.DEFAULT_BLOCK_IDX) {
-					setNodesOfBlockInvalid(nodesOfBlock, invalidNodes, node);
+					setNodesOfBlockInvalid(nodesOfBlock, node);
 					solutionBuilderDataBag.getValidCustomers().removeAll(nodesOfBlock);
 
 					return false;
 				}
-
-				invalidNodes.add(node);
 			}
 		}
 
@@ -129,7 +127,6 @@ public class CheckService {
 
 	private void checkBlock(
 			SolutionBuilderDataBag solutionBuilderDataBag,
-			List<Node> invalidNodes,
 			XFVRPModel model,
 			int blockIdx,
 			List<Node> nodesOfBlock) throws XFVRPException {
@@ -138,12 +135,11 @@ public class CheckService {
 		) {
 			if(!checkBlock(nodesOfBlock, model)) {
 				solutionBuilderDataBag.getValidCustomers().removeAll(nodesOfBlock);
-				invalidNodes.addAll(nodesOfBlock);
 			}
 		}
 	}
 
-	private void setNodesOfBlockInvalid(List<Node> nodesOfBlock, List<Node> invalidNodes, Node node) {
+	private void setNodesOfBlockInvalid(List<Node> nodesOfBlock, Node node) {
 		for (Node n : nodesOfBlock)
 			// First node of block has already a detailed information of invalidity
 			if(n != node)
@@ -151,7 +147,6 @@ public class CheckService {
 						node.getInvalidReason(),
 						"Customer " + n.getExternID() + " is invalid because block " + node.getPresetBlockIdx() + " is invalid. See invalid argument of customer "+node.getExternID()
 						);
-		invalidNodes.addAll(nodesOfBlock);
 	}
 
 	/**
