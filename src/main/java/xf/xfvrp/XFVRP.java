@@ -122,8 +122,6 @@ public class XFVRP extends XFVRPData {
 						solution = splitter.execute(solution, model, statusManager, xfvrp);
 					else
 						solution = xfvrp.execute(solution, model, statusManager);
-
-					System.out.println("CCC "+solution.getQuality().toString());
 				} catch (UnsupportedOperationException usoex) {
 					statusManager.fireMessage(StatusCode.EXCEPTION, "Splitting encountert problem:\n" + usoex.getMessage());
 				}

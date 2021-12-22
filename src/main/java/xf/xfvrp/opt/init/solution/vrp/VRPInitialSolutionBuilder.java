@@ -57,7 +57,7 @@ public class VRPInitialSolutionBuilder {
 		return generateSolution(customers, model);
 	}
 
-	private Solution generateSolution(List<Node> customers, XFVRPModel model) {
+	public Solution generateSolution(List<Node> customers, XFVRPModel model) {
 		Solution solution = new Solution(model);
 		List<Node> route = new ArrayList<>();
 

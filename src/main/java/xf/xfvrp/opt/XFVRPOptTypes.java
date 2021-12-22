@@ -5,6 +5,7 @@ import xf.xfvrp.opt.construct.XFVRPSavings;
 import xf.xfvrp.opt.construct.insert.XFPDPFirstBestInsert;
 import xf.xfvrp.opt.construct.insert.XFVRPFirstBestInsert;
 import xf.xfvrp.opt.improve.XFPDPRelocate;
+import xf.xfvrp.opt.improve.XFVRPNoOpt;
 import xf.xfvrp.opt.improve.giantroute.XFVRP2Opt;
 import xf.xfvrp.opt.improve.giantroute.XFVRP2OptIntra;
 import xf.xfvrp.opt.improve.giantroute.XFVRP3Opt;
@@ -31,6 +32,8 @@ import xf.xfvrp.opt.improve.routebased.swap.XFVRPSingleSwap;
  *
  */
 public class XFVRPOptTypes {
+
+	public static XFVRPOptType NONE = new XFVRPOptType(XFVRPNoOpt.class);
 
 	public static XFVRPOptType SAVINGS = new XFVRPOptType(XFVRPSavings.class);
 	public static XFVRPOptType CONST = new XFVRPOptType(XFVRPConst.class);
