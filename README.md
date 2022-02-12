@@ -1,6 +1,6 @@
 [![MIT License](https://img.shields.io/apm/l/atomic-design-ui.svg?)](https://github.com/tterb/atomic-design-ui/blob/master/LICENSEs)
 [![BCH compliance](https://bettercodehub.com/edge/badge/hschneid/xfvrp?branch=master)](https://bettercodehub.com/)
-![alt text](https://img.shields.io/static/v1?label=version&message=11.4.5&color=-)
+![alt text](https://img.shields.io/static/v1?label=version&message=11.4.6&color=-)
 
 xfvrp
 ======
@@ -61,6 +61,10 @@ report.getSummary().getDistance();
 As a general purpose solver, XFVRP is not fully compatable with single problem solvers. But even though it can prove its relevance by [benchmarks](BENCHMARKS.md).
 
 ## Change log
+
+### 11.4.6
+- Licence update
+- Refactoring of solution builder by preset
 
 ### 11.4.5
 #### Breaking Changes

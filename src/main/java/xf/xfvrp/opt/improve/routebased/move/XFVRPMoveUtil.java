@@ -6,7 +6,7 @@ import xf.xfvrp.base.exception.XFVRPExceptionType;
 import xf.xfvrp.opt.Solution;
 
 /**
- * Copyright (c) 2012-2021 Holger Schneider
+ * Copyright (c) 2012-2022 Holger Schneider
  * All rights reserved.
  *
  * This source code is licensed under the MIT License (MIT) found in the
