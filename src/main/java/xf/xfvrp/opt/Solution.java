@@ -17,6 +17,11 @@ import java.util.List;
  *
  * This source code is licensed under the MIT License (MIT) found in the
  * LICENSE file in the root directory of this source tree.
+ *
+ * The solution is the central object for the representation of one single point in search space.
+ *
+ * It contains the set of chosen routes, the quality of each route and the sum of all qualities.
+ *
  **/
 public class Solution implements Iterable<Node[]> {
 
@@ -25,11 +30,14 @@ public class Solution implements Iterable<Node[]> {
 	private Node[][] routes = new Node[1][0];
 	private RouteQuality[] routeQualities = new RouteQuality[] { new RouteQuality(0, null) };
 	private Quality totalQuality = new Quality(null);
+	private int[] nbrRoutesOfDepot;
 
 	private final List<RouteQuality> invalidatedRoutesQualities = new ArrayList<>();
 
 	public Solution(XFVRPModel model) {
 		this.model = model;
+
+		nbrRoutesOfDepot = new int[model.getNbrOfDepots()];
 	}
 
 	public XFVRPModel getModel() {
@@ -49,6 +57,9 @@ public class Solution implements Iterable<Node[]> {
 	}
 
 	public void deleteRoute(int routeIndex) {
+		// Reduce number of routes per depot
+		nbrRoutesOfDepot[routes[routeIndex][0].getIdx()]--;
+
 		routes[routeIndex] = new Node[0];
 
 		totalQuality.sub(routeQualities[routeIndex]);
@@ -56,6 +67,11 @@ public class Solution implements Iterable<Node[]> {
 	}
 
 	public void addRoute(Node[] newRoute) {
+		// Update count of routes per depot, if route has customers
+		if(newRoute.length > 2 && newRoute[1].getSiteType() == SiteType.CUSTOMER) {
+			nbrRoutesOfDepot[newRoute[0].getIdx()]++;
+		}
+
 		// Replace empty slot with new route, if available
 		for (int i = 0; i < routes.length; i++) {
 			if(routes[i].length == 0) {
@@ -73,7 +89,7 @@ public class Solution implements Iterable<Node[]> {
 	}
 
 	public void addRoutes(Node[][] newRoutes) {
-		for (int i = 0; i < newRoutes.length; i++) {
+		for (int i = newRoutes.length - 1; i >= 0; i--) {
 			if(newRoutes[i] != null)
 				addRoute(newRoutes[i]);
 		}
@@ -213,7 +229,7 @@ public class Solution implements Iterable<Node[]> {
 	/**
 	 * This will purge all routes over the number of routes to retain.
 	 *
-	 * This function is called to shrink the number or routes, which makes
+	 * This function is called to shrink the number of routes, which makes
 	 * sense for the optimization. So for-loops will not test so often empty
 	 * routes.
 	 */
@@ -234,5 +250,18 @@ public class Solution implements Iterable<Node[]> {
 				Arrays.stream(routes)
 						.flatMap(Arrays::stream)
 						.anyMatch(n -> n.getSiteType() == SiteType.CUSTOMER);
+	}
+
+	public void beforeChange(int routeIdx) {
+		// Just reduce the number of routes per depot, if route is full
+		if(routes[routeIdx].length > 2 && routes[routeIdx][1].getSiteType() == SiteType.CUSTOMER) {
+			nbrRoutesOfDepot[routes[routeIdx][0].getIdx()]--;
+		}
+	}
+
+	public void afterChange(int routeIdx) {
+		if(routes[routeIdx].length > 2 && routes[routeIdx][1].getSiteType() == SiteType.CUSTOMER) {
+			nbrRoutesOfDepot[routes[routeIdx][0].getIdx()]++;
+		}
 	}
 }
