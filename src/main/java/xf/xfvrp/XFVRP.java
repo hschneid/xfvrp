@@ -129,7 +129,6 @@ public class XFVRP extends XFVRPData {
 
 			// Normalization of last result
 			NormalizeSolutionService.normalizeRoute(solution);
-
 		}
 
 		lastModel = model;
