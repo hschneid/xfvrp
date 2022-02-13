@@ -317,7 +317,8 @@ public class CustomerData extends NodeData {
 				serviceTimeForSite,
 				loadType,
 				presetBlockRank,
-				shipID
+				shipID,
+				0
 		);
 	}
 }

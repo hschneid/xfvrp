@@ -119,7 +119,8 @@ public class ReplenishData extends NodeData {
 				0,
 				LoadType.REPLENISH,
 				0,
-				""
+				"",
+				0
 		);
 	}
 }

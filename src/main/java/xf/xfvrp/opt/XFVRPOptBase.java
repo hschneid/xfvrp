@@ -168,7 +168,7 @@ public abstract class XFVRPOptBase extends XFVRPBase<XFVRPModel> {
 	 * Processes a check evaluation for two routes.
 	 */
 	public Quality check(Solution solution, int routeIdxA, int routeIdxB) throws XFVRPException {
-		return evaluationService.check(solution, solution.getModel(), routeIdxA, routeIdxB);
+		return evaluationService.check(solution, routeIdxA, routeIdxB);
 	}
 
 	public Random getRandom() {

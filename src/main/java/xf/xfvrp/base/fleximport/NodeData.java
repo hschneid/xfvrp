@@ -1,8 +1,6 @@
 package xf.xfvrp.base.fleximport;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -44,12 +42,7 @@ public abstract class NodeData {
 				timeWindowList.add(new float[]{open2, close2});
 
 		// Bigger time window overrides smaller ones.
-		Collections.sort(timeWindowList, new Comparator<float[]>() {
-			@Override
-			public int compare(float[] o1, float[] o2) {
-				return (int)((o1[0] - o2[0]) * 1000f);
-			}
-		});
+		timeWindowList.sort((o1, o2) -> (int) ((o1[0] - o2[0]) * 1000f));
 		
 		// If no time window is given, insert the default time window
 		if(timeWindowList.size() == 0)

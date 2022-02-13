@@ -31,6 +31,8 @@ import xf.xfvrp.base.SiteType;
  */
 public class DepotData extends NodeData {
 
+	private int maxNbrRoutes = Integer.MAX_VALUE;
+
 	/**
 	 * @param externID the externID to set
 	 */
@@ -100,6 +102,15 @@ public class DepotData extends NodeData {
 		return this;
 	}
 
+	/**
+	 *
+	 * @param maxNbrRoutes - Means the maximal number of routes, which are allowed at this depot.
+	 *                       Further routes will get a penalty, so that optimizer tries to remove it.
+	 */
+	public void setMaxNbrRoutes(int maxNbrRoutes) {
+		this.maxNbrRoutes = maxNbrRoutes;
+	}
+
 	/////////////////////////////////////
 
 	Node createDepot(int idx) {
@@ -117,7 +128,8 @@ public class DepotData extends NodeData {
 				0,
 				0,
 				null, 0,
-				""
+				"",
+				maxNbrRoutes
 		);
 	}
 }
