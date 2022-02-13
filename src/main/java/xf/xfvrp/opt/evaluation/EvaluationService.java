@@ -45,8 +45,8 @@ public class EvaluationService {
 	 *
 	 * Here only 2 routes are checked, which are changed by neighborhood search.
 	 */
-	public Quality check(Solution solution, XFVRPModel model, int routeIdxA, int routeIdxB) throws XFVRPException {
-		Context context = contextBuilder.build(model);
+	public Quality check(Solution solution, int routeIdxA, int routeIdxB) throws XFVRPException {
+		Context context = contextBuilder.build(solution.getModel());
 
 		solution.invalidateRouteQuality(routeIdxA);
 		checkAndUpdateRoutes(routeIdxA, solution, context);

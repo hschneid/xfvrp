@@ -30,7 +30,7 @@ public class Solution implements Iterable<Node[]> {
 	private Node[][] routes = new Node[1][0];
 	private RouteQuality[] routeQualities = new RouteQuality[] { new RouteQuality(0, null) };
 	private Quality totalQuality = new Quality(null);
-	private int[] nbrRoutesOfDepot;
+	private final int[] nbrRoutesOfDepot;
 
 	private final List<RouteQuality> invalidatedRoutesQualities = new ArrayList<>();
 
@@ -54,6 +54,10 @@ public class Solution implements Iterable<Node[]> {
 
 	public Quality getQuality() {
 		return totalQuality;
+	}
+
+	public int[] getNbrRoutesOfDepot() {
+		return nbrRoutesOfDepot;
 	}
 
 	public void deleteRoute(int routeIndex) {

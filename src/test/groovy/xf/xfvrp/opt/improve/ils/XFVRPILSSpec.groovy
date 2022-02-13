@@ -150,7 +150,7 @@ class XFVRPILSSpec extends Specification {
 		service.optPropArr = [0.5, 0.5]
 		def quality = new Quality(cost: 100, penalty: 0)
 		def betterQuality = new Quality(cost: 80, penalty: 0)
-		evaluationService.check(_ as Solution, _) >>> [quality, betterQuality]
+		evaluationService.check(_ as Solution) >>> [quality, betterQuality]
 
 		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[5], n[4], nd, nd, n[3], nd] as Node[])
