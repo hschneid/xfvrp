@@ -1,6 +1,7 @@
 package xf.xfvrp.opt.improve
 
 import spock.lang.Specification
+import util.instances.Helper
 import util.instances.TestNode
 import util.instances.TestVehicle
 import util.instances.TestXFVRPModel
@@ -21,19 +22,12 @@ class XFPDPRelocateExtSpec extends Specification {
 	timeWindow: [[0,99],[2,99]]
 	).getNode()
 
-	def sol
-
-	def parameter = new XFVRPParameter()
-
-	def metric = new EucledianMetric()
-
 	def "Search"() {
 		def model = initScen()
 		def n = model.getNodes()
 		service.setModel(model)
-
-		sol = new Solution()
-		sol.setGiantRoute([nd, n[1], n[2], nd, n[3], n[4], nd] as Node[])
+		
+		def sol = Helper.set(model, [nd, n[1], n[2], nd, n[3], n[4], nd] as Node[])
 
 		when:
 		def impList = service.search(sol.getGiantRoute())
@@ -54,8 +48,8 @@ class XFPDPRelocateExtSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
-		sol.setGiantRoute([nd, n[3], n[4], n[1], n[2], nd] as Node[])
+		
+		def sol = Helper.set(model, [nd, n[3], n[4], n[1], n[2], nd] as Node[])
 		def route = sol.getGiantRoute()
 
 		when:
@@ -70,8 +64,8 @@ class XFPDPRelocateExtSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
-		sol.setGiantRoute([nd, n[3], n[1], n[4], n[2], nd] as Node[])
+		
+		def sol = Helper.set(model, [nd, n[3], n[1], n[4], n[2], nd] as Node[])
 		def route = sol.getGiantRoute()
 
 		when:
@@ -86,8 +80,8 @@ class XFPDPRelocateExtSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
-		sol.setGiantRoute([nd, n[3], n[1], n[4], n[2], nd] as Node[])
+		
+		def sol = Helper.set(model, [nd, n[3], n[1], n[4], n[2], nd] as Node[])
 		def route = sol.getGiantRoute()
 
 		when:
@@ -102,8 +96,8 @@ class XFPDPRelocateExtSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
-		sol.setGiantRoute([nd, n[1], n[2], n[3], n[4], nd] as Node[])
+		
+		def sol = Helper.set(model, [nd, n[1], n[2], n[3], n[4], nd] as Node[])
 		def route = sol.getGiantRoute()
 
 		when:
@@ -118,8 +112,8 @@ class XFPDPRelocateExtSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
-		sol.setGiantRoute([nd, n[1], n[2], n[3], n[4], nd] as Node[])
+		
+		def sol = Helper.set(model, [nd, n[1], n[2], n[3], n[4], nd] as Node[])
 		def route = sol.getGiantRoute()
 
 		when:
@@ -134,8 +128,8 @@ class XFPDPRelocateExtSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
-		sol.setGiantRoute([nd, n[2], n[3], n[4], n[1], nd] as Node[])
+		
+		def sol = Helper.set(model, [nd, n[2], n[3], n[4], n[1], nd] as Node[])
 		def route = sol.getGiantRoute()
 
 		when:
