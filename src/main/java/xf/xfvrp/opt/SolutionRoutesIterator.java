@@ -25,7 +25,7 @@ public class SolutionRoutesIterator implements Iterator<Node[]> {
 	@Override
 	public boolean hasNext() {
 		int index = currentIndex + 1;
-		while(index < length && routes[index].length == 0) {
+		while(index < length && routes[index] != null && routes[index].length == 0) {
 			index++;
 		}
 		
@@ -36,7 +36,7 @@ public class SolutionRoutesIterator implements Iterator<Node[]> {
 	public Node[] next() {
 		currentIndex++;
 		
-		while(currentIndex < length && routes[currentIndex].length == 0) {
+		while(currentIndex < length && routes[currentIndex] != null && routes[currentIndex].length == 0) {
 			currentIndex++;
 		}
 		

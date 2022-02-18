@@ -13,30 +13,24 @@ class XFVRPFirstBestInsertSpec extends Specification {
 	def service = new XFVRPFirstBestInsert()
 
 	def nd = new TestNode(
-	externID: "DEP",
-	globalIdx: 0,
-	xlong: -1,
-	ylat: 0,
-	siteType: SiteType.DEPOT,
-	demand: [0, 0],
-	timeWindow: [[0,99],[2,99]]
+			externID: "DEP",
+			globalIdx: 0,
+			xlong: -1,
+			ylat: 0,
+			siteType: SiteType.DEPOT,
+			demand: [0, 0],
+			timeWindow: [[0,99],[2,99]]
 	).getNode()
 
 	def nd2 = new TestNode(
-	externID: "DEP2",
-	globalIdx: 1,
-	xlong: 1,
-	ylat: 0,
-	siteType: SiteType.DEPOT,
-	demand: [0, 0],
-	timeWindow: [[0,99],[2,99]]
+			externID: "DEP2",
+			globalIdx: 1,
+			xlong: 1,
+			ylat: 0,
+			siteType: SiteType.DEPOT,
+			demand: [0, 0],
+			timeWindow: [[0,99],[2,99]]
 	).getNode()
-
-	def sol
-
-	def parameter = new XFVRPParameter()
-
-	def metric = new EucledianMetric()
 
 	def "Insert Customer"() {
 		def model = initScen()
@@ -279,10 +273,8 @@ class XFVRPFirstBestInsertSpec extends Specification {
 		n7.setIdx(8)
 		n8.setIdx(9)
 
-		def nodes = [nd, nd2, n1, n2, n3, n4, n5, n6, n7, n8] as Node[]
+		def nodes = [nd, nd2, n1, n2, n3, n4, n5, n6, n7, n8]
 
-		def iMetric = new AcceleratedMetricTransformator().transform(metric, nodes, v)
-
-		return TestXFVRPModel.get(nodes, iMetric, iMetric, v, parameter)
+		return TestXFVRPModel.get(nodes, v)
 	}
 }

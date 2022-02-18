@@ -40,9 +40,15 @@ class Helper {
     }
 
     static Solution set(XFVRPModel model, Node... nodes) {
+        def sol = setNoNorm(model, nodes)
+        NormalizeSolutionService.normalizeRoute(sol)
+
+        return sol
+    }
+
+    static Solution setNoNorm(XFVRPModel model, Node... nodes) {
         def sol = new Solution(model)
         sol.setGiantRoute(nodes as Node[])
-        NormalizeSolutionService.normalizeRoute(sol)
 
         return sol
     }

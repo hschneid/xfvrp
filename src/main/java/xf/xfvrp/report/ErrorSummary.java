@@ -39,6 +39,9 @@ public class ErrorSummary {
 	 */
 	public void add(Solution solution) {
 		for (Node[] route : solution) {
+			if(route == null)
+				continue;
+
 			for (Node node : route) {
 				if (node != null && node.getInvalidReason() != InvalidReason.NONE) {
 					// Description

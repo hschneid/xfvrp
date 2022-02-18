@@ -35,11 +35,9 @@ public class ReportBuilder {
             // Feasibility check
             FeasibilityAnalzer.checkFeasibility(route);
 
-            if(route.length <= 2) {
-                continue;
+            if(containsCustomers(route)) {
+                rep.add(getRouteReport(route, context));
             }
-
-            rep.add(getRouteReport(route, context));
         }
 
         return rep;
@@ -206,5 +204,16 @@ public class ReportBuilder {
         if(amounts != null) {
             e.setAmounts(amounts);
         }
+    }
+
+    private boolean containsCustomers(Node[] route) {
+        if(route != null) {
+            for (int i = route.length - 1; i >= 0; i--) {
+                if(route[i].getSiteType() == SiteType.CUSTOMER)
+                    return true;
+            }
+        }
+
+        return false;
     }
 }

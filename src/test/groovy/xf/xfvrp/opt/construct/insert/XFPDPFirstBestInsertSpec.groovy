@@ -32,11 +32,7 @@ class XFPDPFirstBestInsertSpec extends Specification {
 	timeWindow: [[0,99],[2,99]]
 	).getNode()
 
-	def sol
-
 	def parameter = new XFVRPParameter()
-
-	def metric = new EucledianMetric()
 
 	def "Insert Shipment"() {
 		def model = initScen()
@@ -287,12 +283,10 @@ class XFPDPFirstBestInsertSpec extends Specification {
 		n7.setIdx(8)
 		n8.setIdx(9)
 
-		def nodes = [nd, nd2, n1, n2, n3, n4, n5, n6, n7, n8] as Node[]
-
-		def iMetric = new AcceleratedMetricTransformator().transform(metric, nodes, v)
+		def nodes = [nd, nd2, n1, n2, n3, n4, n5, n6, n7, n8]
 
 		parameter.setWithPDP(true)
 
-		return TestXFVRPModel.get(nodes, iMetric, iMetric, v, parameter)
+		return TestXFVRPModel.get(nodes, v, parameter)
 	}
 }
