@@ -25,7 +25,7 @@ import java.util.List;
  **/
 public class Solution implements Iterable<Node[]> {
 
-	private XFVRPModel model;
+	private final XFVRPModel model;
 
 	private Node[][] routes = new Node[1][0];
 	private RouteQuality[] routeQualities = new RouteQuality[] { new RouteQuality(0, null) };
@@ -35,8 +35,6 @@ public class Solution implements Iterable<Node[]> {
 	private boolean[] isOverhang = new boolean[1];
 
 	private final List<RouteQuality> invalidatedRoutesQualities = new ArrayList<>();
-
-	private Solution() {}
 
 	public Solution(XFVRPModel model) {
 		this.model = model;
@@ -81,7 +79,8 @@ public class Solution implements Iterable<Node[]> {
 
 	public void addRoute(Node[] newRoute) {
 		// Update count of routes per depot, if route has customers
-		nbrRoutesOfDepot[newRoute[0].getIdx()]++;
+		if(newRoute[0].getSiteType() == SiteType.DEPOT)
+			nbrRoutesOfDepot[newRoute[0].getIdx()]++;
 
 		// Replace empty slot with new route, if available
 		for (int i = 0; i < routes.length; i++) {
