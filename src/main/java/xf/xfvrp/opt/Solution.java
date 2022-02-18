@@ -25,14 +25,18 @@ import java.util.List;
  **/
 public class Solution implements Iterable<Node[]> {
 
-	private final XFVRPModel model;
+	private XFVRPModel model;
 
 	private Node[][] routes = new Node[1][0];
 	private RouteQuality[] routeQualities = new RouteQuality[] { new RouteQuality(0, null) };
 	private Quality totalQuality = new Quality(null);
-	private final int[] nbrRoutesOfDepot;
+	private int[] nbrRoutesOfDepot;
+	// Route -> is more then allowed number of routes for this depot
+	private boolean[] isOverhang = new boolean[1];
 
 	private final List<RouteQuality> invalidatedRoutesQualities = new ArrayList<>();
+
+	private Solution() {}
 
 	public Solution(XFVRPModel model) {
 		this.model = model;
@@ -60,6 +64,10 @@ public class Solution implements Iterable<Node[]> {
 		return nbrRoutesOfDepot;
 	}
 
+	public boolean[] getOverhangRoutes() {
+		return isOverhang;
+	}
+
 	public void deleteRoute(int routeIndex) {
 		// Reduce number of routes per depot
 		nbrRoutesOfDepot[routes[routeIndex][0].getIdx()]--;
@@ -68,18 +76,18 @@ public class Solution implements Iterable<Node[]> {
 
 		totalQuality.sub(routeQualities[routeIndex]);
 		routeQualities[routeIndex] = new RouteQuality(0, null);
+		isOverhang[routeIndex] = false;
 	}
 
 	public void addRoute(Node[] newRoute) {
 		// Update count of routes per depot, if route has customers
-		if(newRoute.length > 2 && newRoute[1].getSiteType() == SiteType.CUSTOMER) {
-			nbrRoutesOfDepot[newRoute[0].getIdx()]++;
-		}
+		nbrRoutesOfDepot[newRoute[0].getIdx()]++;
 
 		// Replace empty slot with new route, if available
 		for (int i = 0; i < routes.length; i++) {
-			if(routes[i].length == 0) {
+			if(routes[i] == null || routes[i].length == 0) {
 				routes[i] = newRoute;
+				routeQualities[i] = new RouteQuality(i, null);
 				return;
 			}
 		}
@@ -90,6 +98,8 @@ public class Solution implements Iterable<Node[]> {
 
 		routeQualities = Arrays.copyOf(routeQualities, routeQualities.length + 1);
 		routeQualities[routeQualities.length - 1] = new RouteQuality(routeQualities.length - 1, null);
+
+		isOverhang = Arrays.copyOf(isOverhang, routes.length);
 	}
 
 	public void addRoutes(Node[][] newRoutes) {
@@ -184,11 +194,12 @@ public class Solution implements Iterable<Node[]> {
 
 		routes = new Node[list.size()][];
 		routeQualities = new RouteQuality[list.size()];
-		for (int i = 0; i < list.size(); i++) {
-			routes[i] = list.get(i).toArray(new Node[0]);
-			routeQualities[i] = new RouteQuality(i, null);
-		}
 		totalQuality = new Quality(null);
+
+		for (int i = 0; i < list.size(); i++) {
+			addRoute(list.get(i).toArray(new Node[0]));
+		}
+
 	}
 
 	public Solution copy() {
@@ -203,6 +214,9 @@ public class Solution implements Iterable<Node[]> {
 		for (int i = 0; i < routeQualities.length; i++)
 			solution.routeQualities[i] = new RouteQuality(i, routeQualities[i]);
 		solution.totalQuality = new Quality(totalQuality);
+
+		solution.nbrRoutesOfDepot = Arrays.copyOf(nbrRoutesOfDepot, nbrRoutesOfDepot.length);
+		solution.isOverhang = Arrays.copyOf(isOverhang, isOverhang.length);
 
 		return solution;
 	}

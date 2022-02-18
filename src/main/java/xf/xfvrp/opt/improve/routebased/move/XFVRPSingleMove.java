@@ -29,11 +29,11 @@ public class XFVRPSingleMove extends XFVRPOptImpBase {
 	private static final boolean IS_INVERT_ACTIVE = false;
 
 	@Override
-	protected Queue<float[]> search(Node[][] routes) {
+	protected Queue<float[]> search(Solution solution) {
 		PriorityQueue<float[]> improvingSteps = new PriorityQueue<>(
 				(o1, o2) -> Float.compare(o2[0], o1[0])
 		);
-		XFVRPMoveSearchUtil.search(model, routes, improvingSteps, MAX_SEGMENT_LENGTH, IS_INVERT_ACTIVE);
+		XFVRPMoveSearchUtil.search(solution, improvingSteps, MAX_SEGMENT_LENGTH, IS_INVERT_ACTIVE);
 
 		return improvingSteps;
 	}

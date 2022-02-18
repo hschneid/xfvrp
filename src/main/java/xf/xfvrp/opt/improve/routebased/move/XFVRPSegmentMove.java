@@ -1,6 +1,5 @@
 package xf.xfvrp.opt.improve.routebased.move;
 
-import xf.xfvrp.base.Node;
 import xf.xfvrp.base.exception.XFVRPException;
 import xf.xfvrp.opt.Solution;
 import xf.xfvrp.opt.improve.routebased.XFVRPOptImpBase;
@@ -42,11 +41,11 @@ public class XFVRPSegmentMove extends XFVRPOptImpBase {
 	}
 
 	@Override
-	protected Queue<float[]> search(Node[][] routes) {
+	protected Queue<float[]> search(Solution solution) {
 		PriorityQueue<float[]> improvingSteps = new PriorityQueue<>(
 				(o1, o2) -> Float.compare(o2[0], o1[0])
 		);
-		XFVRPMoveSearchUtil.search(model, routes, improvingSteps, MAX_SEGMENT_LENGTH, IS_INVERT_ACTIVE);
+		XFVRPMoveSearchUtil.search(solution, improvingSteps, MAX_SEGMENT_LENGTH, IS_INVERT_ACTIVE);
 
 		return improvingSteps;
 	}
