@@ -32,7 +32,9 @@ public class XFVRPSegmentSwap extends XFVRPOptImpBase {
 	private int maxSegmentLength = 3;
 
 	@Override
-	protected Queue<float[]> search(Node[][] routes) {
+	protected Queue<float[]> search(Solution solution) {
+		Node[][] routes = solution.getRoutes();
+
 		PriorityQueue<float[]> improvingSteps = new PriorityQueue<>(
 				(o1, o2) -> Float.compare(o2[0], o1[0])
 		);

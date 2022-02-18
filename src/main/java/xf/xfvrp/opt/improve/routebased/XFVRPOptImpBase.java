@@ -1,6 +1,5 @@
 package xf.xfvrp.opt.improve.routebased;
 
-import xf.xfvrp.base.Node;
 import xf.xfvrp.base.NormalizeSolutionService;
 import xf.xfvrp.base.Quality;
 import xf.xfvrp.base.XFVRPModel;
@@ -39,7 +38,7 @@ public abstract class XFVRPOptImpBase extends XFVRPOptBase {
 		isSplittable = true;
 	}
 
-	protected abstract Queue<float[]> search(Node[][] routes);
+	protected abstract Queue<float[]> search(Solution solution);
 	protected abstract void change(Solution solution, float[] changeParameter) throws XFVRPException;
 	protected abstract void reverseChange(Solution solution, float[] changeParameter) throws XFVRPException;
 
@@ -85,7 +84,7 @@ public abstract class XFVRPOptImpBase extends XFVRPOptBase {
 	private Quality improve(final Solution solution, Quality bestResult) throws XFVRPException {
 		checkIt(solution);
 
-		Queue<float[]> improvingSteps = search(solution.getRoutes());
+		Queue<float[]> improvingSteps = search(solution);
 
 		// Find first valid improving change
 		while(!improvingSteps.isEmpty()) {
@@ -95,7 +94,8 @@ public abstract class XFVRPOptImpBase extends XFVRPOptBase {
 			change(solution, val);
 
 			Quality result = checkIt(solution, (int)val[1], (int)val[2]);
-			if(result != null && result.getFitness() < bestResult.getFitness()) {
+			// All improving steps are accepted. Even if evaluation quality may shrink.
+			if(result != null && result.getPenalty() == 0) {
 				solution.fixateQualities();
 				return result;
 			}

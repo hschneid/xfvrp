@@ -1,6 +1,7 @@
 package xf.xfvrp.opt.improve.routebased.move
 
 import spock.lang.Specification
+import util.instances.Helper
 import util.instances.TestNode
 import util.instances.TestVehicle
 import util.instances.TestXFVRPModel
@@ -33,13 +34,7 @@ class XFVRPSegmentMove2Spec extends Specification {
 	timeWindow: [[0,99],[2,99]]
 	).getNode()
 
-	def sol
-
-	def parameter = new XFVRPParameter()
-
-	def metric = new EucledianMetric()
-
-	def impList = new PriorityQueue<>(
+	PriorityQueue<float[]> impList = new PriorityQueue<>(
 			(o1, o2) -> Float.compare(o2[6], o1[6])
 	)
 
@@ -48,12 +43,11 @@ class XFVRPSegmentMove2Spec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
-		sol.setGiantRoute([nd, n[2], n[3], nd, n[4], n[5], nd] as Node[])
+		def sol = Helper.set(model, [nd, n[2], n[3], nd, n[4], n[5], nd] as Node[])
 		impList.clear()
 
 		when:
-		XFVRPMoveSearchUtil.search(model, sol.getRoutes(), impList, 3, true)
+		XFVRPMoveSearchUtil.search(sol, impList, 3, true)
 
 		then:
 		impList.size() > 0
@@ -68,12 +62,11 @@ class XFVRPSegmentMove2Spec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
-		sol.setGiantRoute([nd, n[2], n[3], nd, n[4], n[5], n[6], n[7], nd] as Node[])
+		def sol = Helper.set(model, [nd, n[2], n[3], nd, n[4], n[5], n[6], n[7], nd] as Node[])
 		impList.clear()
 
 		when:
-		XFVRPMoveSearchUtil.search(model, sol.getRoutes(), impList, 3, true)
+		XFVRPMoveSearchUtil.search(sol, impList, 3, true)
 
 		then:
 		impList.size() > 0
@@ -84,12 +77,11 @@ class XFVRPSegmentMove2Spec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
-		sol.setGiantRoute([nd, n[4], n[2], n[3], n[5], nd] as Node[])
+		def sol = Helper.set(model, [nd, n[4], n[2], n[3], n[5], nd] as Node[])
 		impList.clear()
 
 		when:
-		XFVRPMoveSearchUtil.search(model, sol.getRoutes(), impList, 3, true)
+		XFVRPMoveSearchUtil.search(sol, impList, 3, true)
 
 		then:
 		impList.size() == 0
@@ -100,12 +92,11 @@ class XFVRPSegmentMove2Spec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
-		sol.setGiantRoute([nd, n[2], n[3], nd, n[5], n[4], nd] as Node[])
+		def sol = Helper.set(model, [nd, n[2], n[3], nd, n[5], n[4], nd] as Node[])
 		impList.clear()
 
 		when:
-		XFVRPMoveSearchUtil.search(model, sol.getRoutes(), impList, 3, false)
+		XFVRPMoveSearchUtil.search(sol, impList, 3, false)
 
 		then:
 		impList.size() > 0
@@ -118,12 +109,11 @@ class XFVRPSegmentMove2Spec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
-		sol.setGiantRoute([nd2, n[2], n[3], nd, n[5], n[4], nd] as Node[])
+		def sol = Helper.set(model, [nd2, n[2], n[3], nd, n[5], n[4], nd] as Node[])
 		impList.clear()
 
 		when:
-		XFVRPMoveSearchUtil.search(model, sol.getRoutes(), impList, 3, true)
+		XFVRPMoveSearchUtil.search(sol, impList, 3, true)
 
 		then:
 		impList.size() > 0
@@ -135,12 +125,11 @@ class XFVRPSegmentMove2Spec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
-		sol.setGiantRoute([nd2, n[2], n[3], nd, n[5], n[4], nd] as Node[])
+		def sol = Helper.set(model, [nd2, n[2], n[3], nd, n[5], n[4], nd] as Node[])
 		impList.clear()
 
 		when:
-		XFVRPMoveSearchUtil.search(model, sol.getRoutes(), impList, 3, false)
+		XFVRPMoveSearchUtil.search(sol, impList, 3, false)
 
 		then:
 		impList.size() > 0
@@ -220,10 +209,8 @@ class XFVRPSegmentMove2Spec extends Specification {
 		n5.setIdx(6)
 		n6.setIdx(7)
 
-		def nodes = [nd, nd2, n1, n2, n3, n4, n5, n6] as Node[]
+		def nodes = [nd, nd2, n1, n2, n3, n4, n5, n6]
 
-		def iMetric = new AcceleratedMetricTransformator().transform(metric, nodes, v)
-
-		return TestXFVRPModel.get(nodes, iMetric, iMetric, v, parameter)
+		return TestXFVRPModel.get(nodes, v)
 	}
 }

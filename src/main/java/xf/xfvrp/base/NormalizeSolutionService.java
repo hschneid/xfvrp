@@ -4,6 +4,7 @@ import xf.xfvrp.base.quality.RouteQuality;
 import xf.xfvrp.opt.Solution;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -28,6 +29,8 @@ public class NormalizeSolutionService {
 		maxDepotId = addEmptyRoutes(solution, maxDepotId);
 
 		addReplenishRoute(solution, maxDepotId);
+
+		updateOverhangingRoutes(solution);
 
 		return solution;
 	}
@@ -157,6 +160,23 @@ public class NormalizeSolutionService {
 		newRoute[idx] = depot;
 
 		solution.addRoute(newRoute);
+	}
+
+	private static void updateOverhangingRoutes(Solution solution) {
+		int[] nbrOfRoutes = Arrays.copyOf(solution.getNbrRoutesOfDepot(), solution.getNbrRoutesOfDepot().length);
+		boolean[] isOverhang = solution.getOverhangRoutes();
+		Node[][] routes = solution.getRoutes();
+
+		for (int i = routes.length - 1; i >= 0; i--) {
+			// If route is not empty AND the number of routes is greater than allowed -> overhang!
+			if(routes[i] != null && routes[i].length > 0 &&
+					nbrOfRoutes[routes[i][0].getIdx()] > routes[i][0].getMaxNbrOfRoutes()) {
+				isOverhang[i] = true;
+				nbrOfRoutes[routes[i][0].getIdx()]--;
+			} else {
+				isOverhang[i] = false;
+			}
+		}
 	}
 
 }

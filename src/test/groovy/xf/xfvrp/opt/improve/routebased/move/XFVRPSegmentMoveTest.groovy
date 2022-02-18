@@ -1,6 +1,7 @@
 package xf.xfvrp.opt.improve.routebased.move
 
 import spock.lang.Specification
+import util.instances.Helper
 import util.instances.TestNode
 import util.instances.TestVehicle
 import util.instances.TestXFVRPModel
@@ -25,10 +26,15 @@ class XFVRPSegmentMoveTest extends Specification {
     def n9 = new Node(externID: "9", siteType: SiteType.CUSTOMER)
     def n10 = new Node(externID: "10", siteType: SiteType.CUSTOMER)
 
-    def sol = new Solution()
+    XFVRPModel model
+
+    def setup() {
+        def v = new TestVehicle(name: "V1", capacity: [3, 3]).getVehicle()
+        model = TestXFVRPModel.get([n1,n5,n8,n2,n3,n4,n6,n7,n9, n10], v)
+    }
 
     def "change - reset - different routes"() {
-        sol.setGiantRoute([n1, n2, n3, n4, n5, n6, n7, n8] as Node[])
+        def sol = Helper.set(model, [n1, n2, n3, n4, n5, n6, n7, n8] as Node[])
         def parameter = [-1, 0, 1, 1, 2, 2, 0] as float[]
 
         when:
@@ -44,11 +50,11 @@ class XFVRPSegmentMoveTest extends Specification {
         result[4].externID == "5"
         result[5].externID == "6"
         result[6].externID == "7"
-        result[7].externID == "5"
+        result[7].externID == "1"
     }
 
     def "change - reset - same routes - src < dst"() {
-        sol.setGiantRoute([n1, n2, n3, n4, n6, n7, n8] as Node[])
+        def sol = Helper.set(model, [n1, n2, n3, n4, n6, n7, n8] as Node[])
         def parameter = [-1, 0, 0, 2, 6, 1, 0] as float[]
 
         when:
@@ -66,7 +72,7 @@ class XFVRPSegmentMoveTest extends Specification {
     }
 
     def "change - reset - same routes - src > dst"() {
-        sol.setGiantRoute([n1, n2, n3, n4, n6, n7, n8] as Node[])
+        def sol = Helper.set(model, [n1, n2, n3, n4, n6, n7, n8] as Node[])
         def parameter = [-1, 0, 0, 3, 2, 1, 0] as float[]
 
         when:
@@ -84,7 +90,7 @@ class XFVRPSegmentMoveTest extends Specification {
     }
 
     def "change - reset - different routes - with invert"() {
-        sol.setGiantRoute([n1, n2, n3, n4, n5, n6, n7, n8] as Node[])
+        def sol = Helper.set(model, [n1, n2, n3, n4, n5, n6, n7, n8] as Node[])
         def parameter = [-1, 0, 1, 1, 2, 2, 1] as float[]
 
         when:
@@ -100,11 +106,11 @@ class XFVRPSegmentMoveTest extends Specification {
         result[4].externID == "5"
         result[5].externID == "6"
         result[6].externID == "7"
-        result[7].externID == "5"
+        result[7].externID == "1"
     }
 
     def "change - reset - same routes - src < dst - with invert"() {
-        sol.setGiantRoute([n1, n2, n3, n4, n6, n7, n8] as Node[])
+        def sol = Helper.set(model, [n1, n2, n3, n4, n6, n7, n8] as Node[])
         def parameter = [-1, 0, 0, 2, 6, 1, 1] as float[]
 
         when:
@@ -122,7 +128,7 @@ class XFVRPSegmentMoveTest extends Specification {
     }
 
     def "change - reset - same routes - src > dst - with invert"() {
-        sol.setGiantRoute([n1, n2, n3, n4, n6, n7, n8] as Node[])
+        def sol = Helper.set(model, [n1, n2, n3, n4, n6, n7, n8] as Node[])
         def parameter = [-1, 0, 0, 3, 2, 1, 1] as float[]
 
         when:
@@ -143,8 +149,8 @@ class XFVRPSegmentMoveTest extends Specification {
         def model = initScen()
         def n = model.getNodes()
 
-        def sol = new Solution(model)
-        sol.setGiantRoute([n[0], n[1], n[2], n[5], n[6], n[3], n[4], n[7], n[0]] as Node[])
+        
+        def sol = Helper.set(model, [n[0], n[1], n[2], n[5], n[6], n[3], n[4], n[7], n[0]] as Node[])
 
         when:
         def newQuality = service.improve(sol, new Quality(cost: Float.MAX_VALUE), model)
@@ -166,8 +172,8 @@ class XFVRPSegmentMoveTest extends Specification {
         def model = initScen()
         def n = model.getNodes()
 
-        def sol = new Solution(model)
-        sol.setGiantRoute([n[0], n[1], n[2], n[7], n[6], n[5], n[3], n[4], n[0]] as Node[])
+        
+        def sol = Helper.set(model, [n[0], n[1], n[2], n[7], n[6], n[5], n[3], n[4], n[0]] as Node[])
 
         when:
         def newQuality = service.improve(sol, new Quality(cost: Float.MAX_VALUE), model)
@@ -189,8 +195,8 @@ class XFVRPSegmentMoveTest extends Specification {
         def model = initScen()
         def n = model.getNodes()
 
-        def sol = new Solution(model)
-        sol.setGiantRoute([n[0], n[1], n[2], n[3], n[4], n[5], n[6], n[7], n[0]] as Node[])
+        
+        def sol = Helper.set(model, [n[0], n[1], n[2], n[3], n[4], n[5], n[6], n[7], n[0]] as Node[])
 
         when:
         def newQuality = service.improve(sol, new Quality(cost: Float.MAX_VALUE), model)
@@ -302,10 +308,8 @@ class XFVRPSegmentMoveTest extends Specification {
         n9.setIdx(6)
         n10.setIdx(7)
 
-        def nodes = [n1, n2, n3, n5, n6, n7, n9, n10] as Node[]
+        def nodes = [n1, n2, n3, n5, n6, n7, n9, n10]
 
-        def iMetric = new AcceleratedMetricTransformator().transform(new EucledianMetric(), nodes, v)
-
-        return TestXFVRPModel.get(nodes, iMetric, iMetric, v, new XFVRPParameter())
+        return TestXFVRPModel.get(nodes, v)
     }
 }

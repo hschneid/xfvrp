@@ -1,6 +1,7 @@
 package xf.xfvrp.opt
 
 import spock.lang.Specification
+import util.instances.Helper
 import xf.xfvrp.base.Node
 import xf.xfvrp.base.SiteType
 import xf.xfvrp.base.exception.XFVRPException
@@ -17,8 +18,7 @@ class XFVRPMoveUtilNodeMoveSpec extends Specification {
 	def n7 = new Node(externID: "7", siteType: SiteType.DEPOT)
 
 	def "Regular move - between 2 routes"() {
-		def sol = new Solution()
-		sol.setGiantRoute([n1, n2, n3, n4, n5, n6, n7] as Node[])
+		def sol = Helper.set([n1, n2, n3, n4, n5, n6, n7] as Node[])
 
 		when:
 		XFVRPMoveUtil.move(sol, 0, 1, 1, 1, 2)
@@ -31,12 +31,11 @@ class XFVRPMoveUtilNodeMoveSpec extends Specification {
 		result[3].externID == "5"
 		result[4].externID == "2"
 		result[5].externID == "6"
-		result[6].externID == "4"
+		result[6].externID == "1"
 	}
 
 	def "Regular move - same route and src < dst"() {
-		def sol = new Solution()
-		sol.setGiantRoute([n1, n2, n3, n4, n5, n6, n7] as Node[])
+		def sol = Helper.set([n1, n2, n3, n4, n5, n6, n7] as Node[])
 
 		when:
 		XFVRPMoveUtil.move(sol, 0, 0, 1, 1, 3)
@@ -49,12 +48,12 @@ class XFVRPMoveUtilNodeMoveSpec extends Specification {
 		result[3].externID == "4"
 		result[4].externID == "5"
 		result[5].externID == "6"
-		result[6].externID == "4"
+		result[6].externID == "1"
 	}
 
 	def "Regular move - same route and src > dst"() {
-		def sol = new Solution()
-		sol.setGiantRoute([n1, n2, n3, n5, n6, n7] as Node[])
+		
+		def sol = Helper.set([n1, n2, n3, n5, n6, n7] as Node[])
 
 		when:
 		XFVRPMoveUtil.move(sol, 0, 0, 3, 3, 1)
@@ -70,8 +69,8 @@ class XFVRPMoveUtilNodeMoveSpec extends Specification {
 	}
 
 	def "Regular move - no move - same positions"() {
-		def sol = new Solution()
-		sol.setGiantRoute([n1, n2, n3, n4, n5, n6, n7] as Node[])
+		
+		def sol = Helper.set([n1, n2, n3, n4, n5, n6, n7] as Node[])
 
 		when:
 		XFVRPMoveUtil.move(sol, 0, 0, 1, 1, 1)
@@ -84,12 +83,12 @@ class XFVRPMoveUtilNodeMoveSpec extends Specification {
 		result[3].externID == "4"
 		result[4].externID == "5"
 		result[5].externID == "6"
-		result[6].externID == "4"
+		result[6].externID == "1"
 	}
 
 	def "Regular move - no move - different positions"() {
-		def sol = new Solution()
-		sol.setGiantRoute([n1, n2, n3, n4, n5, n6, n7] as Node[])
+		
+		def sol = Helper.set([n1, n2, n3, n4, n5, n6, n7] as Node[])
 
 		when:
 		XFVRPMoveUtil.move(sol, 0, 0, 1, 1, 2)
@@ -102,12 +101,12 @@ class XFVRPMoveUtilNodeMoveSpec extends Specification {
 		result[3].externID == "4"
 		result[4].externID == "5"
 		result[5].externID == "6"
-		result[6].externID == "4"
+		result[6].externID == "1"
 	}
 
 	def "Irregular move - src is first node"() {
-		def sol = new Solution()
-		sol.setGiantRoute([n1, n2, n3, n4, n5, n6, n7] as Node[])
+		
+		def sol = Helper.set([n1, n2, n3, n4, n5, n6, n7] as Node[])
 
 		when:
 		XFVRPMoveUtil.move(sol, 0, 1, 0, 0, 2)
@@ -117,8 +116,8 @@ class XFVRPMoveUtilNodeMoveSpec extends Specification {
 	}
 
 	def "Irregular move - dst is first node"() {
-		def sol = new Solution()
-		sol.setGiantRoute([n1, n2, n3, n4, n5, n6, n7] as Node[])
+		
+		def sol = Helper.set([n1, n2, n3, n4, n5, n6, n7] as Node[])
 
 		when:
 		XFVRPMoveUtil.move(sol, 0, 1, 2, 2, 0)
