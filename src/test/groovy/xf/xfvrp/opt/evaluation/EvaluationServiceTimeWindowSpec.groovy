@@ -1,6 +1,7 @@
 package xf.xfvrp.opt.evaluation
 
 import spock.lang.Specification
+import util.instances.Helper
 import util.instances.TestNode
 import util.instances.TestVehicle
 import util.instances.TestXFVRPModel
@@ -57,19 +58,15 @@ class EvaluationServiceTimeWindowSpec extends Specification {
 	timeWindow: [[0,99],[2,99]]
 	).getNode()
 
-	def sol
-
 	def parameter = new XFVRPParameter()
-
-	def metric = new EucledianMetric()
 
 	def "Basic Time Windows - Okay"() {
 		depot = nd
 		def model = initScenBasic([[[3,4]],[[4,5]],[[5,6]]] as float[][][], 0f, null)
 		def n = model.getNodes()
 
-		sol = new Solution(model)
-		sol.setGiantRoute([depot, n[1], n[2], n[3], depot] as Node[])
+		
+		def sol = Helper.set(model, [depot, n[1], n[2], n[3], depot] as Node[])
 
 		when:
 		def result = service.check(sol)
@@ -85,8 +82,8 @@ class EvaluationServiceTimeWindowSpec extends Specification {
 		def model = initScenBasic([[[3,4]],[[3,3.9f]],[[5,6]]] as float[][][], 0f, null)
 		def n = model.getNodes()
 
-		sol = new Solution(model)
-		sol.setGiantRoute([depot, n[1], n[2], n[3], depot] as Node[])
+		
+		def sol = Helper.set(model, [depot, n[1], n[2], n[3], depot] as Node[])
 
 		when:
 		def result = service.check(sol)
@@ -102,8 +99,8 @@ class EvaluationServiceTimeWindowSpec extends Specification {
 		def model = initScenBasic([[[3,4]],[[4,5.5]],[[6,7]]] as float[][][], 0.5f, null)
 		def n = model.getNodes()
 
-		sol = new Solution(model)
-		sol.setGiantRoute([depot, n[1], n[2], n[3], depot] as Node[])
+		
+		def sol = Helper.set(model, [depot, n[1], n[2], n[3], depot] as Node[])
 
 		when:
 		def result = service.check(sol)
@@ -119,8 +116,8 @@ class EvaluationServiceTimeWindowSpec extends Specification {
 		def model = initScenBasic([[[3,4]],[[4,5.5]],[[6,7]]] as float[][][], 0.5f, null)
 		def n = model.getNodes()
 
-		sol = new Solution(model)
-		sol.setGiantRoute([depot, n[1], n[2], n[3], depot] as Node[])
+		
+		def sol = Helper.set(model, [depot, n[1], n[2], n[3], depot] as Node[])
 
 		when:
 		def result = service.check(sol)
@@ -137,8 +134,8 @@ class EvaluationServiceTimeWindowSpec extends Specification {
 		def model = initScenBasic([[[3,4]],[[4,5.5]],[[6,7]]] as float[][][], 0.5f, null)
 		def n = model.getNodes()
 
-		sol = new Solution(model)
-		sol.setGiantRoute([depot, n[1], n[2], n[3], depot] as Node[])
+		
+		def sol = Helper.set(model, [depot, n[1], n[2], n[3], depot] as Node[])
 
 		when:
 		def result = service.check(sol)
@@ -155,8 +152,8 @@ class EvaluationServiceTimeWindowSpec extends Specification {
 		def model = initScenBasic([[[3,4]],[[4,5.5]],[[6,7]]] as float[][][], 0.5f, null)
 		def n = model.getNodes()
 
-		sol = new Solution(model)
-		sol.setGiantRoute([depot, n[1], n[2], n[3], depot] as Node[])
+		
+		def sol = Helper.set(model, [depot, n[1], n[2], n[3], depot] as Node[])
 
 		when:
 		def result = service.check(sol)
@@ -173,8 +170,8 @@ class EvaluationServiceTimeWindowSpec extends Specification {
 		def model = initScenBasicPickup([[[3,4]],[[4,5.5]],[[6,7]]] as float[][][], 0.5f, null)
 		def n = model.getNodes()
 
-		sol = new Solution(model)
-		sol.setGiantRoute([depot, n[1], n[2], n[3], depot] as Node[])
+		
+		def sol = Helper.set(model, [depot, n[1], n[2], n[3], depot] as Node[])
 
 		when:
 		def result = service.check(sol)
@@ -191,8 +188,8 @@ class EvaluationServiceTimeWindowSpec extends Specification {
 		def model = initScenBasicPickup([[[3,4]],[[4,5.5]],[[6,7]]] as float[][][], 0.5f, null)
 		def n = model.getNodes()
 
-		sol = new Solution(model)
-		sol.setGiantRoute([depot, n[1], n[2], n[3], depot] as Node[])
+		
+		def sol = Helper.set(model, [depot, n[1], n[2], n[3], depot] as Node[])
 
 		when:
 		def result = service.check(sol)
@@ -208,8 +205,8 @@ class EvaluationServiceTimeWindowSpec extends Specification {
 		def model = initScenBasic([[[3,4]],[[5,6]],[[6,7]]] as float[][][], 0f, new TestVehicle(name: "V1", capacity: [3, 3], maxWaitingTime: 1))
 		def n = model.getNodes()
 
-		sol = new Solution(model)
-		sol.setGiantRoute([depot, n[1], n[2], n[3], depot] as Node[])
+		
+		def sol = Helper.set(model, [depot, n[1], n[2], n[3], depot] as Node[])
 
 		when:
 		def result = service.check(sol)
@@ -225,8 +222,8 @@ class EvaluationServiceTimeWindowSpec extends Specification {
 		def model = initScenBasic([[[3,4]],[[5.1,6]],[[6,7]]] as float[][][], 0f, new TestVehicle(name: "V1", capacity: [3, 3], maxWaitingTime: 1))
 		def n = model.getNodes()
 
-		sol = new Solution(model)
-		sol.setGiantRoute([depot, n[1], n[2], n[3], depot] as Node[])
+		
+		def sol = Helper.set(model, [depot, n[1], n[2], n[3], depot] as Node[])
 
 		when:
 		def result = service.check(sol)
@@ -242,8 +239,8 @@ class EvaluationServiceTimeWindowSpec extends Specification {
 		def model = initScenBasic([[[3,4]],[[4,5]],[[5,6]]] as float[][][], 0f, new TestVehicle(name: "V1", capacity: [3, 3], maxDrivingTimePerShift: 2f, waitingTimeBetweenShifts: 1f))
 		def n = model.getNodes()
 
-		sol = new Solution(model)
-		sol.setGiantRoute([depot, n[1], n[2], n[3], depot] as Node[])
+		
+		def sol = Helper.set(model, [depot, n[1], n[2], n[3], depot] as Node[])
 
 		when:
 		def result = service.check(sol)
@@ -259,8 +256,8 @@ class EvaluationServiceTimeWindowSpec extends Specification {
 		def model = initScenBasic([[[3,4]],[[4,4.9]],[[5,6]]] as float[][][], 0f, new TestVehicle(name: "V1", capacity: [3, 3], maxDrivingTimePerShift: 2f, waitingTimeBetweenShifts: 1f))
 		def n = model.getNodes()
 
-		sol = new Solution(model)
-		sol.setGiantRoute([depot, n[1], n[2], n[3], depot] as Node[])
+		
+		def sol = Helper.set(model, [depot, n[1], n[2], n[3], depot] as Node[])
 
 		when:
 		def result = service.check(sol)
@@ -276,8 +273,8 @@ class EvaluationServiceTimeWindowSpec extends Specification {
 		def model = initScenBasic([[[3,4]],[[2,3], [3,4]],[[5,6]]] as float[][][], 0f, null)
 		def n = model.getNodes()
 
-		sol = new Solution(model)
-		sol.setGiantRoute([depot, n[1], n[2], n[3], depot] as Node[])
+		
+		def sol = Helper.set(model, [depot, n[1], n[2], n[3], depot] as Node[])
 
 		when:
 		def result = service.check(sol)
@@ -293,8 +290,8 @@ class EvaluationServiceTimeWindowSpec extends Specification {
 		def model = initScenBasic([[[3,4]],[[2,3], [3,3.9]],[[5,6]]] as float[][][], 0f, null)
 		def n = model.getNodes()
 
-		sol = new Solution(model)
-		sol.setGiantRoute([depot, n[1], n[2], n[3], depot] as Node[])
+		
+		def sol = Helper.set(model, [depot, n[1], n[2], n[3], depot] as Node[])
 
 		when:
 		def result = service.check(sol)
@@ -358,10 +355,8 @@ class EvaluationServiceTimeWindowSpec extends Specification {
 		n2.setIdx(2)
 		n3.setIdx(3)
 
-		def nodes = [depot, n1, n2, n3] as Node[]
+		def nodes = [depot, n1, n2, n3]
 
-		def iMetric = new AcceleratedMetricTransformator().transform(metric, nodes, v)
-
-		return TestXFVRPModel.get(nodes, iMetric, iMetric, v, parameter)
+		return TestXFVRPModel.get(nodes, v, parameter)
 	}
 }

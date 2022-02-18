@@ -1,6 +1,7 @@
 package xf.xfvrp.opt.improve.routebased.swap
 
 import spock.lang.Specification
+import util.instances.Helper
 import xf.xfvrp.base.Node
 import xf.xfvrp.base.SiteType
 import xf.xfvrp.base.exception.XFVRPException
@@ -17,8 +18,8 @@ class XFVRPSwapUtilSpec extends Specification {
 	def n6 = new Node(externID: "6", siteType: SiteType.CUSTOMER)
 
 	def "Change - 1 node exchange - 2 routes"() {
-		def sol = new Solution()
-		sol.setGiantRoute([nd, n1, n2, nd, n3, n4, nd] as Node[])
+		
+		def sol = Helper.set([nd, n1, n2, nd, n3, n4, nd] as Node[])
 		
 		when:
 		XFVRPSwapUtil.change(sol, [-1, 0, 1, 1, 2, 0, 0, 0] as float[])
@@ -35,8 +36,8 @@ class XFVRPSwapUtilSpec extends Specification {
 	}
 
 	def "Change - 1 node exchange - 1 route - a < b"() {
-		def sol = new Solution()
-		sol.setGiantRoute([nd, n1, n2, n3, n4, nd] as Node[])
+		
+		def sol = Helper.set([nd, n1, n2, n3, n4, nd] as Node[])
 
 		when:
 		XFVRPSwapUtil.change(sol, [-1, 0, 0, 2, 4, 0, 0, 0] as float[])
@@ -52,8 +53,8 @@ class XFVRPSwapUtilSpec extends Specification {
 	}
 
 	def "Change - 1 node exchange - 1 route - b < a"() {
-		def sol = new Solution()
-		sol.setGiantRoute([nd, n1, n2, n3, n4, nd] as Node[])
+		
+		def sol = Helper.set([nd, n1, n2, n3, n4, nd] as Node[])
 
 		when:
 		XFVRPSwapUtil.change(sol, [-1, 0, 0, 4, 2, 0, 0, 0] as float[])
@@ -69,8 +70,8 @@ class XFVRPSwapUtilSpec extends Specification {
 	}
 
 	def "Change - 1 node exchange - 1 route - b directly before a"() {
-		def sol = new Solution()
-		sol.setGiantRoute([nd, n1, n2, n3, n4, nd] as Node[])
+		
+		def sol = Helper.set([nd, n1, n2, n3, n4, nd] as Node[])
 
 		when:
 		XFVRPSwapUtil.change(sol, [-1, 0, 0, 2, 3, 0, 0, 0] as float[])
@@ -86,8 +87,8 @@ class XFVRPSwapUtilSpec extends Specification {
 	}
 
 	def "Change - 1 node exchange - 1 route - a directly before b"() {
-		def sol = new Solution()
-		sol.setGiantRoute([nd, n1, n2, n3, n4, nd] as Node[])
+		
+		def sol = Helper.set([nd, n1, n2, n3, n4, nd] as Node[])
 
 		when:
 		XFVRPSwapUtil.change(sol, [-1, 0, 0, 3, 2, 0, 0, 0] as float[])
@@ -105,8 +106,8 @@ class XFVRPSwapUtilSpec extends Specification {
 	//////////////////////////////////////////////////
 
 	def "Change - segment exchange - 2 routes - same length"() {
-		def sol = new Solution()
-		sol.setGiantRoute([nd, n1, n2, n3, nd, n4, n5, n6, nd] as Node[])
+		
+		def sol = Helper.set([nd, n1, n2, n3, nd, n4, n5, n6, nd] as Node[])
 
 		when:
 		XFVRPSwapUtil.change(sol, [-1, 0, 1, 2, 1, 1, 1, 0] as float[])
@@ -125,8 +126,8 @@ class XFVRPSwapUtilSpec extends Specification {
 	}
 
 	def "Change - segment exchange - 2 routes - different lengths"() {
-		def sol = new Solution()
-		sol.setGiantRoute([nd, n1, n2, n3, nd, n4, n5, n6, nd] as Node[])
+		
+		def sol = Helper.set([nd, n1, n2, n3, nd, n4, n5, n6, nd] as Node[])
 
 		when:
 		XFVRPSwapUtil.change(sol, [-1, 0, 1, 1, 2, 2, 1, 0] as float[])
@@ -145,8 +146,8 @@ class XFVRPSwapUtilSpec extends Specification {
 	}
 
 	def "Change - segment exchange - 1 route - different lengths - A < B"() {
-		def sol = new Solution()
-		sol.setGiantRoute([nd, n1, n2, n3, n4, n5, n6, nd] as Node[])
+		
+		def sol = Helper.set([nd, n1, n2, n3, n4, n5, n6, nd] as Node[])
 
 		when:
 		XFVRPSwapUtil.change(sol, [-1, 0, 0, 1, 4, 1, 2, 0] as float[])
@@ -164,8 +165,8 @@ class XFVRPSwapUtilSpec extends Specification {
 	}
 
 	def "Change - segment exchange - 1 route - differnt lengths - B < A"() {
-		def sol = new Solution()
-		sol.setGiantRoute([nd, n1, n2, n3, n4, n5, n6, nd] as Node[])
+		
+		def sol = Helper.set([nd, n1, n2, n3, n4, n5, n6, nd] as Node[])
 
 		when:
 		XFVRPSwapUtil.change(sol, [-1, 0, 0, 4, 2, 2, 1, 0] as float[])
@@ -183,8 +184,8 @@ class XFVRPSwapUtilSpec extends Specification {
 	}
 
 	def "Change - segment exchange - 1 route - same lengths - A < B"() {
-		def sol = new Solution()
-		sol.setGiantRoute([nd, n1, n2, n3, n4, n5, n6, nd] as Node[])
+		
+		def sol = Helper.set([nd, n1, n2, n3, n4, n5, n6, nd] as Node[])
 
 		when:
 		XFVRPSwapUtil.change(sol, [-1, 0, 0, 1, 4, 1, 1, 0] as float[])
@@ -202,8 +203,8 @@ class XFVRPSwapUtilSpec extends Specification {
 	}
 
 	def "Change - segment exchange - 1 route - different lengths - Invert both"() {
-		def sol = new Solution()
-		sol.setGiantRoute([nd, n1, n2, n3, n4, n5, n6, nd] as Node[])
+		
+		def sol = Helper.set([nd, n1, n2, n3, n4, n5, n6, nd] as Node[])
 
 		when:
 		XFVRPSwapUtil.change(sol, [-1, 0, 0, 1, 4, 1, 2, XFVRPSwapUtil.BOTH_INVERT] as float[])
@@ -221,8 +222,8 @@ class XFVRPSwapUtilSpec extends Specification {
 	}
 
 	def "Change - segment exchange - 1 route - different lengths - Only invert B "() {
-		def sol = new Solution()
-		sol.setGiantRoute([nd, n1, n2, n3, n4, n5, n6, nd] as Node[])
+		
+		def sol = Helper.set([nd, n1, n2, n3, n4, n5, n6, nd] as Node[])
 
 		when:
 		XFVRPSwapUtil.change(sol, [-1, 0, 0, 1, 4, 1, 2, XFVRPSwapUtil.B_INVERT] as float[])
@@ -242,8 +243,8 @@ class XFVRPSwapUtilSpec extends Specification {
 	////////////////////////////////////////////////////////////
 
 	def "Change/Reverse - 2 routes - different lengths - both inverts"() {
-		def sol = new Solution()
-		sol.setGiantRoute([nd, n1, n2, n3, nd, n4, n5, n6, nd] as Node[])
+		
+		def sol = Helper.set([nd, n1, n2, n3, nd, n4, n5, n6, nd] as Node[])
 
 		def para = [-1, 0, 1, 1, 2, 2, 1, XFVRPSwapUtil.BOTH_INVERT] as float[]
 
@@ -265,8 +266,8 @@ class XFVRPSwapUtilSpec extends Specification {
 	}
 
 	def "Change/Reverse - 1 route - different lengths - B invert"() {
-		def sol = new Solution()
-		sol.setGiantRoute([nd, n1, n2, n3, n4, n5, n6, nd] as Node[])
+		
+		def sol = Helper.set([nd, n1, n2, n3, n4, n5, n6, nd] as Node[])
 
 		def para = [-1, 0, 0, 6, 1, 0, 2, XFVRPSwapUtil.B_INVERT] as float[]
 
@@ -287,8 +288,8 @@ class XFVRPSwapUtilSpec extends Specification {
 	}
 
 	def "Change/Reverse - 1 route - same lengths - A invert"() {
-		def sol = new Solution()
-		sol.setGiantRoute([nd, n1, n2, n3, n4, n5, n6, nd] as Node[])
+		
+		def sol = Helper.set([nd, n1, n2, n3, n4, n5, n6, nd] as Node[])
 
 		def para = [-1, 0, 0, 5, 3, 1, 1, XFVRPSwapUtil.A_INVERT] as float[]
 
@@ -310,8 +311,8 @@ class XFVRPSwapUtilSpec extends Specification {
 
 	///////////////////////////////////////////////////
 	def "Change - Segment contains leading depot"() {
-		def sol = new Solution()
-		sol.setGiantRoute([nd, n1, n2, n3, nd, n4, n5, n6, nd] as Node[])
+		
+		def sol = Helper.set([nd, n1, n2, n3, nd, n4, n5, n6, nd] as Node[])
 
 		def para = [-1, 0, 1, 1, 0, 1, 1, 0] as float[]
 
@@ -322,8 +323,8 @@ class XFVRPSwapUtilSpec extends Specification {
 		thrown(XFVRPException)
 	}
 	def "Change - Segment contains trailing depot"() {
-		def sol = new Solution()
-		sol.setGiantRoute([nd, n1, n2, n3, nd, n4, n5, n6, nd] as Node[])
+		
+		def sol = Helper.set([nd, n1, n2, n3, nd, n4, n5, n6, nd] as Node[])
 
 		def para = [-1, 0, 1, 3, 1, 1, 1, 0] as float[]
 
@@ -334,8 +335,8 @@ class XFVRPSwapUtilSpec extends Specification {
 		thrown(XFVRPException)
 	}
 	def "Change - Segments are overlapping"() {
-		def sol = new Solution()
-		sol.setGiantRoute([nd, n1, n2, n3, n4, n5, n6, nd] as Node[])
+		
+		def sol = Helper.set([nd, n1, n2, n3, n4, n5, n6, nd] as Node[])
 
 		def para = [-1, 0, 0, 2, 4, 2, 1, 0] as float[]
 

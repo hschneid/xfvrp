@@ -43,12 +43,6 @@ class XFVRPSavingsSpec extends Specification {
 			timeWindow: [[0,99],[2,99]]
 	).getNode()
 
-	def sol
-
-	def parameter = new XFVRPParameter()
-
-	def metric = new EucledianMetric()
-
 	def "Prepare"() {
 		def model = initScen()
 		def n = model.getNodes()
@@ -538,10 +532,8 @@ class XFVRPSavingsSpec extends Specification {
 		n8.setIdx(9)
 		nr.setIdx(10)
 
-		def nodes = [nd, nd2, n1, n2, n3, n4, n5, n6, n7, n8, nr] as Node[]
+		def nodes = [nd, nd2, n1, n2, n3, n4, n5, n6, n7, n8, nr]
 
-		def iMetric = new AcceleratedMetricTransformator().transform(metric, nodes, v)
-
-		return TestXFVRPModel.get(nodes, iMetric, iMetric, v, parameter)
+		return TestXFVRPModel.get(nodes, v)
 	}
 }

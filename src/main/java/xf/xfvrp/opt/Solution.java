@@ -194,6 +194,7 @@ public class Solution implements Iterable<Node[]> {
 
 		routes = new Node[list.size()][];
 		routeQualities = new RouteQuality[list.size()];
+		isOverhang = new boolean[list.size()];
 		totalQuality = new Quality(null);
 
 		for (int i = 0; i < list.size(); i++) {
