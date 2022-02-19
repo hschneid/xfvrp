@@ -32,7 +32,7 @@ class XFVRPSingleMove2Spec extends Specification {
 		timeWindow: [[0,99],[2,99]]
 		).getNode()
 
-	def impList = new PriorityQueue<>(
+	def impList = new PriorityQueue<float[]>(
 			(o1, o2) -> Float.compare(o2[6], o1[6])
 	)
 
@@ -45,7 +45,7 @@ class XFVRPSingleMove2Spec extends Specification {
 		impList.clear()
 
 		when:
-		XFVRPMoveSearchUtil.search(model, sol.getRoutes(), impList, 1, false)
+		XFVRPMoveSearchUtil.search(sol, impList, 1, false)
 
 		then:
 		impList.size() == 4
@@ -68,7 +68,7 @@ class XFVRPSingleMove2Spec extends Specification {
 		impList.clear()
 
 		when:
-		XFVRPMoveSearchUtil.search(model, sol.getRoutes(), impList, 1, false)
+		XFVRPMoveSearchUtil.search(sol, impList, 1, false)
 
 		then:
 		impList.size() == 0
