@@ -81,7 +81,7 @@ class XFVRPSavingsSpec extends Specification {
 		def depot = nd
 
 		def dataBag = new SavingsDataBag(null)
-		dataBag.nodeList = [n[2], n[3], n[4], n[5]]
+		dataBag.nodeList = [n[3], n[4], n[5], n[6]]
 		dataBag.routeIdxForStartNode = [-1, -1, 0, -1, 1, -1, -1, -1, -1, -1]
 		dataBag.routeIdxForEndNode = [-1, -1, -1, 0, -1, 1, -1, -1, -1, -1]
 
