@@ -106,7 +106,6 @@ class EvaluationServiceCapacityIntSpec extends Specification {
 	def "Check with replenishment"() {
 		XFVRP vrp = build()
 		vrp.addOptType(XFVRPOptTypes.ILS)
-		// vrp.getParameters().nbrOfILSLoops = 100
 		vrp.addVehicle().setName('V').setCapacity([3, 2, 3] as float[])
 		vrp.addCompartment(CompartmentType.DELIVERY)
 		vrp.addCompartment(CompartmentType.PICKUP)
