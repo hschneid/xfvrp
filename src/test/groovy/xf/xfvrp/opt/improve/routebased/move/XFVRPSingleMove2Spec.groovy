@@ -1,6 +1,7 @@
 package xf.xfvrp.opt.improve.routebased.move
 
 import spock.lang.Specification
+import util.instances.Helper
 import util.instances.TestNode
 import util.instances.TestVehicle
 import util.instances.TestXFVRPModel
@@ -31,12 +32,6 @@ class XFVRPSingleMove2Spec extends Specification {
 		timeWindow: [[0,99],[2,99]]
 		).getNode()
 
-	def sol
-
-	def parameter = new XFVRPParameter()
-
-	def metric = new EucledianMetric()
-
 	def impList = new PriorityQueue<>(
 			(o1, o2) -> Float.compare(o2[6], o1[6])
 	)
@@ -45,9 +40,8 @@ class XFVRPSingleMove2Spec extends Specification {
 		def model = initScenMultiDepot()
 		def n = model.getNodes()
 		service.setModel(model)
-
-		sol = new Solution()
-		sol.setGiantRoute([nd, n[2], nd, n[3], nd2, n[4], nd2] as Node[])
+		
+		def sol = Helper.set(model, [nd, n[2], nd, n[3], nd2, n[4], nd2] as Node[])
 		impList.clear()
 
 		when:
@@ -69,9 +63,8 @@ class XFVRPSingleMove2Spec extends Specification {
 		def model = initScenMultiDepot()
 		def n = model.getNodes()
 		service.setModel(model)
-
-		sol = new Solution()
-		sol.setGiantRoute([nd, n[2], nd2, n[4], nd2] as Node[])
+		
+		def sol = Helper.set(model, [nd, n[2], nd2, n[4], nd2] as Node[])
 		impList.clear()
 
 		when:
@@ -121,11 +114,9 @@ class XFVRPSingleMove2Spec extends Specification {
 		n2.setIdx(3)
 		n3.setIdx(4)
 
-		def nodes = [nd, nd2, n1, n2, n3] as Node[]
+		def nodes = [nd, nd2, n1, n2, n3]
 
-		def iMetric = new AcceleratedMetricTransformator().transform(metric, nodes, v)
-
-		return new XFVRPModel(nodes, iMetric, iMetric, v, parameter)
+		return TestXFVRPModel.get(nodes, v)
 	}
 	
 	XFVRPModel initScenMultiDepot() {
@@ -168,8 +159,8 @@ class XFVRPSingleMove2Spec extends Specification {
 		n2.setIdx(3)
 		n3.setIdx(4)
 
-		def nodes = [nd, nd2, n1, n2, n3] as Node[]
+		def nodes = [nd, nd2, n1, n2, n3]
 
-		return TestXFVRPModel.get(Arrays.asList(nodes), v)
+		return TestXFVRPModel.get(nodes, v)
 	}
 }

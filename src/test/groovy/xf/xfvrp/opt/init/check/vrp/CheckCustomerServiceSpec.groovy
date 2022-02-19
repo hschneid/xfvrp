@@ -23,7 +23,7 @@ class CheckCustomerServiceSpec extends Specification {
 				).getNode()
 
 		def v = new TestVehicle(capacity: [3, 3, 3] as float[]).getVehicle()
-		def model = TestXFVRPModel.get(new Node[0], null, null, v, null)
+		def model = TestXFVRPModel.get([], v)
 
 		when:
 		def result = service.checkDemands(customer, model)
@@ -40,7 +40,7 @@ class CheckCustomerServiceSpec extends Specification {
 				).getNode()
 
 		def v = new TestVehicle(capacity: [3, 1, 3] as float[]).getVehicle()
-		def model = TestXFVRPModel.get(new Node[0], null, null, v, null)
+		def model = TestXFVRPModel.get([], v)
 
 		when:
 		def result = service.checkDemands(customer, model)
@@ -57,7 +57,7 @@ class CheckCustomerServiceSpec extends Specification {
 				).getNode()
 
 		def v = new TestVehicle(capacity: [3, 3] as float[]).getVehicle()
-		def model = TestXFVRPModel.get(new Node[0], null, null, v, null)
+		def model = TestXFVRPModel.get([], v)
 
 		when:
 		def result = service.checkDemands(customer, model)
