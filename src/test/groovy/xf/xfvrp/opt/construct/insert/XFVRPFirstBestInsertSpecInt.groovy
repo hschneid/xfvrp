@@ -35,8 +35,6 @@ class XFVRPFirstBestInsertSpecInt extends Specification {
 
 	def parameter = new XFVRPParameter()
 
-	def metric = new EucledianMetric()
-
 	def "Opt"() {
 		def model = initScen()
 		def n = model.getNodes()
@@ -190,10 +188,8 @@ class XFVRPFirstBestInsertSpecInt extends Specification {
 		n7.setIdx(8)
 		n8.setIdx(9)
 
-		def nodes = [nd, nd2, n1, n2, n3, n4, n5, n6, n7, n8] as Node[]
+		def nodes = [nd, nd2, n1, n2, n3, n4, n5, n6, n7, n8]
 
-		def iMetric = new AcceleratedMetricTransformator().transform(metric, nodes, v)
-
-		return TestXFVRPModel.get(nodes, iMetric, iMetric, v, parameter)
+		return TestXFVRPModel.get(nodes, v, parameter)
 	}
 }
