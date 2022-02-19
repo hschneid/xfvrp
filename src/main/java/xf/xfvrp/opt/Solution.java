@@ -30,7 +30,7 @@ public class Solution implements Iterable<Node[]> {
 	private Node[][] routes = new Node[1][0];
 	private RouteQuality[] routeQualities = new RouteQuality[] { new RouteQuality(0, null) };
 	private Quality totalQuality = new Quality(null);
-	private int[] nbrRoutesOfDepot;
+	private int[] nbrRoutesOfDepot = new int[0];
 	// Route -> is more then allowed number of routes for this depot
 	private boolean[] isOverhang = new boolean[1];
 
@@ -39,7 +39,9 @@ public class Solution implements Iterable<Node[]> {
 	public Solution(XFVRPModel model) {
 		this.model = model;
 
-		nbrRoutesOfDepot = new int[model.getNbrOfDepots()];
+		if(model != null) {
+			nbrRoutesOfDepot = new int[model.getNbrOfDepots()];
+		}
 	}
 
 	public XFVRPModel getModel() {

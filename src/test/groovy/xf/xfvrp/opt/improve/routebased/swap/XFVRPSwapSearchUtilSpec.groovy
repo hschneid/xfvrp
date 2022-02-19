@@ -1,6 +1,7 @@
 package xf.xfvrp.opt.improve.routebased.swap
 
 import spock.lang.Specification
+import util.instances.Helper
 import util.instances.TestNode
 import util.instances.TestVehicle
 import util.instances.TestXFVRPModel
@@ -31,11 +32,6 @@ class XFVRPSwapSearchUtilSpec extends Specification {
 	timeWindow: [[0,99],[2,99]]
 	).getNode()
 
-	def sol
-
-	def parameter = new XFVRPParameter()
-
-	def metric = new EucledianMetric()
 	def impList = new PriorityQueue<>(
 			(o1, o2) -> Float.compare(o2[7], o1[7])
 	)
@@ -44,8 +40,8 @@ class XFVRPSwapSearchUtilSpec extends Specification {
 		def model = initScen()
 		def n = model.getNodes()
 
-		sol = new Solution()
-		sol.setGiantRoute([nd, n[6], n[7], n[8], n[9], nd2, n[2], n[3], n[4], n[5], nd2] as Node[])
+		
+		def sol = Helper.set(model, [nd, n[6], n[7], n[8], n[9], nd2, n[2], n[3], n[4], n[5], nd2] as Node[])
 		impList.clear()
 
 		when:
@@ -67,8 +63,8 @@ class XFVRPSwapSearchUtilSpec extends Specification {
 		def model = initScen()
 		def n = model.getNodes()
 
-		sol = new Solution()
-		sol.setGiantRoute([nd, n[7], n[3], n[6], n[2], n[9], n[8], n[4], n[5], nd] as Node[])
+		
+		def sol = Helper.set(model, [nd, n[7], n[3], n[6], n[2], n[9], n[8], n[4], n[5], nd] as Node[])
 		impList.clear()
 
 		when:
@@ -89,8 +85,8 @@ class XFVRPSwapSearchUtilSpec extends Specification {
 		def model = initScen()
 		def n = model.getNodes()
 
-		sol = new Solution()
-		sol.setGiantRoute([nd, n[6], n[7], n[8], n[9], nd2, n[2], n[3], n[4], n[5], nd2] as Node[])
+		
+		def sol = Helper.set(model, [nd, n[6], n[7], n[8], n[9], nd2, n[2], n[3], n[4], n[5], nd2] as Node[])
 		impList.clear()
 
 		when:
@@ -113,8 +109,8 @@ class XFVRPSwapSearchUtilSpec extends Specification {
 		def model = initScen()
 		def n = model.getNodes()
 
-		sol = new Solution()
-		sol.setGiantRoute([nd, n[6], n[7], n[8], n[9], nd2, n[2], n[3], n[4], n[5], nd2] as Node[])
+		
+		def sol = Helper.set(model, [nd, n[6], n[7], n[8], n[9], nd2, n[2], n[3], n[4], n[5], nd2] as Node[])
 		impList.clear()
 
 		when:
@@ -137,8 +133,8 @@ class XFVRPSwapSearchUtilSpec extends Specification {
 		def model = initScen()
 		def n = model.getNodes()
 
-		sol = new Solution()
-		sol.setGiantRoute([nd, n[6], n[7], n[8], n[9], nd2, n[2], n[3], n[4], n[5], nd2] as Node[])
+		
+		def sol = Helper.set(model, [nd, n[6], n[7], n[8], n[9], nd2, n[2], n[3], n[4], n[5], nd2] as Node[])
 		impList.clear()
 
 		when:
@@ -253,10 +249,8 @@ class XFVRPSwapSearchUtilSpec extends Specification {
 		n7.setIdx(8)
 		n8.setIdx(9)
 
-		def nodes = [nd, nd2, n1, n2, n3, n4, n5, n6, n7, n8] as Node[]
+		def nodes = [nd, nd2, n1, n2, n3, n4, n5, n6, n7, n8]
 
-		def iMetric = new AcceleratedMetricTransformator().transform(metric, nodes, v)
-
-		return TestXFVRPModel.get(nodes, iMetric, iMetric, v, parameter)
+		return TestXFVRPModel.get(nodes, v)
 	}
 }

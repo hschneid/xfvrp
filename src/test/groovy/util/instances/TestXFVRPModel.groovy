@@ -1,6 +1,7 @@
 package util.instances
 
 import xf.xfvrp.base.Node
+import xf.xfvrp.base.SiteType
 import xf.xfvrp.base.Vehicle
 import xf.xfvrp.base.XFVRPModel
 import xf.xfvrp.base.XFVRPParameter
@@ -13,6 +14,8 @@ import xf.xfvrp.base.metric.internal.AcceleratedMetricTransformator
 import xf.xfvrp.base.monitor.DefaultStatusMonitor
 import xf.xfvrp.base.monitor.StatusManager
 import xf.xfvrp.opt.init.ModelBuilder
+
+import java.util.stream.Collectors
 
 class TestXFVRPModel {
 
@@ -39,6 +42,21 @@ class TestXFVRPModel {
 
 
     static XFVRPModel get(Node[] nodeArr, Metric metric, Vehicle vehicle, XFVRPParameter parameter) {
+        def nodes = nodeArr.toList().stream()
+                .filter(f -> f.getSiteType() == SiteType.DEPOT)
+                .sorted(Comparator.comparing({Node f -> f.externID}))
+                .collect(Collectors.toList())
+        nodes.addAll(nodeArr.toList().stream()
+                .filter(f -> f.getSiteType() == SiteType.REPLENISH)
+                .sorted(Comparator.comparing({Node f -> f.externID}))
+                .collect(Collectors.toList()))
+        nodes.addAll(nodeArr.toList().stream()
+                .filter(f -> f.getSiteType() == SiteType.CUSTOMER)
+                .sorted(Comparator.comparing({Node f -> f.externID}))
+                .collect(Collectors.toList()))
+
+        nodeArr = nodes.toArray(new Node[0])
+
         List<CompartmentType> types = new ArrayList<>()
         CompartmentInitializer.check(nodeArr, types, new Vehicle[]{vehicle})
 
@@ -52,7 +70,7 @@ class TestXFVRPModel {
         )
     }
 
-    public static XFVRPModel get(Node[] nodeArr, CompartmentType[] compartmentTypes, InternalMetric metric, InternalMetric optMetric, Vehicle vehicle, XFVRPParameter parameter) {
+    static XFVRPModel get(Node[] nodeArr, CompartmentType[] compartmentTypes, InternalMetric metric, InternalMetric optMetric, Vehicle vehicle, XFVRPParameter parameter) {
         return new XFVRPModel(
                 nodeArr,
                 compartmentTypes,

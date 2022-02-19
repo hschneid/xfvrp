@@ -117,10 +117,7 @@ class CheckServiceSpec extends Specification {
 	XFVRPModel build(Node[] nodes) {
 		def v = new TestVehicle().getVehicle()
 
-		def p = new XFVRPParameter()
-
-		def iMetric = new AcceleratedMetricTransformator().transform(new EucledianMetric(), nodes, v)
-		return TestXFVRPModel.get(nodes, iMetric, iMetric, v, p)
+		return TestXFVRPModel.get(Arrays.asList(nodes), v)
 	}
 
 	Node[] getNodes() {

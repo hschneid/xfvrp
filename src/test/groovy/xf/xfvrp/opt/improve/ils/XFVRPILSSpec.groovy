@@ -1,6 +1,7 @@
 package xf.xfvrp.opt.improve.ils
 
 import spock.lang.Specification
+import util.instances.Helper
 import util.instances.TestNode
 import util.instances.TestVehicle
 import util.instances.TestXFVRPModel
@@ -42,12 +43,6 @@ class XFVRPILSSpec extends Specification {
 	timeWindow: [[0,99],[2,99]]
 	).getNode()
 
-	def sol
-
-	def parameter = new XFVRPParameter()
-
-	def metric = new EucledianMetric()
-
 	def "Choose"() {
 		service.optPropArr = [0.1, 0.2, 0.3, 0.4]
 
@@ -69,7 +64,6 @@ class XFVRPILSSpec extends Specification {
 
 	def "Check termination - Loops"() {
 		def model = initScen()
-		def n = model.getNodes()
 		service.setModel(model)
 
 		service.model.getParameter().setNbrOfILSLoops(15)
@@ -82,7 +76,6 @@ class XFVRPILSSpec extends Specification {
 
 	def "Check termination - Time"() {
 		def model = initScen()
-		def n = model.getNodes()
 		service.setModel(model)
 
 		service.model.getParameter().setNbrOfILSLoops(15)
@@ -101,7 +94,6 @@ class XFVRPILSSpec extends Specification {
 
 	def "Check termination - Okay"() {
 		def model = initScen()
-		def n = model.getNodes()
 		service.setModel(model)
 
 		service.model.getParameter().setNbrOfILSLoops(15)
@@ -124,8 +116,7 @@ class XFVRPILSSpec extends Specification {
 		service.optArr = [opt1, opt2, opt3] as XFVRPOptBase[]
 		service.optPropArr = [0.1, 0.3, 0.6]
 
-		sol = new Solution()
-		sol.setGiantRoute([nd, n[2], n[3], n[4], n[5], nd] as Node[])
+		def sol = Helper.set(model, [nd, n[2], n[3], n[4], n[5], nd] as Node[])
 
 		def quality = new Quality(cost: 111, penalty: 0)
 		evaluationService.check(_) >> quality
@@ -152,8 +143,7 @@ class XFVRPILSSpec extends Specification {
 		def betterQuality = new Quality(cost: 80, penalty: 0)
 		evaluationService.check(_ as Solution) >>> [quality, betterQuality]
 
-		sol = new Solution(model)
-		sol.setGiantRoute([nd, n[2], n[5], n[4], nd, nd, n[3], nd] as Node[])
+		def sol = Helper.set(model, [nd, n[2], n[5], n[4], nd, nd, n[3], nd] as Node[])
 
 		opt1.execute(_ ,_ , _) >> sol
 		opt2.execute(_ ,_ , _) >> sol
@@ -216,10 +206,8 @@ class XFVRPILSSpec extends Specification {
 		n3.setIdx(4)
 		n4.setIdx(5)
 
-		def nodes = [nd, nd2, n1, n2, n3, n4] as Node[]
+		def nodes = [nd, nd2, n1, n2, n3, n4]
 
-		def iMetric = new AcceleratedMetricTransformator().transform(metric, nodes, v)
-
-		return TestXFVRPModel.get(nodes, iMetric, iMetric, v, parameter)
+		return TestXFVRPModel.get(nodes, v)
 	}
 }
