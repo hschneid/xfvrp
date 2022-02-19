@@ -69,7 +69,7 @@ public class EvaluationService {
 	private void checkAndUpdateRoutes(int routeIdx, Solution solution, Context context) throws XFVRPException {
 		Node[] route = solution.getRoutes()[routeIdx];
 		if(route.length == 0) {
-			solution.setRouteQuality(routeIdx, new Quality(null));
+			solution.setRouteQuality(routeIdx, new RouteQuality(-1, null));
 			return;
 		}
 
