@@ -82,8 +82,8 @@ class XFVRPSavingsSpec extends Specification {
 
 		def dataBag = new SavingsDataBag(null)
 		dataBag.nodeList = [n[3], n[4], n[5], n[6]]
-		dataBag.routeIdxForStartNode = [-1, -1, 0, -1, 1, -1, -1, -1, -1, -1]
-		dataBag.routeIdxForEndNode = [-1, -1, -1, 0, -1, 1, -1, -1, -1, -1]
+		dataBag.routeIdxForStartNode = [-1, -1, -1, 0, -1, 1, -1, -1, -1, -1, -1]
+		dataBag.routeIdxForEndNode = [-1, -1, -1, -1, 0, -1, 1, -1, -1, -1, -1]
 
 		when:
 		service.createSavingsMatrix(depot, dataBag)
@@ -91,12 +91,12 @@ class XFVRPSavingsSpec extends Specification {
 
 		then:
 		savings.size() == 6
-		savings.stream().filter({f -> f[0] == 2 && f[1] == 4 && Math.abs(f[2] - 1537) < 1}).count() == 1
-		savings.stream().filter({f -> f[0] == 2 && f[1] == 5 && Math.abs(f[2] - 2118) < 1}).count() == 1
 		savings.stream().filter({f -> f[0] == 3 && f[1] == 5 && Math.abs(f[2] - 1537) < 1}).count() == 1
-		savings.stream().filter({f -> f[0] == 4 && f[1] == 2 && Math.abs(f[2] - 1537) < 1}).count() == 1
-		savings.stream().filter({f -> f[0] == 5 && f[1] == 2 && Math.abs(f[2] - 2118) < 1}).count() == 1
+		savings.stream().filter({f -> f[0] == 3 && f[1] == 6 && Math.abs(f[2] - 2118) < 1}).count() == 1
+		savings.stream().filter({f -> f[0] == 4 && f[1] == 6 && Math.abs(f[2] - 1537) < 1}).count() == 1
 		savings.stream().filter({f -> f[0] == 5 && f[1] == 3 && Math.abs(f[2] - 1537) < 1}).count() == 1
+		savings.stream().filter({f -> f[0] == 6 && f[1] == 3 && Math.abs(f[2] - 2118) < 1}).count() == 1
+		savings.stream().filter({f -> f[0] == 6 && f[1] == 4 && Math.abs(f[2] - 1537) < 1}).count() == 1
 	}
 
 	def "Merge routes without invertation"() {
@@ -228,13 +228,11 @@ class XFVRPSavingsSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 		def sol = new Solution(model)
-		sol.routes = [
-				[nd, nd],
-				[nd, n[2], n[7], n[3], nd],
-				[nd, n[5], nr, n[4], nd],
-				[nd, n[6], nd],
-				[nd, nr, nd]
-		] as Node[][]
+		sol.addRoute([nd, nd] as Node[])
+		sol.addRoute([nd, n[3], n[8], n[4], nd] as Node[])
+		sol.addRoute([nd, n[6], nr, n[5], nd] as Node[])
+		sol.addRoute([nd, n[7], nd] as Node[])
+		sol.addRoute([nd, nr, nd] as Node[])
 
 		when:
 		def result = service.buildRoutes(sol)
@@ -242,12 +240,12 @@ class XFVRPSavingsSpec extends Specification {
 
 		then:
 		routes.length == 3
-		routes[0][0] == n[2]
-		routes[0][1] == n[7]
-		routes[0][2] == n[3]
-		routes[1][0] == n[5]
-		routes[1][1] == n[4]
-		routes[2][0] == n[6]
+		routes[0][0] == n[3]
+		routes[0][1] == n[8]
+		routes[0][2] == n[4]
+		routes[1][0] == n[6]
+		routes[1][1] == n[5]
+		routes[2][0] == n[7]
 	}
 
 	def "Update routes - Invert B"() {
