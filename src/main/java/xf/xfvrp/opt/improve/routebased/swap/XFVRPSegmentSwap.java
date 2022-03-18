@@ -1,6 +1,5 @@
 package xf.xfvrp.opt.improve.routebased.swap;
 
-import xf.xfvrp.base.Node;
 import xf.xfvrp.base.exception.XFVRPException;
 import xf.xfvrp.opt.Solution;
 import xf.xfvrp.opt.improve.routebased.XFVRPOptImpBase;
@@ -33,12 +32,10 @@ public class XFVRPSegmentSwap extends XFVRPOptImpBase {
 
 	@Override
 	protected Queue<float[]> search(Solution solution) {
-		Node[][] routes = solution.getRoutes();
-
 		PriorityQueue<float[]> improvingSteps = new PriorityQueue<>(
 				(o1, o2) -> Float.compare(o2[0], o1[0])
 		);
-		XFVRPSwapSearchUtil.search(model, routes, improvingSteps, maxSegmentLength, isSegmentLengthEqual, isInvertationActive);
+		XFVRPSwapSearchUtil.search(solution, improvingSteps, maxSegmentLength, isSegmentLengthEqual, isInvertationActive);
 
 		return improvingSteps;
 	}

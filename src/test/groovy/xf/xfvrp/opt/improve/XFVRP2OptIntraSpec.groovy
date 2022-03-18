@@ -7,7 +7,6 @@ import util.instances.TestVehicle
 import util.instances.TestXFVRPModel
 import xf.xfvrp.base.*
 import xf.xfvrp.base.metric.EucledianMetric
-import xf.xfvrp.opt.Solution
 import xf.xfvrp.opt.improve.giantroute.XFVRP2OptIntra
 
 import java.util.stream.Collectors

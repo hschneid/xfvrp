@@ -1,14 +1,11 @@
 package xf.xfvrp.opt.improve.ils
 
-
 import spock.lang.Specification
 import util.instances.Helper
 import util.instances.TestNode
 import util.instances.TestVehicle
 import util.instances.TestXFVRPModel
 import xf.xfvrp.base.*
-import xf.xfvrp.base.metric.EucledianMetric
-import xf.xfvrp.base.metric.internal.AcceleratedMetricTransformator
 import xf.xfvrp.opt.Solution
 import xf.xfvrp.opt.evaluation.EvaluationService
 import xf.xfvrp.opt.improve.ils.XFPDPRandomChangeService.Choice

@@ -16,8 +16,8 @@ public class XFVRPMoveUtil {
 
     public static final int NO_INVERT = 0;
     public static final int INVERT = 1;
-    public static final int IS_OVERGANG = -1;
-    public static final int NO_OVERGANG = 0;
+    public static final int IS_OVERHANG = -1;
+    public static final int NO_OVERHANG = 0;
 
     public static void change(Solution solution, float[] val) throws XFVRPException {
         int srcRouteIdx = (int) val[1];
