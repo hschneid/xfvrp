@@ -5,6 +5,8 @@ import xf.xfvrp.base.NormalizeSolutionService
 import xf.xfvrp.base.SiteType
 import xf.xfvrp.base.XFVRPModel
 import xf.xfvrp.opt.Solution
+import xf.xfvrp.report.Report
+import xf.xfvrp.report.RouteReport
 
 import java.util.stream.Collectors
 
@@ -51,5 +53,12 @@ class Helper {
         sol.setGiantRoute(nodes as Node[])
 
         return sol
+    }
+
+    static String get(Report rep, int routeIdx) {
+        RouteReport rr = rep.getRoutes().get(routeIdx)
+        return rr.getEvents().stream()
+                .map(e -> e.getID())
+                .collect(Collectors.joining(","))
     }
 }

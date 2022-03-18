@@ -218,21 +218,11 @@ public class XFVRPSwapSearchUtil {
         }
     }
 
+    /**
+     * Swapping does not check for overhanging routes, because only customers are swapped, and this
+     * is not changing the number of routes.
+     */
     private static void addImprovingStep(Solution solution, Queue<float[]> improvingSteps, float... newStep) {
-        // Check for nbr of routes
-        /*if(newStep[1] != newStep[2]) {
-            // Is destination route an overhang route? --> Penalty (val gets negative)
-            if(isDestinationOverhangRoute(solution, newStep)) {
-                newStep[0] = -1;
-                newStep[7] = XFVRPMoveUtil.IS_OVERHANG;
-            }
-            // Is source an overhang and destination is not overhang --> Bonus
-            else if(isReduceOfOverhang(solution, newStep)) {
-                newStep[0] = EPSILON * 2;
-                newStep[7] = XFVRPMoveUtil.IS_OVERHANG;
-            }
-        }*/
-
         // Add only improving steps
         if (newStep[0] > EPSILON) {
             improvingSteps.add(newStep);
