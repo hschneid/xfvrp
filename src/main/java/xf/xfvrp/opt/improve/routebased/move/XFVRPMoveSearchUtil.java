@@ -79,7 +79,7 @@ public class XFVRPMoveSearchUtil {
                         (model.getDistanceForOptimization(srcRoute[srcPos - 1], srcRoute[srcPos + segmentLength + 1]) +
                                 model.getDistanceForOptimization(dstRoute[dstPos - 1], srcRoute[srcPos]) +
                                 model.getDistanceForOptimization(srcRoute[srcPos + segmentLength], dstRoute[dstPos]));
-        addImprovingStep(solution, improvingSteps, val, srcRtIdx, dstRtIdx, srcPos, dstPos, segmentLength, XFVRPMoveUtil.NO_INVERT, XFVRPMoveUtil.NO_OVERGANG);
+        addImprovingStep(solution, improvingSteps, val, srcRtIdx, dstRtIdx, srcPos, dstPos, segmentLength, XFVRPMoveUtil.NO_INVERT, XFVRPMoveUtil.NO_OVERHANG);
 
         // with invert
         if (isInvertationActive && segmentLength > 0) {
@@ -88,7 +88,7 @@ public class XFVRPMoveSearchUtil {
                             (model.getDistanceForOptimization(srcRoute[srcPos - 1], srcRoute[srcPos + segmentLength + 1]) +
                                     model.getDistanceForOptimization(dstRoute[dstPos - 1], srcRoute[srcPos + segmentLength]) +
                                     model.getDistanceForOptimization(srcRoute[srcPos], dstRoute[dstPos]));
-            addImprovingStep(solution, improvingSteps, val, srcRtIdx, dstRtIdx, srcPos, dstPos, segmentLength, XFVRPMoveUtil.INVERT, XFVRPMoveUtil.NO_OVERGANG);
+            addImprovingStep(solution, improvingSteps, val, srcRtIdx, dstRtIdx, srcPos, dstPos, segmentLength, XFVRPMoveUtil.INVERT, XFVRPMoveUtil.NO_OVERHANG);
         }
     }
 
@@ -106,7 +106,7 @@ public class XFVRPMoveSearchUtil {
                                 model.getDistanceForOptimization(route[srcPos + segmentLength], route[dstPos]) +
                                 model.getDistanceForOptimization(route[dstPos], route[srcPos + segmentLength + 1]));
 
-        addImprovingStep(solution, improvingSteps, val, srcRtIdx, dstRtIdx, srcPos, dstPos, segmentLength, XFVRPMoveUtil.NO_INVERT, XFVRPMoveUtil.NO_OVERGANG);
+        addImprovingStep(solution, improvingSteps, val, srcRtIdx, dstRtIdx, srcPos, dstPos, segmentLength, XFVRPMoveUtil.NO_INVERT, XFVRPMoveUtil.NO_OVERHANG);
 
         // with invert
         if (isInvertationActive && segmentLength > 0) {
@@ -115,7 +115,7 @@ public class XFVRPMoveSearchUtil {
                             (model.getDistanceForOptimization(route[dstPos - 1], route[srcPos + segmentLength]) +
                                     model.getDistanceForOptimization(route[srcPos], route[dstPos]) +
                                     model.getDistanceForOptimization(route[dstPos], route[srcPos + segmentLength + 1]));
-            addImprovingStep(solution, improvingSteps, val, srcRtIdx, dstRtIdx, srcPos, dstPos, segmentLength, XFVRPMoveUtil.INVERT, XFVRPMoveUtil.NO_OVERGANG);
+            addImprovingStep(solution, improvingSteps, val, srcRtIdx, dstRtIdx, srcPos, dstPos, segmentLength, XFVRPMoveUtil.INVERT, XFVRPMoveUtil.NO_OVERHANG);
         }
     }
 
@@ -125,12 +125,12 @@ public class XFVRPMoveSearchUtil {
             // Is destination route an overhang route? --> Penalty (val gets negative)
             if(isDestinationOverhangRoute(solution, newStep)) {
                 newStep[0] = -1;
-                newStep[7] = XFVRPMoveUtil.IS_OVERGANG;
+                newStep[7] = XFVRPMoveUtil.IS_OVERHANG;
             }
             // Is source an overhang and destination is not overhang --> Bonus
             else if(isReduceOfOverhang(solution, newStep)) {
                 newStep[0] = EPSILON * 2;
-                newStep[7] = XFVRPMoveUtil.IS_OVERGANG;
+                newStep[7] = XFVRPMoveUtil.IS_OVERHANG;
             }
         }
 

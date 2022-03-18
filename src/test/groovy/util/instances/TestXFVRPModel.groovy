@@ -1,17 +1,11 @@
 package util.instances
 
-import xf.xfvrp.base.Node
-import xf.xfvrp.base.SiteType
-import xf.xfvrp.base.Vehicle
-import xf.xfvrp.base.XFVRPModel
-import xf.xfvrp.base.XFVRPParameter
+import xf.xfvrp.base.*
 import xf.xfvrp.base.compartment.CompartmentInitializer
 import xf.xfvrp.base.compartment.CompartmentType
 import xf.xfvrp.base.metric.EucledianMetric
 import xf.xfvrp.base.metric.InternalMetric
 import xf.xfvrp.base.metric.Metric
-import xf.xfvrp.base.metric.internal.AcceleratedMetricTransformator
-import xf.xfvrp.base.monitor.DefaultStatusMonitor
 import xf.xfvrp.base.monitor.StatusManager
 import xf.xfvrp.opt.init.ModelBuilder
 

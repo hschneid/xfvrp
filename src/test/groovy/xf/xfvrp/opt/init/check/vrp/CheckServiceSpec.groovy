@@ -7,9 +7,6 @@ import util.instances.TestXFVRPModel
 import xf.xfvrp.base.Node
 import xf.xfvrp.base.SiteType
 import xf.xfvrp.base.XFVRPModel
-import xf.xfvrp.base.XFVRPParameter
-import xf.xfvrp.base.metric.EucledianMetric
-import xf.xfvrp.base.metric.internal.AcceleratedMetricTransformator
 import xf.xfvrp.base.preset.BlockNameConverter
 import xf.xfvrp.opt.improve.routebased.move.XFVRPSingleMove
 import xf.xfvrp.opt.init.solution.vrp.SolutionBuilderDataBag

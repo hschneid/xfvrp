@@ -8,7 +8,6 @@ import xf.xfvrp.opt.Solution;
 import xf.xfvrp.opt.XFVRPOptBase;
 import xf.xfvrp.opt.improve.routebased.move.XFVRPMoveUtil;
 
-import java.util.Arrays;
 import java.util.Queue;
 
 /**
@@ -93,17 +92,11 @@ public abstract class XFVRPOptImpBase extends XFVRPOptBase {
 		while(!improvingSteps.isEmpty()) {
 			float[] val = improvingSteps.remove();
 
-			String s = "AAA "+
-					val[1]+"-"+solution.getRoutes()[(int)val[1]][(int)val[3]]+" "+
-					val[2]+"-"+solution.getRoutes()[(int)val[2]][(int)val[4]];
-
 			// Variation
 			change(solution, val);
 
 			Quality result = checkIt(solution, (int)val[1], (int)val[2]);
-			System.out.println("BBB "+ Arrays.toString(val));
 			if(isImprovement(result, bestResult, (int)val[7])) {
-				System.out.println(s + " " + result.getCost()+" "+val[0]);
 				solution.fixateQualities();
 				return result;
 			}
@@ -117,7 +110,8 @@ public abstract class XFVRPOptImpBase extends XFVRPOptBase {
 	}
 
 	private boolean isImprovement(Quality currentResult, Quality bestResult, int overhangFlag) {
-		return currentResult.getFitness() < bestResult.getFitness() || overhangFlag == XFVRPMoveUtil.IS_OVERGANG;
+		// Is fitness better OR
+		return currentResult.getFitness() < bestResult.getFitness() || overhangFlag == XFVRPMoveUtil.IS_OVERHANG;
 	}
 
 	/**
@@ -132,6 +126,6 @@ public abstract class XFVRPOptImpBase extends XFVRPOptBase {
 			return result;
 		}
 
-		return null;
+		return result;
 	}
 }

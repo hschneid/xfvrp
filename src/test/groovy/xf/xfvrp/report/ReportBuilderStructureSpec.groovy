@@ -7,9 +7,6 @@ import util.instances.TestVehicle
 import util.instances.TestXFVRPModel
 import xf.xfvrp.base.*
 import xf.xfvrp.base.exception.XFVRPException
-import xf.xfvrp.base.metric.EucledianMetric
-import xf.xfvrp.base.metric.internal.AcceleratedMetricTransformator
-import xf.xfvrp.opt.Solution
 import xf.xfvrp.report.build.ReportBuilder
 
 class ReportBuilderStructureSpec extends Specification {

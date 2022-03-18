@@ -6,9 +6,6 @@ import util.instances.TestNode
 import util.instances.TestVehicle
 import util.instances.TestXFVRPModel
 import xf.xfvrp.base.*
-import xf.xfvrp.base.metric.EucledianMetric
-import xf.xfvrp.base.metric.internal.AcceleratedMetricTransformator
-import xf.xfvrp.opt.Solution
 
 class EvaluationServiceCapacitySpec extends Specification {
 

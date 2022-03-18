@@ -5,7 +5,6 @@ import util.instances.TestNode
 import util.instances.TestVehicle
 import util.instances.TestXFVRPModel
 import xf.xfvrp.base.InvalidReason
-import xf.xfvrp.base.Node
 import xf.xfvrp.base.SiteType
 import xf.xfvrp.base.XFVRPModel
 import xf.xfvrp.opt.init.solution.vrp.SolutionBuilderDataBag
