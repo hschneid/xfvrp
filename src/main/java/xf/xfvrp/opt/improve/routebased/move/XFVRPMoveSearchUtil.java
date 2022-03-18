@@ -123,14 +123,16 @@ public class XFVRPMoveSearchUtil {
         // Check for nbr of routes
         if(newStep[1] != newStep[2]) {
             // Is destination route an overhang route? --> Penalty (val gets negative)
-            if(isDestinationOverhangRoute(solution, newStep)) {
+            if(isDestinationOverhangRoute(solution, newStep) && !isSourceOverhangRoute(solution, newStep)) {
                 newStep[0] = -1;
                 newStep[7] = XFVRPMoveUtil.IS_OVERHANG;
             }
             // Is source an overhang and destination is not overhang --> Bonus
             else if(isReduceOfOverhang(solution, newStep)) {
-                newStep[0] = EPSILON * 2;
-                newStep[7] = XFVRPMoveUtil.IS_OVERHANG;
+                if(newStep[0] <= 0) {
+                    newStep[0] = (EPSILON * 2) + (-newStep[0] / 10000f);
+                    newStep[7] = XFVRPMoveUtil.IS_OVERHANG;
+                }
             }
         }
 
@@ -141,7 +143,15 @@ public class XFVRPMoveSearchUtil {
     }
 
     /**
-     * In any case, if destination is overhang route, then prevent a move to this route.
+     * In any case, if source route is overhang route
+     */
+    private static boolean isSourceOverhangRoute(Solution solution, float[] newStep) {
+        boolean[] isOverhang = solution.getOverhangRoutes();
+        return isOverhang[(int)newStep[1]];
+    }
+
+    /**
+     * In any case, if destination route is overhang route
      */
     private static boolean isDestinationOverhangRoute(Solution solution, float[] newStep) {
         boolean[] isOverhang = solution.getOverhangRoutes();
@@ -157,6 +167,4 @@ public class XFVRPMoveSearchUtil {
         boolean[] isOverhang = solution.getOverhangRoutes();
         return isOverhang[(int)newStep[1]] && !isOverhang[(int)newStep[2]];
     }
-
-
 }

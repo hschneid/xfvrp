@@ -83,6 +83,8 @@ public abstract class XFVRPOptImpBase extends XFVRPOptBase {
 		return solution;
 	}
 
+	private int c = 0;
+
 	private Quality improve(final Solution solution, Quality bestResult) throws XFVRPException {
 		check(solution);
 
@@ -111,7 +113,9 @@ public abstract class XFVRPOptImpBase extends XFVRPOptBase {
 
 	private boolean isImprovement(Quality currentResult, Quality bestResult, int overhangFlag) {
 		// Is fitness better OR
-		return currentResult.getFitness() < bestResult.getFitness() || overhangFlag == XFVRPMoveUtil.IS_OVERHANG;
+		return currentResult.getPenalty() == 0 &&
+				(currentResult.getFitness() < bestResult.getFitness() ||
+						overhangFlag == XFVRPMoveUtil.IS_OVERHANG);
 	}
 
 	/**
