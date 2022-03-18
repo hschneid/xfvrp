@@ -16,6 +16,8 @@ public class XFVRPMoveUtil {
 
     public static final int NO_INVERT = 0;
     public static final int INVERT = 1;
+    public static final int IS_OVERGANG = -1;
+    public static final int NO_OVERGANG = 0;
 
     public static void change(Solution solution, float[] val) throws XFVRPException {
         int srcRouteIdx = (int) val[1];
@@ -68,17 +70,9 @@ public class XFVRPMoveUtil {
         System.arraycopy(srcRoute, srcStart, nodes, 0, nodes.length);
 
         if(srcRouteIdx != dstRouteIdx) {
-            solution.beforeChange(srcRouteIdx);
-            solution.beforeChange(dstRouteIdx);
-
             solution.setRoute(srcRouteIdx, remove(srcRoute, srcStart, srcEnd));
             solution.setRoute(dstRouteIdx, addBefore(dstRoute, nodes, dstPos));
-
-            solution.afterChange(srcRouteIdx);
-            solution.afterChange(dstRouteIdx);
         } else {
-            solution.beforeChange(srcRouteIdx);
-
             if(srcStart < dstPos) {
                 System.arraycopy(srcRoute, srcEnd + 1, srcRoute, srcStart, dstPos - srcEnd);
                 System.arraycopy(nodes, 0, srcRoute, dstPos - ((srcEnd - srcStart) + 1), nodes.length);
@@ -86,8 +80,6 @@ public class XFVRPMoveUtil {
                 System.arraycopy(srcRoute, dstPos, srcRoute, dstPos + (srcEnd - srcStart) + 1, srcStart - dstPos);
                 System.arraycopy(nodes, 0, srcRoute, dstPos, nodes.length);
             }
-
-            solution.afterChange(srcRouteIdx);
         }
     }
 

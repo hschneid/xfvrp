@@ -95,16 +95,17 @@ public class NormalizeSolutionService {
 			if(route.length == 0)
 				continue;
 
-			if(route.length == 2) {
+			// If route contains no customers, remove route
+			if(isEmptyRoute(route)) {
 				solution.deleteRoute(routeIndex);
 				continue;
 			}
 
-			removeEmptyReplenishments(routeIndex, solution);
+			removeObsoleteReplenishments(routeIndex, solution);
 		}
 	}
 
-	private static void removeEmptyReplenishments(int routeIndex, Solution solution) {
+	private static void removeObsoleteReplenishments(int routeIndex, Solution solution) {
 		Node[] route = solution.getRoutes()[routeIndex];
 
 		// Remove empty routes
@@ -177,6 +178,23 @@ public class NormalizeSolutionService {
 				isOverhang[i] = false;
 			}
 		}
+	}
+
+	private static boolean isEmptyRoute(Node[] route) {
+		if(route.length <= 2)
+			return true;
+
+		if(route[1].getSiteType() == SiteType.CUSTOMER ||
+				route[route.length - 2].getSiteType() == SiteType.CUSTOMER
+		)
+			return false;
+
+		for (Node node : route) {
+			if (node.getSiteType() == SiteType.CUSTOMER)
+				return false;
+		}
+
+		return true;
 	}
 
 }

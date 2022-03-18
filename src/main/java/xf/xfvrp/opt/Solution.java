@@ -261,6 +261,9 @@ public class Solution implements Iterable<Node[]> {
 
 		this.routes = newRoutes;
 		this.routeQualities = newRouteQualities;
+		this.isOverhang = new boolean[newRoutes.length];
+
+		updateNbrOfRoutesPerDepot();
 	}
 
 	public boolean isValid() {
@@ -272,16 +275,13 @@ public class Solution implements Iterable<Node[]> {
 						.anyMatch(n -> n.getSiteType() == SiteType.CUSTOMER);
 	}
 
-	public void beforeChange(int routeIdx) {
-		// Just reduce the number of routes per depot, if route is full
-		if(routes[routeIdx].length > 2 && routes[routeIdx][1].getSiteType() == SiteType.CUSTOMER) {
-			nbrRoutesOfDepot[routes[routeIdx][0].getIdx()]--;
-		}
-	}
+	private void updateNbrOfRoutesPerDepot() {
+		Arrays.fill(nbrRoutesOfDepot, 0);
 
-	public void afterChange(int routeIdx) {
-		if(routes[routeIdx].length > 2 && routes[routeIdx][1].getSiteType() == SiteType.CUSTOMER) {
-			nbrRoutesOfDepot[routes[routeIdx][0].getIdx()]++;
+		for (int i = routes.length - 1; i >= 0; i--) {
+			if(routes[i][0].getSiteType() == SiteType.DEPOT) {
+				nbrRoutesOfDepot[routes[i][0].getIdx()]++;
+			}
 		}
 	}
 }
