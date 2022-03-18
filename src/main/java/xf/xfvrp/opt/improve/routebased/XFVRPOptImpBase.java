@@ -6,7 +6,9 @@ import xf.xfvrp.base.XFVRPModel;
 import xf.xfvrp.base.exception.XFVRPException;
 import xf.xfvrp.opt.Solution;
 import xf.xfvrp.opt.XFVRPOptBase;
+import xf.xfvrp.opt.improve.routebased.move.XFVRPMoveUtil;
 
+import java.util.Arrays;
 import java.util.Queue;
 
 /**
@@ -68,11 +70,12 @@ public abstract class XFVRPOptImpBase extends XFVRPOptBase {
 		long startTime = System.currentTimeMillis();
 		while((System.currentTimeMillis() - startTime) / 1000.0 < model.getParameter().getMaxRunningTimeInSec()) {
 			Quality result = improve(solution, bestResult);
-
 			if (result == null)
 				break;
 
 			bestResult = result;
+
+			NormalizeSolutionService.normalizeRoute(solution);
 		}
 
 		// Normalize resulting solution - Remove empty routes
@@ -82,7 +85,7 @@ public abstract class XFVRPOptImpBase extends XFVRPOptBase {
 	}
 
 	private Quality improve(final Solution solution, Quality bestResult) throws XFVRPException {
-		checkIt(solution);
+		check(solution);
 
 		Queue<float[]> improvingSteps = search(solution);
 
@@ -90,12 +93,17 @@ public abstract class XFVRPOptImpBase extends XFVRPOptBase {
 		while(!improvingSteps.isEmpty()) {
 			float[] val = improvingSteps.remove();
 
+			String s = "AAA "+
+					val[1]+"-"+solution.getRoutes()[(int)val[1]][(int)val[3]]+" "+
+					val[2]+"-"+solution.getRoutes()[(int)val[2]][(int)val[4]];
+
 			// Variation
 			change(solution, val);
 
 			Quality result = checkIt(solution, (int)val[1], (int)val[2]);
-			// All improving steps are accepted. Even if evaluation quality may shrink.
-			if(result != null && result.getPenalty() == 0) {
+			System.out.println("BBB "+ Arrays.toString(val));
+			if(isImprovement(result, bestResult, (int)val[7])) {
+				System.out.println(s + " " + result.getCost()+" "+val[0]);
 				solution.fixateQualities();
 				return result;
 			}
@@ -108,21 +116,8 @@ public abstract class XFVRPOptImpBase extends XFVRPOptBase {
 		return null;
 	}
 
-	/**
-	 * This method checks a new solution, if it is better than the current best solution. If
-	 * the result of this method is not null, then the new solution is better. Otherwise not. The
-	 * check includes a possible check of the loading restrictions.
-	 */
-	protected Quality checkIt(Solution solution) throws XFVRPException {
-		// Evaluate the costs and restrictions (penalties) of a giant route
-		Quality result = check(solution);
-
-		// Only valid solutions are allowed.
-		if(result.getPenalty() == 0) {
-			return result;
-		}
-
-		return null;
+	private boolean isImprovement(Quality currentResult, Quality bestResult, int overhangFlag) {
+		return currentResult.getFitness() < bestResult.getFitness() || overhangFlag == XFVRPMoveUtil.IS_OVERGANG;
 	}
 
 	/**
