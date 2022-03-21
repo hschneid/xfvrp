@@ -9,6 +9,8 @@ import xf.xfvrp.base.Node
 import xf.xfvrp.base.SiteType
 import xf.xfvrp.base.XFVRPModel
 import xf.xfvrp.opt.Solution
+import xf.xfvrp.opt.construct.savings.SavingsDataBag
+import xf.xfvrp.opt.construct.savings.XFVRPSavings
 
 class XFVRPSavingsSpec extends Specification {
 
@@ -87,7 +89,7 @@ class XFVRPSavingsSpec extends Specification {
 		dataBag.routeIdxForEndNode = [-1, -1, -1, -1, 0, -1, 1, -1, -1, -1, -1]
 
 		when:
-		service.createSavingsMatrix(depot, dataBag)
+		service.createSavingsMatrix(depot, dataBag, false)
 		def savings = dataBag.getSavingsMatrix()
 
 		then:

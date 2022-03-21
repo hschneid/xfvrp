@@ -1,4 +1,4 @@
-package xf.xfvrp.opt.construct;
+package xf.xfvrp.opt.construct.savings;
 
 import xf.xfvrp.base.*;
 import xf.xfvrp.base.exception.XFVRPException;
@@ -26,7 +26,7 @@ import java.util.List;
  */
 public class XFVRPSavings extends XFVRPOptBase {
 
-	protected float lamda = 1;
+	protected float lambda = 1;
 
 	public XFVRPSavings() {
 		super.isSplittable = true;
@@ -43,9 +43,11 @@ public class XFVRPSavings extends XFVRPOptBase {
 
 		prepare(dataBag);
 
-		createSavingsMatrix(depot, dataBag);
+		createSavingsMatrix(depot, dataBag, false);
 
 		improve(depot, dataBag);
+
+		handleOverhangingRoutes(depot, dataBag);
 
 		return createSolution(depot, dataBag, solution.getModel());
 	}
@@ -63,6 +65,9 @@ public class XFVRPSavings extends XFVRPOptBase {
 		// Trage f�r jeden Start- oder Ziel-Knoten ein, auf welcher Tour
 		// er zu finden ist. Nat�rlich kann ein Knoten nur auf einer Tour sein.
 		for (int i = 0; i < routes.length; i++) {
+			if(routes[i] == null)
+				continue;
+
 			Node firstCustomer = routes[i][0];
 			Node lastCustomer = routes[i][routes[i].length - 1];
 
@@ -83,6 +88,12 @@ public class XFVRPSavings extends XFVRPOptBase {
 		boolean isImproved = true;
 		while(isImproved) {
 			isImproved = applyNextSaving(depot, dataBag);
+		}
+	}
+
+	private void improveOverhangingRoutes(Node depot, SavingsDataBag dataBag) throws XFVRPException {
+		while(hasOverhangingRoutes(depot, dataBag)) {
+			applyNextSaving(depot, dataBag);
 		}
 	}
 
@@ -211,7 +222,8 @@ public class XFVRPSavings extends XFVRPOptBase {
 		return newRoute;
 	}
 
-	private void createSavingsMatrix(Node depot, SavingsDataBag dataBag) {
+	private void createSavingsMatrix(Node depot, SavingsDataBag dataBag, boolean acceptAllChanges) {
+		dataBag.getSavingsMatrix().clear();
 		List<Node> nodeList = dataBag.getNodeList();
 		int[] routeIdxForStartNode = dataBag.getRouteIdxForStartNode();
 		int[] routeIdxForEndNode = dataBag.getRouteIdxForEndNode();
@@ -232,9 +244,9 @@ public class XFVRPSavings extends XFVRPOptBase {
 
 				float dist = getDistanceForOptimization(src, dst);
 				float distBDepot = getDistanceForOptimization(dst, depot);
-				float saving = (distADepot + distBDepot) - lamda * dist;
+				float saving = (distADepot + distBDepot) - lambda * dist;
 
-				if(saving > 0) {
+				if(saving > 0 || acceptAllChanges) {
 					dataBag.addSaving(srcIdx, dst.getIdx(), saving);
 					dataBag.addSaving(dst.getIdx(), srcIdx, saving);
 				}
@@ -278,6 +290,30 @@ public class XFVRPSavings extends XFVRPOptBase {
 			}
 		}
 
+		NormalizeSolutionService.normalizeRouteWithCleanup(newSolution);
+
 		return newSolution;
+	}
+
+	private void handleOverhangingRoutes(Node depot, SavingsDataBag dataBag) {
+		if(hasOverhangingRoutes(depot, dataBag)) {
+			prepare(dataBag);
+
+			createSavingsMatrix(depot, dataBag, true);
+
+			improveOverhangingRoutes(depot, dataBag);
+		}
+	}
+
+	private boolean hasOverhangingRoutes(Node depot, SavingsDataBag dataBag) {
+		int nbrOfUsableRoutes = depot.getMaxNbrOfRoutes();
+		for (int i = 0; i < dataBag.getRoutes().length; i++) {
+			if(dataBag.getRoutes()[i] != null && dataBag.getRoutes()[i].length > 0)
+				nbrOfUsableRoutes--;
+			if(nbrOfUsableRoutes < 0)
+				return true;
+		}
+
+		return false;
 	}
 }
