@@ -83,13 +83,11 @@ public abstract class XFVRPOptImpBase extends XFVRPOptBase {
 		return solution;
 	}
 
-	private int c = 0;
-
 	private Quality improve(final Solution solution, Quality bestResult) throws XFVRPException {
 		check(solution);
 
 		Queue<float[]> improvingSteps = search(solution);
-
+		System.out.println();
 		// Find first valid improving change
 		while(!improvingSteps.isEmpty()) {
 			float[] val = improvingSteps.remove();

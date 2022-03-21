@@ -1,4 +1,4 @@
-package xf.xfvrp.opt.construct;
+package xf.xfvrp.opt.construct.savings;
 
 import util.collection.ListMap;
 import xf.xfvrp.base.Node;
