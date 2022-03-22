@@ -1,11 +1,10 @@
 package xf.xfvrp.opt.evaluation
 
-import spock.lang.Ignore
+
 import spock.lang.Specification
 import xf.xfvrp.XFVRP
 import xf.xfvrp.base.metric.Metrics
 import xf.xfvrp.opt.XFVRPOptTypes
-import xf.xfvrp.report.StringWriter
 
 class EvaluationServiceMaxRoutesDepotSpec extends Specification {
 
@@ -105,7 +104,6 @@ class EvaluationServiceMaxRoutesDepotSpec extends Specification {
 		result.routes[1].vehicle.name == 'V'
 	}
 
-	@Ignore
 	def "Consider max routes with FIRST_BEST"() {
 		XFVRP vrp = build()
 		vrp.clearOptTypes()

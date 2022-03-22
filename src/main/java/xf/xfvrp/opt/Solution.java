@@ -284,4 +284,17 @@ public class Solution implements Iterable<Node[]> {
 			}
 		}
 	}
+
+	public String toPrettyString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("|");
+		for (int i = 0; i < routes.length; i++) {
+			for (int j = 0; j < routes[i].length; j++) {
+				sb.append(routes[i][j].getExternID()+",");
+			}
+			sb.append("|");
+		}
+
+		return sb.toString();
+	}
 }

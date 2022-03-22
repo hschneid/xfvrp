@@ -87,7 +87,6 @@ public abstract class XFVRPOptImpBase extends XFVRPOptBase {
 		check(solution);
 
 		Queue<float[]> improvingSteps = search(solution);
-		System.out.println();
 		// Find first valid improving change
 		while(!improvingSteps.isEmpty()) {
 			float[] val = improvingSteps.remove();
