@@ -54,9 +54,9 @@ public class XFVRPSegmentExchange extends XFVRPOptImpBase {
 
 	@Override
 	protected void reverseChange(Solution solution, float[] changeParameter) throws XFVRPException {
-		if(changeParameter.length == 8) {
-		XFVRPSwapUtil.reverseChange(solution, changeParameter);
-		} else if(changeParameter.length == 7) {
+		if(changeParameter.length == 9) {
+			XFVRPSwapUtil.reverseChange(solution, changeParameter);
+		} else if(changeParameter.length == 8) {
 			XFVRPMoveUtil.reverseChange(solution, changeParameter);
 		}
 	}

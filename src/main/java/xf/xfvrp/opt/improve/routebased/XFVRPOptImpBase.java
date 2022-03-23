@@ -96,6 +96,7 @@ public abstract class XFVRPOptImpBase extends XFVRPOptBase {
 
 			Quality result = checkIt(solution, (int)val[1], (int)val[2]);
 			if(isImprovement(result, bestResult, (int)val[7])) {
+				//System.out.println(result.getCost()+" "+ Arrays.toString(val));
 				solution.fixateQualities();
 				return result;
 			}

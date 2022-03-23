@@ -1,9 +1,9 @@
 package xf.xfvrp.opt;
 
+import xf.xfvrp.opt.construct.insert.XFPDPFirstBestInsert;
 import xf.xfvrp.opt.construct.insert.XFVRPFirstBestInsert;
 import xf.xfvrp.opt.construct.savings.XFVRPConst;
 import xf.xfvrp.opt.construct.savings.XFVRPSavings;
-import xf.xfvrp.opt.construct.insert.XFPDPFirstBestInsert;
 import xf.xfvrp.opt.improve.XFPDPRelocate;
 import xf.xfvrp.opt.improve.XFVRPNoOpt;
 import xf.xfvrp.opt.improve.giantroute.XFVRP2Opt;
