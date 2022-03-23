@@ -6,13 +6,13 @@ import xf.xfvrp.base.LoadType
 import xf.xfvrp.base.metric.EucledianMetric
 import xf.xfvrp.opt.XFVRPOptTypes
 
-class XFVRPFirstBestInsertSpecInt extends Specification {
+class XFVRPFirstBestInsertSpec extends Specification {
 
 	def "Opt with reinsertion"() {
 		def vrp = initScen()
 
 		when:
-		def newSol = vrp.executeRoutePlanning()
+		vrp.executeRoutePlanning()
 		def rep = vrp.getReport()
 
 		then:

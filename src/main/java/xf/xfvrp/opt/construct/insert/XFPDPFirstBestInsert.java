@@ -2,14 +2,16 @@ package xf.xfvrp.opt.construct.insert;
 
 import xf.xfvrp.base.*;
 import xf.xfvrp.base.exception.XFVRPException;
-import xf.xfvrp.base.exception.XFVRPExceptionType;
 import xf.xfvrp.opt.Solution;
 import xf.xfvrp.opt.XFVRPOptBase;
 
-import java.util.*;
-import java.util.stream.IntStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
-/** 
+/**
  * Copyright (c) 2012-2022 Holger Schneider
  * All rights reserved.
  *
@@ -17,204 +19,143 @@ import java.util.stream.IntStream;
  * LICENSE file in the root directory of this source tree.
  *
  *
- * Insertion heuristic First-Best for Pickup and Delivery Problem
- * 
- * All shipments are marked as unplanned and are brought in 
+ * Insertion heuristic First-Best
+ *
+ * Scope: This heuristic shall reduce the number of routes during construction.
+ *        If you wish a reduction of route length choose for Savings.
+ *
+ * All shipments are marked as unplanned and are brought in
  * a randomized order. Then the shipments are inserted sequentially,
- * where the cheapest insert position is searched for the current route plan.
- * 
+ * where the cheapest insert position is searched for the current shipment.
+ *
  * Additionally a reinsert is possible, so that bad decisions can be corrected.
- * 
+ *
  * @author hschneid
  *
  */
 public class XFPDPFirstBestInsert extends XFVRPOptBase {
 
-	private static final int PICKUP_POS = 0;
-	private static final int DELIVERY_POS = 1;
-	private static final int COST_VALUE = 2;
-	
+	private static final int PICKUP = 0;
+	private static final int DELIVERY = 1;
+
 	/*
 	 * (non-Javadoc)
 	 * @see de.fhg.iml.vlog.xftour.model.XFBase#execute(de.fhg.iml.vlog.xftour.model.XFNode[])
 	 */
 	@Override
-	public Solution execute(Solution solution) throws XFVRPException {
-		List<Node[]> shipments = getShipments();
-		
-		// Init with empty route (attention for multiple depots)
-		Node[] giantRoute = initRoute();
+	public Solution execute(Solution input) throws XFVRPException {
+		List<Node[]> shipments = getShipments(input.getModel());
 
-		// Randomized ordering of shipment insertion
+		// Init with empty route (attention for multiple depots)
+		Solution solution = initNewSolution(input.getModel());
+
+		// Randomized ordering of shipment insertions
 		Collections.shuffle(shipments, rand);
 
 		// Insert all shipments
-		giantRoute = insertShipments(giantRoute, shipments);
+		insertShipments(solution, shipments);
 
 		// Reinsert all shipments (loop-able)
 		for (int i = 0; i < model.getParameter().getILSLoops(); i++)
-			giantRoute = reinsertShipments(giantRoute, shipments);
+			reinsertNodes(solution, shipments);
 
-		Solution newSolution = new Solution(solution.getModel());
-		newSolution.setGiantRoute(giantRoute);
-		return NormalizeSolutionService.normalizeRoute(newSolution);
+		NormalizeSolutionService.normalizeRouteWithCleanup(solution);
+		return solution;
 	}
 
 	/**
-	 * Inserts the given shipments (unplanned) into the giant route
-	 * 
-	 * The shipments are inserted sequentially as the ordering of the given shipment list.
-	 * For each shipment the cheapest insert positions for pickup and delivery are 
-	 * calculated with the current giant route solution. 
-	 * Each insertion adjusts the current solution.
-	 * 
-	 * @param giantRoute Current valid solution of planned routes
-	 * @param shipments List of unplanned shipments
-	 * @return Giant route with all shipments inserted
+	 * Inserts the unplanned shipments into the solution
+	 *
+	 * The shipments are inserted sequentially in a randomized order. For each
+	 * shipment the cheapest insert position is calculated with the current
+	 * solution.
 	 */
-	private Node[] insertShipments(Node[] giantRoute, List<Node[]> shipments) throws XFVRPException {
+	private void insertShipments(Solution solution, List<Node[]> shipments) throws XFVRPException {
 		for (Node[] shipment : shipments) {
-			// Get all feasible insertion points on current giant route
-			List<float[]> insertPoints = evaluate(giantRoute, shipment);
-
-			// Sort for lowest insertion costs
-			insertPoints.sort( (a,b) -> {return (int) ((a[COST_VALUE] - b[COST_VALUE]) * 1000f);});
-
-			// Prepare new solution (additional space for two customer)
-			Node[] newGiantRoute = new Node[giantRoute.length + 2];
-
-			// For all found feasible insertion points
-			for (int i = 0; i < insertPoints.size(); i++) {
-				float[] val = insertPoints.get(i);
-
-				// Insert shipment into new solution
-				insertShipment(giantRoute, newGiantRoute, shipment[0], shipment[1], (int)val[PICKUP_POS], (int)val[DELIVERY_POS]);
-
-				// Evaluate new solution
-				Solution newSolution = new Solution(model);
-				newSolution.setGiantRoute(newGiantRoute);
-				Quality qq = check(newSolution);
-				if(qq.getPenalty() == 0) {
-					giantRoute = NormalizeSolutionService.normalizeRoute(newSolution).getGiantRoute();
-					break;
-				}
+			boolean inserted = insertShipment(solution, shipment);
+			if(!inserted) {
+				// If no feasible insertion can be found, add empty routes
+				NormalizeSolutionService.normalizeRoute(solution);
+				insertShipment(solution, shipment);
 			}
 		}
-
-		return giantRoute;
 	}
 
 	/**
 	 * Each shipment will be removed from current solution and reinserted.
-	 * 
-	 * This make sense, because the insertion heuristic is strongly dependent from
-	 * ordered sequence of shipments to insert. Hence a reinsert of first inserted
-	 * shipments may give the possibility to find better insert positions than
-	 * the insert without the other shipments.
-	 * 
-	 * @param giantRoute Current solution of planned routes
-	 * @param shipments List of all planned shipments
-	 * @return New solution of planned routes
+	 *
+	 * This make sense, because this heuristic is strongly dependent from
+	 * ordered sequence of shipments to insert. So a reinsert of first inserted
+	 * nodes may give the possibility to find a better insert position than
+	 * the order insertion before
 	 */
-	private Node[] reinsertShipments(Node[] giantRoute, List<Node[]> shipments) throws XFVRPException {
-		// New solutions will contain in first step one customer less
-		Node[] reducedGiantRoute = new Node[giantRoute.length - 2];
-		
+	private void reinsertNodes(Solution solution, List<Node[]> shipments) throws XFVRPException {
 		for (Node[] shipment : shipments) {
-			Node pickup = shipment[0];
-			Node delivery = shipment[1];
-			
-			// Remove shipment nodes from giant route
-			giantRoute = removeShipment(giantRoute, reducedGiantRoute, pickup, delivery);
-
-			// Get all feasible insertion points on current giant route
-			List<float[]> insertPoints = evaluate(giantRoute, shipment);
-
-			// Sort for lowest insertion costs
-			insertPoints.sort( (a,b) -> {return (int) ((a[COST_VALUE] - b[COST_VALUE]) * 1000f);});
-
-			// Prepare new solution (additional space for new customer)
-			Node[] newGiantRoute = new Node[giantRoute.length + 2];
-
-			// For all found feasible insertion points
-			for (int i = 0; i < insertPoints.size(); i++) {
-				float[] val = insertPoints.get(i);
-
-				// Insert shipment into new solution
-				insertShipment(giantRoute, newGiantRoute, shipment[0], shipment[1], (int)val[PICKUP_POS], (int)val[DELIVERY_POS]);
-
-				// Evaluate new solution
-				Solution newSolution = new Solution(model);
-				newSolution.setGiantRoute(newGiantRoute);
-				Quality qq = check(newSolution);
-				if(qq.getPenalty() == 0) {
-					giantRoute = NormalizeSolutionService.normalizeRoute(newSolution).getGiantRoute();
-					reducedGiantRoute = new Node[giantRoute.length - 2];
-					break;
-				}
+			// Remove shipment
+			removeShipment(solution, shipment);
+			// Reinsert shipment
+			boolean inserted = insertShipment(solution, shipment);
+			if(!inserted) {
+				// If no feasible insertion can be found, add empty routes
+				NormalizeSolutionService.normalizeRoute(solution);
+				insertShipment(solution, shipment);
 			}
 		}
+	}
 
-		return giantRoute;
+	private boolean insertShipment(Solution solution, Node[] shipment) {
+		// Get all feasible insertion points on current routes
+		List<float[]> insertPoints = evaluate(solution, shipment);
+
+		// Sort for lowest insertion costs (reverse orientation)
+		insertPoints.sort((a, b) -> (int) ((b[0] - a[0]) * 1000f));
+
+		// For all found feasible insertion points
+		for (int i = insertPoints.size() - 1; i >= 0; i--) {
+			float[] val = insertPoints.get(i);
+			int routeIdx = (int) val[1];
+
+			// Insert shipment
+			Node[] oldRoute = insertShipment(solution, shipment, routeIdx, (int) val[2], (int) val[3]);
+
+			// Evaluate new solution
+			Quality qq = check(solution, routeIdx, routeIdx);
+			if (qq.getPenalty() == 0) {
+				solution.fixateQualities();
+				return true;
+			}
+
+			// Reverse change
+			solution.setRoute(
+					routeIdx,
+					oldRoute
+			);
+			solution.resetQualities();
+		}
+
+		return false;
 	}
 
 	/**
-	 * Evaluates all possible insertion points in a current solution for
-	 * a new shipment, where this shipment must not be part of the current
+	 * Evaluates all insertion points in a current solution for
+	 * a new shipment, where this shipment is not part of the current
 	 * solution.
-	 * 
-	 * @param giantRoute Current solution of planned routes
-	 * @param shipment The shipment which shall be inserted
-	 * @return List of evaluated insertion points (0 = index of pickup, position 1 = index of delivery position, 2 = insertion cost)
 	 */
-	private List<float[]> evaluate(Node[] giantRoute, Node[] shipment) throws XFVRPException {
-		List<int[]> routes = getRoutes(giantRoute);
-
+	private List<float[]> evaluate(Solution solution, Node[] shipment) throws XFVRPException {
 		List<float[]> insertPoints = new ArrayList<>();
 
-		Node pickup = shipment[0];
-		Node delivery = shipment[1];
-
-		for (int[] routeStats : routes) {// Create partial route with two additional empty slot
-			Node[] route = createEvaluationRoute(giantRoute, routeStats);
-
-			// Get current solution
-			route[1] = route[0];
-			route[2] = route[0];
-			Solution ss = new Solution(model);
-			ss.setGiantRoute(route);
-			Quality currentRouteQuality = check(ss);
-
-			// For all insert positions for pickup
-			int pickCnt = 1;
-			for (int p = routeStats[0] + 1; p <= routeStats[1]; p++) {
-				// Insert new pickup node in first empty slot
-				route[pickCnt] = pickup;
-
-				int deliCnt = pickCnt + 1;
-				for (int k = p; k <= routeStats[1]; k++) {
-					// Insert new delivery node in second empty slot
-					route[deliCnt] = delivery;
-
-					// Check for feasibility
-					Solution newSolution = new Solution(model);
-					newSolution.setGiantRoute(route);
-					Quality newRouteQuality = check(newSolution);
-					if (newRouteQuality != null && newRouteQuality.getPenalty() == 0) {
-						insertPoints.add(new float[]{p, k, newRouteQuality.getCost() - currentRouteQuality.getCost()});
-					}
-
-					// Move second empty slot one position further
-					route[deliCnt] = route[deliCnt + 1];
-					deliCnt++;
+		// For all insert positions
+		for (int routeIdx = 0; routeIdx < solution.getRoutes().length; routeIdx++) {
+			Node[] route = solution.getRoutes()[routeIdx];
+			for (int posA = 1; posA < route.length; posA++) {
+				for (int posB = posA; posB < route.length; posB++) {
+					insertPoints.add(new float[]{
+							getEffortOfInsertion(shipment, route, posA, posB, solution.getModel()),
+							routeIdx,
+							posA,
+							posB
+					});
 				}
-
-				// Restore the original giant route with start index pickCnt
-				System.arraycopy(route, pickCnt + 1, route, pickCnt + 2, route.length - pickCnt - 2);
-
-				// Move first empty slot one position further
-				route[pickCnt] = route[pickCnt + 1];
-				pickCnt++;
 			}
 		}
 
@@ -222,125 +163,113 @@ public class XFPDPFirstBestInsert extends XFVRPOptBase {
 	}
 
 	/**
-	 * Inserts a shipment (pickup and delivery node) into the giant route at certain positions.
-	 * 
-	 * @param giantRoute Original giant route with current solution
-	 * @param newGiantRoute Node array with two places more.
-	 * @param pickup Inserting pickup node
-	 * @param delivery Inserting delivery node
-	 * @param pickupPos Position where the pickup should be placed
-	 * @param deliveryPos Position where the delivery should be placed
+	 * Calculates the additional distance to add a new shipment to given route.
 	 */
-	private void insertShipment(Node[] giantRoute, Node[] newGiantRoute, Node pickup, Node delivery, int pickupPos, int deliveryPos) {
-		System.arraycopy(giantRoute, 0, newGiantRoute, 0, pickupPos);
-		newGiantRoute[pickupPos] = pickup;
-		System.arraycopy(giantRoute, pickupPos, newGiantRoute, pickupPos + 1, deliveryPos - pickupPos);
-		newGiantRoute[deliveryPos + 1] = delivery;
-		System.arraycopy(giantRoute, deliveryPos, newGiantRoute, deliveryPos + 2, giantRoute.length - deliveryPos);
+	private float getEffortOfInsertion(Node[] shipment, Node[] route, int posA, int posB, XFVRPModel model) {
+		if(posA == posB) {
+			return model.getDistanceForOptimization(route[posA - 1], shipment[PICKUP]) +
+					model.getDistanceForOptimization(shipment[DELIVERY], route[posA]) +
+					model.getDistanceForOptimization(shipment[PICKUP], shipment[DELIVERY])
+					- model.getDistanceForOptimization(route[posA - 1], route[posA]);
+		}
+		float effort = model.getDistanceForOptimization(route[posA - 1], shipment[PICKUP]) +
+				model.getDistanceForOptimization(shipment[PICKUP], route[posA])
+				- model.getDistanceForOptimization(route[posA - 1], route[posA]);
+		effort += model.getDistanceForOptimization(route[posB - 1], shipment[DELIVERY]) +
+				model.getDistanceForOptimization(shipment[DELIVERY], route[posB])
+				- model.getDistanceForOptimization(route[posB - 1], route[posB]);
+
+		return effort;
 	}
 
 	/**
-	 * Removes a certain shipment from giant route and returns the giant route without this shipment.
-	 * 
-	 * @param giantRoute Original giant route with current solution
-	 * @param reducedGiantRoute Node array with two places less.
-	 * @param pickup Removing pickup node
-	 * @param delivery Removing delivery node
-	 * @return Giant route without the shipment
+	 * Inserts a shipment into a solution at a certain position.
 	 */
-	private Node[] removeShipment(Node[] giantRoute, Node[] reducedGiantRoute, Node pickup, Node delivery) throws XFVRPException {
-		OptionalInt posObj = IntStream
-				.range(0, giantRoute.length)
-				.filter(i -> giantRoute[i] == pickup)
-				.findFirst();
-		int pickupPos = posObj.orElseThrow(() -> new XFVRPException(XFVRPExceptionType.ILLEGAL_STATE, "Could not find pickup position"));
+	private Node[] insertShipment(Solution solution, Node[] shipment, int routeIdx, int posA, int posB) {
+		try {
+			Node[] route = solution.getRoutes()[routeIdx];
+			Node[] newRoute = new Node[route.length + 2];
 
-		posObj = IntStream.range(0, giantRoute.length).filter(i -> giantRoute[i] == delivery).findFirst();
-		int deliveryPos = posObj.orElseThrow(() -> new XFVRPException(XFVRPExceptionType.ILLEGAL_STATE, "Could not find delivery position"));
+			System.arraycopy(route, 0, newRoute, 0, posA);
+			newRoute[posA] = shipment[PICKUP];
+			if(posA != posB) {
+				System.arraycopy(route, posA, newRoute, posA + 1, posB - posA);
+			}
+			newRoute[posB + 1] = shipment[DELIVERY];
+			System.arraycopy(route, posB, newRoute, posB + 2, route.length - posB);
 
-		System.arraycopy(giantRoute, 0, reducedGiantRoute, 0, pickupPos);
-		System.arraycopy(giantRoute, pickupPos + 1, reducedGiantRoute, pickupPos, deliveryPos - 1 - pickupPos);
-		System.arraycopy(giantRoute, deliveryPos + 1, reducedGiantRoute, deliveryPos - 1, giantRoute.length - deliveryPos - 1);
+			solution.setRoute(routeIdx, newRoute);
 
-		return reducedGiantRoute;
+			return route;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	/**
-	 * Initialize the giant route object with a single empty route of the depot.
-	 * 
-	 * @return Empty giant route object (no customers inserted only depots)
+	 * Removes a certain shipment from route and returns the route without this shipment
 	 */
-	private Node[] initRoute() {
+	private void removeShipment(Solution solution, Node[] shipment) throws XFVRPException {
+		for (int routeIdx = solution.getRoutes().length - 1; routeIdx >= 0; routeIdx--) {
+			boolean found = false;
+			Node[] route = solution.getRoutes()[routeIdx];
+
+			for (int pos = route.length - 1; pos >= 0; pos--) {
+				if(route[pos] == shipment[PICKUP] || route[pos] == shipment[DELIVERY]) {
+					solution.setRoute(routeIdx, removeNode(route, pos));
+					route = solution.getRoutes()[routeIdx];
+					found = true;
+				}
+			}
+
+			if(found)
+				return;
+		}
+	}
+
+	private Node[] removeNode(Node[] route, int pos) {
+		Node[] newRoute = new Node[route.length - 1];
+
+		System.arraycopy(route, 0, newRoute, 0, pos);
+		System.arraycopy(route, pos + 1, newRoute, pos, route.length - pos - 1);
+
+		return newRoute;
+	}
+
+	/**
+	 * Initialize a new solution with single empty routes per depot.
+	 */
+	private Solution initNewSolution(XFVRPModel model) {
 		Node[] route = new Node[2];
 		route[0] = Util.createIdNode(model.getNodes()[0], 0);
 		route[1] = Util.createIdNode(model.getNodes()[0], 1);
 
-		Solution newSolution = new Solution(model);
-		newSolution.setGiantRoute(route);
-		return NormalizeSolutionService.normalizeRoute(newSolution).getGiantRoute();
+		Solution solution = new Solution(model);
+		solution.addRoute(route);
+		return NormalizeSolutionService.normalizeRoute(solution);
 	}
 
 	/**
-	 * Returns a certain single route of the giant route with two empty slots more than the original route.
-	 * 
-	 * @param giantRoute Current solution of planned routes
-	 * @param routeStats Info, where the route starts and ends
-	 * @return Array of nodes between start and end position and with two empty slots more than the original route.
+	 * Retries all shipments with pickup and delivery nodes from node array in model.
 	 */
-	private Node[] createEvaluationRoute(Node[] giantRoute, int[] routeStats) {
-		Node[] route = new Node[(routeStats[1] - routeStats[0]) + 1 + 2];
-		int cnt = 0;
-		for(int p = routeStats[0]; p <= routeStats[1]; p++) {
-			if(cnt == 1)
-				cnt+=2;
-			route[cnt++] = giantRoute[p];
-		}
-		
-		return route;
-	}
+	private List<Node[]> getShipments(XFVRPModel model) {
+		return Arrays.stream(model.getNodes())
+				.filter(n -> n.getSiteType() == SiteType.CUSTOMER)
+				.collect(Collectors.groupingBy(Node::getShipID))
+				.values()
+				.stream()
+				.map(e -> {
+					Node[] shipNodes = new Node[2];
+					for (Node node : e) {
+						if(node.getLoadType() == LoadType.PICKUP)
+							shipNodes[PICKUP] = node;
+						else if(node.getLoadType() == LoadType.DELIVERY)
+							shipNodes[DELIVERY] = node;
+					}
 
-	/**
-	 * Creates a list of indexes where the routes in the giant route start and end.
-	 * 
-	 * Start and end index are always at a depot node. The end of one route can be the start of next route. 
-	 * 
-	 * @param giantRoute Current solution of planned routes
-	 * @return List of indexes where the routes in the giant route start and end. (0 = start index in giant route 1 = end index in giant route)
-	 */
-	private List<int[]> getRoutes(Node[] giantRoute) {
-		List<int[]> routeList = new ArrayList<>();
-
-		int[] arr = new int[] {0,-1};
-		for (int i = 1; i < giantRoute.length; i++) 
-			if(giantRoute[i].getSiteType() == SiteType.DEPOT) {
-				arr[1] = i;
-				routeList.add(arr);
-				arr = new int[] {i,-1};
-			}
-
-		return routeList;
-	}
-
-	/**
-	 * Retries all shipments with pickup and delivery nodes from node array in model. 
-	 * 
-	 * @return List of all shipments
-	 */
-	private List<Node[]> getShipments() {
-		Map<String, Node[]> shipmentMap = new HashMap<>();
-
-		for (int i = model.getNbrOfDepots() + model.getNbrOfReplenish(); i < model.getNbrOfNodes(); i++) {
-			Node node = model.getNodes()[i];
-			if(!shipmentMap.containsKey(node.getShipID()))
-				shipmentMap.put(node.getShipID(), new Node[2]);
-
-			Node[] nodes = shipmentMap.get(node.getShipID());
-			if(node.getDemand()[0] > 0)
-				nodes[PICKUP_POS] = node;
-			else
-				nodes[DELIVERY_POS] = node;
-		}
-
-		return new ArrayList<>(shipmentMap.values());
+					return shipNodes;
+				})
+				.collect(Collectors.toList());
 	}
 }
