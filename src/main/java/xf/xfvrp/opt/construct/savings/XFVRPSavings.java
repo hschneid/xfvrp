@@ -92,8 +92,9 @@ public class XFVRPSavings extends XFVRPOptBase {
 	}
 
 	private void improveOverhangingRoutes(Node depot, SavingsDataBag dataBag) throws XFVRPException {
-		while(hasOverhangingRoutes(depot, dataBag)) {
-			applyNextSaving(depot, dataBag);
+		boolean isImproved = true;
+		while(hasOverhangingRoutes(depot, dataBag) && isImproved) {
+			isImproved = applyNextSaving(depot, dataBag);
 		}
 	}
 

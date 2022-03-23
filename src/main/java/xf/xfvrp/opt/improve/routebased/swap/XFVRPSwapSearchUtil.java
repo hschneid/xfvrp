@@ -223,9 +223,32 @@ public class XFVRPSwapSearchUtil {
      * is not changing the number of routes.
      */
     private static void addImprovingStep(Solution solution, Queue<float[]> improvingSteps, float... newStep) {
+        // Prevent, that additional nodes are moved to overhanging routes
+        if((isDestinationOverhangRoute(solution, newStep) && newStep[5] > newStep[6]) ||
+                (isSourceOverhangRoute(solution, newStep) && newStep[6] > newStep[5])) {
+            newStep[0] = -1;
+            newStep[8] = XFVRPMoveUtil.IS_OVERHANG;
+        }
+
         // Add only improving steps
         if (newStep[0] > EPSILON) {
             improvingSteps.add(newStep);
         }
+    }
+
+    /**
+     * In any case, if source route is overhang route
+     */
+    private static boolean isSourceOverhangRoute(Solution solution, float[] newStep) {
+        boolean[] isOverhang = solution.getOverhangRoutes();
+        return isOverhang[(int)newStep[1]];
+    }
+
+    /**
+     * In any case, if destination route is overhang route
+     */
+    private static boolean isDestinationOverhangRoute(Solution solution, float[] newStep) {
+        boolean[] isOverhang = solution.getOverhangRoutes();
+        return isOverhang[(int)newStep[2]];
     }
 }
