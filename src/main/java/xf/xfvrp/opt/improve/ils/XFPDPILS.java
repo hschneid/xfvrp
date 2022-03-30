@@ -3,7 +3,7 @@ package xf.xfvrp.opt.improve.ils;
 import xf.xfvrp.base.exception.XFVRPException;
 import xf.xfvrp.opt.Solution;
 import xf.xfvrp.opt.XFVRPOptBase;
-import xf.xfvrp.opt.improve.XFPDPRelocate;
+import xf.xfvrp.opt.improve.routebased.move.XFPDPRelocate;
 
 /** 
  * Copyright (c) 2012-2022 Holger Schneider

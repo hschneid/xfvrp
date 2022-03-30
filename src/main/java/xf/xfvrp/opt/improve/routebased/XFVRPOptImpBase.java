@@ -1,5 +1,6 @@
 package xf.xfvrp.opt.improve.routebased;
 
+import xf.xfvrp.base.Node;
 import xf.xfvrp.base.NormalizeSolutionService;
 import xf.xfvrp.base.Quality;
 import xf.xfvrp.base.XFVRPModel;
@@ -40,8 +41,7 @@ public abstract class XFVRPOptImpBase extends XFVRPOptBase {
 	}
 
 	protected abstract Queue<float[]> search(Solution solution);
-	protected abstract void change(Solution solution, float[] changeParameter) throws XFVRPException;
-	protected abstract void reverseChange(Solution solution, float[] changeParameter) throws XFVRPException;
+	protected abstract Node[][] change(Solution solution, float[] changeParameter) throws XFVRPException;
 
 	/**
 	 * This method calls the abstract improve method of this optimization class with
@@ -50,10 +50,10 @@ public abstract class XFVRPOptImpBase extends XFVRPOptBase {
 	 *
 	 * Currently it is only used by the PathExchange operator.
 	 */
-	public Quality improve(Solution giantTour, Quality bestResult, XFVRPModel model) throws XFVRPException {
+	public Quality improve(Solution solution, Quality bestResult, XFVRPModel model) throws XFVRPException {
 		this.model = model;
 
-		return improve(giantTour, bestResult);
+		return improve(solution, bestResult);
 	}
 
 	/*
@@ -92,7 +92,7 @@ public abstract class XFVRPOptImpBase extends XFVRPOptBase {
 			float[] val = improvingSteps.remove();
 
 			// Variation
-			change(solution, val);
+			Node[][] oldRoutes = change(solution, val);
 
 			Quality result = checkIt(solution, (int)val[1], (int)val[2]);
 			if(isImprovement(result, bestResult, (int)val[7])) {
@@ -101,12 +101,18 @@ public abstract class XFVRPOptImpBase extends XFVRPOptBase {
 				return result;
 			}
 
-			// Reverse-Variation
-			reverseChange(solution, val);
-			solution.resetQualities();
+			// Reverse
+			reverseChange(solution, val, oldRoutes);
 		}
 
 		return null;
+	}
+
+	private void reverseChange(Solution solution, float[] val, Node[][] oldRoutes) {
+		solution.setRoute((int)val[1], oldRoutes[0]);
+		if(oldRoutes.length > 1)
+			solution.setRoute((int)val[2], oldRoutes[1]);
+		solution.resetQualities();
 	}
 
 	private boolean isImprovement(Quality currentResult, Quality bestResult, int overhangFlag) {

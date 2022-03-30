@@ -1,5 +1,6 @@
 package xf.xfvrp.opt.improve.routebased.move;
 
+import xf.xfvrp.base.Node;
 import xf.xfvrp.base.exception.XFVRPException;
 import xf.xfvrp.opt.Solution;
 import xf.xfvrp.opt.improve.routebased.XFVRPOptImpBase;
@@ -51,12 +52,8 @@ public class XFVRPSegmentMove extends XFVRPOptImpBase {
 	}
 
 	@Override
-	protected void change(Solution solution, float[] changeParameter) throws XFVRPException {
-		XFVRPMoveUtil.change(solution, changeParameter);
+	protected Node[][] change(Solution solution, float[] changeParameter) throws XFVRPException {
+		return XFVRPMoveUtil.change(solution, changeParameter);
 	}
 
-	@Override
-	protected void reverseChange(Solution solution, float[] changeParameter) throws XFVRPException {
-		XFVRPMoveUtil.reverseChange(solution, changeParameter);
-	}
 }

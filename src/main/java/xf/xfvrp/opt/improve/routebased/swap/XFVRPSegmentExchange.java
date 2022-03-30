@@ -1,5 +1,6 @@
 package xf.xfvrp.opt.improve.routebased.swap;
 
+import xf.xfvrp.base.Node;
 import xf.xfvrp.base.exception.XFVRPException;
 import xf.xfvrp.opt.Solution;
 import xf.xfvrp.opt.improve.routebased.XFVRPOptImpBase;
@@ -44,20 +45,13 @@ public class XFVRPSegmentExchange extends XFVRPOptImpBase {
 	}
 
 	@Override
-	protected void change(Solution solution, float[] changeParameter) throws XFVRPException {
+	protected Node[][] change(Solution solution, float[] changeParameter) throws XFVRPException {
 		if(changeParameter.length == 9) {
-			XFVRPSwapUtil.change(solution, changeParameter);
+			return XFVRPSwapUtil.change(solution, changeParameter);
 		} else if(changeParameter.length == 8) {
-			XFVRPMoveUtil.change(solution, changeParameter);
+			return XFVRPMoveUtil.change(solution, changeParameter);
 		}
-	}
 
-	@Override
-	protected void reverseChange(Solution solution, float[] changeParameter) throws XFVRPException {
-		if(changeParameter.length == 9) {
-			XFVRPSwapUtil.reverseChange(solution, changeParameter);
-		} else if(changeParameter.length == 8) {
-			XFVRPMoveUtil.reverseChange(solution, changeParameter);
-		}
+		return null;
 	}
 }

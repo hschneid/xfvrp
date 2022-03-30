@@ -8,6 +8,7 @@ import util.instances.TestXFVRPModel
 import xf.xfvrp.base.*
 import xf.xfvrp.base.fleximport.CustomerData
 import xf.xfvrp.opt.evaluation.EvaluationService
+import xf.xfvrp.opt.improve.routebased.move.XFPDPRelocate
 
 class XFPDPRelocateIntSpec extends Specification {
 
