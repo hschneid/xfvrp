@@ -23,7 +23,7 @@ public class XFVRPSwapUtil {
     /**
      * Changes a solution according to given parameter
      */
-    public static void change(Solution solution, float[] val) throws XFVRPException {
+    public static Node[][] change(Solution solution, float[] val) throws XFVRPException {
         int aRouteIndex = (int) val[1];
         int bRouteIndex = (int) val[2];
         int aPos = (int) val[3];
@@ -33,35 +33,7 @@ public class XFVRPSwapUtil {
         int invertType = (int) val[7];
 
         invert(solution, aRouteIndex, bRouteIndex, aPos, bPos, aSegmentLength, bSegmentLength, invertType);
-        exchange(solution, aRouteIndex, bRouteIndex, aPos, bPos, aSegmentLength, bSegmentLength);
-    }
-
-    public static void reverseChange(Solution solution, float[] val) throws XFVRPException {
-        int aRouteIndex = (int) val[1];
-        int bRouteIndex = (int) val[2];
-        int aPos = (int) val[3];
-        int bPos = (int) val[4];
-        int aSegmentLength = (int) val[5];
-        int bSegmentLength = (int) val[6];
-        int invertType = (int) val[7];
-
-        // Swap segment parameter, that A is always before B
-        if(aRouteIndex == bRouteIndex && bPos < aPos) {
-            int tmp = aPos; aPos = bPos; bPos = tmp;
-            tmp = aSegmentLength; aSegmentLength = bSegmentLength; bSegmentLength = tmp;
-
-            if(invertType == A_INVERT) invertType = B_INVERT;
-            else if(invertType == B_INVERT) invertType = A_INVERT;
-        }
-
-        if(aRouteIndex != bRouteIndex) {
-            // Just change segment lengths
-            exchange(solution, aRouteIndex, bRouteIndex, aPos, bPos, bSegmentLength, aSegmentLength);
-        } else {
-            int newBPos = bPos - (aSegmentLength - bSegmentLength);
-            exchange(solution, aRouteIndex, bRouteIndex, aPos, newBPos, bSegmentLength, aSegmentLength);
-        }
-        invert(solution, aRouteIndex, bRouteIndex, aPos, bPos, aSegmentLength, bSegmentLength, invertType);
+        return exchange(solution, aRouteIndex, bRouteIndex, aPos, bPos, aSegmentLength, bSegmentLength);
     }
 
     /**
@@ -70,7 +42,7 @@ public class XFVRPSwapUtil {
      * starts at position b and includes lb many nodes. The two
      * segments must not overlap each other.
      */
-    private static void exchange(
+    private static Node[][] exchange(
             Solution solution,
             int aRouteIndex,
             int bRouteIndex,
@@ -139,7 +111,7 @@ public class XFVRPSwapUtil {
         return newRoute;
     }
 
-    private static void swapSegmentsEqualLength(Solution solution, int aRouteIndex, int bRouteIndex, int aPos, int bPos, int aSegmentLength) {
+    private static Node[][] swapSegmentsEqualLength(Solution solution, int aRouteIndex, int bRouteIndex, int aPos, int bPos, int aSegmentLength) {
         Node[] aRoute = solution.getRoutes()[aRouteIndex];
         Node[] bRoute = solution.getRoutes()[bRouteIndex];
         for (int i = 0; i <= aSegmentLength; i++) {

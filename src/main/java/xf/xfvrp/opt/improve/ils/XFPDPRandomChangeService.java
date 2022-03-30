@@ -6,7 +6,7 @@ import xf.xfvrp.base.SiteType;
 import xf.xfvrp.base.exception.XFVRPException;
 import xf.xfvrp.opt.Solution;
 import xf.xfvrp.opt.XFVRPOptBase;
-import xf.xfvrp.opt.improve.XFPDPRelocate;
+import xf.xfvrp.opt.improve.routebased.move.XFPDPRelocate;
 
 import java.util.NoSuchElementException;
 

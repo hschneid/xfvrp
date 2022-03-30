@@ -7,6 +7,7 @@ import util.instances.TestVehicle
 import util.instances.TestXFVRPModel
 import xf.xfvrp.base.*
 import xf.xfvrp.base.fleximport.CustomerData
+import xf.xfvrp.opt.improve.routebased.move.XFPDPRelocate
 
 class XFPDPRelocateBaseSpec extends Specification {
 
