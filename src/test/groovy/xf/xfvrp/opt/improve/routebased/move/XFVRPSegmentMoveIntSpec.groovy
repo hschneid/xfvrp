@@ -34,10 +34,6 @@ class XFVRPSegmentMoveIntSpec extends Specification {
 
 	def sol
 
-	def parameter = new XFVRPParameter()
-
-	def metric = new EucledianMetric()
-
 	def "Find improvement for single depot"() {
 		def model = initSDScen()
 		def n = model.getNodes()

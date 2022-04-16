@@ -30,97 +30,92 @@ class XFVRPSegmentMoveTest extends Specification {
         model = TestXFVRPModel.get([n1,n5,n8,n2,n3,n4,n6,n7,n9, n10], v)
     }
 
-    def "change - reset - different routes"() {
+    def "change - different routes"() {
         def sol = Helper.set(model, [n1, n2, n3, n4, n5, n6, n7, n8] as Node[])
         def parameter = [-1, 0, 1, 1, 2, 2, 0] as float[]
 
         when:
         XFVRPMoveUtil.change(sol, parameter)
-        XFVRPMoveUtil.reverseChange(sol, parameter)
         def result = sol.getGiantRoute()
 
         then:
         result[0].externID == "01"
-        result[1].externID == "02"
-        result[2].externID == "03"
-        result[3].externID == "04"
-        result[4].externID == "05"
-        result[5].externID == "06"
+        result[1].externID == "05"
+        result[2].externID == "06"
+        result[3].externID == "02"
+        result[4].externID == "03"
+        result[5].externID == "04"
         result[6].externID == "07"
         result[7].externID == "01"
     }
 
-    def "change - reset - same routes - src < dst"() {
+    def "change - same routes - src < dst"() {
         def sol = Helper.set(model, [n1, n2, n3, n4, n6, n7, n8] as Node[])
         def parameter = [-1, 0, 0, 2, 6, 1, 0] as float[]
 
         when:
         XFVRPMoveUtil.change(sol, parameter)
-        XFVRPMoveUtil.reverseChange(sol, parameter)
         def result = sol.getGiantRoute()
         then:
         result[0].externID == "01"
         result[1].externID == "02"
-        result[2].externID == "03"
-        result[3].externID == "04"
-        result[4].externID == "06"
-        result[5].externID == "07"
+        result[2].externID == "06"
+        result[3].externID == "07"
+        result[4].externID == "03"
+        result[5].externID == "04"
         result[6].externID == "01"
     }
 
-    def "change - reset - same routes - src > dst"() {
+    def "change - same routes - src > dst"() {
         def sol = Helper.set(model, [n1, n2, n3, n4, n6, n7, n8] as Node[])
         def parameter = [-1, 0, 0, 3, 2, 1, 0] as float[]
 
         when:
         XFVRPMoveUtil.change(sol, parameter)
-        XFVRPMoveUtil.reverseChange(sol, parameter)
         def result = sol.getGiantRoute()
         then:
         result[0].externID == "01"
         result[1].externID == "02"
-        result[2].externID == "03"
-        result[3].externID == "04"
-        result[4].externID == "06"
+        result[2].externID == "04"
+        result[3].externID == "06"
+        result[4].externID == "03"
         result[5].externID == "07"
         result[6].externID == "01"
     }
 
-    def "change - reset - different routes - with invert"() {
+    def "change - different routes - with invert"() {
         def sol = Helper.set(model, [n1, n2, n3, n4, n5, n6, n7, n8] as Node[])
         def parameter = [-1, 0, 1, 1, 2, 2, 1] as float[]
 
         when:
         XFVRPMoveUtil.change(sol, parameter)
-        XFVRPMoveUtil.reverseChange(sol, parameter)
         def result = sol.getGiantRoute()
 
         then:
         result[0].externID == "01"
-        result[1].externID == "02"
-        result[2].externID == "03"
+        result[1].externID == "05"
+        result[2].externID == "06"
         result[3].externID == "04"
-        result[4].externID == "05"
-        result[5].externID == "06"
+        result[4].externID == "03"
+        result[5].externID == "02"
         result[6].externID == "07"
         result[7].externID == "01"
     }
 
-    def "change - reset - same routes - src < dst - with invert"() {
+    def "change - same routes - src < dst - with invert"() {
         def sol = Helper.set(model, [n1, n2, n3, n4, n6, n7, n8] as Node[])
         def parameter = [-1, 0, 0, 2, 6, 1, 1] as float[]
 
         when:
         XFVRPMoveUtil.change(sol, parameter)
-        XFVRPMoveUtil.reverseChange(sol, parameter)
         def result = sol.getGiantRoute()
         then:
         result[0].externID == "01"
         result[1].externID == "02"
-        result[2].externID == "03"
-        result[3].externID == "04"
-        result[4].externID == "06"
-        result[5].externID == "07"
+        result[2].externID == "06"
+        result[3].externID == "07"
+        result[4].externID == "04"
+        result[5].externID == "03"
         result[6].externID == "01"
     }
 
@@ -130,14 +125,13 @@ class XFVRPSegmentMoveTest extends Specification {
 
         when:
         XFVRPMoveUtil.change(sol, parameter)
-        XFVRPMoveUtil.reverseChange(sol, parameter)
         def result = sol.getGiantRoute()
         then:
         result[0].externID == "01"
         result[1].externID == "02"
-        result[2].externID == "03"
+        result[2].externID == "06"
         result[3].externID == "04"
-        result[4].externID == "06"
+        result[4].externID == "03"
         result[5].externID == "07"
         result[6].externID == "01"
     }

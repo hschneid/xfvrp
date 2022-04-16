@@ -19,60 +19,6 @@ class XFVRPSingleMoveTest extends Specification {
     def n6 = new Node(externID: "6", siteType: SiteType.CUSTOMER)
     def n7 = new Node(externID: "7", siteType: SiteType.DEPOT)
 
-    def "change - reset - different routes"() {
-        def sol = Helper.set([n1, n2, n3, n4, n5, n6, n7] as Node[])
-        def parameter = [-1, 0, 1, 1, 2, 0, 0] as float[]
-
-        when:
-        XFVRPMoveUtil.change(sol, parameter)
-        XFVRPMoveUtil.reverseChange(sol, parameter)
-        def result = sol.getGiantRoute()
-        then:
-        result[0].externID == "1"
-        result[1].externID == "2"
-        result[2].externID == "3"
-        result[3].externID == "4"
-        result[4].externID == "5"
-        result[5].externID == "6"
-        result[6].externID == "1"
-    }
-
-    def "change - reset - same routes - src > dst"() {
-        
-        def sol = Helper.set([n1, n2, n3, n5, n6, n7] as Node[])
-        def parameter = [-1, 0, 0, 1, 3, 0, 0] as float[]
-
-        when:
-        XFVRPMoveUtil.change(sol, parameter)
-        XFVRPMoveUtil.reverseChange(sol, parameter)
-        def result = sol.getGiantRoute()
-        then:
-        result[0].externID == "1"
-        result[1].externID == "2"
-        result[2].externID == "3"
-        result[3].externID == "5"
-        result[4].externID == "6"
-        result[5].externID == "1"
-    }
-
-    def "change - reset - same routes - src < dst"() {
-        
-        def sol = Helper.set([n1, n2, n3, n5, n6, n7] as Node[])
-        def parameter = [-1, 0, 0, 4, 1, 0, 0] as float[]
-
-        when:
-        XFVRPMoveUtil.change(sol, parameter)
-        XFVRPMoveUtil.reverseChange(sol, parameter)
-        def result = sol.getGiantRoute()
-        then:
-        result[0].externID == "1"
-        result[1].externID == "2"
-        result[2].externID == "3"
-        result[3].externID == "5"
-        result[4].externID == "6"
-        result[5].externID == "1"
-    }
-
     def "find an improvement"() {
         def model = initScen()
         def n = model.getNodes()

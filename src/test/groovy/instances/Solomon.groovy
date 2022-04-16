@@ -1,6 +1,6 @@
 package instances
 
-
+import spock.lang.Ignore
 import spock.lang.Specification
 import xf.xfvrp.XFVRP
 import xf.xfvrp.base.metric.EucledianMetric
@@ -102,12 +102,12 @@ class Solomon extends Specification {
         }
 
         xfvrp.addOptType(XFVRPOptTypes.SAVINGS)
-        xfvrp.addOptType(XFVRPOptTypes.RELOCATE)
-        xfvrp.addOptType(XFVRPOptTypes.PATH_RELOCATE)
-        xfvrp.addOptType(XFVRPOptTypes.PATH_EXCHANGE)
+        //xfvrp.addOptType(XFVRPOptTypes.RELOCATE)
+        //xfvrp.addOptType(XFVRPOptTypes.PATH_RELOCATE)
+        //xfvrp.addOptType(XFVRPOptTypes.PATH_EXCHANGE)
 
         xfvrp.getParameters().setNbrOfILSLoops(100)
-        xfvrp.addOptType(XFVRPOptTypes.ILS)
+        //xfvrp.addOptType(XFVRPOptTypes.ILS)
 
         xfvrp.setMetric(new EucledianMetric())
 

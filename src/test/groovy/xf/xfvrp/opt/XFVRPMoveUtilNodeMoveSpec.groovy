@@ -21,7 +21,7 @@ class XFVRPMoveUtilNodeMoveSpec extends Specification {
 		def sol = Helper.set([n1, n2, n3, n4, n5, n6, n7] as Node[])
 
 		when:
-		XFVRPMoveUtil.move(sol, 0, 1, 1, 1, 2)
+		XFVRPMoveUtil.change(sol, [0, 0, 1, 1, 2, 0, 0] as float[])
 		def result = sol.getGiantRoute()
 		
 		then:
@@ -38,7 +38,7 @@ class XFVRPMoveUtilNodeMoveSpec extends Specification {
 		def sol = Helper.set([n1, n2, n3, n4, n5, n6, n7] as Node[])
 
 		when:
-		XFVRPMoveUtil.move(sol, 0, 0, 1, 1, 3)
+		XFVRPMoveUtil.change(sol, [0, 0, 0, 1, 3, 0, 0] as float[])
 		def result = sol.getGiantRoute()
 
 		then:
@@ -56,7 +56,7 @@ class XFVRPMoveUtilNodeMoveSpec extends Specification {
 		def sol = Helper.set([n1, n2, n3, n5, n6, n7] as Node[])
 
 		when:
-		XFVRPMoveUtil.move(sol, 0, 0, 3, 3, 1)
+		XFVRPMoveUtil.change(sol, [0, 0, 0, 3, 1, 0, 0] as float[])
 		def result = sol.getGiantRoute()
 
 		then:
@@ -73,7 +73,7 @@ class XFVRPMoveUtilNodeMoveSpec extends Specification {
 		def sol = Helper.set([n1, n2, n3, n4, n5, n6, n7] as Node[])
 
 		when:
-		XFVRPMoveUtil.move(sol, 0, 0, 1, 1, 1)
+		XFVRPMoveUtil.change(sol, [0, 0, 0, 1, 1, 0, 0] as float[])
 		def result = sol.getGiantRoute()
 
 		then:
@@ -91,7 +91,7 @@ class XFVRPMoveUtilNodeMoveSpec extends Specification {
 		def sol = Helper.set([n1, n2, n3, n4, n5, n6, n7] as Node[])
 
 		when:
-		XFVRPMoveUtil.move(sol, 0, 0, 1, 1, 2)
+		XFVRPMoveUtil.change(sol, [0, 0, 0, 1, 2, 0, 0] as float[])
 		def result = sol.getGiantRoute()
 
 		then:
@@ -109,7 +109,7 @@ class XFVRPMoveUtilNodeMoveSpec extends Specification {
 		def sol = Helper.set([n1, n2, n3, n4, n5, n6, n7] as Node[])
 
 		when:
-		XFVRPMoveUtil.move(sol, 0, 1, 0, 0, 2)
+		XFVRPMoveUtil.change(sol, [0, 0, 1, 0, 2, 0, 0] as float[])
 
 		then:
 		thrown(XFVRPException)
@@ -120,7 +120,7 @@ class XFVRPMoveUtilNodeMoveSpec extends Specification {
 		def sol = Helper.set([n1, n2, n3, n4, n5, n6, n7] as Node[])
 
 		when:
-		XFVRPMoveUtil.move(sol, 0, 1, 2, 2, 0)
+		XFVRPMoveUtil.change(sol, [0, 0, 1, 2, 0, 0, 0] as float[])
 
 		then:
 		thrown(XFVRPException)
