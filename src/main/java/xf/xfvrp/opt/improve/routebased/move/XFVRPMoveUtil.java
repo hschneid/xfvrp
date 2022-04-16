@@ -47,7 +47,7 @@ public class XFVRPMoveUtil {
 
         Node[] nodes = new Node[srcEnd - srcStart + 1];
         System.arraycopy(srcRoute, srcStart, nodes, 0, nodes.length);
-        if(isInverted == INVERT) swap(nodes, 0, nodes.length);
+        if(isInverted == INVERT) swap(nodes, 0, nodes.length - 1);
 
         if(srcRouteIdx != dstRouteIdx) {
             solution.setRoute(srcRouteIdx, remove(srcRoute, srcStart, srcEnd));
@@ -63,12 +63,17 @@ public class XFVRPMoveUtil {
 
     private static Node[] moveIntraRoute(int srcStart, int srcEnd, int dstPos, Node[] srcRoute, Node[] nodes) {
         Node[] newRoute = new Node[srcRoute.length];
+
         if(srcStart < dstPos) {
+            System.arraycopy(srcRoute, 0, newRoute, 0, srcStart);
             System.arraycopy(srcRoute, srcEnd + 1, newRoute, srcStart, dstPos - srcEnd);
             System.arraycopy(nodes, 0, newRoute, dstPos - ((srcEnd - srcStart) + 1), nodes.length);
+            System.arraycopy(srcRoute, dstPos, newRoute, dstPos, srcRoute.length - dstPos);
         } else {
+            System.arraycopy(srcRoute, 0, newRoute, 0, dstPos);
             System.arraycopy(srcRoute, dstPos, newRoute, dstPos + (srcEnd - srcStart) + 1, srcStart - dstPos);
             System.arraycopy(nodes, 0, newRoute, dstPos, nodes.length);
+            System.arraycopy(srcRoute, srcEnd + 1, newRoute, srcEnd + 1, srcRoute.length - (srcEnd + 1));
         }
         return newRoute;
     }

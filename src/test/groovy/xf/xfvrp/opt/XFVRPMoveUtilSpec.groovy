@@ -22,7 +22,7 @@ class XFVRPMoveUtilSpec extends Specification {
 		def sol = Helper.set([n1, n2, n3, n4, n5, n6, n7, n8] as Node[])
 
 		when:
-		XFVRPMoveUtil.move(sol, 0, 1, 2, 3, 2)
+		XFVRPMoveUtil.change(sol, [-1, 0, 1, 2, 2, 1, 0] as float[])
 
 		def result = sol.getGiantRoute()
 
@@ -41,7 +41,7 @@ class XFVRPMoveUtilSpec extends Specification {
 		def sol = Helper.set([n1, n2, n3, n4, n5, n8] as Node[])
 
 		when:
-		XFVRPMoveUtil.move(sol, 0, 2, 1, 3, 1)
+		XFVRPMoveUtil.change(sol, [-1, 0, 2, 1, 1, 2, 0] as float[])
 
 		def result = sol.getGiantRoute()
 
@@ -59,7 +59,7 @@ class XFVRPMoveUtilSpec extends Specification {
 		def sol = Helper.set([n1, n2, n3, n4, n5, n6, n7, n8] as Node[])
 
 		when:
-		XFVRPMoveUtil.move(sol, 0, 0, 2, 3, 4)
+		XFVRPMoveUtil.change(sol, [-1, 0, 0, 2, 4, 1, 0] as float[])
 
 		def result = sol.getGiantRoute()
 
@@ -78,7 +78,7 @@ class XFVRPMoveUtilSpec extends Specification {
 		def sol = Helper.set([n1, n2, n3, n4, n5, n6, n7, n8] as Node[])
 
 		when:
-		XFVRPMoveUtil.move(sol, 0, 1,1, 1, 1)
+		XFVRPMoveUtil.change(sol, [-1, 0, 1, 1, 1, 0, 0] as float[])
 
 		def result = sol.getGiantRoute()
 
@@ -97,7 +97,7 @@ class XFVRPMoveUtilSpec extends Specification {
 		def sol = Helper.set([n1, n2, n3, n4, n6, n7, n8] as Node[])
 
 		when:
-		XFVRPMoveUtil.move(sol, 0, 0,2, 3, 6)
+		XFVRPMoveUtil.change(sol, [-1, 0, 0, 2, 6, 1, 0] as float[])
 
 		def result = sol.getGiantRoute()
 
@@ -115,7 +115,7 @@ class XFVRPMoveUtilSpec extends Specification {
 		def sol = Helper.set([n1, n2, n3, n4, n6, n7, n8] as Node[])
 
 		when:
-		XFVRPMoveUtil.move(sol, 0, 0,4, 5, 2)
+		XFVRPMoveUtil.change(sol, [-1, 0, 0, 4, 2, 1, 0] as float[])
 
 		def result = sol.getGiantRoute()
 
@@ -133,7 +133,7 @@ class XFVRPMoveUtilSpec extends Specification {
 		def sol = Helper.set([n1, n2, n3, n4, n6, n7, n8] as Node[])
 
 		when:
-		XFVRPMoveUtil.move(sol, 0, 0,3, 5, 2)
+		XFVRPMoveUtil.change(sol, [-1, 0, 0, 3, 2, 2, 0] as float[])
 
 		def result = sol.getGiantRoute()
 
@@ -151,7 +151,7 @@ class XFVRPMoveUtilSpec extends Specification {
 		def sol = Helper.set([n1, n2, n3, n4, n5, n6, n7, n8] as Node[])
 
 		when:
-		XFVRPMoveUtil.move(sol, 0, 1, 2, 1, 3)
+		XFVRPMoveUtil.change(sol, [-1, 0, 1, 2, 3, -1, 0] as float[])
 
 		sol.getGiantRoute()
 		

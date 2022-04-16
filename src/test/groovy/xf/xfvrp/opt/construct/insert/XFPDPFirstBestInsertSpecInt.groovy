@@ -30,6 +30,7 @@ class XFPDPFirstBestInsertSpecInt extends Specification {
 		println r.getRoutes().size() +" "+ r.getSummary().cost + " " + time/1000f+"ms"
 
 		then:
+		// Reduce number of routes
 		r.getRoutes().size() < 100/3f
 	}
 
