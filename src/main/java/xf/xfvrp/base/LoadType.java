@@ -26,13 +26,11 @@ public enum LoadType {
 	DELIVERY(1),
 	REPLENISH(2), 
 	PAUSE(3),
-	UNDEF(4);
+	UNDEF(4),
+	PRELOAD_AT_DEPOT(5);
 	
 	public final int idx;
 	
-	/**
-	 * @param idx
-	 */
 	LoadType(int idx) {
 		this.idx = idx;
 	}

@@ -4,9 +4,11 @@ import xf.xfvrp.base.InvalidReason;
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.SiteType;
 import xf.xfvrp.base.Vehicle;
+import xf.xfvrp.base.exception.XFVRPException;
+import xf.xfvrp.base.exception.XFVRPExceptionType;
 import xf.xfvrp.base.preset.BlockNameConverter;
-import xf.xfvrp.opt.init.precheck.PreCheckException;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -45,7 +47,7 @@ public class VRPPreCheckService  {
 	/**
 	 * Structural checks of the nodes without model 
 	 */
-	public Node[] precheck(Node[] nodes, Vehicle vehicle) throws PreCheckException {
+	public Node[] precheck(Node[] nodes, Vehicle vehicle) throws XFVRPException {
 		checkFeasibility(nodes);
 
 		// Fetch block informations
@@ -56,21 +58,19 @@ public class VRPPreCheckService  {
 		// Check if customer is allowed for this vehicle type
 		checkVehicleType(nodes, vehicle, blocks, plannedNodes);
 
-		// TODO: PDP shipments
-
 		return plannedNodes.toArray(new Node[0]);
 	}
 
-	private void checkFeasibility(Node[] nodes) throws PreCheckException {
+	private void checkFeasibility(Node[] nodes) throws XFVRPException {
 		if(nodes.length == 0) {
-			throw new PreCheckException("No nodes found.");
+			throw new XFVRPException(XFVRPExceptionType.ILLEGAL_INPUT, "No nodes found.");
 		}
 	}
 
-	private void checkVehicleType(Node[] nodes, Vehicle vehicle, Map<Integer, List<Node>> blocks, List<Node> plannedNodes) {
+	private void checkVehicleType(Node[] nodes, Vehicle vehicle, Map<Integer, List<Node>> blocks, List<Node> plannedNodes) throws XFVRPException {
 		for (Node node : nodes) {
 			if(node.getSiteType() == SiteType.CUSTOMER) {
-				if(!node.getPresetBlockVehicleList().isEmpty() && !node.getPresetBlockVehicleList().contains(vehicle.idx)) {
+				if(!node.getPresetBlockVehicleList().isEmpty() && !node.getPresetBlockVehicleList().contains(vehicle.getIdx())) {
 					// Remove invalid customer from nodes list
 					removeNode(plannedNodes, node, InvalidReason.WRONG_VEHICLE_TYPE);
 
@@ -78,6 +78,11 @@ public class VRPPreCheckService  {
 					removeCustomersOfBlock(blocks, plannedNodes, node);
 				}
 			} 
+		}
+
+		// There must be customers left, otherwise input is wrong
+		if(plannedNodes.stream().noneMatch(node -> node.getSiteType() == SiteType.CUSTOMER)) {
+			throw new XFVRPException(XFVRPExceptionType.ILLEGAL_INPUT, "Not a single node is allowed for vehicle " + vehicle.getName() + ". Please remove it from input.");
 		}
 	}
 
@@ -102,6 +107,6 @@ public class VRPPreCheckService  {
 
 	private List<Node> getPlannedNodes(Node[] nodes) {
 		// Already planned customers (true = planned, false = unplanned, DEPOTS/REPLENISH always false)
-		return Arrays.asList(nodes);		
+		return new ArrayList<>(Arrays.asList(nodes));
 	}
 }

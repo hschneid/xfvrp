@@ -38,23 +38,24 @@ public class ErrorSummary {
 	 * that the route is build up by the init routine in the XFVRPInit class.
 	 */
 	public void add(Solution solution) {
-		Node[] route = solution.getGiantRoute();
-		for (Node node : route) {
-			if(node != null && node.getInvalidReason() != InvalidReason.NONE) {
-				// Description
-				if(node.getInvalidArguments().length() > 0)
-					errorDescriptions.add(node.getInvalidArguments());
-				
-				// Statistics
-				String invalidReason = node.getInvalidReason().toString();
-				
-				if(!statistics.containsKey(invalidReason))
-					statistics.put(invalidReason, 0);
-					
-				statistics.put(
-						invalidReason,
-						statistics.get(invalidReason) + 1
-						);
+		for (Node[] route : solution) {
+			for (Node node : route) {
+				if (node != null && node.getInvalidReason() != InvalidReason.NONE) {
+					// Description
+					if (node.getInvalidArguments().length() > 0)
+						errorDescriptions.add(node.getInvalidArguments());
+
+					// Statistics
+					String invalidReason = node.getInvalidReason().toString();
+
+					if (!statistics.containsKey(invalidReason))
+						statistics.put(invalidReason, 0);
+
+					statistics.put(
+							invalidReason,
+							statistics.get(invalidReason) + 1
+					);
+				}
 			}
 		}
 	}

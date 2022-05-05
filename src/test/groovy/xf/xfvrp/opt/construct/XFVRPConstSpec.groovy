@@ -1,259 +1,118 @@
 package xf.xfvrp.opt.construct
 
 import spock.lang.Specification
-import util.instances.TestNode
-import util.instances.TestVehicle
-import xf.xfvrp.base.*
-import xf.xfvrp.base.exception.XFVRPException
-import xf.xfvrp.base.metric.internal.AcceleratedMetric
+import xf.xfvrp.XFVRP
+import xf.xfvrp.base.metric.Metrics
+import xf.xfvrp.opt.XFVRPOptTypes
 
 class XFVRPConstSpec extends Specification {
 
-	def metric = Stub(AcceleratedMetric, constructorArgs: [5]) 
-	def service = new XFVRPConst();
-
-	def nd = new TestNode(
-	externID: "DEP",
-	globalIdx: 0,
-	xlong: -1,
-	ylat: 0,
-	siteType: SiteType.DEPOT,
-	demand: [0, 0],
-	timeWindow: [[0,99],[2,99]]
-	).getNode()
-
-	def nd2 = new TestNode(
-	externID: "DEP2",
-	globalIdx: 1,
-	xlong: 1,
-	ylat: 0,
-	siteType: SiteType.DEPOT,
-	demand: [0, 0],
-	timeWindow: [[0,99],[2,99]]
-	).getNode()
-	
-	def nr = new TestNode(
-		externID: "REP",
-		globalIdx: 1,
-		xlong: 1,
-		ylat: 0,
-		siteType: SiteType.REPLENISH,
-		demand: [0, 0],
-		timeWindow: [[0,99],[2,99]]
-		).getNode()
-
-	def sol;
-
-	def parameter = new XFVRPParameter()
-
-	def "Build Giant Route For Optimization"() {
-		def model = initScen()
-		def n = model.getNodes()
-		service.setModel(model)
-
-		def customers = [n[2], n[3], n[4]]
+	def "Optimize with single depot and blocks"() {
+		def vrp = getVRP()
 
 		when:
-		def result = service.buildGiantRouteForOptimization(nd, customers)
-		def giantRoute = result.getGiantRoute()
-
+		vrp.executeRoutePlanning()
+		def rep = vrp.getReport()
 		then:
-		giantRoute[0].externID == nd.externID
-		giantRoute[1] == n[2]
-		giantRoute[2].externID == nd.externID
-		giantRoute[3] == n[3]
-		giantRoute[4].externID == nd.externID
-		giantRoute[5] == n[4]
-		giantRoute[6].externID == nd.externID
+		rep.routes.size() == 3
+		rep.routes.find {r ->
+			r.events.count {e -> e.ID == 'A1'} == 1 &&
+					r.events.count {e -> e.ID == 'C1'} == 1 &&
+					r.events.size() == 4} != null
+		rep.routes.find {r ->
+			r.events.count {e -> e.ID == 'B1'} == 1 &&
+					r.events.count {e -> e.ID == 'B2'} == 1 &&
+					r.events.size() == 4} != null
+		rep.routes.find {r ->
+			r.events.count {e -> e.ID == 'E1'} == 1 &&
+					r.events.count {e -> e.ID == 'E2'} == 1 &&
+					r.events.size() == 4} != null
 	}
-	
-	def "Build Giant Route For Optimization - empty customers"() {
-		def model = initScen()
-		def n = model.getNodes()
-		service.setModel(model)
 
-		def customers = []
+	def "Optimize with multiple depots and blocks"() {
+		def vrp = getVRP()
+		vrp.addDepot().setExternID('D2').setXlong(100).setYlat(100)
 
 		when:
-		def result = service.buildGiantRouteForOptimization(nd, customers)
-		def giantRoute = result.getGiantRoute()
+		vrp.executeRoutePlanning()
+		def rep = vrp.getReport()
 
+		def d1Routes = rep.routes.findAll {r -> r.events.get(0).ID == 'D1'}
+		def d2Routes = rep.routes.findAll {r -> r.events.get(0).ID == 'D2'}
 		then:
-		giantRoute[0].externID == nd.externID
+		rep.routes.size() == 4
+		d1Routes.size() == 2
+		d2Routes.size() == 2
+		d1Routes.find {r -> r.events.count {e -> e.ID == 'A1'} == 1 && r.events.size() == 3} != null
+		d1Routes.find {r ->
+			r.events.count {e -> e.ID == 'B1'} == 1 &&
+					r.events.count {e -> e.ID == 'B2'} == 1 &&
+					r.events.size() == 4} != null
+		d2Routes.find {r -> r.events.count {e -> e.ID == 'C1'} == 1 && r.events.size() == 3} != null
+		d2Routes.find {r ->
+			r.events.count {e -> e.ID == 'E1'} == 1 &&
+					r.events.count {e -> e.ID == 'E2'} == 1 &&
+					r.events.size() == 4} != null
 	}
-	
-	def "Build Giant Route For Optimization - with blocks"() {
-		def model = initScen()
-		def n = model.getNodes()
-		service.setModel(model)
-		
-		n[2].presetBlockIdx = 11
-		n[3].presetBlockIdx = 11
 
-		def customers = [n[2], n[3], n[4]]
-		
+	def "Optimize with allowed depots"() {
+		def vrp = getVRP()
+		vrp.addDepot().setExternID('D2').setXlong(100).setYlat(100)
+		vrp.addDepot().setExternID('D3').setXlong(200).setYlat(200)
+
+		vrp.addCustomer().setExternID('F1').setXlong(10).setYlat(0).setDemand(5).setPresetDepotList(['D3'] as Set<String>)
+		vrp.addCustomer().setExternID('G1').setXlong(10).setYlat(0).setDemand(5).setPresetDepotList(['D2', 'D3'] as Set<String>)
+		vrp.addCustomer().setExternID('H1').setXlong(0).setYlat(10).setDemand(5).setPresetBlockName("H").setPresetDepotList(['D3'] as Set<String>)
+		vrp.addCustomer().setExternID('H2').setXlong(10).setYlat(5).setDemand(5).setPresetBlockName("H").setPresetDepotList(['D3'] as Set<String>)
+
 		when:
-		def result = service.buildGiantRouteForOptimization(nd, customers)
-		def giantRoute = result.getGiantRoute()
+		vrp.executeRoutePlanning()
+		def rep = vrp.getReport()
 
+		def d1Routes = rep.routes.findAll {r -> r.events.get(0).ID == 'D1'}
+		def d2Routes = rep.routes.findAll {r -> r.events.get(0).ID == 'D2'}
+		def d3Routes = rep.routes.findAll {r -> r.events.get(0).ID == 'D3'}
 		then:
-		giantRoute[0].externID == nd.externID
-		giantRoute[1] == n[2]
-		giantRoute[2] == n[3]
-		giantRoute[3].externID == nd.externID
-		giantRoute[4] == n[4]
-		giantRoute[5].externID == nd.externID
+		rep.routes.size() == 6
+		d1Routes.size() == 2
+		d2Routes.size() == 2
+		d3Routes.size() == 2
+
+		d1Routes.find {r -> r.events.count {e -> e.ID == 'A1'} == 1 && r.events.size() == 3} != null
+		d1Routes.find {r ->
+			r.events.count {e -> e.ID == 'B1'} == 1 &&
+					r.events.count {e -> e.ID == 'B2'} == 1 &&
+					r.events.size() == 4} != null
+		d2Routes.find {r ->
+			r.events.count {e -> e.ID == 'C1'} == 1 &&
+					r.events.count {e -> e.ID == 'G1'} == 1 &&
+					r.events.size() == 4} != null
+		d2Routes.find {r ->
+			r.events.count {e -> e.ID == 'E1'} == 1 &&
+					r.events.count {e -> e.ID == 'E2'} == 1 &&
+					r.events.size() == 4} != null
+		d3Routes.find {r -> r.events.count {e -> e.ID == 'F1'} == 1 && r.events.size() == 3} != null
+		d3Routes.find {r ->
+			r.events.count {e -> e.ID == 'H1'} == 1 &&
+					r.events.count {e -> e.ID == 'H2'} == 1 &&
+					r.events.size() == 4} != null
 	}
-	
-	def "Find Nearest Depot with multi depots"() {
-		def model = initScen()
-		def n = model.getNodes()
-		service.setModel(model)
-		
-		def depots = [nd, nd2]
-		def customer = n[2]
-		
-		metric.getDistance(nd, n[2]) >> 15
-		metric.getDistance(nd, n[2]) >> 5
-		
-		when:
-		def result = service.findNearestDepot(depots, customer)
 
-		then:
-		result == 1
-	}
-	
-	def "Find Nearest Depot with single depot"() {
-		def model = initScen()
-		def n = model.getNodes()
-		service.setModel(model)
-		
-		def depots = [nd]
-		def customer = n[2]
-		
-		metric.getDistance(nd, n[2]) >> 155
-		
-		when:
-		def result = service.findNearestDepot(depots, customer)
+	static XFVRP getVRP() {
+		def vrp = new XFVRP()
+		vrp.addVehicle().setName('V1').setCapacity([10] as float[])
+		// Add depots
+		vrp.addDepot().setExternID('D1').setXlong(0).setYlat(0)
+		// Add customers
+		vrp.addCustomer().setExternID('A1').setXlong(10).setYlat(0).setDemand(5)
+		vrp.addCustomer().setExternID('B1').setXlong(0).setYlat(10).setDemand(5).setPresetBlockName("B")
+		vrp.addCustomer().setExternID('B2').setXlong(10).setYlat(5).setDemand(5).setPresetBlockName("B")
+		vrp.addCustomer().setExternID('C1').setXlong(110).setYlat(100).setDemand(5)
+		vrp.addCustomer().setExternID('E1').setXlong(100).setYlat(110).setDemand(5).setPresetBlockName("E")
+		vrp.addCustomer().setExternID('E2').setXlong(110).setYlat(105).setDemand(5).setPresetBlockName("E")
 
-		then:
-		result == 0
-	}
-	
-	def "Find Nearest Depot with no depots"() {
-		def model = initScen()
-		def n = model.getNodes()
-		service.setModel(model)
-		
-		def depots = []
-		def customer = n[2]
-		
-		metric.getDistance(_, n[2]) >> 155
-		
-		when:
-		def result = service.findNearestDepot(depots, customer)
-
-		then:
-		thrown XFVRPException
-	}
-	
-	XFVRPModel initScen() {
-		def v = new TestVehicle(name: "V1", capacity: [30, 30]).getVehicle()
-
-		def n1 = new TestNode(
-				globalIdx: 2,
-				externID: "1",
-				xlong: -2,
-				ylat: 2,
-				geoId: 2,
-				demand: [1, 1],
-				timeWindow: [[0,99]],
-				loadType: LoadType.DELIVERY)
-				.getNode()
-		def n2 = new TestNode(
-				globalIdx: 3,
-				externID: "2",
-				xlong: -2,
-				ylat: 1,
-				geoId: 3,
-				demand: [1, 1],
-				timeWindow: [[0,99]],
-				loadType: LoadType.DELIVERY)
-				.getNode()
-		def n3 = new TestNode(
-				globalIdx: 4,
-				externID: "3",
-				xlong: -2,
-				ylat: -1,
-				geoId: 4,
-				demand: [1, 1],
-				timeWindow: [[0,99]],
-				loadType: LoadType.DELIVERY)
-				.getNode()
-		def n4 = new TestNode(
-				globalIdx: 5,
-				externID: "4",
-				xlong: -2,
-				ylat: -2,
-				geoId: 5,
-				demand: [1, 1],
-				timeWindow: [[0,99]],
-				loadType: LoadType.DELIVERY)
-				.getNode()
-		def n5 = new TestNode(
-				globalIdx: 6,
-				externID: "5",
-				xlong: 2,
-				ylat: 2,
-				geoId: 6,
-				demand: [1, 1],
-				timeWindow: [[0,99]],
-				loadType: LoadType.DELIVERY)
-				.getNode()
-		def n6 = new TestNode(
-				globalIdx: 7,
-				externID: "6",
-				xlong: 2,
-				ylat: 1,
-				geoId: 7,
-				demand: [1, 1],
-				timeWindow: [[0,99]],
-				loadType: LoadType.DELIVERY)
-				.getNode()
-		def n7 = new TestNode(
-				globalIdx: 8,
-				externID: "7",
-				xlong: 2,
-				ylat: -1,
-				geoId: 8,
-				demand: [1, 1],
-				timeWindow: [[0,99]],
-				loadType: LoadType.DELIVERY)
-				.getNode()
-		def n8 = new TestNode(
-				globalIdx: 9,
-				externID: "8",
-				xlong: 2,
-				ylat: -2,
-				geoId: 9,
-				demand: [1, 1],
-				timeWindow: [[0,99]],
-				loadType: LoadType.DELIVERY)
-				.getNode()
-		nd.setIdx(0);
-		nd2.setIdx(1);
-		n1.setIdx(2);
-		n2.setIdx(3);
-		n3.setIdx(4);
-		n4.setIdx(5);
-		n5.setIdx(6);
-		n6.setIdx(7);
-		n7.setIdx(8);
-		n8.setIdx(9);
-		nr.setIdx(10)
-
-		def nodes = [nd, nd2, n1, n2, n3, n4, n5, n6, n7, n8, nr] as Node[];
-
-		return new XFVRPModel(nodes, metric, metric, v, parameter)
+		vrp.setMetric(Metrics.EUCLEDIAN.get())
+		vrp.addOptType(XFVRPOptTypes.CONST)
+		return vrp
 	}
 }

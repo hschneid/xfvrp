@@ -2,6 +2,7 @@ package xf.xfvrp.opt.improve.ils;
 
 import xf.xfvrp.base.NormalizeSolutionService;
 import xf.xfvrp.base.Quality;
+import xf.xfvrp.base.SiteType;
 import xf.xfvrp.base.exception.XFVRPException;
 import xf.xfvrp.base.monitor.StatusCode;
 import xf.xfvrp.opt.Solution;
@@ -23,6 +24,10 @@ public abstract class XFILS extends XFVRPOptBase {
 	protected XFRandomChangeService randomChangeService;
 
 	public Solution execute(Solution solution) throws XFVRPException {
+		if(isInvalid(solution)) {
+			return solution;
+		}
+
 		Solution currentSolution = solution.copy();
 		Solution bestSolution = solution.copy();
 		Quality bestQuality = check(bestSolution);
@@ -33,7 +38,7 @@ public abstract class XFILS extends XFVRPOptBase {
 			Solution newSolution = currentSolution.copy();
 
 			// Variation
-			newSolution = randomChangeService.change(newSolution, model);
+			newSolution = randomChangeService.change(newSolution);
 
 			// Intensification
 			newSolution = localSearch(newSolution);
@@ -53,7 +58,18 @@ public abstract class XFILS extends XFVRPOptBase {
 			}
 		}
 
-		return NormalizeSolutionService.normalizeRoute(bestSolution, model);
+		return NormalizeSolutionService.normalizeRoute(bestSolution);
+	}
+
+	/**
+	 * Checks, if input solution is valid to be optimized.
+	 * - All routes must contain at least 1 customer
+	 */
+	private boolean isInvalid(Solution solution) {
+		return Arrays.stream(solution.getRoutes())
+				.noneMatch(route ->
+						Arrays.stream(route).anyMatch(node -> node.getSiteType() == SiteType.CUSTOMER)
+				);
 	}
 
 	/**

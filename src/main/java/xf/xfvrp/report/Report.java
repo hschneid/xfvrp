@@ -32,11 +32,10 @@ public class Report {
 	
 	/**
 	 * A Report is the structral representation of a route planning solution.
-	 * 
-	 * @param model The used data model for gaining this solution.
+	 *
 	 */
-	public Report(Solution solution, XFVRPModel model) {
-		this.model = model;
+	public Report(Solution solution) {
+		this.model = solution.getModel();
 		errors.add(solution);
 	}
 

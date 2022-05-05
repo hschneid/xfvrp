@@ -2,6 +2,7 @@ package xf.xfvrp;
 
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.Vehicle;
+import xf.xfvrp.base.compartment.CompartmentType;
 
 /**
  * Copyright (c) 2012-2021 Holger Schneider
@@ -11,11 +12,14 @@ import xf.xfvrp.base.Vehicle;
  * LICENSE file in the root directory of this source tree.
  **/
 public class RoutingDataBag {
+
 	Node[] nodes;
+	CompartmentType[] compartmentTypes;
 	Vehicle vehicle;
 
-	public RoutingDataBag(Node[] nodes, Vehicle vehicle) {
+	public RoutingDataBag(Node[] nodes, CompartmentType[] compartmentTypes, Vehicle vehicle) {
 		this.nodes = nodes;
+		this.compartmentTypes = compartmentTypes;
 		this.vehicle = vehicle;
 	}
 

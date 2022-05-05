@@ -4,17 +4,14 @@ import util.collection.ListMap;
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.NormalizeSolutionService;
 import xf.xfvrp.base.SiteType;
-import xf.xfvrp.base.Util;
 import xf.xfvrp.base.exception.XFVRPException;
-import xf.xfvrp.base.exception.XFVRPExceptionType;
-import xf.xfvrp.base.preset.BlockNameConverter;
 import xf.xfvrp.opt.Solution;
 import xf.xfvrp.opt.XFVRPOptBase;
+import xf.xfvrp.opt.init.solution.vrp.VRPInitialSolutionBuilder;
 
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /** 
  * Copyright (c) 2012-2021 Holger Schneider
@@ -26,7 +23,7 @@ import java.util.stream.Collectors;
  *
  * General construction procedure
  * - Nearest allocation of customers to depots in MDVRP
- * - Optimization with Multiple Lamda Savings
+ * - Optimization with Multiple Lambda Savings
  * - Choice of best solution 
  * 
  * @author hschneid
@@ -35,6 +32,7 @@ import java.util.stream.Collectors;
 public class XFVRPConst extends XFVRPOptBase {
 
 	private final XFVRPSavingsLamda savings = new XFVRPSavingsLamda();
+	private final VRPInitialSolutionBuilder solutionBuilder = new VRPInitialSolutionBuilder();
 
 	/*
 	 * (non-Javadoc)
@@ -43,129 +41,87 @@ public class XFVRPConst extends XFVRPOptBase {
 	@Override
 	public Solution execute(Solution solution) throws XFVRPException {
 		// Prepare: nearest allocation of customer to depots
-		ListMap<Integer, Node> allocMap = allocateNearestDepot(solution);
+		ListMap<Integer, Node> depotAllocations = allocateNearestDepot(solution);
 
-		// Separate giantRoute into pieces of nearest allocated customers
-		List<Node> giantList = new ArrayList<>();
+		Solution newSolution = new Solution(solution.getModel());
 
-		int depIDGlobal = 0;
-		for (int depIdx : allocMap.keySet()) {
+		for (int depIdx : depotAllocations.keySet()) {
 			Node dep = model.getNodes()[depIdx];
-			List<Node> customers = allocMap.get(depIdx);
+			List<Node> customers = depotAllocations.get(depIdx);
 
-			// Prepare customer list: customers with same block are placed togehter
-			customers.sort((arg0, arg1) -> {
-				int diff = arg0.getPresetBlockIdx() - arg1.getPresetBlockIdx();
-				if(diff == 0)
-					diff = arg0.getPresetBlockPos() - arg1.getPresetBlockPos();
-				return diff;
-			});
+			// Prepare customer list: customers with same block are placed together
+			customers.sort(
+					Comparator.comparingInt(Node::getPresetBlockIdx)
+							.thenComparingInt(Node::getPresetBlockPos)
+			);
 
 			// Create temp giant tour with only one depot and allocated customers
-			Solution gT = buildGiantRouteForOptimization(dep, customers);
+			Solution savingsSolution = solutionBuilder.generateSolution(dep, customers, this.model);
 
 			// Run optimizers for each piece and choose best
-			gT = savings.execute(gT, model, statusManager);
+			savingsSolution = savings.execute(savingsSolution, model, statusManager);
 
-			// Concatenate piece to new giant tour
-			for (Node n : gT.getGiantRoute()) {
-				if(n.getSiteType() == SiteType.DEPOT)
-					giantList.add(Util.createIdNode(dep, depIDGlobal++));
-				else
-					giantList.add(n);
-			}
+			newSolution.addRoutes(savingsSolution.getRoutes());
 		}
 
-		Solution newSolution = new Solution();
-		newSolution.setGiantRoute(giantList.toArray(new Node[giantList.size()]));
-		return NormalizeSolutionService.normalizeRoute(newSolution, model);
+		return NormalizeSolutionService.normalizeRoute(newSolution);
 	}
 
 	private ListMap<Integer, Node> allocateNearestDepot(Solution solution) throws XFVRPException {
-		ListMap<Integer, Node> allocMap = ListMap.create();
+		ListMap<Integer, Node> depotAllocations = ListMap.create();
 
-		List<Node> depotList = Arrays.stream(model.getNodes())
-				.filter(node -> node.getSiteType() == SiteType.DEPOT)
-				.collect(Collectors.toList());
+		Node[] depots = Arrays.copyOf(model.getNodes(), model.getNbrOfDepots());
 
-		Node[] giantTour = solution.getGiantRoute();
-		for (int i = 0; i < giantTour.length; i++) {
-			Node n = giantTour[i];
+		for (int routeIdx = 0; routeIdx < solution.getRoutes().length; routeIdx++) {
+			Node[] route = solution.getRoutes()[routeIdx];
+			int firstCustomerIdx = getFirstCustomerInRoute(route);
+			if(firstCustomerIdx == -1)
+				continue;
 
-			if(n.getSiteType() == SiteType.CUSTOMER) {
+			int bestDepotIdx = findNearestDepot(depots, route[firstCustomerIdx]);
+			allocateCustomersOfRoute(route, bestDepotIdx, depotAllocations);
+		}
 
-				int bestIdx = findNearestDepot(depotList, n);
+		return depotAllocations;
+	}
 
-				allocMap.put(bestIdx, n);
+	private int getFirstCustomerInRoute(Node[] route) {
+		for (int i = 0; i < route.length; i++) {
+			if(route[i].getSiteType() == SiteType.CUSTOMER)
+				return i;
+		}
+		return -1;
+	}
 
-				i = allocateCustomersToNearestDepot(allocMap, depotList, giantTour, i, bestIdx);
+	private void allocateCustomersOfRoute(Node[] route, int bestDepotIdx, ListMap<Integer, Node> depotAllocations) {
+		for (int i = route.length - 1; i >= 0; i--) {
+			if(route[i].getSiteType() == SiteType.CUSTOMER) {
+				depotAllocations.put(bestDepotIdx, route[i]);
 			}
 		}
-
-		return allocMap;
 	}
 
-	private int allocateCustomersToNearestDepot(ListMap<Integer, Node> allocMap, List<Node> depotList, Node[] giantTour,
-			int i, int bestIdx) {
-		if(depotList.size() == 1)
-			return i;
-
-		for (int j = i + 1; j < giantTour.length; j++) {
-			Node nextN = giantTour[j];
-			if(nextN.getSiteType() == SiteType.DEPOT)
-				return i;
-
-			allocMap.put(bestIdx, nextN);
-
-			i++;
-		}
-
-		return i;
-	}
-
-	private int findNearestDepot(List<Node> depotList, Node n) throws XFVRPException {
+	private int findNearestDepot(Node[] depots, Node customer) throws XFVRPException {
 		int bestIdx = -1;
-		float bestDistance = Float.MAX_VALUE;
-		if(depotList.size() > 1) {
-			for (Node d : depotList) {
-				float distance = getDistance(d, n);
+		if(depots.length > 1) {
+			float bestDistance = Float.MAX_VALUE;
+			for (Node depot : depots) {
+				// Check allowed depot for this customer
+				if(customer.getPresetDepotList().size() > 0 &&
+						!customer.getPresetDepotList().contains(depot.getIdx())) {
+					continue;
+				}
+
+				float distance = getDistance(depot, customer);
 				if(distance < bestDistance) {
 					bestDistance = distance;
-					bestIdx = d.getIdx();
+					bestIdx = depot.getIdx();
 				}
 			}
-		} else if(depotList.size() == 1) {
-			bestIdx = depotList.get(0).getIdx();
+		} else if(depots.length == 1) {
+			bestIdx = depots[0].getIdx();
 		}
-
-		if(bestIdx == -1)
-			throw new XFVRPException(XFVRPExceptionType.ILLEGAL_STATE, "No improvement found");
 
 		return bestIdx;
-	}
-
-	private Solution buildGiantRouteForOptimization(Node dep, List<Node> customers) {
-		Node[] gT = new Node[customers.size() * 2 + 1];
-
-		int idx = 0;
-		int depID = 0;
-		int lastBlockIdx = BlockNameConverter.UNDEF_BLOCK_IDX;
-		for (int i = 0; i < customers.size(); i++) {
-			int blockIdx = customers.get(i).getPresetBlockIdx();
-
-			// Default blocks or Change of block index lead to a new route
-			if (lastBlockIdx == BlockNameConverter.DEFAULT_BLOCK_IDX || blockIdx != lastBlockIdx)
-				gT[idx++] = Util.createIdNode(dep, depID++);
-
-			gT[idx++] = customers.get(i);
-
-			lastBlockIdx = blockIdx;
-		}
-		gT[idx++] = Util.createIdNode(dep, depID);
-
-		Solution solution = new Solution();
-		solution.setGiantRoute(Arrays.copyOf(gT, idx));
-
-		return solution;
 	}
 }

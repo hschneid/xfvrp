@@ -5,7 +5,7 @@ import xf.xfvrp.base.Node;
 import xf.xfvrp.base.SiteType;
 import xf.xfvrp.base.XFVRPModel;
 import xf.xfvrp.base.exception.XFVRPException;
-import xf.xfvrp.opt.XFVRPSolution;
+import xf.xfvrp.opt.Solution;
 import xf.xfvrp.opt.evaluation.*;
 import xf.xfvrp.report.Event;
 import xf.xfvrp.report.Report;
@@ -24,12 +24,14 @@ import xf.xfvrp.report.RouteReport;
  */
 public class ReportBuilder {
 
-    public Report getReport(XFVRPSolution solution) throws XFVRPException {
-        XFVRPModel model = solution.getModel();
-        Report rep = new Report(solution.getSolution(), model);
+    private final ContextBuilder contextBuilder = new ContextBuilder();
 
-        Context context = ContextBuilder.build(model);
-        for (Node[] route : solution.getSolution()) {
+    public Report getReport(Solution solution) throws XFVRPException {
+        XFVRPModel model = solution.getModel();
+        Report rep = new Report(solution);
+
+        Context context = contextBuilder.build(model);
+        for (Node[] route : solution) {
             // Feasibility check
             FeasibilityAnalzer.checkFeasibility(route);
 
@@ -47,7 +49,7 @@ public class ReportBuilder {
         RouteReport routeReport = new RouteReport(context.getModel().getVehicle());
 
         route = ActiveNodeAnalyzer.getActiveNodes(route);
-        context.setRouteInfos(RouteInfoBuilder.build(route));
+        context.setRouteInfos(RouteInfoBuilder.build(route, context));
 
         context.setCurrentNode(route[0]);
         routeReport.add(
@@ -99,10 +101,10 @@ public class ReportBuilder {
         e.setLoadType(null);
         e.setTravelTime(0);
 
-        Amount deliveryAmount = context.getRouteInfo().getDeliveryAmount();
+        Amount deliveryAmount = Amount.ofDelivery(context.getRouteInfo());
         setAmountsToEvent(e,
                 deliveryAmount.getAmounts(),
-                LoadType.PICKUP
+                LoadType.PRELOAD_AT_DEPOT
         );
 
         return e;
@@ -113,13 +115,13 @@ public class ReportBuilder {
         context.drive(dist);
 
         // check max driving time per shift restrictions
-        if(context.getDrivingTime() >= context.getModel().getVehicle().maxDrivingTimePerShift) {
+        if(context.getDrivingTime() >= context.getModel().getVehicle().getMaxDrivingTimePerShift()) {
             context.resetDrivingTime();
 
             Node waitingNode = context.getCurrentNode().copy();
             waitingNode.setSiteType(SiteType.PAUSE);
             Event e = new Event(waitingNode); // Driver Pause
-            e.setDuration(context.getModel().getVehicle().waitingTimeBetweenShifts);
+            e.setDuration(context.getModel().getVehicle().getWaitingTimeBetweenShifts());
             e.setLoadType(LoadType.PAUSE);
 
             report.add(e, context);
@@ -131,10 +133,12 @@ public class ReportBuilder {
 
         switch(context.getCurrentNode().getSiteType()) {
             case REPLENISH:
-                setAmountsToEvent(e,
-                        context.getRouteInfo().getDeliveryAmount().getAmounts(),
-                        LoadType.PICKUP
-                );
+                if(context.getRouteInfo() != null) {
+                    setAmountsToEvent(e,
+                            Amount.ofDelivery(context.getRouteInfo()).getAmounts(),
+                            LoadType.PRELOAD_AT_DEPOT
+                    );
+                }
                 break;
             case CUSTOMER:
                 setAmountsToEvent(e,

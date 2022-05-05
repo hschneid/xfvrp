@@ -3,6 +3,7 @@ package xf.xfvrp.opt.improve.ils
 import spock.lang.Specification
 import util.instances.TestNode
 import util.instances.TestVehicle
+import util.instances.TestXFVRPModel
 import xf.xfvrp.base.*
 import xf.xfvrp.base.metric.EucledianMetric
 import xf.xfvrp.base.metric.internal.AcceleratedMetricTransformator
@@ -21,7 +22,7 @@ class XFVRPILSSpec extends Specification {
 	def opt3 = Stub XFVRPSegmentMove
 	def evaluationService = Stub EvaluationService
 	def statusManager = Stub StatusManager
-	def service = new XFVRPILS(evaluationService: evaluationService);
+	def service = new XFVRPILS(evaluationService: evaluationService)
 
 	def nd = new TestNode(
 	externID: "DEP",
@@ -41,7 +42,7 @@ class XFVRPILSSpec extends Specification {
 	timeWindow: [[0,99],[2,99]]
 	).getNode()
 
-	def sol;
+	def sol
 
 	def parameter = new XFVRPParameter()
 
@@ -85,11 +86,11 @@ class XFVRPILSSpec extends Specification {
 		service.setModel(model)
 
 		service.model.getParameter().setNbrOfILSLoops(15)
-		service.model.getParameter().setMaxRunningTimeInSec(1);
+		service.model.getParameter().setMaxRunningTimeInSec(1)
 		def statusManager = new StatusManager(startTime: System.currentTimeMillis())
 		service.statusManager = statusManager
 
-		Thread.sleep(1500);
+		Thread.sleep(1500)
 
 		when:
 		def result = service.checkTerminationCriteria(1)
@@ -104,7 +105,7 @@ class XFVRPILSSpec extends Specification {
 		service.setModel(model)
 
 		service.model.getParameter().setNbrOfILSLoops(15)
-		service.model.getParameter().setMaxRunningTimeInSec(10000);
+		service.model.getParameter().setMaxRunningTimeInSec(10000)
 		def statusManager = new StatusManager(startTime: System.currentTimeMillis())
 		service.statusManager = statusManager
 
@@ -151,7 +152,7 @@ class XFVRPILSSpec extends Specification {
 		def betterQuality = new Quality(cost: 80, penalty: 0)
 		evaluationService.check(_ as Solution, _) >>> [quality, betterQuality]
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[5], n[4], nd, nd, n[3], nd] as Node[])
 
 		opt1.execute(_ ,_ , _) >> sol
@@ -208,17 +209,17 @@ class XFVRPILSSpec extends Specification {
 				loadType: LoadType.DELIVERY)
 				.getNode()
 
-		nd.setIdx(0);
-		nd2.setIdx(1);
-		n1.setIdx(2);
-		n2.setIdx(3);
-		n3.setIdx(4);
-		n4.setIdx(5);
+		nd.setIdx(0)
+		nd2.setIdx(1)
+		n1.setIdx(2)
+		n2.setIdx(3)
+		n3.setIdx(4)
+		n4.setIdx(5)
 
-		def nodes = [nd, nd2, n1, n2, n3, n4] as Node[];
+		def nodes = [nd, nd2, n1, n2, n3, n4] as Node[]
 
-		def iMetric = new AcceleratedMetricTransformator().transform(metric, nodes, v);
+		def iMetric = new AcceleratedMetricTransformator().transform(metric, nodes, v)
 
-		return new XFVRPModel(nodes, iMetric, iMetric, v, parameter)
+		return TestXFVRPModel.get(nodes, iMetric, iMetric, v, parameter)
 	}
 }

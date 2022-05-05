@@ -3,6 +3,7 @@ package xf.xfvrp.opt.evaluation
 import spock.lang.Specification
 import util.instances.TestNode
 import util.instances.TestVehicle
+import util.instances.TestXFVRPModel
 import xf.xfvrp.base.*
 import xf.xfvrp.base.metric.EucledianMetric
 import xf.xfvrp.base.metric.internal.AcceleratedMetricTransformator
@@ -10,7 +11,7 @@ import xf.xfvrp.opt.Solution
 
 class EvaluationServiceCapacitySpec extends Specification {
 
-	def service = new EvaluationService();
+	def service = new EvaluationService()
 
 	def nd = new TestNode(
 	externID: "DEP",
@@ -26,7 +27,7 @@ class EvaluationServiceCapacitySpec extends Specification {
 	timeWindow: [[0,99],[2,99]]
 	).getNode()
 
-	def sol;
+	def sol
 
 	def parameter = new XFVRPParameter()
 
@@ -37,11 +38,11 @@ class EvaluationServiceCapacitySpec extends Specification {
 		def model = initScen1(v, LoadType.DELIVERY)
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[1], n[2], n[3], nd] as Node[])
 
 		when:
-		def result = service.check(sol, model)
+		def result = service.check(sol)
 
 		then:
 		result != null
@@ -54,11 +55,11 @@ class EvaluationServiceCapacitySpec extends Specification {
 		def model = initScen1(v, LoadType.DELIVERY)
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[1], n[2], n[3], nd] as Node[])
 
 		when:
-		def result = service.check(sol, model)
+		def result = service.check(sol)
 
 		then:
 		result != null
@@ -71,11 +72,11 @@ class EvaluationServiceCapacitySpec extends Specification {
 		def model = initScen1(v, LoadType.DELIVERY)
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[1], n[2], n[3], nd] as Node[])
 
 		when:
-		def result = service.check(sol, model)
+		def result = service.check(sol)
 
 		then:
 		result != null
@@ -88,11 +89,11 @@ class EvaluationServiceCapacitySpec extends Specification {
 		def model = initScen1(v, LoadType.PICKUP)
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[1], n[2], n[3], nd] as Node[])
 
 		when:
-		def result = service.check(sol, model)
+		def result = service.check(sol)
 
 		then:
 		result != null
@@ -105,11 +106,11 @@ class EvaluationServiceCapacitySpec extends Specification {
 		def model = initScen1(v, LoadType.PICKUP)
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[1], n[2], n[3], nd] as Node[])
 
 		when:
-		def result = service.check(sol, model)
+		def result = service.check(sol)
 
 		then:
 		result != null
@@ -122,11 +123,11 @@ class EvaluationServiceCapacitySpec extends Specification {
 		def model = initScen1(v, LoadType.PICKUP)
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[1], n[2], n[3], nd] as Node[])
 
 		when:
-		def result = service.check(sol, model)
+		def result = service.check(sol)
 
 		then:
 		result != null
@@ -139,11 +140,11 @@ class EvaluationServiceCapacitySpec extends Specification {
 		def model = initScen2(v)
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[1], n[3], n[2], nd] as Node[])
 
 		when:
-		def result = service.check(sol, model)
+		def result = service.check(sol)
 
 		then:
 		result != null
@@ -156,11 +157,15 @@ class EvaluationServiceCapacitySpec extends Specification {
 		def model = initScen2(v)
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
+		// Pickup 3 at    depot (truck 3)
+		// Unload 1 at 1. node  (truck=2)
+		// Pickup 3 at 2. node  (truck=5) <--- Error
+		// Unload 2 at 3. node  (truck=3)
 		sol.setGiantRoute([nd, n[1], n[2], n[3], nd] as Node[])
 
 		when:
-		def result = service.check(sol, model)
+		def result = service.check(sol)
 
 		then:
 		result != null
@@ -173,11 +178,11 @@ class EvaluationServiceCapacitySpec extends Specification {
 		def model = initScen3(v)
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[4], nr, n[6], n[3], nd] as Node[])
 
 		when:
-		def result = service.check(sol, model)
+		def result = service.check(sol)
 
 		then:
 		result != null
@@ -190,11 +195,11 @@ class EvaluationServiceCapacitySpec extends Specification {
 		def model = initScen3(v)
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[4], nr, n[3], n[5], nd] as Node[])
 
 		when:
-		def result = service.check(sol, model)
+		def result = service.check(sol)
 
 		then:
 		result != null
@@ -207,12 +212,11 @@ class EvaluationServiceCapacitySpec extends Specification {
 		def model = initScen3(v)
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[4], n[6], nr, n[3], nd] as Node[])
 
 		when:
-		def result = service.check(sol, model)
-
+		def result = service.check(sol)
 		then:
 		result != null
 		result.getPenalty() > 0
@@ -224,11 +228,11 @@ class EvaluationServiceCapacitySpec extends Specification {
 		def model = initScen3(v)
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[4], n[5], n[2], nr, n[6], n[3], nd] as Node[])
 
 		when:
-		def result = service.check(sol, model)
+		def result = service.check(sol)
 
 		then:
 		result != null
@@ -269,16 +273,16 @@ class EvaluationServiceCapacitySpec extends Specification {
 				loadType: loadType)
 				.getNode()
 
-		nd.setIdx(0);
-		n1.setIdx(1);
-		n2.setIdx(2);
-		n3.setIdx(3);
+		nd.setIdx(0)
+		n1.setIdx(1)
+		n2.setIdx(2)
+		n3.setIdx(3)
 
-		def nodes = [nd, n1, n2, n3] as Node[];
+		def nodes = [nd, n1, n2, n3] as Node[]
 
-		def iMetric = new AcceleratedMetricTransformator().transform(metric, nodes, v);
+		def iMetric = new AcceleratedMetricTransformator().transform(metric, nodes, v)
 
-		return new XFVRPModel(nodes, iMetric, iMetric, v, parameter)
+		return TestXFVRPModel.get(nodes, iMetric, iMetric, v, parameter)
 	}
 
 	XFVRPModel initScen2(Vehicle v) {
@@ -313,16 +317,16 @@ class EvaluationServiceCapacitySpec extends Specification {
 				loadType: LoadType.DELIVERY)
 				.getNode()
 
-		nd.setIdx(0);
-		n1.setIdx(1);
-		n2.setIdx(2);
-		n3.setIdx(3);
+		nd.setIdx(0)
+		n1.setIdx(1)
+		n2.setIdx(2)
+		n3.setIdx(3)
 
-		def nodes = [nd, n1, n2, n3] as Node[];
+		def nodes = [nd, n1, n2, n3] as Node[]
 
-		def iMetric = new AcceleratedMetricTransformator().transform(metric, nodes, v);
+		def iMetric = new AcceleratedMetricTransformator().transform(metric, nodes, v)
 
-		return new XFVRPModel(nodes, iMetric, iMetric, v, parameter)
+		return TestXFVRPModel.get(nodes, iMetric, iMetric, v, parameter)
 	}
 
 	XFVRPModel initScen3(Vehicle v) {
@@ -377,19 +381,17 @@ class EvaluationServiceCapacitySpec extends Specification {
 				loadType: LoadType.DELIVERY)
 				.getNode()
 
-		nd.setIdx(0);
-		nr.setIdx(1);
-		n1.setIdx(2);
-		n2.setIdx(3);
-		n3.setIdx(4);
-		n4.setIdx(5);
-		n5.setIdx(6);
+		nd.setIdx(0)
+		nr.setIdx(1)
+		n1.setIdx(2)
+		n2.setIdx(3)
+		n3.setIdx(4)
+		n4.setIdx(5)
+		n5.setIdx(6)
 
-		def nodes = [nd, nr, n1, n2, n3, n4, n5] as Node[];
+		def nodes = [nd, nr, n1, n2, n3, n4, n5] as Node[]
 
-		def iMetric = new AcceleratedMetricTransformator().transform(metric, nodes, v);
-
-		return new XFVRPModel(nodes, iMetric, iMetric, v, parameter)
+		return TestXFVRPModel.get(Arrays.asList(nodes), v)
 	}
 
 }

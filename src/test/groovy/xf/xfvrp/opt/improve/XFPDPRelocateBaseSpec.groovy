@@ -3,6 +3,7 @@ package xf.xfvrp.opt.improve
 import spock.lang.Specification
 import util.instances.TestNode
 import util.instances.TestVehicle
+import util.instances.TestXFVRPModel
 import xf.xfvrp.base.*
 import xf.xfvrp.base.fleximport.CustomerData
 import xf.xfvrp.base.metric.EucledianMetric
@@ -11,7 +12,7 @@ import xf.xfvrp.opt.Solution
 
 class XFPDPRelocateBaseSpec extends Specification {
 
-	def service = new XFPDPRelocate();
+	def service = new XFPDPRelocate()
 
 	def nd = new TestNode(
 	externID: "DEP",
@@ -21,7 +22,7 @@ class XFPDPRelocateBaseSpec extends Specification {
 	timeWindow: [[0,99],[2,99]]
 	).getNode()
 
-	def sol;
+	def sol
 
 	def parameter = new XFVRPParameter()
 
@@ -32,7 +33,7 @@ class XFPDPRelocateBaseSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[1], n[2], n[3], n[4], n[5], n[6], nd] as Node[])
 		def route = sol.getGiantRoute()
 
@@ -55,7 +56,7 @@ class XFPDPRelocateBaseSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[1], n[2], n[3], nd, n[4], n[5], n[6], nd] as Node[])
 		def route = sol.getGiantRoute()
 
@@ -79,7 +80,7 @@ class XFPDPRelocateBaseSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[3], n[1], n[4], n[5], n[6], n[2], nd] as Node[])
 		
 		when:
@@ -103,7 +104,7 @@ class XFPDPRelocateBaseSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[3], n[1], n[4], n[5], n[6], n[2], nd] as Node[])
 
 		when:
@@ -127,7 +128,7 @@ class XFPDPRelocateBaseSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[4], n[1], n[6], n[2], n[3], n[5], nd] as Node[])
 
 		when:
@@ -151,7 +152,7 @@ class XFPDPRelocateBaseSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[1], n[3], n[5], n[6], n[4], nd] as Node[])
 
 		when:
@@ -175,7 +176,7 @@ class XFPDPRelocateBaseSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[4], n[1], n[5], n[6], n[3], nd] as Node[])
 
 		when:
@@ -199,7 +200,7 @@ class XFPDPRelocateBaseSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[1], n[3], n[4], n[6], n[5], nd] as Node[])
 
 		when:
@@ -223,7 +224,7 @@ class XFPDPRelocateBaseSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[3], n[1], n[2], n[5], n[6], n[4], nd] as Node[])
 
 		when:
@@ -247,7 +248,7 @@ class XFPDPRelocateBaseSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[1], n[2], n[3], n[4], nd] as Node[])
 
 		when:
@@ -343,20 +344,20 @@ class XFPDPRelocateBaseSpec extends Specification {
 				new CustomerData(externID: "6", shipID: "C")
 		] as List<CustomerData>
 
-		nd.setIdx(0);
-		n1.setIdx(1);
-		n2.setIdx(2);
-		n3.setIdx(3);
-		n4.setIdx(4);
-		n5.setIdx(5);
-		n6.setIdx(6);
+		nd.setIdx(0)
+		n1.setIdx(1)
+		n2.setIdx(2)
+		n3.setIdx(3)
+		n4.setIdx(4)
+		n5.setIdx(5)
+		n6.setIdx(6)
 
-		def nodes = [nd, n1, n2, n3, n4, n5, n6] as Node[];
+		def nodes = [nd, n1, n2, n3, n4, n5, n6] as Node[]
 
-		def iMetric = new AcceleratedMetricTransformator().transform(metric, nodes, v);
+		def iMetric = new AcceleratedMetricTransformator().transform(metric, nodes, v)
 		new ShipmentConverter().convert(nodes, customers)
 
-		return new XFVRPModel(nodes, iMetric, iMetric, v, parameter)
+		return TestXFVRPModel.get(nodes, iMetric, iMetric, v, parameter)
 	}
 
 }

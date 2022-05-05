@@ -23,7 +23,7 @@ import xf.xfvrp.opt.Solution;
  */
 public class XFVRPSavingsLamda extends XFVRPSavings {
 
-	private final float[] lamdaParameters = new float[]{0.6f, 1, 1.4f, 1.6f, 2, 3};
+	private final float[] lambdaParameters = new float[]{0.6f, 1, 1.4f, 1.6f, 2, 3};
 	
 	/*
 	 * (non-Javadoc)
@@ -37,7 +37,7 @@ public class XFVRPSavingsLamda extends XFVRPSavings {
 
 		bestQuality = check(best);
 		
-		for (float l : lamdaParameters) {
+		for (float l : lambdaParameters) {
 			this.lamda = l;
 			sol = super.execute(solution.copy());
 			quality = check(sol);

@@ -6,7 +6,7 @@ import xf.xfvrp.base.preset.BlockNameConverter;
 import xf.xfvrp.base.preset.BlockPositionConverter;
 import xf.xfvrp.opt.Solution;
 import xf.xfvrp.opt.XFVRPOptBase;
-import xf.xfvrp.opt.XFVRPOptType;
+import xf.xfvrp.opt.XFVRPOptTypes;
 import xf.xfvrp.opt.init.solution.vrp.SolutionBuilderDataBag;
 
 import java.util.Arrays;
@@ -45,13 +45,15 @@ import java.util.stream.Collectors;
  */
 public class CheckService {
 
-	private XFVRPOptBase optimizationMethod = XFVRPOptType.RELOCATE.createInstance();
+	private XFVRPOptBase optimizationMethod = XFVRPOptTypes.RELOCATE.create();
 	private CheckCustomerService checkCustomerService = new CheckCustomerService();
 
 	public CheckService() throws XFVRPException {
 	}
 
 	/**
+	 * If nodes cannot be served within the given constraints, these nodes
+	 * are excluded from optimization in the invalidNodes list.
 	 * Builds the giant route.<br>
 	 * A list of nodes, where the depot is allowed to be placed multiple times.
 	 * Each area surrounded by two depots is called route. A giant route has to
@@ -59,17 +61,11 @@ public class CheckService {
 	 * 
 	 * Multiple depots are inserted in a alternating sequence.
 	 * 
-	 * If nodes cannot be served within the given constraints, these nodes
-	 * are excluded from optimization in the invalidNodes list.
 	 */
 	public SolutionBuilderDataBag check(XFVRPModel model, List<Node> invalidNodes) throws XFVRPException {
-		SolutionBuilderDataBag solutionBuilderDataBag = new SolutionBuilderDataBag();
-
 		Map<Integer, List<Node>> blocks = getBlocks(model);
 
-		checkBlocks(blocks, solutionBuilderDataBag, invalidNodes, model);
-
-		return solutionBuilderDataBag;
+		return checkBlocks(blocks, invalidNodes, model);
 	}
 
 	private Map<Integer, List<Node>> getBlocks(XFVRPModel model) {
@@ -78,13 +74,15 @@ public class CheckService {
 				.collect(Collectors.groupingBy(Node::getPresetBlockIdx));
 	}
 
-	private void checkBlocks(Map<Integer, List<Node>> blocks, SolutionBuilderDataBag solutionBuilderDataBag, List<Node> invalidNodes, XFVRPModel model) throws XFVRPException {
+	private SolutionBuilderDataBag checkBlocks(Map<Integer, List<Node>> blocks, List<Node> invalidNodes, XFVRPModel model) throws XFVRPException {
+		SolutionBuilderDataBag solutionBuilderDataBag = new SolutionBuilderDataBag();
+
 		for (Map.Entry<Integer, List<Node>> entry : blocks.entrySet()) {
 			int blockIdx = entry.getKey();
 			List<Node> nodesOfBlock = entry.getValue();
 			solutionBuilderDataBag.resetKnownSequencePositions();
 
-			nodesOfBlock.sort(Comparator.comparingInt(Node::getPresetBlockPos));
+			nodesOfBlock.sort(Comparator.comparingInt(Node::getPresetBlockPos).thenComparingInt(Node::getPresetBlockRank));
 
 			boolean isValid = checkNodesOfBlock(blockIdx, nodesOfBlock, solutionBuilderDataBag, invalidNodes, model);
 			if(!isValid) 
@@ -95,6 +93,8 @@ public class CheckService {
 
 			checkMaxWaiting(nodesOfBlock, model);
 		}
+
+		return solutionBuilderDataBag;
 	}
 
 	private boolean checkNodesOfBlock(int blockIdx, List<Node> nodesOfBlock, SolutionBuilderDataBag solutionBuilderDataBag, List<Node> invalidNodes, XFVRPModel model) throws XFVRPException {
@@ -133,7 +133,9 @@ public class CheckService {
 			XFVRPModel model,
 			int blockIdx,
 			List<Node> nodesOfBlock) throws XFVRPException {
-		if(blockIdx != BlockNameConverter.DEFAULT_BLOCK_IDX) {
+		if(blockIdx != BlockNameConverter.DEFAULT_BLOCK_IDX &&
+				nodesOfBlock.stream().anyMatch(node -> node.getSiteType() == SiteType.CUSTOMER)
+		) {
 			if(!checkBlock(nodesOfBlock, model)) {
 				solutionBuilderDataBag.getValidCustomers().removeAll(nodesOfBlock);
 				invalidNodes.addAll(nodesOfBlock);
@@ -173,7 +175,7 @@ public class CheckService {
 
 			// Check with Relocate optimization, if there is a sequence of nodes
 			// in the block, which are valid for the constraints.
-			Solution solution = new Solution();
+			Solution solution = new Solution(model);
 			solution.addRoute(route);
 
 			solution = optimizationMethod.execute(solution, model, null);
@@ -193,7 +195,7 @@ public class CheckService {
 		int idx = 0;
 		
 		route[idx++] = Util.createIdNode(depot, 0);
-		for (int j = nodesOfBlock.size() - 1; j >= 0; j--) {
+		for (int j = 0; j < nodesOfBlock.size(); j++) {
 			if(nodesOfBlock.get(j).getSiteType() == SiteType.CUSTOMER)
 				route[idx++] = nodesOfBlock.get(j); 
 		}

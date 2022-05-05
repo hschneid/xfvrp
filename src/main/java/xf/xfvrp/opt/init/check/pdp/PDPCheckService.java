@@ -26,11 +26,7 @@ public class PDPCheckService {
 		if(!isValid)
 			return false;
 		
-		isValid = checkTimeWindows(model, depot, pick, deli);
-		if(!isValid)
-			return false;
-
-		return true;
+		return checkTimeWindows(model, depot, pick, deli);
 	}
 
 	private boolean checkTimeWindows(XFVRPModel model, Node depot, Node pick, Node deli) {
@@ -82,7 +78,7 @@ public class PDPCheckService {
 		
 		// Check route duration with this customer
 		float time = travelTime + travelTime2 + travelTime3 + serviceTime;
-		if(time > model.getVehicle().maxRouteDuration) {
+		if(time > model.getVehicle().getMaxRouteDuration()) {
 			pick.setInvalidReason(InvalidReason.TRAVEL_TIME, "Customer " + pick.getExternID() + " - Traveltime required: " + time);
 			deli.setInvalidReason(InvalidReason.TRAVEL_TIME, "Customer " + deli.getExternID() + " - Traveltime required: " + time);
 			return false;
@@ -93,12 +89,12 @@ public class PDPCheckService {
 
 	private boolean checkVehicleType(XFVRPModel model, Node pick, Node deli) {
 		// Check if customer is allowed for this vehicle type
-		if(!pick.getPresetBlockVehicleList().isEmpty() && ! pick.getPresetBlockVehicleList().contains(model.getVehicle().idx)){
+		if(!pick.getPresetBlockVehicleList().isEmpty() && ! pick.getPresetBlockVehicleList().contains(model.getVehicle().getIdx())){
 			pick.setInvalidReason(InvalidReason.WRONG_VEHICLE_TYPE);
 			return false;
 		}
 		// Check if customer is allowed for this vehicle type
-		if(!deli.getPresetBlockVehicleList().isEmpty() && ! deli.getPresetBlockVehicleList().contains(model.getVehicle().idx)){
+		if(!deli.getPresetBlockVehicleList().isEmpty() && ! deli.getPresetBlockVehicleList().contains(model.getVehicle().getIdx())){
 			deli.setInvalidReason(InvalidReason.WRONG_VEHICLE_TYPE);
 			return false;
 		}

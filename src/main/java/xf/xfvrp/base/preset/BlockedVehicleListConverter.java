@@ -29,28 +29,28 @@ public class BlockedVehicleListConverter {
 	 * Sets for a node the blocked vehicle object which was given in
 	 * the input data
 	 */
-	public static void convert(Node[] nodes, List<CustomerData> customerList, Vehicle[] vehicles, StatusManager mon) {
+	public static void convert(Node[] nodes, List<CustomerData> customers, Vehicle[] vehicles, StatusManager mon) {
 		Map<String, Integer> vehMap = getVehicleMapping(vehicles);
 
 		Map<String, Node> nodeMap = getNodeMapping(nodes);
 
-		addPreset(customerList, vehMap, nodeMap, mon);
+		addPreset(customers, vehMap, nodeMap, mon);
 	}
 
-	private static void addPreset(List<CustomerData> customerList, Map<String, Integer> vehMap, Map<String, Node> nodeMap, StatusManager mon) {
-		for (CustomerData cust : customerList) {
-			Node node = nodeMap.get(cust.getExternID());
+	private static void addPreset(List<CustomerData> customers, Map<String, Integer> vehicles, Map<String, Node> nodes, StatusManager mon) {
+		for (CustomerData cust : customers) {
+			Node node = nodes.get(cust.getExternID());
 			
 			Set<String> presetBlockedVehicles = cust.getPresetBlockVehicleList();
-			
-			if(presetBlockedVehicles == null)
+
+			if(presetBlockedVehicles == null || presetBlockedVehicles.size() == 0)
 				continue;
 
 			presetBlockedVehicles.forEach(vehName -> {
 				vehName = vehName.trim();
 
-				if(vehMap.containsKey(vehName)) 
-					node.addPresetVehicle(vehMap.get(vehName));
+				if(vehicles.containsKey(vehName))
+					node.addPresetVehicle(vehicles.get(vehName));
 				else 
 					mon.fireMessage(StatusCode.EXCEPTION, "Found blocked vehicle name "+vehName+" for node "+node.getExternID()+" could not be bound to existing vehicle names. It will be ignored.");
 			});
@@ -58,7 +58,8 @@ public class BlockedVehicleListConverter {
 	}
 
 	private static Map<String, Integer> getVehicleMapping(Vehicle[] vehicles) {
-		return Arrays.stream(vehicles).collect(Collectors.toMap(k -> k.name, v -> v.idx, (v1, v2) -> v1));
+		return Arrays.stream(vehicles)
+				.collect(Collectors.toMap(Vehicle::getName, Vehicle::getIdx, (v1, v2) -> v1));
 	}
 
 	private static Map<String, Node> getNodeMapping(Node[] nodes) {

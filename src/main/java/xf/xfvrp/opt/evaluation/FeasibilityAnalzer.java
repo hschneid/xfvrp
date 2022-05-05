@@ -5,9 +5,6 @@ import xf.xfvrp.base.SiteType;
 import xf.xfvrp.base.exception.XFVRPException;
 import xf.xfvrp.base.exception.XFVRPExceptionType;
 
-import java.util.Arrays;
-import java.util.Objects;
-
 /**
  * Copyright (c) 2012-2021 Holger Schneider
  * All rights reserved.
@@ -24,7 +21,14 @@ public class FeasibilityAnalzer {
 			throw new XFVRPException(XFVRPExceptionType.ILLEGAL_STATE, "First node in giant route is not a depot.");
 		if(route[route.length - 1].getSiteType() != SiteType.DEPOT)
 			throw new XFVRPException(XFVRPExceptionType.ILLEGAL_STATE, "Last node in giant route is not a depot.");
-		if(Arrays.stream(route).anyMatch(Objects::isNull))
+		if(hasNullObjects(route))
 			throw new XFVRPException(XFVRPExceptionType.ILLEGAL_STATE, "Route contains null objects!");
+	}
+
+	private static boolean hasNullObjects(Object[] objects) {
+		for (int i = objects.length - 1; i >= 0; i--) {
+			if(objects[i] == null) return true;
+		}
+		return false;
 	}
 }

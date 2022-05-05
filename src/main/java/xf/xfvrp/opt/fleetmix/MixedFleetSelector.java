@@ -1,10 +1,11 @@
-package xf.xfvrp.opt;
+package xf.xfvrp.opt.fleetmix;
 
 import xf.xfvrp.base.Vehicle;
 import xf.xfvrp.report.Report;
 import xf.xfvrp.report.RouteReport;
 import xf.xfvrp.report.RouteReportSummary;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -15,7 +16,7 @@ import java.util.stream.Collectors;
  * This source code is licensed under the MIT License (MIT) found in the
  * LICENSE file in the root directory of this source tree.
  **/
-public class FullRouteMixedFleetSelector {
+public class MixedFleetSelector implements IMixedFleetSelector {
 
 	/**
 	 * This method searches the best k routes in a given solution
@@ -26,21 +27,16 @@ public class FullRouteMixedFleetSelector {
 	 * @param rep Solution as report object
 	 * @return List of best routes in solution report
 	 */
-	List<RouteReport> getBestRoutes(Vehicle veh, Report rep) {
+	@Override
+	public List<RouteReport> getBestRoutes(Vehicle veh, Report rep) {
 		return rep.getRoutes().stream()
 				// Get the quality of routes by the report informations
-				.map(route -> getQuality(route))
+				.map(this::getQuality)
 				// Sort the routes by their quality
-				.sorted((o1, o2) -> {
-					double v1 = o1.quality;
-					double v2 = o2.quality;
-					if(v1 > v2) return 1;
-					if(v1 < v2) return -1;
-					return 0;
-				})
+				.sorted(Comparator.comparing((RouteQuality r) -> r.quality))
 				// Reduce routes to the n best routes
 				.map(val -> val.route)
-				.limit(veh.nbrOfAvailableVehicles)
+				.limit(veh.getNbrOfAvailableVehicles())
 				.collect(Collectors.toList());
 	}
 
@@ -50,7 +46,7 @@ public class FullRouteMixedFleetSelector {
 		Vehicle veh = route.getVehicle();
 		float time = summary.getDuration();
 		float amount = sum(summary.getPickups()) + sum(summary.getDeliveries());
-		float quality = (veh.fixCost + (veh.varCost * time)) / amount;
+		float quality = (veh.getFixCost() + (veh.getVarCost() * time)) / amount;
 		
 		if(summary.getDelay() > 0)
 			quality = Float.MAX_VALUE;

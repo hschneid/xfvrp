@@ -3,6 +3,7 @@ package xf.xfvrp.opt.improve.routebased.swap
 import spock.lang.Specification
 import util.instances.TestNode
 import util.instances.TestVehicle
+import util.instances.TestXFVRPModel
 import xf.xfvrp.base.*
 import xf.xfvrp.base.metric.EucledianMetric
 import xf.xfvrp.base.metric.internal.AcceleratedMetricTransformator
@@ -241,21 +242,21 @@ class XFVRPSwapSearchUtilSpec extends Specification {
 				timeWindow: [[0,99]],
 				loadType: LoadType.DELIVERY)
 				.getNode()
-		nd.setIdx(0);
-		nd2.setIdx(1);
-		n1.setIdx(2);
-		n2.setIdx(3);
-		n3.setIdx(4);
-		n4.setIdx(5);
-		n5.setIdx(6);
-		n6.setIdx(7);
-		n7.setIdx(8);
-		n8.setIdx(9);
+		nd.setIdx(0)
+		nd2.setIdx(1)
+		n1.setIdx(2)
+		n2.setIdx(3)
+		n3.setIdx(4)
+		n4.setIdx(5)
+		n5.setIdx(6)
+		n6.setIdx(7)
+		n7.setIdx(8)
+		n8.setIdx(9)
 
-		def nodes = [nd, nd2, n1, n2, n3, n4, n5, n6, n7, n8] as Node[];
+		def nodes = [nd, nd2, n1, n2, n3, n4, n5, n6, n7, n8] as Node[]
 
-		def iMetric = new AcceleratedMetricTransformator().transform(metric, nodes, v);
+		def iMetric = new AcceleratedMetricTransformator().transform(metric, nodes, v)
 
-		return new XFVRPModel(nodes, iMetric, iMetric, v, parameter)
+		return TestXFVRPModel.get(nodes, iMetric, iMetric, v, parameter)
 	}
 }

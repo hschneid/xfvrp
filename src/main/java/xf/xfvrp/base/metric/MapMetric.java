@@ -29,7 +29,7 @@ public class MapMetric implements Metric {
 	 */
 	@Override
 	public float getDistance(Node src, Node dst, Vehicle veh) {
-		return map.get(genKey(src.getGeoId(), dst.getGeoId(), veh.vehicleMetricId))[0];
+		return map.get(genKey(src.getGeoId(), dst.getGeoId(), veh.getVehicleMetricId()))[0];
 	}
 
 	/*
@@ -38,7 +38,7 @@ public class MapMetric implements Metric {
 	 */
 	@Override
 	public float getTime(Node src, Node dst, Vehicle veh) {
-		return map.get(genKey(src.getGeoId(), dst.getGeoId(), veh.vehicleMetricId))[1];
+		return map.get(genKey(src.getGeoId(), dst.getGeoId(), veh.getVehicleMetricId()))[1];
 	}
 	
 	/*
@@ -47,7 +47,7 @@ public class MapMetric implements Metric {
 	 */
 	@Override
 	public float[] getDistanceAndTime(Node src, Node dst, Vehicle veh) {
-		return map.get(genKey(src.getGeoId(), dst.getGeoId(), veh.vehicleMetricId));
+		return map.get(genKey(src.getGeoId(), dst.getGeoId(), veh.getVehicleMetricId()));
 	}
 	
 	/**

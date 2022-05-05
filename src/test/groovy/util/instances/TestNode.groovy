@@ -26,9 +26,9 @@ class TestNode {
 	int shipmentIdx = -1
 	int presetDepotGlobalIdx = -1
 	int presetVehicleIdx = -1
+	int presetVehicleIdx2 = -1
 	int presetBlackNodeIdx = -1
 	InvalidReason invalidReason = InvalidReason.NONE
-	boolean[] isCompartmentReplenished
 
 	Node getNode() {
 		Node node = new Node(
@@ -44,15 +44,15 @@ class TestNode {
 				serviceTimeForSite,
 				loadType,
 				presetBlockRank,
-				shipID,
-				isCompartmentReplenished
+				shipID
 				)
 		node.setPresetBlockIdx(presetBlockIdx)
 		node.setPresetBlockPos(presetBlockPos)
 		node.setShipmentIdx(shipmentIdx)
 		if(presetDepotGlobalIdx > -1) node.addPresetDepot(presetDepotGlobalIdx)
 		if(presetVehicleIdx > -1) node.addPresetVehicle(presetVehicleIdx)
-		if(presetBlackNodeIdx > -1) node.addToBlacklist(presetBlackNodeIdx)
+		if(presetVehicleIdx2 > -1) node.addPresetVehicle(presetVehicleIdx2)
+		if(presetBlackNodeIdx > -1) node.setPresetRoutingBlackList(new int[]{presetBlackNodeIdx})
 		node.invalidReason = invalidReason
 
 		return node

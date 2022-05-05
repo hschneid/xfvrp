@@ -3,16 +3,14 @@ package xf.xfvrp.report
 import spock.lang.Specification
 import util.instances.TestNode
 import util.instances.TestVehicle
+import util.instances.TestXFVRPModel
 import xf.xfvrp.base.*
-import xf.xfvrp.base.metric.EucledianMetric
-import xf.xfvrp.base.metric.internal.AcceleratedMetricTransformator
 import xf.xfvrp.opt.Solution
-import xf.xfvrp.opt.XFVRPSolution
 import xf.xfvrp.report.build.ReportBuilder
 
 class ReportBuilderCapacitySpec extends Specification {
 
-	def service = new ReportBuilder();
+	def service = new ReportBuilder()
 
 	def nd = new TestNode(
 	externID: "DEP",
@@ -28,24 +26,18 @@ class ReportBuilderCapacitySpec extends Specification {
 	timeWindow: [[0,99],[2,99]]
 	).getNode()
 
-	def sol;
-
-	def parameter = new XFVRPParameter()
-
-	def metric = new EucledianMetric()
+	def sol
 
 	def "Distance"() {
 		def v = new TestVehicle(name: "V1", capacity: [3, 3]).getVehicle()
 		def model = initScen1(v, LoadType.DELIVERY)
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[1], n[2], n[3], nd] as Node[])
 
-		def solution = new XFVRPSolution(sol, model);
-
 		when:
-		def result = service.getReport(solution)
+		def result = service.getReport(sol)
 
 		then:
 		result != null
@@ -66,13 +58,11 @@ class ReportBuilderCapacitySpec extends Specification {
 		def model = initScen1(v, LoadType.DELIVERY)
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[1], n[2], n[3], nd] as Node[])
 
-		def solution = new XFVRPSolution(sol, model);
-
 		when:
-		def result = service.getReport(solution)
+		def result = service.getReport(sol)
 
 		then:
 		result != null
@@ -83,7 +73,7 @@ class ReportBuilderCapacitySpec extends Specification {
 		result.getRoutes().get(0).getSummary().getPickups()[0] == 0
 		result.getRoutes().get(0).getSummary().getPickups()[1] == 0
 		Math.abs(result.getRoutes().get(0).getEvents().get(0).getAmounts()[0] - 3) < 0.001
-		result.getRoutes().get(0).getEvents().get(0).getLoadType() == LoadType.PICKUP
+		result.getRoutes().get(0).getEvents().get(0).getLoadType() == LoadType.PRELOAD_AT_DEPOT
 		Math.abs(result.getRoutes().get(0).getEvents().get(1).getAmounts()[0] - 1) < 0.001
 		result.getRoutes().get(0).getEvents().get(1).getLoadType() == LoadType.DELIVERY
 		Math.abs(result.getRoutes().get(0).getEvents().get(2).getAmounts()[0] - 1) < 0.001
@@ -99,13 +89,11 @@ class ReportBuilderCapacitySpec extends Specification {
 		def model = initScen1(v, LoadType.DELIVERY)
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[1], n[2], n[3], nd] as Node[])
 
-		def solution = new XFVRPSolution(sol, model);
-
 		when:
-		def result = service.getReport(solution)
+		def result = service.getReport(sol)
 
 		then:
 		result != null
@@ -118,7 +106,7 @@ class ReportBuilderCapacitySpec extends Specification {
 		result.getRoutes().get(0).getSummary().getPickups()[0] == 0
 		result.getRoutes().get(0).getSummary().getPickups()[1] == 0
 		Math.abs(result.getRoutes().get(0).getEvents().get(0).getAmounts()[0] - 3) < 0.001
-		result.getRoutes().get(0).getEvents().get(0).getLoadType() == LoadType.PICKUP
+		result.getRoutes().get(0).getEvents().get(0).getLoadType() == LoadType.PRELOAD_AT_DEPOT
 		Math.abs(result.getRoutes().get(0).getEvents().get(1).getAmounts()[0] - 1) < 0.001
 		result.getRoutes().get(0).getEvents().get(1).getLoadType() == LoadType.DELIVERY
 		Math.abs(result.getRoutes().get(0).getEvents().get(2).getAmounts()[0] - 1) < 0.001
@@ -134,13 +122,11 @@ class ReportBuilderCapacitySpec extends Specification {
 		def model = initScen1(v, LoadType.DELIVERY)
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[1], n[2], n[3], nd] as Node[])
 
-		def solution = new XFVRPSolution(sol, model);
-
 		when:
-		def result = service.getReport(solution)
+		def result = service.getReport(sol)
 
 		then:
 		result != null
@@ -153,7 +139,7 @@ class ReportBuilderCapacitySpec extends Specification {
 		result.getRoutes().get(0).getSummary().getPickups()[0] == 0
 		result.getRoutes().get(0).getSummary().getPickups()[1] == 0
 		Math.abs(result.getRoutes().get(0).getEvents().get(0).getAmounts()[0] - 3) < 0.001
-		result.getRoutes().get(0).getEvents().get(0).getLoadType() == LoadType.PICKUP
+		result.getRoutes().get(0).getEvents().get(0).getLoadType() == LoadType.PRELOAD_AT_DEPOT
 		Math.abs(result.getRoutes().get(0).getEvents().get(1).getAmounts()[0] - 1) < 0.001
 		result.getRoutes().get(0).getEvents().get(1).getLoadType() == LoadType.DELIVERY
 		Math.abs(result.getRoutes().get(0).getEvents().get(2).getAmounts()[0] - 1) < 0.001
@@ -162,7 +148,6 @@ class ReportBuilderCapacitySpec extends Specification {
 		result.getRoutes().get(0).getEvents().get(3).getLoadType() == LoadType.DELIVERY
 		Math.abs(result.getRoutes().get(0).getEvents().get(4).getAmounts()[0] - 0) < 0.001
 		result.getRoutes().get(0).getEvents().get(4).getLoadType() == LoadType.UNDEF
-
 	}
 
 	def "Pickup - 2 capacity, all clear"() {
@@ -170,13 +155,11 @@ class ReportBuilderCapacitySpec extends Specification {
 		def model = initScen1(v, LoadType.PICKUP)
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[1], n[2], n[3], nd] as Node[])
 
-		def solution = new XFVRPSolution(sol, model);
-
 		when:
-		def result = service.getReport(solution)
+		def result = service.getReport(sol)
 
 		then:
 		result != null
@@ -188,7 +171,7 @@ class ReportBuilderCapacitySpec extends Specification {
 		result.getRoutes().get(0).getSummary().getPickups()[0] == 3
 		result.getRoutes().get(0).getSummary().getPickups()[1] == 3
 		Math.abs(result.getRoutes().get(0).getEvents().get(0).getAmounts()[0] - 0) < 0.001
-		result.getRoutes().get(0).getEvents().get(0).getLoadType() == LoadType.PICKUP
+		result.getRoutes().get(0).getEvents().get(0).getLoadType() == LoadType.PRELOAD_AT_DEPOT
 		Math.abs(result.getRoutes().get(0).getEvents().get(1).getAmounts()[0] - 1) < 0.001
 		result.getRoutes().get(0).getEvents().get(1).getLoadType() == LoadType.PICKUP
 		Math.abs(result.getRoutes().get(0).getEvents().get(2).getAmounts()[0] - 1) < 0.001
@@ -204,13 +187,11 @@ class ReportBuilderCapacitySpec extends Specification {
 		def model = initScen1(v, LoadType.PICKUP)
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[1], n[2], n[3], nd] as Node[])
 
-		def solution = new XFVRPSolution(sol, model)
-
 		when:
-		def result = service.getReport(solution)
+		def result = service.getReport(sol)
 
 		then:
 		result != null
@@ -222,7 +203,7 @@ class ReportBuilderCapacitySpec extends Specification {
 		result.getRoutes().get(0).getSummary().getPickups()[0] == 3
 		result.getRoutes().get(0).getSummary().getPickups()[1] == 3
 		Math.abs(result.getRoutes().get(0).getEvents().get(0).getAmounts()[0] - 0) < 0.001
-		result.getRoutes().get(0).getEvents().get(0).getLoadType() == LoadType.PICKUP
+		result.getRoutes().get(0).getEvents().get(0).getLoadType() == LoadType.PRELOAD_AT_DEPOT
 		Math.abs(result.getRoutes().get(0).getEvents().get(1).getAmounts()[0] - 1) < 0.001
 		result.getRoutes().get(0).getEvents().get(1).getLoadType() == LoadType.PICKUP
 		Math.abs(result.getRoutes().get(0).getEvents().get(2).getAmounts()[0] - 1) < 0.001
@@ -238,13 +219,11 @@ class ReportBuilderCapacitySpec extends Specification {
 		def model = initScen1(v, LoadType.PICKUP)
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[1], n[2], n[3], nd] as Node[])
 
-		def solution = new XFVRPSolution(sol, model);
-
 		when:
-		def result = service.getReport(solution)
+		def result = service.getReport(sol)
 
 		then:
 		result != null
@@ -256,7 +235,7 @@ class ReportBuilderCapacitySpec extends Specification {
 		result.getRoutes().get(0).getSummary().getPickups()[0] == 3
 		result.getRoutes().get(0).getSummary().getPickups()[1] == 3
 		Math.abs(result.getRoutes().get(0).getEvents().get(0).getAmounts()[0] - 0) < 0.001
-		result.getRoutes().get(0).getEvents().get(0).getLoadType() == LoadType.PICKUP
+		result.getRoutes().get(0).getEvents().get(0).getLoadType() == LoadType.PRELOAD_AT_DEPOT
 		Math.abs(result.getRoutes().get(0).getEvents().get(1).getAmounts()[0] - 1) < 0.001
 		result.getRoutes().get(0).getEvents().get(1).getLoadType() == LoadType.PICKUP
 		Math.abs(result.getRoutes().get(0).getEvents().get(2).getAmounts()[0] - 1) < 0.001
@@ -272,13 +251,11 @@ class ReportBuilderCapacitySpec extends Specification {
 		def model = initScen2(v)
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[1], n[3], n[2], nd] as Node[])
 
-		def solution = new XFVRPSolution(sol, model);
-
 		when:
-		def result = service.getReport(solution)
+		def result = service.getReport(sol)
 
 		then:
 		result != null
@@ -290,7 +267,7 @@ class ReportBuilderCapacitySpec extends Specification {
 		result.getRoutes().get(0).getSummary().getPickups()[0] == 3
 		result.getRoutes().get(0).getSummary().getPickups()[1] == 1
 		Math.abs(result.getRoutes().get(0).getEvents().get(0).getAmounts()[0] - 3) < 0.001
-		result.getRoutes().get(0).getEvents().get(0).getLoadType() == LoadType.PICKUP
+		result.getRoutes().get(0).getEvents().get(0).getLoadType() == LoadType.PRELOAD_AT_DEPOT
 		Math.abs(result.getRoutes().get(0).getEvents().get(1).getAmounts()[0] - 1) < 0.001
 		result.getRoutes().get(0).getEvents().get(1).getLoadType() == LoadType.DELIVERY
 		Math.abs(result.getRoutes().get(0).getEvents().get(2).getAmounts()[0] - 2) < 0.001
@@ -301,7 +278,7 @@ class ReportBuilderCapacitySpec extends Specification {
 		result.getRoutes().get(0).getEvents().get(4).getLoadType() == LoadType.UNDEF
 
 		Math.abs(result.getRoutes().get(0).getEvents().get(0).getAmounts()[1] - 2) < 0.001
-		result.getRoutes().get(0).getEvents().get(0).getLoadType() == LoadType.PICKUP
+		result.getRoutes().get(0).getEvents().get(0).getLoadType() == LoadType.PRELOAD_AT_DEPOT
 		Math.abs(result.getRoutes().get(0).getEvents().get(1).getAmounts()[1] - 1) < 0.001
 		result.getRoutes().get(0).getEvents().get(1).getLoadType() == LoadType.DELIVERY
 		Math.abs(result.getRoutes().get(0).getEvents().get(2).getAmounts()[1] - 1) < 0.001
@@ -317,18 +294,16 @@ class ReportBuilderCapacitySpec extends Specification {
 		def model = initScen2(v)
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[1], n[2], n[3], nd] as Node[])
 
-		def solution = new XFVRPSolution(sol, model);
-
 		when:
-		def result = service.getReport(solution)
+		def result = service.getReport(sol)
 
 		then:
 		result != null
 
-		result.getSummary().getOverloads()[0] == 3
+		result.getSummary().getOverloads()[0] == 2
 		result.getSummary().getOverloads()[1] == 0
 		result.getRoutes().size() == 1
 		result.getRoutes().get(0).getSummary().getDeliveries()[0] == 3
@@ -336,16 +311,11 @@ class ReportBuilderCapacitySpec extends Specification {
 		result.getRoutes().get(0).getSummary().getPickups()[0] == 3
 		result.getRoutes().get(0).getSummary().getPickups()[1] == 1
 
-		Math.abs(result.getRoutes().get(0).getEvents().get(0).getAmounts()[0] - 3) < 0.001
-		result.getRoutes().get(0).getEvents().get(0).getLoadType() == LoadType.PICKUP
-		Math.abs(result.getRoutes().get(0).getEvents().get(1).getAmounts()[0] - 1) < 0.001
-		result.getRoutes().get(0).getEvents().get(1).getLoadType() == LoadType.DELIVERY
-		Math.abs(result.getRoutes().get(0).getEvents().get(2).getAmounts()[0] - 3) < 0.001
-		result.getRoutes().get(0).getEvents().get(2).getLoadType() == LoadType.PICKUP
-		Math.abs(result.getRoutes().get(0).getEvents().get(3).getAmounts()[0] - 2) < 0.001
-		result.getRoutes().get(0).getEvents().get(3).getLoadType() == LoadType.DELIVERY
-		Math.abs(result.getRoutes().get(0).getEvents().get(4).getAmounts()[0] - 0) < 0.001
-		result.getRoutes().get(0).getEvents().get(4).getLoadType() == LoadType.UNDEF
+		checkAmount(result, 0, 3, LoadType.PRELOAD_AT_DEPOT)
+		checkAmount(result, 1, 1, LoadType.DELIVERY)
+		checkAmount(result, 2, 3, LoadType.PICKUP)
+		checkAmount(result, 3, 2, LoadType.DELIVERY)
+		checkAmount(result, 4, 0, LoadType.UNDEF)
 	}
 
 	def "Replenish - homogeneous - all clear"() {
@@ -353,13 +323,11 @@ class ReportBuilderCapacitySpec extends Specification {
 		def model = initScen3(v)
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[4], nr, n[6], n[3], nd] as Node[])
 
-		def solution = new XFVRPSolution(sol, model);
-
 		when:
-		def result = service.getReport(solution)
+		def result = service.getReport(sol)
 
 		then:
 		result != null
@@ -371,10 +339,10 @@ class ReportBuilderCapacitySpec extends Specification {
 		result.getRoutes().get(0).getSummary().getPickups()[0] == 3
 		result.getRoutes().get(0).getSummary().getPickups()[1] == 1
 
-		checkAmount(result, 0, 3, LoadType.PICKUP)
+		checkAmount(result, 0, 3, LoadType.PRELOAD_AT_DEPOT)
 		checkAmount(result, 1, 1, LoadType.DELIVERY)
 		checkAmount(result, 2, 2, LoadType.DELIVERY)
-		checkAmount(result, 3, 1, LoadType.PICKUP)
+		checkAmount(result, 3, 1, LoadType.PRELOAD_AT_DEPOT)
 		checkAmount(result, 4, 1, LoadType.DELIVERY)
 		checkAmount(result, 5, 3, LoadType.PICKUP)
 		checkAmount(result, 6, 0, LoadType.UNDEF)
@@ -385,13 +353,11 @@ class ReportBuilderCapacitySpec extends Specification {
 		def model = initScen3(v)
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[4], nr, n[3], n[5], nd] as Node[])
 
-		def solution = new XFVRPSolution(sol, model);
-
 		when:
-		def result = service.getReport(solution)
+		def result = service.getReport(sol)
 
 		then:
 		result != null
@@ -404,10 +370,10 @@ class ReportBuilderCapacitySpec extends Specification {
 		result.getRoutes().get(0).getSummary().getPickups()[0] == 5
 		result.getRoutes().get(0).getSummary().getPickups()[1] == 2
 
-		checkAmount(result, 0, 3, LoadType.PICKUP)
+		checkAmount(result, 0, 3, LoadType.PRELOAD_AT_DEPOT)
 		checkAmount(result, 1, 1, LoadType.DELIVERY)
 		checkAmount(result, 2, 2, LoadType.DELIVERY)
-		checkAmount(result, 3, 0, LoadType.PICKUP)
+		checkAmount(result, 3, 0, LoadType.PRELOAD_AT_DEPOT)
 		checkAmount(result, 4, 3, LoadType.PICKUP)
 		checkAmount(result, 5, 2, LoadType.PICKUP)
 		checkAmount(result, 6, 0, LoadType.UNDEF)
@@ -418,13 +384,11 @@ class ReportBuilderCapacitySpec extends Specification {
 		def model = initScen3(v)
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[4], n[6], nr, n[3], nd] as Node[])
 
-		def solution = new XFVRPSolution(sol, model);
-
 		when:
-		def result = service.getReport(solution)
+		def result = service.getReport(sol)
 
 		then:
 		result != null
@@ -437,11 +401,11 @@ class ReportBuilderCapacitySpec extends Specification {
 		result.getRoutes().get(0).getSummary().getPickups()[0] == 3
 		result.getRoutes().get(0).getSummary().getPickups()[1] == 1
 
-		checkAmount(result, 0, 4, LoadType.PICKUP)
+		checkAmount(result, 0, 4, LoadType.PRELOAD_AT_DEPOT)
 		checkAmount(result, 1, 1, LoadType.DELIVERY)
 		checkAmount(result, 2, 2, LoadType.DELIVERY)
 		checkAmount(result, 3, 1, LoadType.DELIVERY)
-		checkAmount(result, 4, 0, LoadType.PICKUP)
+		checkAmount(result, 4, 0, LoadType.PRELOAD_AT_DEPOT)
 		checkAmount(result, 5, 3, LoadType.PICKUP)
 		checkAmount(result, 6, 0, LoadType.UNDEF)
 	}
@@ -451,13 +415,11 @@ class ReportBuilderCapacitySpec extends Specification {
 		def model = initScen3(v)
 		def n = model.getNodes()
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[4], n[5], n[2], nr, n[6], n[3], nd] as Node[])
 
-		def solution = new XFVRPSolution(sol, model);
-
 		when:
-		def result = service.getReport(solution)
+		def result = service.getReport(sol)
 
 		then:
 		result != null
@@ -469,11 +431,11 @@ class ReportBuilderCapacitySpec extends Specification {
 		result.getRoutes().get(0).getSummary().getPickups()[0] == 5
 		result.getRoutes().get(0).getSummary().getPickups()[1] == 2
 
-		checkAmount(result, 0, 3, LoadType.PICKUP)
+		checkAmount(result, 0, 3, LoadType.PRELOAD_AT_DEPOT)
 		checkAmount(result, 1, 2, LoadType.DELIVERY)
 		checkAmount(result, 2, 2, LoadType.PICKUP)
 		checkAmount(result, 3, 1, LoadType.DELIVERY)
-		checkAmount(result, 4, 1, LoadType.PICKUP)
+		checkAmount(result, 4, 1, LoadType.PRELOAD_AT_DEPOT)
 		checkAmount(result, 5, 1, LoadType.DELIVERY)
 		checkAmount(result, 6, 3, LoadType.PICKUP)
 		checkAmount(result, 7, 0, LoadType.UNDEF)
@@ -517,16 +479,14 @@ class ReportBuilderCapacitySpec extends Specification {
 				loadType: loadType)
 				.getNode()
 
-		nd.setIdx(0);
-		n1.setIdx(1);
-		n2.setIdx(2);
-		n3.setIdx(3);
+		nd.setIdx(0)
+		n1.setIdx(1)
+		n2.setIdx(2)
+		n3.setIdx(3)
 
-		def nodes = [nd, n1, n2, n3] as Node[];
+		def nodes = [nd, n1, n2, n3] as Node[]
 
-		def iMetric = new AcceleratedMetricTransformator().transform(metric, nodes, v);
-
-		return new XFVRPModel(nodes, iMetric, iMetric, v, parameter)
+		return TestXFVRPModel.get(Arrays.asList(nodes), v)
 	}
 
 	XFVRPModel initScen2(Vehicle v) {
@@ -561,16 +521,14 @@ class ReportBuilderCapacitySpec extends Specification {
 				loadType: LoadType.DELIVERY)
 				.getNode()
 
-		nd.setIdx(0);
-		n1.setIdx(1);
-		n2.setIdx(2);
-		n3.setIdx(3);
+		nd.setIdx(0)
+		n1.setIdx(1)
+		n2.setIdx(2)
+		n3.setIdx(3)
 
-		def nodes = [nd, n1, n2, n3] as Node[];
+		def nodes = [nd, n1, n2, n3] as Node[]
 
-		def iMetric = new AcceleratedMetricTransformator().transform(metric, nodes, v);
-
-		return new XFVRPModel(nodes, iMetric, iMetric, v, parameter)
+		return TestXFVRPModel.get(Arrays.asList(nodes), v)
 	}
 
 	XFVRPModel initScen3(Vehicle v) {
@@ -625,19 +583,17 @@ class ReportBuilderCapacitySpec extends Specification {
 				loadType: LoadType.DELIVERY)
 				.getNode()
 
-		nd.setIdx(0);
-		nr.setIdx(1);
-		n1.setIdx(2);
-		n2.setIdx(3);
-		n3.setIdx(4);
-		n4.setIdx(5);
-		n5.setIdx(6);
+		nd.setIdx(0)
+		nr.setIdx(1)
+		n1.setIdx(2)
+		n2.setIdx(3)
+		n3.setIdx(4)
+		n4.setIdx(5)
+		n5.setIdx(6)
 
-		def nodes = [nd, nr, n1, n2, n3, n4, n5] as Node[];
+		def nodes = [nd, nr, n1, n2, n3, n4, n5] as Node[]
 
-		def iMetric = new AcceleratedMetricTransformator().transform(metric, nodes, v);
-
-		return new XFVRPModel(nodes, iMetric, iMetric, v, parameter)
+		return TestXFVRPModel.get(Arrays.asList(nodes), v)
 	}
 
 }

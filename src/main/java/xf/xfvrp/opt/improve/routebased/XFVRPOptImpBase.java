@@ -77,7 +77,7 @@ public abstract class XFVRPOptImpBase extends XFVRPOptBase {
 		}
 
 		// Normalize resulting solution - Remove empty routes
-		NormalizeSolutionService.normalizeRouteWithCleanup(solution, model);
+		NormalizeSolutionService.normalizeRouteWithCleanup(solution);
 
 		return solution;
 	}

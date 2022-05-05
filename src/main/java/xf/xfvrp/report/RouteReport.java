@@ -26,31 +26,19 @@ public class RouteReport {
 
 	private final RouteReportSummary summary;
 	private final Vehicle vehicle;
-	private List<Event> eventList = new ArrayList<>();
+	private final List<Event> eventList = new ArrayList<>();
 
 	
-	/**
-	 * 
-	 * @param vehicle
-	 */
 	public RouteReport(Vehicle vehicle) {
 		this.vehicle = vehicle;
 		this.summary = new RouteReportSummary(vehicle);
 	}
 
-	/**
-	 * 
-	 * @param e
-	 */
 	public void add(Event e, Context context) {
 		summary.add(e, context);
 		eventList.add(e);
 	}
 		
-	/**
-	 * 
-	 * @return
-	 */
 	public RouteReportSummary getSummary() {
 		return summary;
 	}

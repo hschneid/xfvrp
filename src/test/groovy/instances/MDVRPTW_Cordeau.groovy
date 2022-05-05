@@ -4,7 +4,7 @@ import spock.lang.Ignore
 import spock.lang.Specification
 import xf.xfvrp.XFVRP
 import xf.xfvrp.base.metric.EucledianMetric
-import xf.xfvrp.opt.XFVRPOptType
+import xf.xfvrp.opt.XFVRPOptTypes
 import xf.xfvrp.report.Report
 
 import java.nio.file.Files
@@ -72,7 +72,7 @@ class MDVRPTW_Cordeau extends Specification {
 
         // xfvrp.setStatusMonitor(new DefaultStatusMonitor())
 
-        List<String> lines = Files.readAllLines(file.toPath());
+        List<String> lines = Files.readAllLines(file.toPath())
         float[] headerData = split(lines.get(0))
         float[] depotData = split(lines.get(1))
         int nbrOfDepots = (int)headerData[3]
@@ -104,11 +104,11 @@ class MDVRPTW_Cordeau extends Specification {
                     .setTimeWindow(data[7], data[8])
         }
 
-        xfvrp.addOptType(XFVRPOptType.FIRST_BEST)
+        xfvrp.addOptType(XFVRPOptTypes.FIRST_BEST)
         xfvrp.setNbrOfLoopsForILS(10)
-        xfvrp.addOptType(XFVRPOptType.RELOCATE)
-        xfvrp.addOptType(XFVRPOptType.PATH_RELOCATE)
-        xfvrp.addOptType(XFVRPOptType.PATH_EXCHANGE)
+        xfvrp.addOptType(XFVRPOptTypes.RELOCATE)
+        xfvrp.addOptType(XFVRPOptTypes.PATH_RELOCATE)
+        xfvrp.addOptType(XFVRPOptTypes.PATH_EXCHANGE)
 
         xfvrp.setMetric(new EucledianMetric())
 

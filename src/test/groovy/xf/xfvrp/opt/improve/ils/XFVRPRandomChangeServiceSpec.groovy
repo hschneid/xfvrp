@@ -3,6 +3,7 @@ package xf.xfvrp.opt.improve.ils
 import spock.lang.Specification
 import util.instances.TestNode
 import util.instances.TestVehicle
+import util.instances.TestXFVRPModel
 import xf.xfvrp.base.*
 import xf.xfvrp.base.metric.EucledianMetric
 import xf.xfvrp.base.metric.internal.AcceleratedMetricTransformator
@@ -12,7 +13,7 @@ import xf.xfvrp.opt.improve.ils.XFVRPRandomChangeService.Choice
 class XFVRPRandomChangeServiceSpec extends Specification {
 
 	def random = Stub Random
-	def service = new XFVRPRandomChangeService();
+	def service = new XFVRPRandomChangeService()
 
 	def nd = new TestNode(
 			externID: "DEP",
@@ -32,7 +33,7 @@ class XFVRPRandomChangeServiceSpec extends Specification {
 			timeWindow: [[0,99],[2,99]]
 	).getNode()
 
-	def sol;
+	def sol
 
 	def parameter = new XFVRPParameter()
 
@@ -47,7 +48,7 @@ class XFVRPRandomChangeServiceSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[3], n[4], n[5], nd] as Node[])
 
 		def choice = new Choice()
@@ -67,7 +68,7 @@ class XFVRPRandomChangeServiceSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[3], n[4], n[5], nd] as Node[])
 
 		def choice = new Choice()
@@ -87,7 +88,7 @@ class XFVRPRandomChangeServiceSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[3], n[4], n[5], nd] as Node[])
 
 		def choice = new Choice()
@@ -107,7 +108,7 @@ class XFVRPRandomChangeServiceSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[3], n[4], n[5], nd] as Node[])
 
 		def choice = new Choice()
@@ -127,7 +128,7 @@ class XFVRPRandomChangeServiceSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[3], n[4], n[5], nd] as Node[])
 
 		def choice = new Choice()
@@ -149,7 +150,7 @@ class XFVRPRandomChangeServiceSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[3], n[4], n[5], nd] as Node[])
 
 		def choice = new Choice()
@@ -171,7 +172,7 @@ class XFVRPRandomChangeServiceSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[3], n[4], n[5], nd] as Node[])
 
 		def choice = new Choice()
@@ -193,7 +194,7 @@ class XFVRPRandomChangeServiceSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[3], n[4], nd, n[5], nd] as Node[])
 
 		def choice = new Choice()
@@ -223,7 +224,7 @@ class XFVRPRandomChangeServiceSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[3], n[4], nd, n[5], nd] as Node[])
 
 		def choice = new Choice()
@@ -253,7 +254,7 @@ class XFVRPRandomChangeServiceSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], nd, n[3], n[4], n[5], nd] as Node[])
 
 		def choice = new Choice()
@@ -283,14 +284,14 @@ class XFVRPRandomChangeServiceSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[3], n[4], nd, n[5], nd] as Node[])
 
 		random.nextInt(_) >>> [0,0,1,1,1,0,0,1]
 		service.NBR_OF_VARIATIONS = 2
 
 		when:
-		def result = service.change(sol, model)
+		def result = service.change(sol)
 		def gt = result.getGiantRoute()
 
 		then:
@@ -308,7 +309,7 @@ class XFVRPRandomChangeServiceSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
+		sol = new Solution(model)
 		sol.setGiantRoute([nd, n[2], n[3], n[4], nd, n[5], nd] as Node[])
 
 		random.nextInt(_) >>> [0,0,0,2,1,0,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1]
@@ -316,7 +317,7 @@ class XFVRPRandomChangeServiceSpec extends Specification {
 		service.NBR_ACCEPTED_INVALIDS = 10
 
 		when:
-		def result = service.change(sol, model)
+		def result = service.change(sol)
 		def gt = result.getGiantRoute()
 
 		then:
@@ -381,17 +382,17 @@ class XFVRPRandomChangeServiceSpec extends Specification {
 				loadType: LoadType.DELIVERY)
 				.getNode()
 
-		nd.setIdx(0);
-		nd2.setIdx(1);
-		n1.setIdx(2);
-		n2.setIdx(3);
-		n3.setIdx(4);
-		n4.setIdx(5);
+		nd.setIdx(0)
+		nd2.setIdx(1)
+		n1.setIdx(2)
+		n2.setIdx(3)
+		n3.setIdx(4)
+		n4.setIdx(5)
 
-		def nodes = [nd, nd2, n1, n2, n3, n4] as Node[];
+		def nodes = [nd, nd2, n1, n2, n3, n4] as Node[]
 
-		def iMetric = new AcceleratedMetricTransformator().transform(metric, nodes, v);
+		def iMetric = new AcceleratedMetricTransformator().transform(metric, nodes, v)
 
-		return new XFVRPModel(nodes, iMetric, iMetric, v, parameter)
+		return TestXFVRPModel.get(nodes, iMetric, iMetric, v, parameter)
 	}
 }
