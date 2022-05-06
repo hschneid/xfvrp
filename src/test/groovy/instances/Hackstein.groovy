@@ -2,8 +2,6 @@ package instances
 
 import cern.colt.list.FloatArrayList
 import com.fasterxml.jackson.databind.ObjectMapper
-import org.junit.Test
-import org.junit.runners.JUnit4
 import spock.lang.Ignore
 import spock.lang.Specification
 import xf.xfvrp.XFVRP
@@ -42,19 +40,17 @@ class Hackstein extends Specification {
         assert true
     }
 
-    @Test
     def "test_presets_and_timewindows"() {
         def xfvrp = build(new File("./src/test/resources/hackstein/presets_and_timewindows.json"))
         when:
         xfvrp.executeRoutePlanning()
         def rep = xfvrp.getReport()
 
-        then:
         var nbrStops = 0
         rep.getRoutes().forEach((r) -> {
             nbrStops += r.getSummary().getNbrOfEvents() - 2
             r.getSummary().getNbrOfStops()
-        });
+        })
         println "Nbr Routes: " + rep.getRoutes().size() + " Nbr Stops: " + nbrStops
 
         rep.getRoutes().forEach((r) -> {
@@ -72,6 +68,8 @@ class Hackstein extends Specification {
         rep.getErrors().statistics.forEach((k,v) -> {
             println " - " + k + ": " + v
         })
+
+        then:
         assert true
     }
 
