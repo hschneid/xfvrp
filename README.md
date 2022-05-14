@@ -19,10 +19,10 @@ xfvrp is a fast and easy-to-use solver for Rich Vehicle Routing Problems like
 - Presettings (i.e. packages must be loaded together or not)
 - and many more.
  
-Additional requirements are the useage and maintainability of the API like
+Additional requirements are the usage and maintainability of the API like
 - User shall change only the necessary values. The rest is done by default values.
-- The user API shall be as easy as possible to understand. Users of xfvrp need only to know one class.
-- No parameter tuning (i.e. mutation rate, popultation size, annealing temperature) 
+- The user API shall be as easy as possible to understand. Users of xfvrp need only to know one class as interface.
+- No parameter tuning (i.e. mutation rate, population size, annealing temperature) 
 - No free lunch: Good results with good performance.
 
 ## License
@@ -35,12 +35,12 @@ This software is licenced under [MIT License] (https://opensource.org/licenses/M
     <dependency>
       <groupId>com.github.hschneid</groupId>
       <artifactId>xfvrp</artifactId>
-      <version>11.4.5-RELEASE</version>
+      <version>11.4.6-RELEASE</version>
     </dependency>
     ```
   * Gradle:
     ```
-    implementation 'com.github.hschneid:xfvrp:11.4.5-RELEASE'
+    implementation 'com.github.hschneid:xfvrp:11.4.6-RELEASE'
     ```
 
 A simple example for a capacitated vehicle route planning:
@@ -63,12 +63,24 @@ As a general purpose solver, XFVRP is not fully compatable with single problem s
 ## Change log
 
 ### 11.4.6
-- Introducing parameter to limit the number of routes per depot. Currently, this is still not a limit for all depots. We are working on this.
-- Refactoring of solution builder for preset solutions
-- Refactoring of First Best heuristic - 3 to 10 times faster for bigger instances
+- New constraint: Max (preferred) number of routes per depot.
+  - Optimization gets the info, what should be the acceptable number of routes per depot. As XFVRP cannot work with invalid routes, the optimization is guided to solutions with valid number of routes.
+    ```
+    xfvrp.addDepot()
+         .setExternID(depotId)
+         .setXlong(xlong)
+         .setYlat(ylat)
+         .setMaxNbrRoutes(nbrOfMaxRoutesAtThisDepot) 
+    ```
+  - Disclaimer: 
+    - This is no limit for number of routes at all depots. For multi-depot instances, this constraint is not tight.
+    - Even with given constraint, a solution may have more routes than accepted. In these cases, the optimization routes were not strong enough to detect a solution with appropriate number.
+- Refactoring of preset solution builder with lots of bugfixes
+- Refactoring of First Best heuristic &#8594; 3 to 10 times faster for bigger instances
 - Refactoring of reverse operations to reduce change-operator complexity
-- Added Solomon instances for benchmarking
+- Added Solomon (VRPTW) and Christofides (CVRP) instances for benchmarking
 - Licence update (year 2022)
+- Updated libs for security fixes
 
 ### 11.4.5
 #### Breaking Changes

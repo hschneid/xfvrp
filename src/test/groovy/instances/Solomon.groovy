@@ -6,7 +6,6 @@ import xf.xfvrp.XFVRP
 import xf.xfvrp.base.metric.EucledianMetric
 import xf.xfvrp.opt.XFVRPOptTypes
 import xf.xfvrp.report.Report
-import xf.xfvrp.report.StringWriter
 
 import java.nio.file.Files
 import java.nio.file.Path
@@ -14,7 +13,7 @@ import java.util.stream.Collectors
 
 class Solomon extends Specification {
 
-    // @Ignore
+    @Ignore
     def "do Solomon VRPTW tests" () {
         when:
         execute()
@@ -119,7 +118,7 @@ class Solomon extends Specification {
         xfvrp.addOptType(XFVRPOptTypes.PATH_RELOCATE)
         xfvrp.addOptType(XFVRPOptTypes.PATH_EXCHANGE)
 
-        xfvrp.getParameters().setNbrOfILSLoops(500)
+        xfvrp.getParameters().setNbrOfILSLoops(100)
         xfvrp.addOptType(XFVRPOptTypes.ILS)
 
         xfvrp.setMetric(new EucledianMetric())
