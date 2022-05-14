@@ -1,15 +1,10 @@
 package xf.xfvrp.opt.improve.routebased.move;
 
 import xf.xfvrp.base.Node;
-import xf.xfvrp.base.Quality;
-import xf.xfvrp.base.SiteType;
 import xf.xfvrp.base.exception.XFVRPException;
-import xf.xfvrp.base.exception.XFVRPExceptionType;
 import xf.xfvrp.opt.Solution;
 import xf.xfvrp.opt.improve.routebased.XFVRPOptImpBase;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Queue;
 

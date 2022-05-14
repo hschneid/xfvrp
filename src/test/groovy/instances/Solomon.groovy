@@ -13,7 +13,7 @@ import java.util.stream.Collectors
 
 class Solomon extends Specification {
 
-    // @Ignore
+    @Ignore
     def "do Solomon VRPTW tests" () {
         when:
         execute()
@@ -52,8 +52,6 @@ class Solomon extends Specification {
                     String.format("%.2f", ((report.getSummary().getDistance() / bestResult[0] - 1) * 100)) + " " +
                     String.format("%.2f", ((report.getSummary().getNbrOfUsedVehicles() / bestResult[1] - 1) * 100)) + " " +
                     String.format("%.2f", time / 1000)
-
-            break
         }
         println String.format("%.0f", deviation[3]) + " " +
                 String.format("%.2f", deviation[0] / deviation[3]) + " " +
@@ -109,7 +107,7 @@ class Solomon extends Specification {
         xfvrp.addOptType(XFVRPOptTypes.PATH_EXCHANGE)
 
         xfvrp.getParameters().setNbrOfILSLoops(100)
-        //xfvrp.addOptType(XFVRPOptTypes.ILS)
+        xfvrp.addOptType(XFVRPOptTypes.ILS)
 
         xfvrp.setMetric(new EucledianMetric())
 

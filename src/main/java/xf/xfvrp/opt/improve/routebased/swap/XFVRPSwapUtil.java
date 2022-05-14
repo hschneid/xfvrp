@@ -46,6 +46,9 @@ public class XFVRPSwapUtil {
             throw new XFVRPException(XFVRPExceptionType.ILLEGAL_ARGUMENT, "Segments are overlapping");
         }
 
+        Node[] srcARoute = solution.getRoutes()[aRouteIndex];
+        Node[] srcBRoute = solution.getRoutes()[bRouteIndex];
+
         Node[] aRoute = Arrays.copyOf(solution.getRoutes()[aRouteIndex], solution.getRoutes()[aRouteIndex].length);
         Node[] bRoute = (aRouteIndex == bRouteIndex) ? aRoute : Arrays.copyOf(solution.getRoutes()[bRouteIndex], solution.getRoutes()[bRouteIndex].length);
 
@@ -67,7 +70,7 @@ public class XFVRPSwapUtil {
             solution.setRoute(aRouteIndex, aRoute);
             solution.setRoute(bRouteIndex, bRoute);
 
-            return aRouteIndex != bRouteIndex ? new Node[][]{aRoute, bRoute} : new Node[][]{aRoute};
+            return aRouteIndex != bRouteIndex ? new Node[][]{srcARoute, srcBRoute} : new Node[][]{srcARoute};
         } else {
             // Swap segment parameter, that A is always before B
             if(aRouteIndex == bRouteIndex && bPos < aPos) {
@@ -85,12 +88,12 @@ public class XFVRPSwapUtil {
                 solution.setRoute(aRouteIndex, replace(aRoute, aPos, aPos + aSegmentLength, bSegment));
                 solution.setRoute(bRouteIndex, replace(bRoute, bPos, bPos + bSegmentLength, aSegment));
 
-                return new Node[][]{aRoute, bRoute};
+                return new Node[][]{srcARoute, srcBRoute};
             } else {
                 swapIntraRoute(aPos, bPos, aSegmentLength, aRoute, aSegment, bSegment);
                 solution.setRoute(aRouteIndex, aRoute);
 
-                return new Node[][]{aRoute};
+                return new Node[][]{srcARoute};
             }
         }
     }

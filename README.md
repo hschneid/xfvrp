@@ -63,11 +63,12 @@ As a general purpose solver, XFVRP is not fully compatable with single problem s
 ## Change log
 
 ### 11.4.6
-- Licence update (year 2022)
+- Introducing parameter to limit the number of routes per depot. Currently, this is still not a limit for all depots. We are working on this.
 - Refactoring of solution builder for preset solutions
 - Refactoring of First Best heuristic - 3 to 10 times faster for bigger instances
-- Introducing parameter to limit the number of routes per depot. Currently, this is still not a limit for all depots. We are working on this.
+- Refactoring of reverse operations to reduce change-operator complexity
 - Added Solomon instances for benchmarking
+- Licence update (year 2022)
 
 ### 11.4.5
 #### Breaking Changes
