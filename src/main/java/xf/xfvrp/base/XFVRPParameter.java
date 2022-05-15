@@ -130,7 +130,7 @@ public class XFVRPParameter implements Serializable {
 	 * Multiple patterns can be given. A Node-Id must be given in node sequence as
 	 * external id. In patterns an ID must be unique.
 	 *
-	 * Format {(Node-Id,Node-Id,...),(...)}
+	 * @param predefinedSolutionString Format: {(Node-Id,Node-Id,...),(...)}
 	 */
 	public final void setPredefinedSolutionString(String predefinedSolutionString) {
 		this.predefinedSolutionString = predefinedSolutionString;
