@@ -19,30 +19,29 @@ class XFVRPSwapUtilSpec extends Specification {
 	def n6 = new Node(externID: "6", siteType: SiteType.CUSTOMER)
 
 	def "Change - 1 node exchange - 2 routes"() {
-		
 		def sol = Helper.set([nd, n1, n2, nd, n3, n4, nd] as Node[])
 		
 		when:
 		XFVRPSwapUtil.change(sol, [-1, 0, 1, 1, 2, 0, 0, 0] as float[])
-		def result = sol.getGiantRoute()
+		def result = Helper.get(sol)
 		
 		then:
 		result[0].externID == "D"
 		result[1].externID == "4"
 		result[2].externID == "2"
 		result[3].externID == "D"
-		result[4].externID == "3"
-		result[5].externID == "1"
-		result[6].externID == "D"
+		result[4].externID == "D"
+		result[5].externID == "3"
+		result[6].externID == "1"
+		result[7].externID == "D"
 	}
 
 	def "Change - 1 node exchange - 1 route - a < b"() {
-		
 		def sol = Helper.set([nd, n1, n2, n3, n4, nd] as Node[])
 
 		when:
 		XFVRPSwapUtil.change(sol, [-1, 0, 0, 2, 4, 0, 0, 0] as float[])
-		def result = sol.getGiantRoute()
+		def result = Helper.get(sol)
 
 		then:
 		result[0].externID == "D"
@@ -54,12 +53,11 @@ class XFVRPSwapUtilSpec extends Specification {
 	}
 
 	def "Change - 1 node exchange - 1 route - b < a"() {
-		
 		def sol = Helper.set([nd, n1, n2, n3, n4, nd] as Node[])
 
 		when:
 		XFVRPSwapUtil.change(sol, [-1, 0, 0, 4, 2, 0, 0, 0] as float[])
-		def result = sol.getGiantRoute()
+		def result = Helper.get(sol)
 
 		then:
 		result[0].externID == "D"
@@ -71,12 +69,11 @@ class XFVRPSwapUtilSpec extends Specification {
 	}
 
 	def "Change - 1 node exchange - 1 route - b directly before a"() {
-		
 		def sol = Helper.set([nd, n1, n2, n3, n4, nd] as Node[])
 
 		when:
 		XFVRPSwapUtil.change(sol, [-1, 0, 0, 2, 3, 0, 0, 0] as float[])
-		def result = sol.getGiantRoute()
+		def result = Helper.get(sol)
 
 		then:
 		result[0].externID == "D"
@@ -88,12 +85,11 @@ class XFVRPSwapUtilSpec extends Specification {
 	}
 
 	def "Change - 1 node exchange - 1 route - a directly before b"() {
-		
 		def sol = Helper.set([nd, n1, n2, n3, n4, nd] as Node[])
 
 		when:
 		XFVRPSwapUtil.change(sol, [-1, 0, 0, 3, 2, 0, 0, 0] as float[])
-		def result = sol.getGiantRoute()
+		def result = Helper.get(sol)
 
 		then:
 		result[0].externID == "D"
@@ -107,12 +103,11 @@ class XFVRPSwapUtilSpec extends Specification {
 	//////////////////////////////////////////////////
 
 	def "Change - segment exchange - 2 routes - same length"() {
-		
 		def sol = Helper.set([nd, n1, n2, n3, nd, n4, n5, n6, nd] as Node[])
 
 		when:
 		XFVRPSwapUtil.change(sol, [-1, 0, 1, 2, 1, 1, 1, 0] as float[])
-		def result = sol.getGiantRoute()
+		def result = Helper.get(sol)
 
 		then:
 		result[0].externID == "D"
@@ -120,39 +115,39 @@ class XFVRPSwapUtilSpec extends Specification {
 		result[2].externID == "4"
 		result[3].externID == "5"
 		result[4].externID == "D"
-		result[5].externID == "2"
-		result[6].externID == "3"
-		result[7].externID == "6"
-		result[8].externID == "D"
+		result[5].externID == "D"
+		result[6].externID == "2"
+		result[7].externID == "3"
+		result[8].externID == "6"
+		result[9].externID == "D"
 	}
 
 	def "Change - segment exchange - 2 routes - different lengths"() {
-		
 		def sol = Helper.set([nd, n1, n2, n3, nd, n4, n5, n6, nd] as Node[])
 
 		when:
 		XFVRPSwapUtil.change(sol, [-1, 0, 1, 1, 2, 2, 1, 0] as float[])
-		def result = sol.getGiantRoute()
+		def result = Helper.get(sol)
 
 		then:
 		result[0].externID == "D"
 		result[1].externID == "5"
 		result[2].externID == "6"
 		result[3].externID == "D"
-		result[4].externID == "4"
-		result[5].externID == "1"
-		result[6].externID == "2"
-		result[7].externID == "3"
-		result[8].externID == "D"
+		result[4].externID == "D"
+		result[5].externID == "4"
+		result[6].externID == "1"
+		result[7].externID == "2"
+		result[8].externID == "3"
+		result[9].externID == "D"
 	}
 
 	def "Change - segment exchange - 1 route - different lengths - A < B"() {
-		
 		def sol = Helper.set([nd, n1, n2, n3, n4, n5, n6, nd] as Node[])
 
 		when:
 		XFVRPSwapUtil.change(sol, [-1, 0, 0, 1, 4, 1, 2, 0] as float[])
-		def result = sol.getGiantRoute()
+		def result = Helper.get(sol)
 
 		then:
 		result[0].externID == "D"
@@ -166,12 +161,11 @@ class XFVRPSwapUtilSpec extends Specification {
 	}
 
 	def "Change - segment exchange - 1 route - differnt lengths - B < A"() {
-		
 		def sol = Helper.set([nd, n1, n2, n3, n4, n5, n6, nd] as Node[])
 
 		when:
 		XFVRPSwapUtil.change(sol, [-1, 0, 0, 4, 2, 2, 1, 0] as float[])
-		def result = sol.getGiantRoute()
+		def result = Helper.get(sol)
 
 		then:
 		result[0].externID == "D"
@@ -185,12 +179,11 @@ class XFVRPSwapUtilSpec extends Specification {
 	}
 
 	def "Change - segment exchange - 1 route - same lengths - A < B"() {
-		
 		def sol = Helper.set([nd, n1, n2, n3, n4, n5, n6, nd] as Node[])
 
 		when:
 		XFVRPSwapUtil.change(sol, [-1, 0, 0, 1, 4, 1, 1, 0] as float[])
-		def result = sol.getGiantRoute()
+		def result = Helper.get(sol)
 
 		then:
 		result[0].externID == "D"
@@ -204,12 +197,11 @@ class XFVRPSwapUtilSpec extends Specification {
 	}
 
 	def "Change - segment exchange - 1 route - different lengths - Invert both"() {
-		
 		def sol = Helper.set([nd, n1, n2, n3, n4, n5, n6, nd] as Node[])
 
 		when:
 		XFVRPSwapUtil.change(sol, [-1, 0, 0, 1, 4, 1, 2, BOTH_INVERT] as float[])
-		def result = sol.getGiantRoute()
+		def result = Helper.get(sol)
 
 		then:
 		result[0].externID == "D"
@@ -223,12 +215,11 @@ class XFVRPSwapUtilSpec extends Specification {
 	}
 
 	def "Change - segment exchange - 1 route - different lengths - Only invert B "() {
-		
 		def sol = Helper.set([nd, n1, n2, n3, n4, n5, n6, nd] as Node[])
 
 		when:
 		XFVRPSwapUtil.change(sol, [-1, 0, 0, 1, 4, 1, 2, XFVRPSwapUtil.B_INVERT] as float[])
-		def result = sol.getGiantRoute()
+		def result = Helper.get(sol)
 
 		then:
 		result[0].externID == "D"
@@ -244,36 +235,35 @@ class XFVRPSwapUtilSpec extends Specification {
 	////////////////////////////////////////////////////////////
 
 	def "Change - 2 routes - different lengths - both inverts"() {
-		
 		def sol = Helper.set([nd, n1, n2, n3, nd, n4, n5, n6, nd] as Node[])
 
 		def para = [-1, 0, 1, 1, 2, 2, 1, BOTH_INVERT] as float[]
 
 		when:
 		XFVRPSwapUtil.change(sol, para)
-		def result = sol.getGiantRoute()
+		def result = Helper.get(sol)
 
 		then:
 		result[0].externID == "D"
 		result[1].externID == "6"
 		result[2].externID == "5"
 		result[3].externID == "D"
-		result[4].externID == "4"
-		result[5].externID == "3"
-		result[6].externID == "2"
-		result[7].externID == "1"
-		result[8].externID == "D"
+		result[4].externID == "D"
+		result[5].externID == "4"
+		result[6].externID == "3"
+		result[7].externID == "2"
+		result[8].externID == "1"
+		result[9].externID == "D"
 	}
 
 	def "Change - 1 route - different lengths - B invert"() {
-		
 		def sol = Helper.set([nd, n1, n2, n3, n4, n5, n6, nd] as Node[])
 
 		def para = [-1, 0, 0, 6, 1, 0, 2, XFVRPSwapUtil.B_INVERT] as float[]
 
 		when:
 		XFVRPSwapUtil.change(sol, para)
-		def result = sol.getGiantRoute()
+		def result = Helper.get(sol)
 
 		then:
 		result[0].externID == "D"
@@ -287,14 +277,13 @@ class XFVRPSwapUtilSpec extends Specification {
 	}
 
 	def "Change - 1 route - same lengths - A invert"() {
-		
 		def sol = Helper.set([nd, n1, n2, n3, n4, n5, n6, nd] as Node[])
 
 		def para = [-1, 0, 0, 5, 3, 1, 1, XFVRPSwapUtil.A_INVERT] as float[]
 
 		when:
 		XFVRPSwapUtil.change(sol, para)
-		def result = sol.getGiantRoute()
+		def result = Helper.get(sol)
 
 		then:
 		result[0].externID == "D"
@@ -309,7 +298,6 @@ class XFVRPSwapUtilSpec extends Specification {
 
 	///////////////////////////////////////////////////
 	def "Change - Segment contains leading depot"() {
-		
 		def sol = Helper.set([nd, n1, n2, n3, nd, n4, n5, n6, nd] as Node[])
 
 		def para = [-1, 0, 1, 1, 0, 1, 1, 0] as float[]
@@ -321,7 +309,6 @@ class XFVRPSwapUtilSpec extends Specification {
 		thrown(XFVRPException)
 	}
 	def "Change - Segment contains trailing depot"() {
-		
 		def sol = Helper.set([nd, n1, n2, n3, nd, n4, n5, n6, nd] as Node[])
 
 		def para = [-1, 0, 1, 3, 1, 1, 1, 0] as float[]
@@ -333,7 +320,6 @@ class XFVRPSwapUtilSpec extends Specification {
 		thrown(XFVRPException)
 	}
 	def "Change - Segments are overlapping"() {
-		
 		def sol = Helper.set([nd, n1, n2, n3, n4, n5, n6, nd] as Node[])
 
 		def para = [-1, 0, 0, 2, 4, 2, 1, 0] as float[]

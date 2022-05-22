@@ -51,17 +51,19 @@ class Helper {
     static Solution setNoNorm(XFVRPModel model, Node... nodes) {
         def sol = new Solution(model)
 
-        def currRoute = new ArrayList<Node>()
-        Node lastDepot = nodes[0]
-        currRoute.add(lastDepot)
-        for (i in 1..<nodes.length) {
-            if(nodes[i].siteType == SiteType.DEPOT) {
-                currRoute.add(lastDepot)
-                sol.addRoute(currRoute.toArray(new Node[0]))
-                currRoute.clear()
-                lastDepot = nodes[i]
+        if(nodes.size() > 0) {
+            def currRoute = new ArrayList<Node>()
+            Node lastDepot = nodes[0]
+            currRoute.add(lastDepot)
+            for (i in 1..<nodes.length) {
+                if (nodes[i].siteType == SiteType.DEPOT) {
+                    currRoute.add(lastDepot)
+                    sol.addRoute(currRoute.toArray(new Node[0]))
+                    currRoute.clear()
+                    lastDepot = nodes[i]
+                }
+                currRoute.add(nodes[i])
             }
-            currRoute.add(nodes[i])
         }
 
         return sol
@@ -72,5 +74,11 @@ class Helper {
         return rr.getEvents().stream()
                 .map(e -> e.getID())
                 .collect(Collectors.joining(","))
+    }
+
+    static Node[] get(Solution sol) {
+        return Arrays.stream(sol.routes)
+                .flatMap(r -> Arrays.stream(r))
+                .collect(Collectors.toList())
     }
 }

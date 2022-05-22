@@ -26,7 +26,7 @@ public class XFPDPMoveSearchUtil {
 
         int nbrOfRoutes = routes.length;
 
-        int[][] shipmentPositions = getShipmentPositions(routes);
+        int[][] shipmentPositions = getShipmentPositions(routes, solution.getModel());
 
         for (int srcRtIdx = 0; srcRtIdx < nbrOfRoutes; srcRtIdx++) {
             Node[] srcRoute = routes[srcRtIdx];
@@ -153,8 +153,8 @@ public class XFPDPMoveSearchUtil {
         }
     }
 
-    private static int[][] getShipmentPositions(Node[][] routes) {
-        int[][] shipmentPairIdxArr = new int[routes.length][2];
+    private static int[][] getShipmentPositions(Node[][] routes, XFVRPModel model) {
+        int[][] shipmentPairIdxArr = new int[model.getNbrOfShipments()][2];
 
         for (int rt = routes.length - 1; rt >= 0; rt--) {
             for (int pos = routes[rt].length - 2; pos >= 1; pos--) {

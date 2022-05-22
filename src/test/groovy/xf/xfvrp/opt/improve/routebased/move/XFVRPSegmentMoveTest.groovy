@@ -36,17 +36,18 @@ class XFVRPSegmentMoveTest extends Specification {
 
         when:
         XFVRPMoveUtil.change(sol, parameter)
-        def result = sol.getGiantRoute()
+        def result = Helper.get(sol)
 
         then:
         result[0].externID == "01"
-        result[1].externID == "05"
-        result[2].externID == "06"
-        result[3].externID == "02"
-        result[4].externID == "03"
-        result[5].externID == "04"
-        result[6].externID == "07"
-        result[7].externID == "01"
+        result[1].externID == "01"
+        result[2].externID == "05"
+        result[3].externID == "06"
+        result[4].externID == "02"
+        result[5].externID == "03"
+        result[6].externID == "04"
+        result[7].externID == "07"
+        result[8].externID == "05"
     }
 
     def "change - same routes - src < dst"() {
@@ -55,7 +56,7 @@ class XFVRPSegmentMoveTest extends Specification {
 
         when:
         XFVRPMoveUtil.change(sol, parameter)
-        def result = sol.getGiantRoute()
+        def result = Helper.get(sol)
         then:
         result[0].externID == "01"
         result[1].externID == "02"
@@ -72,7 +73,7 @@ class XFVRPSegmentMoveTest extends Specification {
 
         when:
         XFVRPMoveUtil.change(sol, parameter)
-        def result = sol.getGiantRoute()
+        def result = Helper.get(sol)
         then:
         result[0].externID == "01"
         result[1].externID == "02"
@@ -89,17 +90,18 @@ class XFVRPSegmentMoveTest extends Specification {
 
         when:
         XFVRPMoveUtil.change(sol, parameter)
-        def result = sol.getGiantRoute()
+        def result = Helper.get(sol)
 
         then:
         result[0].externID == "01"
-        result[1].externID == "05"
-        result[2].externID == "06"
-        result[3].externID == "04"
-        result[4].externID == "03"
-        result[5].externID == "02"
-        result[6].externID == "07"
-        result[7].externID == "01"
+        result[1].externID == "01"
+        result[2].externID == "05"
+        result[3].externID == "06"
+        result[4].externID == "04"
+        result[5].externID == "03"
+        result[6].externID == "02"
+        result[7].externID == "07"
+        result[8].externID == "05"
     }
 
     def "change - same routes - src < dst - with invert"() {
@@ -108,7 +110,7 @@ class XFVRPSegmentMoveTest extends Specification {
 
         when:
         XFVRPMoveUtil.change(sol, parameter)
-        def result = sol.getGiantRoute()
+        def result = Helper.get(sol)
         then:
         result[0].externID == "01"
         result[1].externID == "02"
@@ -125,7 +127,7 @@ class XFVRPSegmentMoveTest extends Specification {
 
         when:
         XFVRPMoveUtil.change(sol, parameter)
-        def result = sol.getGiantRoute()
+        def result = Helper.get(sol)
         then:
         result[0].externID == "01"
         result[1].externID == "02"
@@ -143,8 +145,8 @@ class XFVRPSegmentMoveTest extends Specification {
         def sol = Helper.set(model, [n[0], n[1], n[2], n[5], n[6], n[3], n[4], n[7], n[0]] as Node[])
 
         when:
-        def newQuality = service.improve(sol, new Quality(cost: Float.MAX_VALUE), model)
-        def result = sol.getGiantRoute()
+        def newQuality = service.improve(sol, new Quality(cost: Float.MAX_VALUE))
+        def result = Helper.get(sol)
         then:
         newQuality.cost < 10
         result[0].externID == "01"
@@ -166,8 +168,8 @@ class XFVRPSegmentMoveTest extends Specification {
         def sol = Helper.set(model, [n[0], n[1], n[2], n[7], n[6], n[5], n[3], n[4], n[0]] as Node[])
 
         when:
-        def newQuality = service.improve(sol, new Quality(cost: Float.MAX_VALUE), model)
-        def result = sol.getGiantRoute()
+        def newQuality = service.improve(sol, new Quality(cost: Float.MAX_VALUE))
+        def result = Helper.get(sol)
         then:
         newQuality.cost < 10
         result[0].externID == "01"
@@ -184,13 +186,12 @@ class XFVRPSegmentMoveTest extends Specification {
     def "find no improvement anymore"() {
         def model = initScen()
         def n = model.getNodes()
-
         
         def sol = Helper.set(model, [n[0], n[1], n[2], n[3], n[4], n[5], n[6], n[7], n[0]] as Node[])
 
         when:
-        def newQuality = service.improve(sol, new Quality(cost: Float.MAX_VALUE), model)
-        def result = sol.getGiantRoute()
+        def newQuality = service.improve(sol, new Quality(cost: Float.MAX_VALUE))
+        def result = Helper.get(sol)
         then:
         newQuality == null
         result[0].externID == "01"

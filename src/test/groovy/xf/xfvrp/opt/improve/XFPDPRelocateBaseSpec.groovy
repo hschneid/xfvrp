@@ -7,10 +7,12 @@ import util.instances.TestVehicle
 import util.instances.TestXFVRPModel
 import xf.xfvrp.base.*
 import xf.xfvrp.base.fleximport.CustomerData
+import xf.xfvrp.opt.improve.routebased.move.XFPDPMoveSearchUtil
+import xf.xfvrp.opt.improve.routebased.move.XFPDPSingleMove
 
 class XFPDPRelocateBaseSpec extends Specification {
 
-	def service = new Object() //new XFPDPRelocate()
+	def service = new XFPDPSingleMove()
 
 	def nd = new TestNode(
 	externID: "DEP",
@@ -23,182 +25,30 @@ class XFPDPRelocateBaseSpec extends Specification {
 	def "Shipment positions"() {
 		def model = initScen()
 		def n = model.getNodes()
-		service.setModel(model)
 
-		
 		def sol = Helper.set(model, [nd, n[1], n[2], n[3], n[4], n[5], n[6], nd] as Node[])
-		def route = sol.getGiantRoute()
 
 		when:
-		def result = service.getShipmentPositions(route)
+		def result = XFPDPMoveSearchUtil.getShipmentPositions(sol.routes, sol.getModel())
 		
 		then:
-		result[0] == 0
-		result[1] == 2
-		result[2] == 1
-		result[3] == 4
-		result[4] == 3
-		result[5] == 6
-		result[6] == 5
-		result[7] == 0
-	}
-	
-	def "Route index"() {
-		def model = initScen()
-		def n = model.getNodes()
-		service.setModel(model)
-
-		
-		def sol = Helper.set(model, [nd, n[1], n[2], n[3], nd, n[4], n[5], n[6], nd] as Node[])
-		def route = sol.getGiantRoute()
-
-		when:
-		def result = service.getRouteIndex(route)
-		
-		then:
-		result[0] == 0
-		result[1] == 0
-		result[2] == 0
-		result[3] == 0
-		result[4] == 0
-		result[5] == 1
-		result[6] == 1
-		result[7] == 1
-		result[8] == 1
+		result[0][0] == 1
+		result[0][1] == 2
+		result[1][0] == 3
+		result[1][1] == 4
+		result[2][0] == 5
+		result[2][1] == 6
 	}
 	
 	def "Change"() {
 		def model = initScen()
 		def n = model.getNodes()
-		service.setModel(model)
 
-		
 		def sol = Helper.set(model, [nd, n[3], n[1], n[4], n[5], n[6], n[2], nd] as Node[])
 		
 		when:
-		service.change(sol, [2, 6, 1, 1] as float[])
-		
-		def nn = sol.getGiantRoute()
-
-		then:
-		nn[0].externID == "DEP"
-		nn[1].externID == "1"
-		nn[2].externID == "2"
-		nn[3].externID == "3"
-		nn[4].externID == "4"
-		nn[5].externID == "5"
-		nn[6].externID == "6"
-		nn[7].externID == "DEP"
-	}
-	
-	def "Reverse change of all right"() {
-		def model = initScen()
-		def n = model.getNodes()
-		service.setModel(model)
-
-		
-		def sol = Helper.set(model, [nd, n[3], n[1], n[4], n[5], n[6], n[2], nd] as Node[])
-
-		when:
-		service.reverseChange(sol, [1, 2, 4, 7] as float[])
-		
-		def nn = sol.getGiantRoute()
-
-		then:
-		nn[0].externID == "DEP"
-		nn[1].externID == "1"
-		nn[2].externID == "2"
-		nn[3].externID == "3"
-		nn[4].externID == "4"
-		nn[5].externID == "5"
-		nn[6].externID == "6"
-		nn[7].externID == "DEP"
-	}
-	
-	def "Reverse change of all left"() {
-		def model = initScen()
-		def n = model.getNodes()
-		service.setModel(model)
-
-		
-		def sol = Helper.set(model, [nd, n[4], n[1], n[6], n[2], n[3], n[5], nd] as Node[])
-
-		when:
-		service.reverseChange(sol, [4, 6, 1, 2] as float[])
-		
-		def nn = sol.getGiantRoute()
-
-		then:
-		nn[0].externID == "DEP"
-		nn[1].externID == "1"
-		nn[2].externID == "2"
-		nn[3].externID == "3"
-		nn[4].externID == "4"
-		nn[5].externID == "5"
-		nn[6].externID == "6"
-		nn[7].externID == "DEP"
-	}
-	
-	def "Reverse change with overlapping 1"() {
-		def model = initScen()
-		def n = model.getNodes()
-		service.setModel(model)
-
-		
-		def sol = Helper.set(model, [nd, n[2], n[1], n[3], n[5], n[6], n[4], nd] as Node[])
-
-		when:
-		service.reverseChange(sol, [1, 4, 3, 7] as float[])
-		
-		def nn = sol.getGiantRoute()
-
-		then:
-		nn[0].externID == "DEP"
-		nn[1].externID == "1"
-		nn[2].externID == "2"
-		nn[3].externID == "3"
-		nn[4].externID == "4"
-		nn[5].externID == "5"
-		nn[6].externID == "6"
-		nn[7].externID == "DEP"
-	}
-	
-	def "Reverse change with overlapping 2"() {
-		def model = initScen()
-		def n = model.getNodes()
-		service.setModel(model)
-
-		
-		def sol = Helper.set(model, [nd, n[2], n[4], n[1], n[5], n[6], n[3], nd] as Node[])
-
-		when:
-		service.reverseChange(sol, [1, 3, 5, 7] as float[])
-		
-		def nn = sol.getGiantRoute()
-
-		then:
-		nn[0].externID == "DEP"
-		nn[1].externID == "1"
-		nn[2].externID == "2"
-		nn[3].externID == "3"
-		nn[4].externID == "4"
-		nn[5].externID == "5"
-		nn[6].externID == "6"
-		nn[7].externID == "DEP"
-	}
-	
-	def "Reverse change in the mid"() {
-		def model = initScen()
-		def n = model.getNodes()
-		service.setModel(model)
-
-		
-		def sol = Helper.set(model, [nd, n[2], n[1], n[3], n[4], n[6], n[5], nd] as Node[])
-
-		when:
-		service.reverseChange(sol, [1, 6, 3, 5] as float[])
-		
-		def nn = sol.getGiantRoute()
+		service.change(sol, [-1, 0, 0, 2, 6, 1, 1] as float[])
+		def nn = Helper.get(sol)
 
 		then:
 		nn[0].externID == "DEP"
@@ -211,52 +61,6 @@ class XFPDPRelocateBaseSpec extends Specification {
 		nn[7].externID == "DEP"
 	}
 
-	def "Reverse change from the mid"() {
-		def model = initScen()
-		def n = model.getNodes()
-		service.setModel(model)
-
-		
-		def sol = Helper.set(model, [nd, n[3], n[1], n[2], n[5], n[6], n[4], nd] as Node[])
-
-		when:
-		service.reverseChange(sol, [3, 4, 1, 7] as float[])
-		
-		def nn = sol.getGiantRoute()
-
-		then:
-		nn[0].externID == "DEP"
-		nn[1].externID == "1"
-		nn[2].externID == "2"
-		nn[3].externID == "3"
-		nn[4].externID == "4"
-		nn[5].externID == "5"
-		nn[6].externID == "6"
-		nn[7].externID == "DEP"
-	}
-	
-	def "Reverse change - Some case"() {
-		def model = initScen()
-		def n = model.getNodes()
-		service.setModel(model)
-
-		
-		def sol = Helper.set(model, [nd, n[1], n[2], n[3], n[4], nd] as Node[])
-
-		when:
-		service.reverseChange(sol, [2, 4, 5, 5] as float[])
-		
-		def nn = sol.getGiantRoute()
-
-		then:
-		nn[0].externID == "DEP"
-		nn[1].externID == "1"
-		nn[2].externID == "3"
-		nn[3].externID == "2"
-		nn[4].externID == "4"
-		nn[5].externID == "DEP"
-	}
-		
 	XFVRPModel initScen() {
 		def v = new TestVehicle(name: "V1", capacity: [3, 3]).getVehicle()
 

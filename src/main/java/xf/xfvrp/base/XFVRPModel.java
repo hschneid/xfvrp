@@ -26,6 +26,7 @@ public class XFVRPModel {
 
 	protected final int nbrOfDepots;
 	protected final int nbrOfReplenish;
+	protected final int nbrOfShipments;
 
 	protected final Node[] nodes;
 	protected final InternalMetric metric;
@@ -44,6 +45,7 @@ public class XFVRPModel {
 	protected XFVRPModel() {
 		nbrOfDepots = 0;
 		nbrOfReplenish = 0;
+		nbrOfShipments = 0;
 		nodes = null;
 		metric = null;
 		optMetric = null;
@@ -70,12 +72,16 @@ public class XFVRPModel {
 		int nbrOfReplenish = 0;
 		int nbrOfBlocks = BlockNameConverter.UNDEF_BLOCK_IDX;
 		int maxGlobalNodeIdx = 0;
+		int maxShipmentIdx = 0;
 		for (int i = 0; i < nodes.length; i++) {
 			if(nodes[i].getSiteType() == SiteType.DEPOT)
 				nbrOfDepots++;
 			
 			if(nodes[i].getSiteType() == SiteType.REPLENISH)
 				nbrOfReplenish++;
+
+			if(nodes[i].getSiteType() == SiteType.CUSTOMER)
+				maxShipmentIdx = Math.max(maxShipmentIdx, nodes[i].getShipmentIdx());
 			
 			nbrOfBlocks = Math.max(nbrOfBlocks, nodes[i].getPresetBlockIdx());
 			maxGlobalNodeIdx = Math.max(maxGlobalNodeIdx, nodes[i].getGlobalIdx());
@@ -87,6 +93,7 @@ public class XFVRPModel {
 		this.maxGlobalNodeIdx = maxGlobalNodeIdx;
 		this.nbrOfDepots = nbrOfDepots;
 		this.nbrOfReplenish = nbrOfReplenish;
+		this.nbrOfShipments = maxShipmentIdx + 1;
 
 		this.compartments = compartmentTypes;
 	}
@@ -183,5 +190,9 @@ public class XFVRPModel {
 
 	public int getMaxGlobalNodeIdx() {
 		return maxGlobalNodeIdx;
+	}
+
+	public int getNbrOfShipments() {
+		return nbrOfShipments;
 	}
 }
