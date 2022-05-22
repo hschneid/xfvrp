@@ -7,11 +7,12 @@ import util.instances.TestVehicle
 import util.instances.TestXFVRPModel
 import xf.xfvrp.base.*
 import xf.xfvrp.base.fleximport.CustomerData
-import xf.xfvrp.opt.improve.routebased.move.XFPDPRelocate
+import xf.xfvrp.opt.improve.routebased.move.XFPDPMoveSearchUtil
+import xf.xfvrp.opt.improve.routebased.move.XFPDPSingleMove
 
 class XFPDPRelocateExtSpec extends Specification {
 
-	def service = new XFPDPRelocate()
+	def service = new XFPDPSingleMove()
 
 	def nd = new TestNode(
 	externID: "DEP",
@@ -29,7 +30,7 @@ class XFPDPRelocateExtSpec extends Specification {
 		def sol = Helper.set(model, [nd, n[1], n[2], nd, n[3], n[4], nd] as Node[])
 
 		when:
-		def impList = service.search(sol.getGiantRoute())
+		def impList = service.search(sol)
 
 		then:
 		impList.stream().filter({f -> f[0] == 1 && f[1] == 2 && f[2] == 4 && f[3] == 4}).count() == 1
@@ -45,97 +46,91 @@ class XFPDPRelocateExtSpec extends Specification {
 	def "Potential 1"() {
 		def model = initScen()
 		def n = model.getNodes()
-		service.setModel(model)
 
-		
 		def sol = Helper.set(model, [nd, n[3], n[4], n[1], n[2], nd] as Node[])
-		def route = sol.getGiantRoute()
+		def route = sol.getRoutes()[0]
+		def queue = new PriorityQueue<float[]>({(o1, o2) -> Float.compare(o2[0], o1[0])})
 
 		when:
-		def result = service.getPotential(route, 3, 4, 1, 1)
+		XFPDPMoveSearchUtil.search(sol, route, route, 0, 0, 3, 4, 1, 1, queue)
 		
 		then:
-		result == -2
+		queue.poll()[0] == -2
 	}
 	
 	def "Potential 2"() {
 		def model = initScen()
 		def n = model.getNodes()
-		service.setModel(model)
 
-		
 		def sol = Helper.set(model, [nd, n[3], n[1], n[4], n[2], nd] as Node[])
-		def route = sol.getGiantRoute()
+		def route = sol.getRoutes()[0]
+		def queue = new PriorityQueue<float[]>()
 
 		when:
-		def result = service.getPotential(route, 2, 4, 1, 3)
-		
+		XFPDPMoveSearchUtil.search(sol, route, route, 0, 0, 2, 4, 1, 3, queue)
+
 		then:
-		result == -2
+		queue.poll()[0] == -2
 	}
 	
 	def "Potential 3"() {
 		def model = initScen()
 		def n = model.getNodes()
-		service.setModel(model)
 
-		
 		def sol = Helper.set(model, [nd, n[3], n[1], n[4], n[2], nd] as Node[])
-		def route = sol.getGiantRoute()
+		def route = sol.getRoutes()[0]
+		def queue = new PriorityQueue<float[]>()
 
 		when:
-		def result = service.getPotential(route, 1, 3, 4, 5)
-		
+		XFPDPMoveSearchUtil.search(sol, route, route, 0, 0, 1, 3, 4, 5, queue)
+
 		then:
-		result == -2
+		queue.poll()[0] == -2
 	}
 	
 	def "Potential 4"() {
 		def model = initScen()
 		def n = model.getNodes()
-		service.setModel(model)
 
-		
 		def sol = Helper.set(model, [nd, n[1], n[2], n[3], n[4], nd] as Node[])
-		def route = sol.getGiantRoute()
+		def route = sol.getRoutes()[0]
+		def queue = new PriorityQueue<float[]>()
 
 		when:
-		def result = service.getPotential(route, 3, 4, 1, 2)
-		
+		XFPDPMoveSearchUtil.search(sol, route, route, 0, 0, 3, 4, 1, 2, queue)
+
 		then:
-		result == 4
+		queue.poll()[0] == 4
 	}
 	
 	def "Potential no move"() {
 		def model = initScen()
 		def n = model.getNodes()
-		service.setModel(model)
 
-		
 		def sol = Helper.set(model, [nd, n[1], n[2], n[3], n[4], nd] as Node[])
-		def route = sol.getGiantRoute()
+		def route = sol.getRoutes()[0]
+		def queue = new PriorityQueue<float[]>()
 
 		when:
-		def result = service.getPotential(route, 1, 2, 3, 3)
-		
+		XFPDPMoveSearchUtil.search(sol, route, route, 0, 0, 1, 2, 3, 3, queue)
+
 		then:
-		result == 0
+		queue.poll().size() == 0
 	}
 	
 	def "Potential partial move"() {
 		def model = initScen()
 		def n = model.getNodes()
-		service.setModel(model)
 
-		
 		def sol = Helper.set(model, [nd, n[2], n[3], n[4], n[1], nd] as Node[])
-		def route = sol.getGiantRoute()
+		def route = sol.getRoutes()[0]
+		def queue = new PriorityQueue<float[]>()
 
 		when:
-		def result = service.getPotential(route, 4, 1, 2, 2)
-		
+		XFPDPMoveSearchUtil.search(sol, route, route, 0, 0, 4, 1, 2, 2, queue)
+
 		then:
-		result == 0
+		queue.poll().size() == 0
 	}
 	
 	XFVRPModel initScen() {

@@ -5,13 +5,8 @@ import xf.xfvrp.opt.construct.insert.XFVRPFirstBestInsert;
 import xf.xfvrp.opt.construct.savings.XFVRPConst;
 import xf.xfvrp.opt.construct.savings.XFVRPSavings;
 import xf.xfvrp.opt.improve.XFVRPNoOpt;
-import xf.xfvrp.opt.improve.giantroute.XFVRP2Opt;
-import xf.xfvrp.opt.improve.giantroute.XFVRP2OptIntra;
-import xf.xfvrp.opt.improve.giantroute.XFVRP3Opt;
-import xf.xfvrp.opt.improve.giantroute.XFVRP3PointMove;
 import xf.xfvrp.opt.improve.ils.XFPDPILS;
 import xf.xfvrp.opt.improve.ils.XFVRPILS;
-import xf.xfvrp.opt.improve.routebased.move.XFPDPRelocate;
 import xf.xfvrp.opt.improve.routebased.move.XFPDPSingleMove;
 import xf.xfvrp.opt.improve.routebased.move.XFVRPSegmentMove;
 import xf.xfvrp.opt.improve.routebased.move.XFVRPSingleMove;
@@ -40,12 +35,6 @@ public class XFVRPOptTypes {
 	public static XFVRPOptType CONST = new XFVRPOptType(XFVRPConst.class);
 	public static XFVRPOptType FIRST_BEST = new XFVRPOptType(XFVRPFirstBestInsert.class);
 
-	// Giant route based
-	public static XFVRPOptType OPT2 = new XFVRPOptType(XFVRP2Opt.class);
-	public static XFVRPOptType OPT2_INTRA = new XFVRPOptType(XFVRP2OptIntra.class);
-	public static XFVRPOptType OPT3 = new XFVRPOptType(XFVRP3Opt.class);
-	public static XFVRPOptType OPT3_POINTMOVE = new XFVRPOptType(XFVRP3PointMove.class);
-
 	// Route based
 	public static XFVRPOptType RELOCATE = new XFVRPOptType(XFVRPSingleMove.class);
 	public static XFVRPOptType PATH_RELOCATE = new XFVRPOptType(XFVRPSegmentMove.class);
@@ -57,7 +46,6 @@ public class XFVRPOptTypes {
 
 	// Pickup & Delivery
 	public static XFVRPOptType PDP_CHEAPEST_INSERT = new XFVRPOptType(XFPDPFirstBestInsert.class);
-	public static XFVRPOptType PDP_RELOCATE = new XFVRPOptType(XFPDPRelocate.class);
 	public static XFVRPOptType PDP_RELOCATE2 = new XFVRPOptType(XFPDPSingleMove.class);
 	public static XFVRPOptType PDP_ILS = new XFVRPOptType(XFPDPILS.class);
 }

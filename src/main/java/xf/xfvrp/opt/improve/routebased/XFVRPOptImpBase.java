@@ -43,19 +43,6 @@ public abstract class XFVRPOptImpBase extends XFVRPOptBase {
 	protected abstract Queue<float[]> search(Solution solution);
 	protected abstract Node[][] change(Solution solution, float[] changeParameter) throws XFVRPException;
 
-	/**
-	 * This method calls the abstract improve method of this optimization class with
-	 * a given model. This method is useful if optimization operators are designed with
-	 * several lower optimization operators. The model may switch between the lower operators.
-	 *
-	 * Currently it is only used by the PathExchange operator.
-	 */
-	public Quality improve(Solution solution, Quality bestResult, XFVRPModel model) throws XFVRPException {
-		this.model = model;
-
-		return improve(solution, bestResult);
-	}
-
 	/*
 	 * (non-Javadoc)
 	 * @see xf.xfvrp.base.XFVRPBase#execute(xf.xfvrp.opt.Solution)
@@ -83,7 +70,14 @@ public abstract class XFVRPOptImpBase extends XFVRPOptBase {
 		return solution;
 	}
 
-	private Quality improve(final Solution solution, Quality bestResult) throws XFVRPException {
+	/**
+	 * This method calls the abstract improve method of this optimization class with
+	 * a given model. This method is useful if optimization operators are designed with
+	 * several lower optimization operators. The model may switch between the lower operators.
+	 *
+	 * Currently it is only used by the PathExchange operator.
+	 */
+	protected Quality improve(final Solution solution, Quality bestResult) throws XFVRPException {
 		check(solution);
 
 		Queue<float[]> improvingSteps = search(solution);

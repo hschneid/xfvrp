@@ -50,7 +50,19 @@ class Helper {
 
     static Solution setNoNorm(XFVRPModel model, Node... nodes) {
         def sol = new Solution(model)
-        sol.setGiantRoute(nodes as Node[])
+
+        def currRoute = new ArrayList<Node>()
+        Node lastDepot = nodes[0]
+        currRoute.add(lastDepot)
+        for (i in 1..<nodes.length) {
+            if(nodes[i].siteType == SiteType.DEPOT) {
+                currRoute.add(lastDepot)
+                sol.addRoute(currRoute.toArray(new Node[0]))
+                currRoute.clear()
+                lastDepot = nodes[i]
+            }
+            currRoute.add(nodes[i])
+        }
 
         return sol
     }

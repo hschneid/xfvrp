@@ -10,15 +10,15 @@ import xf.xfvrp.base.monitor.StatusManager
 import xf.xfvrp.opt.Solution
 import xf.xfvrp.opt.XFVRPOptBase
 import xf.xfvrp.opt.evaluation.EvaluationService
-import xf.xfvrp.opt.improve.giantroute.XFVRP2Opt
 import xf.xfvrp.opt.improve.routebased.move.XFVRPSegmentMove
 import xf.xfvrp.opt.improve.routebased.move.XFVRPSingleMove
+import xf.xfvrp.opt.improve.routebased.swap.XFVRPSegmentExchange
 
 class XFVRPILSSpec extends Specification {
 
-	def opt1 = Stub XFVRP2Opt
-	def opt2 = Stub XFVRPSingleMove
-	def opt3 = Stub XFVRPSegmentMove
+	def opt1 = Stub XFVRPSingleMove
+	def opt2 = Stub XFVRPSegmentMove
+	def opt3 = Stub XFVRPSegmentExchange
 	def evaluationService = Stub EvaluationService
 	def statusManager = Stub StatusManager
 	def service = new XFVRPILS(evaluationService: evaluationService)

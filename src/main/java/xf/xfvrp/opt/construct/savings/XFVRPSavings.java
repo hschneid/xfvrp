@@ -254,7 +254,8 @@ public class XFVRPSavings extends XFVRPOptBase {
 			}
 		}
 
-		sort(dataBag.getSavingsMatrix(), 2);
+		// Sort descending for potential
+		dataBag.getSavingsMatrix().sort((o1, o2) -> Float.compare(o2[2], o1[2]));
 	}
 
 	/**

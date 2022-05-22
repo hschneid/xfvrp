@@ -3,7 +3,7 @@ package xf.xfvrp.opt.improve.ils;
 import xf.xfvrp.base.exception.XFVRPException;
 import xf.xfvrp.opt.Solution;
 import xf.xfvrp.opt.XFVRPOptBase;
-import xf.xfvrp.opt.improve.routebased.move.XFPDPRelocate;
+import xf.xfvrp.opt.improve.routebased.move.XFPDPSingleMove;
 
 /** 
  * Copyright (c) 2012-2022 Holger Schneider
@@ -29,7 +29,7 @@ public class XFPDPILS extends XFILS {
 	@Override
 	public Solution execute(Solution solution) throws XFVRPException {
 		optArr = new XFVRPOptBase[]{
-				new XFPDPRelocate()
+				new XFPDPSingleMove()
 		};
 		optPropArr = new double[]{
 				1
