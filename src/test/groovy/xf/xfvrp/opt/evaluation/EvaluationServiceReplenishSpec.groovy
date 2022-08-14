@@ -1,6 +1,5 @@
 package xf.xfvrp.opt.evaluation
 
-
 import spock.lang.Specification
 import util.instances.Helper
 import util.instances.TestNode
@@ -11,7 +10,6 @@ import xf.xfvrp.base.compartment.CompartmentInitializer
 import xf.xfvrp.base.compartment.CompartmentType
 import xf.xfvrp.base.metric.EucledianMetric
 import xf.xfvrp.base.metric.internal.AcceleratedMetricTransformator
-import xf.xfvrp.opt.Solution
 
 class EvaluationServiceReplenishSpec extends Specification {
 

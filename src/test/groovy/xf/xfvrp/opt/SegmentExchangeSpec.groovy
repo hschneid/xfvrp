@@ -5,7 +5,6 @@ import util.instances.Helper
 import xf.xfvrp.base.Node
 import xf.xfvrp.base.SiteType
 import xf.xfvrp.base.exception.XFVRPException
-import xf.xfvrp.opt.improve.routebased.move.XFVRPSingleMove
 import xf.xfvrp.opt.improve.routebased.swap.XFVRPSegmentExchange
 
 class SegmentExchangeSpec extends Specification {

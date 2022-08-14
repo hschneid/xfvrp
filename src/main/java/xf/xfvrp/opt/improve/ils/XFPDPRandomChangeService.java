@@ -8,7 +8,6 @@ import xf.xfvrp.opt.Solution;
 import xf.xfvrp.opt.XFVRPOptBase;
 import xf.xfvrp.opt.improve.routebased.move.XFPDPMoveUtil;
 
-import java.awt.*;
 import java.util.Arrays;
 import java.util.NoSuchElementException;
 

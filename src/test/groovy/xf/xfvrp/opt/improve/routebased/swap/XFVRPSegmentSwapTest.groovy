@@ -9,7 +9,6 @@ import xf.xfvrp.base.LoadType
 import xf.xfvrp.base.Node
 import xf.xfvrp.base.SiteType
 import xf.xfvrp.base.XFVRPModel
-import xf.xfvrp.opt.Solution
 
 class XFVRPSegmentSwapTest extends Specification {
 

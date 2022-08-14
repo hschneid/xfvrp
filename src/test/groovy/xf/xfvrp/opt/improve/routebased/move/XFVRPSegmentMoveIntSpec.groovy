@@ -6,7 +6,6 @@ import util.instances.TestNode
 import util.instances.TestVehicle
 import util.instances.TestXFVRPModel
 import xf.xfvrp.base.*
-import xf.xfvrp.opt.Solution
 import xf.xfvrp.opt.evaluation.EvaluationService
 
 class XFVRPSegmentMoveIntSpec extends Specification {

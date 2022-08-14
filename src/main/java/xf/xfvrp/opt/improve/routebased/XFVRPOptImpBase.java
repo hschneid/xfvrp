@@ -3,7 +3,6 @@ package xf.xfvrp.opt.improve.routebased;
 import xf.xfvrp.base.Node;
 import xf.xfvrp.base.NormalizeSolutionService;
 import xf.xfvrp.base.Quality;
-import xf.xfvrp.base.XFVRPModel;
 import xf.xfvrp.base.exception.XFVRPException;
 import xf.xfvrp.opt.Solution;
 import xf.xfvrp.opt.XFVRPOptBase;

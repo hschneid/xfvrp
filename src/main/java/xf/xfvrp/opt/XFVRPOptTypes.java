@@ -31,20 +31,22 @@ public class XFVRPOptTypes {
 
 	public static XFVRPOptType NONE = new XFVRPOptType(XFVRPNoOpt.class);
 
+	// Construction heuristics
 	public static XFVRPOptType SAVINGS = new XFVRPOptType(XFVRPSavings.class);
 	public static XFVRPOptType CONST = new XFVRPOptType(XFVRPConst.class);
 	public static XFVRPOptType FIRST_BEST = new XFVRPOptType(XFVRPFirstBestInsert.class);
 
-	// Route based
+	// Improvement heuristics - Neighborhood search
 	public static XFVRPOptType RELOCATE = new XFVRPOptType(XFVRPSingleMove.class);
 	public static XFVRPOptType PATH_RELOCATE = new XFVRPOptType(XFVRPSegmentMove.class);
 	public static XFVRPOptType SWAP = new XFVRPOptType(XFVRPSingleSwap.class);
 	public static XFVRPOptType SWAPSEGMENT = new XFVRPOptType(XFVRPSegmentSwap.class);
 	public static XFVRPOptType PATH_EXCHANGE = new XFVRPOptType(XFVRPSegmentExchange.class);
+
 	// Iterated local search
 	public static XFVRPOptType ILS = new XFVRPOptType(XFVRPILS.class);
 
-	// Pickup & Delivery
+	// Pickup & Delivery - Improvement heuristics - Neighborhood search
 	public static XFVRPOptType PDP_CHEAPEST_INSERT = new XFVRPOptType(XFPDPFirstBestInsert.class);
 	public static XFVRPOptType PDP_RELOCATE2 = new XFVRPOptType(XFPDPSingleMove.class);
 	public static XFVRPOptType PDP_ILS = new XFVRPOptType(XFPDPILS.class);

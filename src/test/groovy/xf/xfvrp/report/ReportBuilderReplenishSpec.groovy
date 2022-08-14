@@ -9,7 +9,6 @@ import xf.xfvrp.base.*
 import xf.xfvrp.base.compartment.CompartmentType
 import xf.xfvrp.base.metric.EucledianMetric
 import xf.xfvrp.base.metric.internal.AcceleratedMetricTransformator
-import xf.xfvrp.opt.Solution
 import xf.xfvrp.report.build.ReportBuilder
 
 class ReportBuilderReplenishSpec extends Specification {

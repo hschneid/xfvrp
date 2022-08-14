@@ -7,7 +7,6 @@ import util.instances.TestVehicle
 import util.instances.TestXFVRPModel
 import xf.xfvrp.base.*
 import xf.xfvrp.base.exception.XFVRPException
-import xf.xfvrp.opt.Solution
 
 class EvaluationServiceStructureSpec extends Specification {
 
