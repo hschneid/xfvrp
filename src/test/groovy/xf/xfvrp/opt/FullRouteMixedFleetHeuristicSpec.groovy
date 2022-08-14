@@ -1,6 +1,7 @@
 package xf.xfvrp.opt
 
 import spock.lang.Specification
+import util.instances.Helper
 import util.instances.TestNode
 import util.instances.TestVehicle
 import util.instances.TestXFVRPModel
@@ -137,7 +138,7 @@ class FullRouteMixedFleetHeuristicSpec extends Specification {
 
 		when:
 		def result = service.reconstructGiantRoute(routes, model)
-		def gT = result.getGiantRoute()
+		def gT = Helper.get(result)
 
 		then:
 		result != null
@@ -146,9 +147,10 @@ class FullRouteMixedFleetHeuristicSpec extends Specification {
 		gT[1].externID == 'n1'
 		gT[2].externID == 'n2'
 		gT[3].externID == 'nD'
-		gT[4].externID == 'n3'
-		gT[5].externID == 'n4'
-		gT[6].externID == 'nD'
+		gT[4].externID == 'nD'
+		gT[5].externID == 'n3'
+		gT[6].externID == 'n4'
+		gT[7].externID == 'nD'
 	}
 
 	def "Reconstruct giant route - empty routes"() {
@@ -170,7 +172,7 @@ class FullRouteMixedFleetHeuristicSpec extends Specification {
 
 		when:
 		def result = service.reconstructGiantRoute(routes, model)
-		def gT = result.getGiantRoute()
+		def gT = Helper.get(result)
 
 		then:
 		result != null
@@ -189,18 +191,17 @@ class FullRouteMixedFleetHeuristicSpec extends Specification {
 
 		when:
 		def result = service.buildSolutionForInvalidNodes(nodes, depot, model, statusManager)
-		def gT = result.getGiantRoute()
+		def gT = Helper.get(result)
 
 		then:
 		result != null
 		result.model == model
-		gT != null
-		gT.length == 5
 		gT[0].externID == 'nD'
 		gT[1].externID == 'n1'
 		gT[2].externID == 'nD'
-		gT[3].externID == 'n2'
-		gT[4].externID == 'nD'
+		gT[3].externID == 'nD'
+		gT[4].externID == 'n2'
+		gT[5].externID == 'nD'
 	}
 
 	def "Build solution For Invalid Nodes - with Blocks"() {
@@ -216,18 +217,17 @@ class FullRouteMixedFleetHeuristicSpec extends Specification {
 
 		when:
 		def result = service.buildSolutionForInvalidNodes(nodes, depot, model, statusManager)
-		def gT = result.getGiantRoute()
+		def gT = Helper.get(result)
 
 		then:
 		result != null
-		gT != null
-		gT.length == 6
 		gT[0].externID == 'nD'
 		gT[1].externID == 'n2'
 		gT[2].externID == 'nD'
-		gT[3].externID == 'n1'
-		gT[4].externID == 'n3'
-		gT[5].externID == 'nD'
+		gT[3].externID == 'nD'
+		gT[4].externID == 'n1'
+		gT[5].externID == 'n3'
+		gT[6].externID == 'nD'
 	}
 
 	def "Build solution For Invalid Nodes - no unplanned"() {
@@ -237,7 +237,7 @@ class FullRouteMixedFleetHeuristicSpec extends Specification {
 
 		when:
 		def result = service.buildSolutionForInvalidNodes([] as List<Node>, depot, model, statusManager)
-		def gT = result.getGiantRoute()
+		def gT = Helper.get(result)
 
 		then:
 		result != null
@@ -268,7 +268,7 @@ class FullRouteMixedFleetHeuristicSpec extends Specification {
 				parameter,
 				statusManager
 		)
-		def gT = result.getGiantRoute()
+		def gT = Helper.get(result)
 
 		then:
 		result != null
@@ -277,8 +277,9 @@ class FullRouteMixedFleetHeuristicSpec extends Specification {
 		gT[0].externID == 'nD'
 		gT[1].externID == 'n1'
 		gT[2].externID == 'nD'
-		gT[3].externID == 'n2'
-		gT[4].externID == 'nD'
+		gT[3].externID == 'nD'
+		gT[4].externID == 'n2'
+		gT[5].externID == 'nD'
 		nodes[0].idx == 0
 		nodes[1].idx == 1
 		nodes[2].idx == 2
@@ -311,7 +312,6 @@ class FullRouteMixedFleetHeuristicSpec extends Specification {
 		def statusManager = Stub StatusManager
 		def metric = Stub Metric
 		metric.getDistanceAndTime(_, _, _) >> [1, 1]
-		def solution = Stub Solution
 
 		def nodes = [
 				new TestNode(externID: 'nD', siteType: SiteType.DEPOT).getNode(),
@@ -323,16 +323,17 @@ class FullRouteMixedFleetHeuristicSpec extends Specification {
 				new TestNode(externID: 'n6', siteType: SiteType.CUSTOMER).getNode()
 		] as Node[]
 
-		solution.getGiantRoute() >> [nodes[0], nodes[0]]
-
 		def vehicles = [] as Vehicle[]
 		def types = []
 		CompartmentInitializer.check(nodes, types, vehicles)
 
 		when:
-		def result = service.execute(nodes, types.toArray(new CompartmentType[0]), vehicles, {routingDataBag ->
-			new Solution(TestXFVRPModel.get(nodes, routingDataBag.vehicle))
-		}, metric, parameter, statusManager)
+		def result = service.execute(nodes, types.toArray(new CompartmentType[0]), vehicles,
+				{routingDataBag ->
+					new Solution(TestXFVRPModel.get(nodes, routingDataBag.vehicle))
+				},
+				metric, parameter, statusManager
+		)
 
 		then:
 		result != null

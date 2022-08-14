@@ -26,8 +26,8 @@ class XFVRPSingleMoveTest extends Specification {
         def sol = Helper.set(model, [n[0], n[3], n[1], n[2], n[4], n[0]] as Node[])
 
         when:
-        def newQuality = service.improve(sol, new Quality(cost: Float.MAX_VALUE), model)
-        def result = sol.getGiantRoute()
+        def newQuality = service.improve(sol, new Quality(cost: Float.MAX_VALUE))
+        def result = Helper.get(sol)
         then:
         newQuality.cost < 7
         result[0].externID == "1"
@@ -45,8 +45,8 @@ class XFVRPSingleMoveTest extends Specification {
         def sol = Helper.set(model, [n[0], n[1], n[2], n[3], n[4], n[0]] as Node[])
 
         when:
-        def newQuality = service.improve(sol, new Quality(cost: 6.236067), model)
-        def result = sol.getGiantRoute()
+        def newQuality = service.improve(sol, new Quality(cost: 6.236067))
+        def result = Helper.get(sol)
         then:
         newQuality == null
         result[0].externID == "1"

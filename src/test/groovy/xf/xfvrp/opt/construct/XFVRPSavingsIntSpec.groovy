@@ -1,6 +1,7 @@
 package xf.xfvrp.opt.construct
 
 import spock.lang.Specification
+import util.instances.Helper
 import util.instances.TestNode
 import util.instances.TestVehicle
 import util.instances.TestXFVRPModel
@@ -37,9 +38,7 @@ class XFVRPSavingsIntSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		def sol = new Solution(model)
-		sol.setGiantRoute([nd, n[1], nd, n[2], nd, n[3], nd, n[4], nd] as Node[])
-
+		def sol = Helper.set(model, [nd, n[1], nd, n[2], nd, n[3], nd, n[4], nd] as Node[])
 		evalService.check(sol)
 		
 		when:
@@ -47,7 +46,7 @@ class XFVRPSavingsIntSpec extends Specification {
 		sol = NormalizeSolutionService.normalizeRoute(sol)
 		
 		def checkedQuality = evalService.check(sol)
-		def newGiantRoute = sol.getGiantRoute()
+		def newGiantRoute = Helper.get(sol)
 		
 		then:
 		checkedQuality != null
@@ -67,8 +66,7 @@ class XFVRPSavingsIntSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		def sol = new Solution(model)
-		sol.setGiantRoute([nd, n[4], n[2], n[1], n[3], nd] as Node[])
+		def sol = Helper.set(model, [nd, n[4], n[2], n[1], n[3], nd] as Node[])
 
 		evalService.check(sol)
 		
@@ -77,7 +75,7 @@ class XFVRPSavingsIntSpec extends Specification {
 		sol = NormalizeSolutionService.normalizeRoute(sol)
 		
 		def checkedQuality = evalService.check(sol)
-		def newGiantRoute = sol.getGiantRoute()
+		def newGiantRoute = Helper.get(sol)
 		
 		then:
 		checkedQuality != null

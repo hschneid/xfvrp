@@ -53,17 +53,27 @@ class Helper {
 
         if(nodes.size() > 0) {
             def currRoute = new ArrayList<Node>()
-            Node lastDepot = nodes[0]
-            currRoute.add(lastDepot)
-            for (i in 1..<nodes.length) {
+
+            int startIdx = 0
+            Node lastDepot = null;
+            if(nodes[0].getSiteType() == SiteType.DEPOT) {
+                lastDepot = nodes[0]
+                currRoute.add(lastDepot)
+                startIdx = 1
+            }
+
+            for (i in startIdx..<nodes.length) {
                 if (nodes[i].siteType == SiteType.DEPOT) {
-                    currRoute.add(lastDepot)
+                    if(lastDepot != null)
+                        currRoute.add(lastDepot)
                     sol.addRoute(currRoute.toArray(new Node[0]))
                     currRoute.clear()
                     lastDepot = nodes[i]
                 }
                 currRoute.add(nodes[i])
             }
+            if(currRoute.size() > 0)
+                sol.addRoute(currRoute.toArray(new Node[0]))
         }
 
         return sol

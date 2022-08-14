@@ -108,7 +108,7 @@ public class XFPDPRandomChangeService extends XFVRPOptBase implements XFRandomCh
 		int srcPickPos;
 		do {
 			// Max value (DEP, ..., X, >Y<, Z, DEP)
-			srcPickPos = rand.nextInt(routes[srcRouteIdx].length - 3) + 1;
+			srcPickPos = rand.nextInt(routes[srcRouteIdx].length - 2) + 1;
 		} while (routes[srcRouteIdx][srcPickPos].getSiteType() != SiteType.CUSTOMER ||
 				// Only pickups (demand > 0)
 				routes[srcRouteIdx][srcPickPos].getDemand()[0] < 0);

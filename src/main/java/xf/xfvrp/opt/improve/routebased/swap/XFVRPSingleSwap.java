@@ -42,13 +42,4 @@ public class XFVRPSingleSwap extends XFVRPOptImpBase {
 	protected Node[][] change(Solution solution, float[] changeParameter) throws XFVRPException {
 		return XFVRPSwapUtil.change(solution, changeParameter);
 	}
-
-	public void setInvertationMode(boolean isInvertationActive) {
-		this.isInvertationActive = isInvertationActive;
-	}
-
-	public void setEqualSegmentLength(boolean isSegmentLengthEqual) {
-		this.isSegmentLengthEqual = isSegmentLengthEqual;
-	}
-
 }

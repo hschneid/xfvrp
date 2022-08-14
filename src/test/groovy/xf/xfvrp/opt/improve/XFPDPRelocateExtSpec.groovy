@@ -15,34 +15,35 @@ class XFPDPRelocateExtSpec extends Specification {
 	def service = new XFPDPSingleMove()
 
 	def nd = new TestNode(
-	externID: "DEP",
-	globalIdx: 0,
-	siteType: SiteType.DEPOT,
-	demand: [0, 0],
-	timeWindow: [[0,99],[2,99]]
+			externID: "DEP",
+			globalIdx: 0,
+			siteType: SiteType.DEPOT,
+			demand: [0, 0],
+			timeWindow: [[0,99],[2,99]]
 	).getNode()
 
 	def "Search"() {
 		def model = initScen()
 		def n = model.getNodes()
 		service.setModel(model)
-		
+
 		def sol = Helper.set(model, [nd, n[1], n[2], nd, n[3], n[4], nd] as Node[])
 
 		when:
 		def impList = service.search(sol)
 
 		then:
-		impList.stream().filter({f -> f[0] == 1 && f[1] == 2 && f[2] == 4 && f[3] == 4}).count() == 1
-		impList.stream().filter({f -> f[0] == 1 && f[1] == 2 && f[2] == 6 && f[3] == 6}).count() == 1
-		impList.stream().filter({f -> f[0] == 1 && f[1] == 2 && f[2] == 4 && f[3] == 5}).count() == 1
-		impList.stream().filter({f -> f[0] == 1 && f[1] == 2 && f[2] == 4 && f[3] == 6}).count() == 1
-		impList.stream().filter({f -> f[0] == 4 && f[1] == 5 && f[2] == 1 && f[3] == 1}).count() == 1
-		impList.stream().filter({f -> f[0] == 4 && f[1] == 5 && f[2] == 2 && f[3] == 2}).count() == 1
-		impList.stream().filter({f -> f[0] == 4 && f[1] == 5 && f[2] == 3 && f[3] == 3}).count() == 1
-		impList.stream().filter({f -> f[0] == 4 && f[1] == 5 && f[2] == 2 && f[3] == 3}).count() == 1
+		impList.count({f -> match(f, [7.0, 0.0, 1.0, 1.0, 2.0, 1.0, 1.0, 0.0])}) == 1
+		impList.count({f -> match(f, [6.0, 0.0, 1.0, 1.0, 2.0, 3.0, 3.0, 0.0])}) == 1
+		impList.count({f -> match(f, [5.0, 1.0, 0.0, 1.0, 2.0, 2.0, 2.0, 0.0])}) == 1
+		impList.count({f -> match(f, [6.0, 1.0, 0.0, 1.0, 2.0, 3.0, 3.0, 0.0])}) == 1
+		impList.count({f -> match(f, [2.0, 0.0, 1.0, 1.0, 2.0, 1.0, 2.0, 0.0])}) == 1
+		impList.count({f -> match(f, [3.0, 1.0, 0.0, 1.0, 2.0, 1.0, 1.0, 0.0])}) == 1
+		impList.count({f -> match(f, [4.0, 0.0, 1.0, 1.0, 2.0, 1.0, 3.0, 0.0])}) == 1
+		impList.count({f -> match(f, [1.0, 0.0, 1.0, 1.0, 2.0, 2.0, 2.0, 0.0])}) == 1
+		impList.count({f -> match(f, [2.0, 1.0, 0.0, 1.0, 2.0, 2.0, 3.0, 0.0])}) == 1
 	}
-	
+
 	def "Potential 1"() {
 		def model = initScen()
 		def n = model.getNodes()
@@ -53,42 +54,42 @@ class XFPDPRelocateExtSpec extends Specification {
 
 		when:
 		XFPDPMoveSearchUtil.search(sol, route, route, 0, 0, 3, 4, 1, 1, queue)
-		
+
 		then:
-		queue.poll()[0] == -2
+		queue.poll()[0] == 2
 	}
-	
+
 	def "Potential 2"() {
 		def model = initScen()
 		def n = model.getNodes()
 
 		def sol = Helper.set(model, [nd, n[3], n[1], n[4], n[2], nd] as Node[])
 		def route = sol.getRoutes()[0]
-		def queue = new PriorityQueue<float[]>()
+		def queue = new PriorityQueue<float[]>({(o1, o2) -> Float.compare(o2[0], o1[0])})
 
 		when:
 		XFPDPMoveSearchUtil.search(sol, route, route, 0, 0, 2, 4, 1, 3, queue)
 
 		then:
-		queue.poll()[0] == -2
+		queue.poll()[0] == 2
 	}
-	
+
 	def "Potential 3"() {
 		def model = initScen()
 		def n = model.getNodes()
 
 		def sol = Helper.set(model, [nd, n[3], n[1], n[4], n[2], nd] as Node[])
 		def route = sol.getRoutes()[0]
-		def queue = new PriorityQueue<float[]>()
+		def queue = new PriorityQueue<float[]>({(o1, o2) -> Float.compare(o2[0], o1[0])})
 
 		when:
 		XFPDPMoveSearchUtil.search(sol, route, route, 0, 0, 1, 3, 4, 5, queue)
 
 		then:
-		queue.poll()[0] == -2
+		queue.poll()[0] == 2
 	}
-	
-	def "Potential 4"() {
+
+	def "Potential 4 - negative potential => no potential"() {
 		def model = initScen()
 		def n = model.getNodes()
 
@@ -100,39 +101,39 @@ class XFPDPRelocateExtSpec extends Specification {
 		XFPDPMoveSearchUtil.search(sol, route, route, 0, 0, 3, 4, 1, 2, queue)
 
 		then:
-		queue.poll()[0] == 4
+		queue.isEmpty()
 	}
-	
+
 	def "Potential no move"() {
 		def model = initScen()
 		def n = model.getNodes()
 
 		def sol = Helper.set(model, [nd, n[1], n[2], n[3], n[4], nd] as Node[])
 		def route = sol.getRoutes()[0]
-		def queue = new PriorityQueue<float[]>()
+		def queue = new PriorityQueue<float[]>({(o1, o2) -> Float.compare(o2[0], o1[0])})
 
 		when:
 		XFPDPMoveSearchUtil.search(sol, route, route, 0, 0, 1, 2, 3, 3, queue)
 
 		then:
-		queue.poll().size() == 0
+		queue.size() == 0
 	}
-	
+
 	def "Potential partial move"() {
 		def model = initScen()
 		def n = model.getNodes()
 
 		def sol = Helper.set(model, [nd, n[2], n[3], n[4], n[1], nd] as Node[])
 		def route = sol.getRoutes()[0]
-		def queue = new PriorityQueue<float[]>()
+		def queue = new PriorityQueue<float[]>({(o1, o2) -> Float.compare(o2[0], o1[0])})
 
 		when:
 		XFPDPMoveSearchUtil.search(sol, route, route, 0, 0, 4, 1, 2, 2, queue)
 
 		then:
-		queue.poll().size() == 0
+		queue.size() == 0
 	}
-	
+
 	XFVRPModel initScen() {
 		def v = new TestVehicle(name: "V1", capacity: [3, 3]).getVehicle()
 
@@ -224,6 +225,22 @@ class XFPDPRelocateExtSpec extends Specification {
 		new ShipmentConverter().convert(nodes, customers)
 
 		return TestXFVRPModel.get(Arrays.asList(nodes), v)
+	}
+
+	boolean match(float[] i , List<BigDecimal> val) {
+		boolean found = true;
+		for (j in 0..<i.length) {
+			if(val[j].floatValue() != i[j]) {
+				found = false;
+				break;
+			}
+		}
+
+		if(found)
+			return true;
+
+
+		return false;
 	}
 
 }

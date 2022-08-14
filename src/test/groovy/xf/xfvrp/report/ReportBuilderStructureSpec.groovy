@@ -62,8 +62,8 @@ class ReportBuilderStructureSpec extends Specification {
 		def model = initScen1(v, LoadType.DELIVERY)
 		def n = model.getNodes()
 
-
-		def sol = Helper.setNoNorm(model, [nd, n[2], null, n[4]] as Node[])
+		def sol = Helper.setNoNorm(model, [nd, n[2], n[3], n[4]] as Node[])
+		sol.getRoutes()[0][2] = null
 
 		when:
 		service.getReport(sol)

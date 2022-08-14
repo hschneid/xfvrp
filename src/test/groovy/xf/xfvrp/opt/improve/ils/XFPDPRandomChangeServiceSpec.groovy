@@ -355,25 +355,26 @@ class XFPDPRandomChangeServiceSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-
 		def sol = Helper.set(model, [nd, n[2], n[3], n[4], n[5], n[6], n[7], nd] as Node[])
 		// 0, 4,5,2,3,6,7
-		random.nextInt(_) >>> [2, 0, 0, 4, 0, 6]
+		random.nextInt(_) >>> [2, 0, 0, 0, 4, 6, 0, 0, 1, 0]
 		service.NBR_OF_VARIATIONS = 2
 
 		when:
 		def result = service.change(sol)
-		def gt = result.getGiantRoute()
+		def gt = Helper.get(result)
 
 		then:
-		eq(gt[0], nd)
-		eq(gt[1], n[6])
-		eq(gt[2], n[4])
-		eq(gt[3], n[5])
-		eq(gt[4], n[2])
-		eq(gt[5], n[3])
-		eq(gt[6], n[7])
-		eq(gt[7], nd)
+		gt[0].externID == 'DEP'
+		gt[1].externID == '1'
+		gt[2].externID == '5'
+		gt[3].externID == '6'
+		gt[4].externID == '2'
+		gt[5].externID == 'DEP'
+		gt[6].externID == 'DEP'
+		gt[7].externID == '3'
+		gt[8].externID == '4'
+		gt[9].externID == 'DEP'
 	}
 
 	boolean doRandomChange(Solution sol, Node[] n) {

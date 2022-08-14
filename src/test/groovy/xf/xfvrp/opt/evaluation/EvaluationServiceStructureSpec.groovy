@@ -1,6 +1,7 @@
 package xf.xfvrp.opt.evaluation
 
 import spock.lang.Specification
+import util.instances.Helper
 import util.instances.TestNode
 import util.instances.TestVehicle
 import util.instances.TestXFVRPModel
@@ -13,42 +14,40 @@ class EvaluationServiceStructureSpec extends Specification {
 	def service = new EvaluationService()
 
 	def nd = new TestNode(
-	externID: "DEP",
-	siteType: SiteType.DEPOT,
-	demand: [0, 0],
-	timeWindow: [[0,99],[2,99]]
+			externID: "DEP",
+			siteType: SiteType.DEPOT,
+			demand: [0, 0],
+			timeWindow: [[0,99],[2,99]]
 	).getNode()
 
 	def nr = new TestNode(
-	externID: "REP",
-	siteType: SiteType.REPLENISH,
-	demand: [0, 0],
-	timeWindow: [[0,99],[2,99]]
+			externID: "REP",
+			siteType: SiteType.REPLENISH,
+			demand: [0, 0],
+			timeWindow: [[0,99],[2,99]]
 	).getNode()
 
-	def "Feasability - Starts not with DEPOT"() {
+	def "Feasibility - Starts not with DEPOT"() {
 		def v = new TestVehicle(name: "V1", capacity: [3, 3]).getVehicle()
 		def model = initScen1(v, LoadType.DELIVERY)
 		def n = model.getNodes()
 
-		def sol = new Solution(model)
-		sol.setGiantRoute([n[2], nd, n[3], n[4], nd] as Node[])
+		def sol = Helper.setNoNorm(model, [n[2], nd, n[3], n[4], nd] as Node[])
 
 		when:
-		def result = service.check(sol)
+		service.check(sol)
 
 		then:
 		thrown XFVRPException
 	}
-	
-	def "Feasability - Ends not with DEPOT"() {
+
+	def "Feasibility - Ends not with DEPOT"() {
 		def v = new TestVehicle(name: "V1", capacity: [3, 3]).getVehicle()
 		def model = initScen1(v, LoadType.DELIVERY)
 		def n = model.getNodes()
 
-		def sol = new Solution(model)
-		sol.setGiantRoute([nd, n[2], n[3], n[4]] as Node[])
-		
+		def sol = Helper.set(model, [nd, n[2], n[3], n[4]] as Node[])
+
 		when:
 		service.check(sol)
 
@@ -61,11 +60,8 @@ class EvaluationServiceStructureSpec extends Specification {
 		def model = initScen1(v, LoadType.DELIVERY)
 		def n = model.getNodes()
 
-		def sol = new Solution(model)
-		sol.setGiantRoute([nd, n[2], n[3], n[4], nd] as Node[])
-		
-		def sol2 = new Solution(model)
-		sol2.setGiantRoute([nd, nd, nr, nr, n[2], n[3], n[4], nr, nd, nd] as Node[])
+		def sol = Helper.set(model, [nd, n[2], n[3], n[4], nd] as Node[])
+		def sol2 = Helper.set(model, [nd, nd, nr, nr, n[2], n[3], n[4], nr, nd, nd] as Node[])
 
 		when:
 		def result = service.check(sol)
@@ -77,16 +73,14 @@ class EvaluationServiceStructureSpec extends Specification {
 		result.getPenalty() == 0
 		result2.getPenalty() == 0
 		Math.abs(result.getCost() - result2.getCost()) < 0.001
-
 	}
-	
+
 	def "Eval with two depots at start"() {
 		def v = new TestVehicle(name: "V1", capacity: [3, 3]).getVehicle()
 		def model = initScen1(v, LoadType.DELIVERY)
 		def n = model.getNodes()
 
-		def sol = new Solution(model)
-		sol.setGiantRoute([Util.createIdNode(nd, 0), Util.createIdNode(nd, 1), n[2], n[3], n[4], Util.createIdNode(nd, 2)] as Node[])
+		def sol = Helper.set(model, [Util.createIdNode(nd, 0), Util.createIdNode(nd, 1), n[2], n[3], n[4], Util.createIdNode(nd, 2)] as Node[])
 
 		when:
 		def result = service.check(sol)

@@ -53,13 +53,6 @@ public class AcceleratedMetric implements InternalMetric {
 		return matrix[src.getIdx()][dst.getIdx()];
 	}
 	
-	/**
-	 * 
-	 * @param srcIdx
-	 * @param dstIdx
-	 * @param dist
-	 * @param time
-	 */
 	public void add(int srcIdx, int dstIdx, float dist, float time) {
 		matrix[srcIdx][dstIdx] = new float[]{dist, time};
 	}

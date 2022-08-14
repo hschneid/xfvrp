@@ -107,18 +107,21 @@ class NormalizeSpec extends Specification {
 		def result = Helper.get(sol)
 		
 		then:
-		result.length == 11
 		result[0].externID == "1"
-		result[1].externID == "4"
-		result[2].externID == "1"
-		result[3].externID == "2"
-		result[4].externID == "3"
-		result[5].externID == "8"
-		result[6].externID == "4"
-		result[7].externID == "5"
-		result[8].externID == "6"
-		result[9].externID == "7"
+		result[1].externID == "1"
+		result[2].externID == "4"
+		result[3].externID == "4"
+		result[4].externID == "1"
+		result[5].externID == "2"
+		result[6].externID == "3"
+		result[7].externID == "1"
+		result[8].externID == "8"
+		result[9].externID == "8"
 		result[10].externID == "4"
+		result[11].externID == "5"
+		result[12].externID == "6"
+		result[13].externID == "7"
+		result[14].externID == "4"
 	}
 	
 	def "Regular normalize - With replenishs"() {

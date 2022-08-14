@@ -1,6 +1,7 @@
 package xf.xfvrp.opt.improve.routebased.swap
 
 import spock.lang.Specification
+import util.instances.Helper
 import util.instances.TestNode
 import util.instances.TestVehicle
 import util.instances.TestXFVRPModel
@@ -22,66 +23,66 @@ class XFVRPSegmentSwapTest extends Specification {
         def model = initScen()
         segmentService.setModel(model)
         def n = model.getNodes()
-        sol = new Solution(model)
-        sol.setGiantRoute([nd, n[5], n[2], n[4], nd2, n[6], n[3], n[7], nd2] as Node[])
+        sol = Helper.set(model, [nd, n[5], n[2], n[4], nd2, n[6], n[3], n[7], nd2] as Node[])
 
         when:
         def sol2 = segmentService.execute(sol)
-        def result = sol2.getGiantRoute()
+        def result = Helper.get(sol2)
         then:
         result[0].externID == "DEP"
         result[1].externID == "1"
         result[2].externID == "2"
         result[3].externID == "3"
-        result[4].externID == "DEP2"
-        result[5].externID == "4"
-        result[6].externID == "5"
-        result[7].externID == "6"
-        result[8].externID.contains("DEP")
+        result[4].externID == "DEP"
+        result[5].externID == "DEP2"
+        result[6].externID == "4"
+        result[7].externID == "5"
+        result[8].externID == "6"
+        result[9].externID == "DEP2"
     }
 
     def "improve by single swap"() {
         def model = initScen()
         singleService.setModel(model)
         def n = model.getNodes()
-        sol = new Solution(model)
-        sol.setGiantRoute([nd, n[5], n[2], n[4], nd2, n[6], n[3], n[7], nd2] as Node[])
+        sol = Helper.set(model, [nd, n[5], n[2], n[4], nd2, n[6], n[3], n[7], nd2] as Node[])
 
         when:
         def sol2 = singleService.execute(sol)
-        def result = sol2.getGiantRoute()
+        def result = Helper.get(sol2)
         then:
         result[0].externID == "DEP"
         result[1].externID == "1"
         result[2].externID == "2"
         result[3].externID == "3"
-        result[4].externID == "DEP2"
-        result[5].externID == "4"
-        result[6].externID == "5"
-        result[7].externID == "6"
-        result[8].externID.contains("DEP")
+        result[4].externID == "DEP"
+        result[5].externID == "DEP2"
+        result[6].externID == "4"
+        result[7].externID == "5"
+        result[8].externID == "6"
+        result[9].externID == "DEP2"
     }
 
     def "improve by segment exchange"() {
         def model = initScen()
         exchangeService.setModel(model)
         def n = model.getNodes()
-        sol = new Solution(model)
-        sol.setGiantRoute([nd, n[5], n[3], n[7], nd2, n[6], n[2], n[4], nd2] as Node[])
+        sol = Helper.set(model, [nd, n[5], n[3], n[7], nd2, n[6], n[2], n[4], nd2] as Node[])
 
         when:
         def sol2 = exchangeService.execute(sol)
-        def result = sol2.getGiantRoute()
+        def result = Helper.get(sol2)
         then:
         result[0].externID == "DEP"
         result[1].externID == "1"
         result[2].externID == "2"
         result[3].externID == "3"
-        result[4].externID == "DEP2"
-        result[5].externID == "4"
-        result[6].externID == "5"
-        result[7].externID == "6"
-        result[8].externID.contains("DEP")
+        result[4].externID == "DEP"
+        result[5].externID == "DEP2"
+        result[6].externID == "4"
+        result[7].externID == "5"
+        result[8].externID == "6"
+        result[9].externID == "DEP2"
     }
 
     def nd = new TestNode(
