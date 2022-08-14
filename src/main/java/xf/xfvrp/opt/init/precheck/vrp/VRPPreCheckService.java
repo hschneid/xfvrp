@@ -14,99 +14,98 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-/** 
+/**
  * Copyright (c) 2012-2022 Holger Schneider
  * All rights reserved.
- *
+ * <p>
  * This source code is licensed under the MIT License (MIT) found in the
  * LICENSE file in the root directory of this source tree.
- *
- *
+ * <p>
+ * <p>
  * This is the standard initialization of the giant tour
  * out of the read data. The first thing of an optimization
  * process is the creation of such a giant tour. Hereby all
  * orders/customers will be arranged in a way, that each
  * order/customer is visited by its own tour.
- * 
+ * <p>
  * If multiple depots are available, each single route has
  * an alternating depot.
- * 
+ * <p>
  * Some construction optimization methods ignore the giant tours
  * and rebuild their own. But for reasons of convenience in
  * all cases a giant tour is initialized by this class.
- * 
+ * <p>
  * If orders/customers can not be served in a valid way with the
  * given restrictions, they are excluded in an invalid list. These
  * orders/customers are reinserted in a later step of optimization.
- * 
- * @author hschneid
  *
+ * @author hschneid
  */
-public class VRPPreCheckService  {
-	
-	/**
-	 * Structural checks of the nodes without model 
-	 */
-	public Node[] precheck(Node[] nodes, Vehicle vehicle) throws XFVRPException {
-		checkFeasibility(nodes);
+public class VRPPreCheckService {
 
-		// Fetch block informations
-		Map<Integer, List<Node>> blocks = getBlocks(nodes);
+    /**
+     * Structural checks of the nodes without model
+     */
+    public Node[] precheck(Node[] nodes, Vehicle vehicle) throws XFVRPException {
+        checkFeasibility(nodes);
 
-		List<Node> plannedNodes = getPlannedNodes(nodes);
+        // Fetch block informations
+        Map<Integer, List<Node>> blocks = getBlocks(nodes);
 
-		// Check if customer is allowed for this vehicle type
-		checkVehicleType(nodes, vehicle, blocks, plannedNodes);
+        List<Node> plannedNodes = getPlannedNodes(nodes);
 
-		return plannedNodes.toArray(new Node[0]);
-	}
+        // Check if customer is allowed for this vehicle type
+        checkVehicleType(nodes, vehicle, blocks, plannedNodes);
 
-	private void checkFeasibility(Node[] nodes) throws XFVRPException {
-		if(nodes.length == 0) {
-			throw new XFVRPException(XFVRPExceptionType.ILLEGAL_INPUT, "No nodes found.");
-		}
-	}
+        return plannedNodes.toArray(new Node[0]);
+    }
 
-	private void checkVehicleType(Node[] nodes, Vehicle vehicle, Map<Integer, List<Node>> blocks, List<Node> plannedNodes) throws XFVRPException {
-		for (Node node : nodes) {
-			if(node.getSiteType() == SiteType.CUSTOMER) {
-				if(!node.getPresetBlockVehicleList().isEmpty() && !node.getPresetBlockVehicleList().contains(vehicle.getIdx())) {
-					// Remove invalid customer from nodes list
-					removeNode(plannedNodes, node, InvalidReason.WRONG_VEHICLE_TYPE);
+    private void checkFeasibility(Node[] nodes) throws XFVRPException {
+        if (nodes.length == 0) {
+            throw new XFVRPException(XFVRPExceptionType.ILLEGAL_INPUT, "No nodes found.");
+        }
+    }
 
-					// Remove all customers from block of invalid customer
-					removeCustomersOfBlock(blocks, plannedNodes, node);
-				}
-			} 
-		}
+    private void checkVehicleType(Node[] nodes, Vehicle vehicle, Map<Integer, List<Node>> blocks, List<Node> plannedNodes) throws XFVRPException {
+        for (Node node : nodes) {
+            if (node.getSiteType() == SiteType.CUSTOMER) {
+                if (!node.getPresetBlockVehicleList().isEmpty() && !node.getPresetBlockVehicleList().contains(vehicle.getIdx())) {
+                    // Remove invalid customer from nodes list
+                    removeNode(plannedNodes, node, InvalidReason.WRONG_VEHICLE_TYPE);
 
-		// There must be customers left, otherwise input is wrong
-		if(plannedNodes.stream().noneMatch(node -> node.getSiteType() == SiteType.CUSTOMER)) {
-			throw new XFVRPException(XFVRPExceptionType.ILLEGAL_INPUT, "Not a single node is allowed for vehicle " + vehicle.getName() + ". Please remove it from input.");
-		}
-	}
+                    // Remove all customers from block of invalid customer
+                    removeCustomersOfBlock(blocks, plannedNodes, node);
+                }
+            }
+        }
 
-	private void removeCustomersOfBlock(Map<Integer, List<Node>> blocks, List<Node> plannedNodes, Node node) {
-		if(blocks.containsKey(node.getPresetBlockIdx())) {
-			blocks.get(node.getPresetBlockIdx())
-				.forEach(n -> removeNode(plannedNodes, n, InvalidReason.WRONG_VEHICLE_TYPE));
-		}
-	}
+        // There must be customers left, otherwise input is wrong
+        if (plannedNodes.stream().noneMatch(node -> node.getSiteType() == SiteType.CUSTOMER)) {
+            throw new XFVRPException(XFVRPExceptionType.ILLEGAL_INPUT, "Not a single node is allowed for vehicle " + vehicle.getName() + ". Please remove it from input.");
+        }
+    }
 
-	private void removeNode(List<Node> plannedNodes, Node node, InvalidReason invalidReason) {
-		node.setInvalidReason(invalidReason);
-		plannedNodes.remove(node);
-	}
-	
-	private Map<Integer, List<Node>> getBlocks(Node[] nodes) {
-		return Arrays.stream(nodes)
-			.filter(n -> n.getSiteType() == SiteType.CUSTOMER)
-			.filter(n-> n.getPresetBlockIdx() != BlockNameConverter.DEFAULT_BLOCK_IDX)
-			.collect(Collectors.groupingBy(Node::getPresetBlockIdx));
-	}
+    private void removeCustomersOfBlock(Map<Integer, List<Node>> blocks, List<Node> plannedNodes, Node node) {
+        if (blocks.containsKey(node.getPresetBlockIdx())) {
+            blocks.get(node.getPresetBlockIdx())
+                    .forEach(n -> removeNode(plannedNodes, n, InvalidReason.WRONG_VEHICLE_TYPE));
+        }
+    }
 
-	private List<Node> getPlannedNodes(Node[] nodes) {
-		// Already planned customers (true = planned, false = unplanned, DEPOTS/REPLENISH always false)
-		return new ArrayList<>(Arrays.asList(nodes));
-	}
+    private void removeNode(List<Node> plannedNodes, Node node, InvalidReason invalidReason) {
+        node.setInvalidReason(invalidReason);
+        plannedNodes.remove(node);
+    }
+
+    private Map<Integer, List<Node>> getBlocks(Node[] nodes) {
+        return Arrays.stream(nodes)
+                .filter(n -> n.getSiteType() == SiteType.CUSTOMER)
+                .filter(n -> n.getPresetBlockIdx() != BlockNameConverter.DEFAULT_BLOCK_IDX)
+                .collect(Collectors.groupingBy(Node::getPresetBlockIdx));
+    }
+
+    private List<Node> getPlannedNodes(Node[] nodes) {
+        // Already planned customers (true = planned, false = unplanned, DEPOTS/REPLENISH always false)
+        return new ArrayList<>(Arrays.asList(nodes));
+    }
 }

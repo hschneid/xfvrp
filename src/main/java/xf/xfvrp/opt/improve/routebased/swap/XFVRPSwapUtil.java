@@ -11,7 +11,7 @@ import java.util.Arrays;
 /**
  * Copyright (c) 2012-2022 Holger Schneider
  * All rights reserved.
- *
+ * <p>
  * This source code is licensed under the MIT License (MIT) found in the
  * LICENSE file in the root directory of this source tree.
  **/
@@ -24,7 +24,7 @@ public class XFVRPSwapUtil {
 
     /**
      * Changes a solution according to given parameter
-     *
+     * <p>
      * Exchanges two segments of the solution. First segment
      * starts at position a and includes la many nodes. Second segments
      * starts at position b and includes lb many nodes. The two
@@ -39,7 +39,7 @@ public class XFVRPSwapUtil {
         int bSegmentLength = (int) val[6];
         int invertType = (int) val[7];
 
-        if(aRouteIndex == bRouteIndex &&
+        if (aRouteIndex == bRouteIndex &&
                 (((aPos < bPos) && (aPos + aSegmentLength) >= bPos) ||
                         ((bPos < aPos) && (bPos + bSegmentLength) >= aPos))
         ) {
@@ -55,16 +55,16 @@ public class XFVRPSwapUtil {
         invert(aRoute, bRoute, aPos, bPos, aSegmentLength, bSegmentLength, invertType);
 
         // Segments must not touch a depot
-        if(aPos == 0 || bPos == 0) {
+        if (aPos == 0 || bPos == 0) {
             throw new XFVRPException(XFVRPExceptionType.ILLEGAL_ARGUMENT, "Segments contain the leading depot");
         }
-        if(aPos + aSegmentLength == aRoute.length - 1 ||
+        if (aPos + aSegmentLength == aRoute.length - 1 ||
                 bPos + bSegmentLength == bRoute.length - 1) {
             throw new XFVRPException(XFVRPExceptionType.ILLEGAL_ARGUMENT, "Segments contain the trailing depot");
         }
 
         // Segments have same size, easy because lengths are not changing
-        if(aSegmentLength == bSegmentLength) {
+        if (aSegmentLength == bSegmentLength) {
             swapSegmentsEqualLength(aRoute, bRoute, aPos, bPos, aSegmentLength);
 
             solution.setRoute(aRouteIndex, aRoute);
@@ -73,18 +73,22 @@ public class XFVRPSwapUtil {
             return aRouteIndex != bRouteIndex ? new Node[][]{srcARoute, srcBRoute} : new Node[][]{srcARoute};
         } else {
             // Swap segment parameter, that A is always before B
-            if(aRouteIndex == bRouteIndex && bPos < aPos) {
-                int tmp = aPos; aPos = bPos; bPos = tmp;
-                tmp = aSegmentLength; aSegmentLength = bSegmentLength; bSegmentLength = tmp;
+            if (aRouteIndex == bRouteIndex && bPos < aPos) {
+                int tmp = aPos;
+                aPos = bPos;
+                bPos = tmp;
+                tmp = aSegmentLength;
+                aSegmentLength = bSegmentLength;
+                bSegmentLength = tmp;
             }
 
             // Fetch the segments
             Node[] aSegment = new Node[aSegmentLength + 1];
-            System.arraycopy(aRoute, aPos , aSegment, 0, aSegment.length);
+            System.arraycopy(aRoute, aPos, aSegment, 0, aSegment.length);
             Node[] bSegment = new Node[bSegmentLength + 1];
-            System.arraycopy(bRoute, bPos , bSegment, 0, bSegment.length);
+            System.arraycopy(bRoute, bPos, bSegment, 0, bSegment.length);
 
-            if(aRouteIndex != bRouteIndex) {
+            if (aRouteIndex != bRouteIndex) {
                 solution.setRoute(aRouteIndex, replace(aRoute, aPos, aPos + aSegmentLength, bSegment));
                 solution.setRoute(bRouteIndex, replace(bRoute, bPos, bPos + bSegmentLength, aSegment));
 

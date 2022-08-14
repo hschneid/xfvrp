@@ -10,7 +10,7 @@ import java.util.Queue;
 /**
  * Copyright (c) 2012-2022 Holger Schneider
  * All rights reserved.
- *
+ * <p>
  * This source code is licensed under the MIT License (MIT) found in the
  * LICENSE file in the root directory of this source tree.
  **/
@@ -36,24 +36,24 @@ public class XFVRPSwapSearchUtil {
 
                         for (int bPos = 1; bPos < bRoute.length - 1; bPos++) {
                             // aPos must not be identical to bPos
-                            if(aRtIdx == bRtIdx && bPos == aPos) {
+                            if (aRtIdx == bRtIdx && bPos == aPos) {
                                 continue;
                             }
 
                             // Both segments must not overlap - Is bPos in A-segment
-                            if(aRtIdx == bRtIdx && bPos >= aPos && bPos <= aPos + aSegmentLength) {
+                            if (aRtIdx == bRtIdx && bPos >= aPos && bPos <= aPos + aSegmentLength) {
                                 continue;
                             }
 
                             int bMaxSegmentLength = Math.min(maxSegmentLength, bRoute.length - bPos - 1);
                             for (int bSegmentLength = 0; bSegmentLength < bMaxSegmentLength; bSegmentLength++) {
                                 // Both segments must not overlap - Is B-segment in A-segment
-                                if(aRtIdx == bRtIdx && bPos < aPos && bPos + bSegmentLength >= aPos) {
+                                if (aRtIdx == bRtIdx && bPos < aPos && bPos + bSegmentLength >= aPos) {
                                     continue;
                                 }
 
                                 // If segment length should be equal
-                                if(isSegmentLengthEqual && aSegmentLength != bSegmentLength) {
+                                if (isSegmentLengthEqual && aSegmentLength != bSegmentLength) {
                                     continue;
                                 }
 
@@ -88,7 +88,7 @@ public class XFVRPSwapSearchUtil {
             boolean isInvertActive
     ) {
         // B-segment is directly before A-segment
-        if(aRtIdx == bRtIdx && aPos - (bPos + bSegmentLength) == 1) {
+        if (aRtIdx == bRtIdx && aPos - (bPos + bSegmentLength) == 1) {
             searchInRoutesBbeforeA(
                     solution,
                     aRoute,
@@ -100,7 +100,7 @@ public class XFVRPSwapSearchUtil {
             );
         }
         // A-segment is directly before B-segment
-        else if(aRtIdx == bRtIdx && bPos - (aPos + aSegmentLength) == 1) {
+        else if (aRtIdx == bRtIdx && bPos - (aPos + aSegmentLength) == 1) {
             searchInRoutesBbeforeA(
                     solution,
                     aRoute,
@@ -144,7 +144,7 @@ public class XFVRPSwapSearchUtil {
         addImprovingStep(solution, improvingSteps, val, aRtIdx, bRtIdx, aPos, bPos, aSegmentLength, bSegmentLength, XFVRPSwapUtil.NO_INVERT, XFVRPMoveUtil.NO_OVERHANG);
 
         // BOTH INVERT
-        if(isInvertActive && aSegmentLength > 0 && bSegmentLength > 0) {
+        if (isInvertActive && aSegmentLength > 0 && bSegmentLength > 0) {
             val = old - (model.getDistance(aRoute[aPos - 1], bRoute[bb]) +
                     model.getDistance(bRoute[bPos], aRoute[aa + 1]) +
                     model.getDistance(bRoute[bPos - 1], aRoute[aa]) +
@@ -152,7 +152,7 @@ public class XFVRPSwapSearchUtil {
             addImprovingStep(solution, improvingSteps, val, aRtIdx, bRtIdx, aPos, bPos, aSegmentLength, bSegmentLength, XFVRPSwapUtil.BOTH_INVERT, XFVRPMoveUtil.NO_OVERHANG);
         }
         // A INVERT
-        if(isInvertActive && aSegmentLength > 0) {
+        if (isInvertActive && aSegmentLength > 0) {
             val = old - (model.getDistance(aRoute[aPos - 1], bRoute[bPos]) +
                     model.getDistance(bRoute[bb], aRoute[aa + 1]) +
                     model.getDistance(bRoute[bPos - 1], aRoute[aa]) +
@@ -160,7 +160,7 @@ public class XFVRPSwapSearchUtil {
             addImprovingStep(solution, improvingSteps, val, aRtIdx, bRtIdx, aPos, bPos, aSegmentLength, bSegmentLength, XFVRPSwapUtil.A_INVERT, XFVRPMoveUtil.NO_OVERHANG);
         }
         // B INVERT
-        if(isInvertActive && bSegmentLength > 0) {
+        if (isInvertActive && bSegmentLength > 0) {
             val = old - (model.getDistance(aRoute[aPos - 1], bRoute[bb]) +
                     model.getDistance(bRoute[bPos], aRoute[aa + 1]) +
                     model.getDistance(bRoute[bPos - 1], aRoute[aPos]) +
@@ -190,7 +190,7 @@ public class XFVRPSwapSearchUtil {
         addImprovingStep(solution, improvingSteps, val, rtIdx, rtIdx, aPos, bPos, aSegmentLength, bSegmentLength, XFVRPSwapUtil.NO_INVERT, XFVRPMoveUtil.NO_OVERHANG);
 
         // BOTH INVERT
-        if(isInvertActive && aSegmentLength > 0 && bSegmentLength > 0) {
+        if (isInvertActive && aSegmentLength > 0 && bSegmentLength > 0) {
             val = old - (
                     model.getDistance(route[bPos - 1], route[aa]) +
                             model.getDistance(route[aPos], route[bb]) +
@@ -199,7 +199,7 @@ public class XFVRPSwapSearchUtil {
             addImprovingStep(solution, improvingSteps, val, rtIdx, rtIdx, aPos, bPos, aSegmentLength, bSegmentLength, XFVRPSwapUtil.BOTH_INVERT, XFVRPMoveUtil.NO_OVERHANG);
         }
         // A INVERT
-        if(isInvertActive && aSegmentLength > 0) {
+        if (isInvertActive && aSegmentLength > 0) {
             val = old - (
                     model.getDistance(route[bPos - 1], route[aa]) +
                             model.getDistance(route[aPos], route[bPos]) +
@@ -208,7 +208,7 @@ public class XFVRPSwapSearchUtil {
             addImprovingStep(solution, improvingSteps, val, rtIdx, rtIdx, aPos, bPos, aSegmentLength, bSegmentLength, XFVRPSwapUtil.A_INVERT, XFVRPMoveUtil.NO_OVERHANG);
         }
         // B INVERT
-        if(isInvertActive && bSegmentLength > 0) {
+        if (isInvertActive && bSegmentLength > 0) {
             val = old - (
                     model.getDistance(route[bPos - 1], route[aPos]) +
                             model.getDistance(route[aa], route[bb]) +
@@ -224,7 +224,7 @@ public class XFVRPSwapSearchUtil {
      */
     private static void addImprovingStep(Solution solution, Queue<float[]> improvingSteps, float... newStep) {
         // Prevent, that additional nodes are moved to overhanging routes
-        if((isDestinationOverhangRoute(solution, newStep) && newStep[5] > newStep[6]) ||
+        if ((isDestinationOverhangRoute(solution, newStep) && newStep[5] > newStep[6]) ||
                 (isSourceOverhangRoute(solution, newStep) && newStep[6] > newStep[5])) {
             newStep[0] = -1;
             newStep[8] = XFVRPMoveUtil.IS_OVERHANG;
@@ -241,7 +241,7 @@ public class XFVRPSwapSearchUtil {
      */
     private static boolean isSourceOverhangRoute(Solution solution, float[] newStep) {
         boolean[] isOverhang = solution.getOverhangRoutes();
-        return isOverhang[(int)newStep[1]];
+        return isOverhang[(int) newStep[1]];
     }
 
     /**
@@ -249,6 +249,6 @@ public class XFVRPSwapSearchUtil {
      */
     private static boolean isDestinationOverhangRoute(Solution solution, float[] newStep) {
         boolean[] isOverhang = solution.getOverhangRoutes();
-        return isOverhang[(int)newStep[2]];
+        return isOverhang[(int) newStep[2]];
     }
 }

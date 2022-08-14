@@ -8,33 +8,33 @@ import java.util.Arrays;
 /**
  * Copyright (c) 2012-2022 Holger Schneider
  * All rights reserved.
- *
+ * <p>
  * This source code is licensed under the MIT License (MIT) found in the
  * LICENSE file in the root directory of this source tree.
  **/
 public class ContextBuilder {
 
-	private final CompartmentLoadBuilder compartmentLoadBuilder = new CompartmentLoadBuilder();
+    private final CompartmentLoadBuilder compartmentLoadBuilder = new CompartmentLoadBuilder();
 
-	public Context build(XFVRPModel model) {
-		Context context = new Context(model);
+    public Context build(XFVRPModel model) {
+        Context context = new Context(model);
 
-		// Variables
-		context.setMaxGlobalNodeIdx(model.getMaxGlobalNodeIdx() + 1);
+        // Variables
+        context.setMaxGlobalNodeIdx(model.getMaxGlobalNodeIdx() + 1);
 
-		// Amounts - Which amounts must be stored during checking - Each compartment and each load type - So same like vehicle capacities
-		context.setAmountArr(compartmentLoadBuilder.createCompartmentLoads(model.getCompartments()));
+        // Amounts - Which amounts must be stored during checking - Each compartment and each load type - So same like vehicle capacities
+        context.setAmountArr(compartmentLoadBuilder.createCompartmentLoads(model.getCompartments()));
 
-		context.setBlockPresetArr(new int[model.getNbrOfBlocks()]);
-		Arrays.fill(context.getBlockPresetArr(), -1);
-		context.setAvailablePresetCountArr(model.getBlockPresetCountList());
-		context.setFoundPresetCountArr(new int[model.getNbrOfBlocks()]);
-		context.setLastPresetSequenceRankArr(new int[model.getNbrOfBlocks()]);
-		context.setPresetRoutingBlackList(new boolean[context.getMaxGlobalNodeIdx()]);
-		context.setPresetRoutingNodeList(new boolean[context.getMaxGlobalNodeIdx()]);
+        context.setBlockPresetArr(new int[model.getNbrOfBlocks()]);
+        Arrays.fill(context.getBlockPresetArr(), -1);
+        context.setAvailablePresetCountArr(model.getBlockPresetCountList());
+        context.setFoundPresetCountArr(new int[model.getNbrOfBlocks()]);
+        context.setLastPresetSequenceRankArr(new int[model.getNbrOfBlocks()]);
+        context.setPresetRoutingBlackList(new boolean[context.getMaxGlobalNodeIdx()]);
+        context.setPresetRoutingNodeList(new boolean[context.getMaxGlobalNodeIdx()]);
 
-		return context;
-	}
+        return context;
+    }
 
-	
+
 }

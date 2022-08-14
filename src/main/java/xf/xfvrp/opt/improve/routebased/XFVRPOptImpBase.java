@@ -13,104 +13,104 @@ import java.util.Queue;
 /**
  * Copyright (c) 2012-2022 Holger Schneider
  * All rights reserved.
- *
+ * <p>
  * This source code is licensed under the MIT License (MIT) found in the
  * LICENSE file in the root directory of this source tree.
- *
+ * <p>
  * This class provides the basis local search structure
  * of iteratively calling an improve-method and memorizing
  * the best solution.
- *
+ * <p>
  * The downhill search stops if no further improvement
  * can be found.
- *
+ * <p>
  * This class is abstract and will be implemented by the route-based neighborhood
  * generating operators itself.
  *
  * @author hschneid
- *
  */
 public abstract class XFVRPOptImpBase extends XFVRPOptBase {
 
-	/**
-	 * Constructor for all improvement heuristics
-	 */
-	public XFVRPOptImpBase() {
-		isSplittable = true;
-	}
+    /**
+     * Constructor for all improvement heuristics
+     */
+    public XFVRPOptImpBase() {
+        isSplittable = true;
+    }
 
-	protected abstract Queue<float[]> search(Solution solution);
-	protected abstract Node[][] change(Solution solution, float[] changeParameter) throws XFVRPException;
+    protected abstract Queue<float[]> search(Solution solution);
 
-	/*
-	 * (non-Javadoc)
-	 * @see xf.xfvrp.base.XFVRPBase#execute(xf.xfvrp.opt.Solution)
-	 */
-	@Override
-	public Solution execute(Solution solution) throws XFVRPException {
-		// Evaluate current solution
-		Quality bestResult = check(solution);
+    protected abstract Node[][] change(Solution solution, float[] changeParameter) throws XFVRPException;
 
-		// Search for improvements and apply them as long as there are improvements or enough time left
-		long startTime = System.currentTimeMillis();
-		while((System.currentTimeMillis() - startTime) / 1000.0 < model.getParameter().getMaxRunningTimeInSec()) {
-			Quality result = improve(solution, bestResult);
-			if (result == null)
-				break;
+    /*
+     * (non-Javadoc)
+     * @see xf.xfvrp.base.XFVRPBase#execute(xf.xfvrp.opt.Solution)
+     */
+    @Override
+    public Solution execute(Solution solution) throws XFVRPException {
+        // Evaluate current solution
+        Quality bestResult = check(solution);
 
-			bestResult = result;
+        // Search for improvements and apply them as long as there are improvements or enough time left
+        long startTime = System.currentTimeMillis();
+        while ((System.currentTimeMillis() - startTime) / 1000.0 < model.getParameter().getMaxRunningTimeInSec()) {
+            Quality result = improve(solution, bestResult);
+            if (result == null)
+                break;
 
-			NormalizeSolutionService.normalizeRoute(solution);
-		}
+            bestResult = result;
 
-		// Normalize resulting solution - Remove empty routes
-		NormalizeSolutionService.normalizeRouteWithCleanup(solution);
+            NormalizeSolutionService.normalizeRoute(solution);
+        }
 
-		return solution;
-	}
+        // Normalize resulting solution - Remove empty routes
+        NormalizeSolutionService.normalizeRouteWithCleanup(solution);
 
-	/**
-	 * This method calls the abstract improve method of this optimization class with
-	 * a given model. This method is useful if optimization operators are designed with
-	 * several lower optimization operators. The model may switch between the lower operators.
-	 *
-	 * Currently it is only used by the PathExchange operator.
-	 */
-	protected Quality improve(final Solution solution, Quality bestResult) throws XFVRPException {
-		check(solution);
+        return solution;
+    }
 
-		Queue<float[]> improvingSteps = search(solution);
-		// Find first valid improving change
-		while(!improvingSteps.isEmpty()) {
-			float[] val = improvingSteps.remove();
+    /**
+     * This method calls the abstract improve method of this optimization class with
+     * a given model. This method is useful if optimization operators are designed with
+     * several lower optimization operators. The model may switch between the lower operators.
+     * <p>
+     * Currently it is only used by the PathExchange operator.
+     */
+    protected Quality improve(final Solution solution, Quality bestResult) throws XFVRPException {
+        check(solution);
 
-			// Variation
-			Node[][] oldRoutes = change(solution, val);
+        Queue<float[]> improvingSteps = search(solution);
+        // Find first valid improving change
+        while (!improvingSteps.isEmpty()) {
+            float[] val = improvingSteps.remove();
 
-			Quality result = check(solution, (int)val[1], (int)val[2]);
-			if(isImprovement(result, bestResult, (int)val[7])) {
-				solution.fixateQualities();
-				return result;
-			}
+            // Variation
+            Node[][] oldRoutes = change(solution, val);
 
-			// Reverse
-			reverseChange(solution, val, oldRoutes);
-		}
+            Quality result = check(solution, (int) val[1], (int) val[2]);
+            if (isImprovement(result, bestResult, (int) val[7])) {
+                solution.fixateQualities();
+                return result;
+            }
 
-		return null;
-	}
+            // Reverse
+            reverseChange(solution, val, oldRoutes);
+        }
 
-	private void reverseChange(Solution solution, float[] val, Node[][] oldRoutes) {
-		solution.setRoute((int)val[1], oldRoutes[0]);
-		if(oldRoutes.length > 1)
-			solution.setRoute((int)val[2], oldRoutes[1]);
-		solution.resetQualities();
-	}
+        return null;
+    }
 
-	private boolean isImprovement(Quality currentResult, Quality bestResult, int overhangFlag) {
-		// Is fitness better OR
-		return currentResult.getPenalty() == 0 &&
-				(currentResult.getFitness() < bestResult.getFitness() ||
-						overhangFlag == XFVRPMoveUtil.IS_OVERHANG);
-	}
+    private void reverseChange(Solution solution, float[] val, Node[][] oldRoutes) {
+        solution.setRoute((int) val[1], oldRoutes[0]);
+        if (oldRoutes.length > 1)
+            solution.setRoute((int) val[2], oldRoutes[1]);
+        solution.resetQualities();
+    }
+
+    private boolean isImprovement(Quality currentResult, Quality bestResult, int overhangFlag) {
+        // Is fitness better OR
+        return currentResult.getPenalty() == 0 &&
+                (currentResult.getFitness() < bestResult.getFitness() ||
+                        overhangFlag == XFVRPMoveUtil.IS_OVERHANG);
+    }
 }

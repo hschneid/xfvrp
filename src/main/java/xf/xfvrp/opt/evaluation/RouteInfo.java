@@ -7,72 +7,72 @@ import java.util.Objects;
 /**
  * Copyright (c) 2012-2022 Holger Schneider
  * All rights reserved.
- *
+ * <p>
  * This source code is licensed under the MIT License (MIT) found in the
  * LICENSE file in the root directory of this source tree.
  **/
 public class RouteInfo {
 
-	private final int compartmentIdx;
-	private final Node depot;
-	
-	private float loadingServiceTime = 0;
-	private float unLoadingServiceTime = 0;
-	
-	private float deliveryAmount = 0;
-	private float pickupAmount = 0;
-	
-	public RouteInfo(Node depot, int compartmentIdx) {
-		this.depot = depot;
-		this.compartmentIdx = compartmentIdx;
-	}
-	
-	public void addLoadingServiceTime(float time) {
-		loadingServiceTime += time;
-	}
-	
-	public void addUnLoadingServiceTime(float time) {
-		unLoadingServiceTime += time;
-	}
+    private final int compartmentIdx;
+    private final Node depot;
 
-	public void addPickUpAmount(float demand) {
-		pickupAmount += demand;
-	}
+    private float loadingServiceTime = 0;
+    private float unLoadingServiceTime = 0;
 
-	public void addDeliveryAmount(float demand) {
-		deliveryAmount += demand;
-	}
+    private float deliveryAmount = 0;
+    private float pickupAmount = 0;
 
-	public float getLoadingServiceTime() {
-		return loadingServiceTime;
-	}
+    public RouteInfo(Node depot, int compartmentIdx) {
+        this.depot = depot;
+        this.compartmentIdx = compartmentIdx;
+    }
 
-	public float getUnLoadingServiceTime() {
-		return unLoadingServiceTime;
-	}
+    public void addLoadingServiceTime(float time) {
+        loadingServiceTime += time;
+    }
 
-	public Node getDepot() {
-		return depot;
-	}
+    public void addUnLoadingServiceTime(float time) {
+        unLoadingServiceTime += time;
+    }
 
-	public float getDeliveryAmount() {
-		return deliveryAmount;
-	}
+    public void addPickUpAmount(float demand) {
+        pickupAmount += demand;
+    }
 
-	public float getPickupAmount() {
-		return pickupAmount;
-	}
+    public void addDeliveryAmount(float demand) {
+        deliveryAmount += demand;
+    }
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-		RouteInfo routeInfo = (RouteInfo) o;
-		return Objects.equals(depot.getIdx(), routeInfo.depot.getIdx());
-	}
+    public float getLoadingServiceTime() {
+        return loadingServiceTime;
+    }
 
-	@Override
-	public int hashCode() {
-		return Objects.hash(depot.getIdx());
-	}
+    public float getUnLoadingServiceTime() {
+        return unLoadingServiceTime;
+    }
+
+    public Node getDepot() {
+        return depot;
+    }
+
+    public float getDeliveryAmount() {
+        return deliveryAmount;
+    }
+
+    public float getPickupAmount() {
+        return pickupAmount;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        RouteInfo routeInfo = (RouteInfo) o;
+        return Objects.equals(depot.getIdx(), routeInfo.depot.getIdx());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(depot.getIdx());
+    }
 }

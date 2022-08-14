@@ -13,124 +13,124 @@ import java.util.Arrays;
 /**
  * Copyright (c) 2012-2022 Holger Schneider
  * All rights reserved.
- *
+ * <p>
  * This source code is licensed under the MIT License (MIT) found in the
  * LICENSE file in the root directory of this source tree.
  **/
 public abstract class XFILS extends XFVRPOptBase {
 
-	protected XFVRPOptBase[] optArr;
-	protected double[] optPropArr;
-	protected XFRandomChangeService randomChangeService;
+    protected XFVRPOptBase[] optArr;
+    protected double[] optPropArr;
+    protected XFRandomChangeService randomChangeService;
 
-	public Solution execute(Solution solution) throws XFVRPException {
-		if(isInvalid(solution)) {
-			return solution;
-		}
+    public Solution execute(Solution solution) throws XFVRPException {
+        if (isInvalid(solution)) {
+            return solution;
+        }
 
-		Solution currentSolution = solution.copy();
-		Solution bestSolution = solution.copy();
-		Quality bestQuality = check(bestSolution);
+        Solution currentSolution = solution.copy();
+        Solution bestSolution = solution.copy();
+        Quality bestQuality = check(bestSolution);
 
-		statusManager.fireMessage(StatusCode.RUNNING, this.getClass().getSimpleName()+" is starting with "+model.getParameter().getILSLoops()+" loops. Start quality " + bestQuality.getCost());
+        statusManager.fireMessage(StatusCode.RUNNING, this.getClass().getSimpleName() + " is starting with " + model.getParameter().getILSLoops() + " loops. Start quality " + bestQuality.getCost());
 
-		for (int i = 0; checkTerminationCriteria(i); i++) {
-			Solution newSolution = currentSolution.copy();
+        for (int i = 0; checkTerminationCriteria(i); i++) {
+            Solution newSolution = currentSolution.copy();
 
-			// Variation
-			newSolution = randomChangeService.change(newSolution);
+            // Variation
+            newSolution = randomChangeService.change(newSolution);
 
-			// Intensification
-			newSolution = localSearch(newSolution);
+            // Intensification
+            newSolution = localSearch(newSolution);
 
-			// Evaluation
-			Quality newQuality = check(newSolution);
+            // Evaluation
+            Quality newQuality = check(newSolution);
 
-			// Selection
-			if(newQuality.getFitness() < bestQuality.getFitness()) {
-				statusManager.fireMessage(StatusCode.RUNNING, this.getClass().getSimpleName()+" loop "+i+"\t last cost : "+bestQuality.getCost()+"\t new cost : "+newQuality.getCost());
+            // Selection
+            if (newQuality.getFitness() < bestQuality.getFitness()) {
+                statusManager.fireMessage(StatusCode.RUNNING, this.getClass().getSimpleName() + " loop " + i + "\t last cost : " + bestQuality.getCost() + "\t new cost : " + newQuality.getCost());
 
-				currentSolution = newSolution;
-				bestQuality = newQuality;
-				bestSolution = newSolution;
-			} else {
-				statusManager.fireMessage(StatusCode.RUNNING, this.getClass().getSimpleName()+" loop "+i+"\t with cost : "+newQuality.getCost()+"\t best cost : "+bestQuality.getCost());
-			}
-		}
+                currentSolution = newSolution;
+                bestQuality = newQuality;
+                bestSolution = newSolution;
+            } else {
+                statusManager.fireMessage(StatusCode.RUNNING, this.getClass().getSimpleName() + " loop " + i + "\t with cost : " + newQuality.getCost() + "\t best cost : " + bestQuality.getCost());
+            }
+        }
 
-		return NormalizeSolutionService.normalizeRoute(bestSolution);
-	}
+        return NormalizeSolutionService.normalizeRoute(bestSolution);
+    }
 
-	/**
-	 * Checks, if input solution is valid to be optimized.
-	 * - All routes must contain at least 1 customer
-	 */
-	private boolean isInvalid(Solution solution) {
-		return Arrays.stream(solution.getRoutes())
-				.noneMatch(route ->
-						Arrays.stream(route).anyMatch(node -> node.getSiteType() == SiteType.CUSTOMER)
-				);
-	}
+    /**
+     * Checks, if input solution is valid to be optimized.
+     * - All routes must contain at least 1 customer
+     */
+    private boolean isInvalid(Solution solution) {
+        return Arrays.stream(solution.getRoutes())
+                .noneMatch(route ->
+                        Arrays.stream(route).anyMatch(node -> node.getSiteType() == SiteType.CUSTOMER)
+                );
+    }
 
-	/**
-	 * Checks if a certain termination criteria is reached.
-	 *
-	 * True - Loop can go on
-	 * False - Terminate loop
-	 *
-	 * Criteria are:
-	 *  - Max number of loops
-	 *  - Max running time
-	 */
-	protected boolean checkTerminationCriteria(int loopIdx) {
-		if(loopIdx >= model.getParameter().getILSLoops())
-			return false;
+    /**
+     * Checks if a certain termination criteria is reached.
+     * <p>
+     * True - Loop can go on
+     * False - Terminate loop
+     * <p>
+     * Criteria are:
+     * - Max number of loops
+     * - Max running time
+     */
+    protected boolean checkTerminationCriteria(int loopIdx) {
+        if (loopIdx >= model.getParameter().getILSLoops())
+            return false;
 
-		return statusManager.getDurationSinceStartInSec() < model.getParameter().getMaxRunningTimeInSec();
-	}
+        return statusManager.getDurationSinceStartInSec() < model.getParameter().getMaxRunningTimeInSec();
+    }
 
-	protected Solution localSearch(Solution solution) throws XFVRPException {
-		boolean[] processedNS = new boolean[optArr.length];
+    protected Solution localSearch(Solution solution) throws XFVRPException {
+        boolean[] processedNS = new boolean[optArr.length];
 
-		Quality bestQuality = null;
-		int nbrOfProcessed = 0;
-		while(nbrOfProcessed < processedNS.length) {
-			// Choose
-			int optIdx = choose(processedNS);
+        Quality bestQuality = null;
+        int nbrOfProcessed = 0;
+        while (nbrOfProcessed < processedNS.length) {
+            // Choose
+            int optIdx = choose(processedNS);
 
-			// Process
-			solution = optArr[optIdx].execute(solution, model, statusManager);
+            // Process
+            solution = optArr[optIdx].execute(solution, model, statusManager);
 
-			// Check
-			Quality currentQuality = check(solution);
-			if(bestQuality == null || currentQuality.getFitness() < bestQuality.getFitness()) {
-				bestQuality = currentQuality;
-				Arrays.fill(processedNS, false);
-				nbrOfProcessed = 0;
-			}
+            // Check
+            Quality currentQuality = check(solution);
+            if (bestQuality == null || currentQuality.getFitness() < bestQuality.getFitness()) {
+                bestQuality = currentQuality;
+                Arrays.fill(processedNS, false);
+                nbrOfProcessed = 0;
+            }
 
-			// Mark
-			processedNS[optIdx] = true;
-			nbrOfProcessed++;
-		}
+            // Mark
+            processedNS[optIdx] = true;
+            nbrOfProcessed++;
+        }
 
-		return solution;
-	}
+        return solution;
+    }
 
-	protected int choose(boolean[] processedArr) {
-		int idx = -1;
-		do {
-			double sum = 0;
-			double r = rand.nextDouble();
-			for (int j = 0; j < processedArr.length; j++) {
-				sum += optPropArr[j];
-				if(sum > r) {
-					idx = j;
-					break;
-				}
-			}
-		} while(processedArr[idx]);
+    protected int choose(boolean[] processedArr) {
+        int idx = -1;
+        do {
+            double sum = 0;
+            double r = rand.nextDouble();
+            for (int j = 0; j < processedArr.length; j++) {
+                sum += optPropArr[j];
+                if (sum > r) {
+                    idx = j;
+                    break;
+                }
+            }
+        } while (processedArr[idx]);
 
-		return idx;
-	}
+        return idx;
+    }
 }

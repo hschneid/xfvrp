@@ -20,12 +20,12 @@ import java.util.List;
 /**
  * Copyright (c) 2012-2022 Holger Schneider
  * All rights reserved.
- *
+ * <p>
  * This source code is licensed under the MIT License (MIT) found in the
  * LICENSE file in the root directory of this source tree.
- *
+ * <p>
  * Mixed fleet heuristic
- *
+ * <p>
  * Choose biggest vehicle type and optimize with no
  * fleet size limitation. Afterwards the k best
  * routes are chosen. The customers on the trashed
@@ -33,58 +33,57 @@ import java.util.List;
  * vehicle type.
  *
  * @author hschneid
- *
  */
 public class DefaultMixedFleetHeuristic extends MixedFleetHeuristicBase implements IMixedFleetHeuristic {
 
-	private final MixedFleetSelector selector = new MixedFleetSelector();
-	
-	@Override
-	public List<Solution> execute(
-			Node[] nodes,
-			CompartmentType[] compartmentTypes,
-			Vehicle[] vehicles,
-			RoutePlanningFunction routePlanningFunction,
-			Metric metric,
-			XFVRPParameter parameter,
-			StatusManager statusManager) throws XFVRPException {
-		List<Node> unplannedNodes = Arrays.asList(nodes);
+    private final MixedFleetSelector selector = new MixedFleetSelector();
 
-		vehicles = VehiclePriorityInitialiser.execute(vehicles);
+    @Override
+    public List<Solution> execute(
+            Node[] nodes,
+            CompartmentType[] compartmentTypes,
+            Vehicle[] vehicles,
+            RoutePlanningFunction routePlanningFunction,
+            Metric metric,
+            XFVRPParameter parameter,
+            StatusManager statusManager) throws XFVRPException {
+        List<Node> unplannedNodes = Arrays.asList(nodes);
 
-		List<Solution> vehicleSolutions = new ArrayList<>();
-		for (Vehicle veh : vehicles) {
-			statusManager.fireMessage(StatusCode.RUNNING, "Run with vehicle "+ veh.getName() +" started.");
+        vehicles = VehiclePriorityInitialiser.execute(vehicles);
 
-			// Optimize all nodes with current vehicle type
-			Solution solution = routePlanningFunction.apply(new RoutingDataBag(unplannedNodes.toArray(new Node[0]), compartmentTypes, veh));
+        List<Solution> vehicleSolutions = new ArrayList<>();
+        for (Vehicle veh : vehicles) {
+            statusManager.fireMessage(StatusCode.RUNNING, "Run with vehicle " + veh.getName() + " started.");
 
-			// Point out best routes for this vehicle type
-			List<RouteReport> bestRoutes = getSelector().getBestRoutes(veh, getReportBuilder().getReport(solution));
+            // Optimize all nodes with current vehicle type
+            Solution solution = routePlanningFunction.apply(new RoutingDataBag(unplannedNodes.toArray(new Node[0]), compartmentTypes, veh));
 
-			if(bestRoutes.size() > 0) {
-				// Add selected routes to overall best solution
-				vehicleSolutions.add(reconstructSolution(bestRoutes, solution.getModel()));
+            // Point out best routes for this vehicle type
+            List<RouteReport> bestRoutes = getSelector().getBestRoutes(veh, getReportBuilder().getReport(solution));
 
-				// Remove customers from best routes for next planning stage
-				unplannedNodes = getUnusedNodes(bestRoutes, unplannedNodes);
-			}
+            if (bestRoutes.size() > 0) {
+                // Add selected routes to overall best solution
+                vehicleSolutions.add(reconstructSolution(bestRoutes, solution.getModel()));
 
-			// If no customers are left, stop!
-			if (getCustomers(unplannedNodes).size() == 0)
-				break;
-		}
+                // Remove customers from best routes for next planning stage
+                unplannedNodes = getUnusedNodes(bestRoutes, unplannedNodes);
+            }
 
-		// Insert invalid and unplanned nodes into solution
-		Solution unplannedNodesSolution = insertUnplannedNodes(unplannedNodes, compartmentTypes, metric, parameter, statusManager);
-		if(unplannedNodesSolution != null)
-			vehicleSolutions.add(unplannedNodesSolution);
+            // If no customers are left, stop!
+            if (getCustomers(unplannedNodes).size() == 0)
+                break;
+        }
 
-		return vehicleSolutions;
-	}
-	
-	@Override
-	public MixedFleetSelector getSelector() {
-		return selector;
-	}
+        // Insert invalid and unplanned nodes into solution
+        Solution unplannedNodesSolution = insertUnplannedNodes(unplannedNodes, compartmentTypes, metric, parameter, statusManager);
+        if (unplannedNodesSolution != null)
+            vehicleSolutions.add(unplannedNodesSolution);
+
+        return vehicleSolutions;
+    }
+
+    @Override
+    public MixedFleetSelector getSelector() {
+        return selector;
+    }
 }

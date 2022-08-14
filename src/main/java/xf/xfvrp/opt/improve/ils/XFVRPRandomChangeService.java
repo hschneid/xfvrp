@@ -13,171 +13,171 @@ import xf.xfvrp.opt.improve.routebased.move.XFVRPMoveUtil;
 /**
  * Copyright (c) 2012-2022 Holger Schneider
  * All rights reserved.
- *
+ * <p>
  * This source code is licensed under the MIT License (MIT) found in the
  * LICENSE file in the root directory of this source tree.
  **/
 public class XFVRPRandomChangeService extends XFVRPOptBase implements XFRandomChangeService {
 
-	private int NBR_ACCEPTED_INVALIDS = 100;
-	private int NBR_OF_VARIATIONS = 5;
+    private final int NBR_ACCEPTED_INVALIDS = 100;
+    private final int NBR_OF_VARIATIONS = 5;
 
-	/*
-	 * (non-Javadoc)
-	 * @see xf.xfvrp.opt.improve.ils.XFRandomChangeService#change(xf.xfvrp.opt.Solution, xf.xfvrp.base.XFVRPModel)
-	 */
-	@Override
-	public Solution change(Solution solution) throws XFVRPException {
-		this.setModel(solution.getModel());
+    /*
+     * (non-Javadoc)
+     * @see xf.xfvrp.opt.improve.ils.XFRandomChangeService#change(xf.xfvrp.opt.Solution, xf.xfvrp.base.XFVRPModel)
+     */
+    @Override
+    public Solution change(Solution solution) throws XFVRPException {
+        this.setModel(solution.getModel());
 
-		return this.execute(solution);
-	}
+        return this.execute(solution);
+    }
 
-	/**
-	 * This perturb routine relocates single nodes iterativly. The nodes are
-	 * selected randomly.
-	 */
-	@Override
-	protected Solution execute(Solution solution) throws XFVRPException {
-		Choice choice = new Choice();
+    /**
+     * This perturb routine relocates single nodes iterativly. The nodes are
+     * selected randomly.
+     */
+    @Override
+    protected Solution execute(Solution solution) throws XFVRPException {
+        Choice choice = new Choice();
 
-		for (int i = 0; i < NBR_OF_VARIATIONS; i++) {
-			// Search source node
-			// Restriction: no depot
-			chooseSrc(choice, solution);
+        for (int i = 0; i < NBR_OF_VARIATIONS; i++) {
+            // Search source node
+            // Restriction: no depot
+            chooseSrc(choice, solution);
 
-			// Search destination
-			// Restriction: 
-			//   Source is not destination
-			//   Solution is not invalid
-			int cnt = 0;
-			while(cnt < NBR_ACCEPTED_INVALIDS) {
-				// Choose
-				chooseDst(choice, solution);
+            // Search destination
+            // Restriction:
+            //   Source is not destination
+            //   Solution is not invalid
+            int cnt = 0;
+            while (cnt < NBR_ACCEPTED_INVALIDS) {
+                // Choose
+                chooseDst(choice, solution);
 
-				boolean isValid = checkMove(choice, solution);
-				if(isValid) {
-					break;
-				}
+                boolean isValid = checkMove(choice, solution);
+                if (isValid) {
+                    break;
+                }
 
-				cnt++;
-			}
-		}
+                cnt++;
+            }
+        }
 
-		return solution;
-	}
+        return solution;
+    }
 
-	private boolean checkMove(Choice choice, Solution solution) throws XFVRPException {
-		Node[][] oldRoutes = XFVRPMoveUtil.change(solution, choice.toArray());
+    private boolean checkMove(Choice choice, Solution solution) throws XFVRPException {
+        Node[][] oldRoutes = XFVRPMoveUtil.change(solution, choice.toArray());
 
-		Quality q = check(solution);
-		if(q.getPenalty() == 0) {
-			return true;
-		}
+        Quality q = check(solution);
+        if (q.getPenalty() == 0) {
+            return true;
+        }
 
-		reverseChange(solution, choice.toArray(), oldRoutes);
-		return false;
-	}
+        reverseChange(solution, choice.toArray(), oldRoutes);
+        return false;
+    }
 
-	private void reverseChange(Solution solution, float[] val, Node[][] oldRoutes) {
-		solution.setRoute((int)val[1], oldRoutes[0]);
-		if(oldRoutes.length > 1)
-			solution.setRoute((int)val[2], oldRoutes[1]);
-		solution.resetQualities();
-	}
+    private void reverseChange(Solution solution, float[] val, Node[][] oldRoutes) {
+        solution.setRoute((int) val[1], oldRoutes[0]);
+        if (oldRoutes.length > 1)
+            solution.setRoute((int) val[2], oldRoutes[1]);
+        solution.resetQualities();
+    }
 
-	private void chooseSrc(Choice choice, Solution solution) {
-		Node[][] routes = solution.getRoutes();
+    private void chooseSrc(Choice choice, Solution solution) {
+        Node[][] routes = solution.getRoutes();
 
-		// Choose not empty route
-		int srcRouteIdx;
-		do {
-			srcRouteIdx = rand.nextInt(routes.length);
-		} while (routes[srcRouteIdx].length <= 2);
+        // Choose not empty route
+        int srcRouteIdx;
+        do {
+            srcRouteIdx = rand.nextInt(routes.length);
+        } while (routes[srcRouteIdx].length <= 2);
 
-		// Choose a source node (customer or replenish)
-		int srcPos;
-		do {
-			srcPos = rand.nextInt(routes[srcRouteIdx].length - 2) + 1;
-		} while (routes[srcRouteIdx][srcPos].getSiteType() == SiteType.DEPOT);
+        // Choose a source node (customer or replenish)
+        int srcPos;
+        do {
+            srcPos = rand.nextInt(routes[srcRouteIdx].length - 2) + 1;
+        } while (routes[srcRouteIdx][srcPos].getSiteType() == SiteType.DEPOT);
 
-		// Reset source node at the beginning of a block
-		srcPos = adjustForBlockCriteria(routes[srcRouteIdx], srcPos, 1);
+        // Reset source node at the beginning of a block
+        srcPos = adjustForBlockCriteria(routes[srcRouteIdx], srcPos, 1);
 
-		choice.srcRouteIdx = srcRouteIdx;
-		choice.srcPos = srcPos;
-		choice.segmentLength = 0;
+        choice.srcRouteIdx = srcRouteIdx;
+        choice.srcPos = srcPos;
+        choice.segmentLength = 0;
 
-		// Extend source node to source path if next nodes belongs to source node block
-		expandToBlock(choice, routes[srcRouteIdx]);
-	}
+        // Extend source node to source path if next nodes belongs to source node block
+        expandToBlock(choice, routes[srcRouteIdx]);
+    }
 
-	private void expandToBlock(Choice choice, Node[] route) {
-		int src = choice.srcPos;
-		int srcBlockIdx = route[src].getPresetBlockIdx();
-		int srcPosValue = route[src].getPresetBlockPos();
+    private void expandToBlock(Choice choice, Node[] route) {
+        int src = choice.srcPos;
+        int srcBlockIdx = route[src].getPresetBlockIdx();
+        int srcPosValue = route[src].getPresetBlockPos();
 
-		if(srcBlockIdx > BlockNameConverter.UNDEF_BLOCK_IDX && srcPosValue > BlockPositionConverter.UNDEF_POSITION) {
+        if (srcBlockIdx > BlockNameConverter.UNDEF_BLOCK_IDX && srcPosValue > BlockPositionConverter.UNDEF_POSITION) {
 
-			for (int i = src + 1; i < route.length; i++) {
-				Node n = route[i];
-				if(n.getPresetBlockIdx() == srcBlockIdx && n.getPresetBlockPos() > srcPosValue) {
-					choice.segmentLength++;
-					srcPosValue = n.getPresetBlockPos();
-				} else
-					break;
-			}
-		}
-	}
+            for (int i = src + 1; i < route.length; i++) {
+                Node n = route[i];
+                if (n.getPresetBlockIdx() == srcBlockIdx && n.getPresetBlockPos() > srcPosValue) {
+                    choice.segmentLength++;
+                    srcPosValue = n.getPresetBlockPos();
+                } else
+                    break;
+            }
+        }
+    }
 
-	private void chooseDst(Choice choice, Solution solution) {
-		Node[][] routes = solution.getRoutes();
+    private void chooseDst(Choice choice, Solution solution) {
+        Node[][] routes = solution.getRoutes();
 
-		int dstRouteIdx = rand.nextInt(routes.length);
+        int dstRouteIdx = rand.nextInt(routes.length);
 
-		int dstPos;
-		do {
-			dstPos = rand.nextInt(routes[dstRouteIdx].length - 1) + 1;
-		} while (
-				choice.srcRouteIdx == dstRouteIdx &&
-						dstPos >= choice.srcPos &&
-						dstPos <= choice.srcPos + choice.segmentLength
-		);
+        int dstPos;
+        do {
+            dstPos = rand.nextInt(routes[dstRouteIdx].length - 1) + 1;
+        } while (
+                choice.srcRouteIdx == dstRouteIdx &&
+                        dstPos >= choice.srcPos &&
+                        dstPos <= choice.srcPos + choice.segmentLength
+        );
 
-		choice.dstRouteIdx = dstRouteIdx;
-		choice.dstPos = adjustForBlockCriteria(routes[dstRouteIdx], dstPos, 1);
-	}
+        choice.dstRouteIdx = dstRouteIdx;
+        choice.dstPos = adjustForBlockCriteria(routes[dstRouteIdx], dstPos, 1);
+    }
 
-	private int adjustForBlockCriteria(Node[] route, int pos, int untilPos) {
-		if(route[pos].getPresetBlockIdx() > BlockNameConverter.DEFAULT_BLOCK_IDX) {
-			while(pos > untilPos) {
-				Node thisNode = route[pos];
-				Node beforeNode = route[pos - 1];
+    private int adjustForBlockCriteria(Node[] route, int pos, int untilPos) {
+        if (route[pos].getPresetBlockIdx() > BlockNameConverter.DEFAULT_BLOCK_IDX) {
+            while (pos > untilPos) {
+                Node thisNode = route[pos];
+                Node beforeNode = route[pos - 1];
 
-				if(thisNode.getSiteType() == SiteType.DEPOT || beforeNode.getSiteType() == SiteType.DEPOT)
-					break;
+                if (thisNode.getSiteType() == SiteType.DEPOT || beforeNode.getSiteType() == SiteType.DEPOT)
+                    break;
 
-				if(thisNode.getPresetBlockIdx() != beforeNode.getPresetBlockIdx())
-					break;
+                if (thisNode.getPresetBlockIdx() != beforeNode.getPresetBlockIdx())
+                    break;
 
-				pos--;
-			}
-		}
-		return pos;
-	}
+                pos--;
+            }
+        }
+        return pos;
+    }
 
-	private class Choice {
-		int srcRouteIdx;
-		int dstRouteIdx;
-		int srcPos;
-		int segmentLength;
-		int dstPos;
+    private class Choice {
+        int srcRouteIdx;
+        int dstRouteIdx;
+        int srcPos;
+        int segmentLength;
+        int dstPos;
 
-		public Choice() {
-		}
+        public Choice() {
+        }
 
-		public float[] toArray() {
-			return new float[] {-1, srcRouteIdx, dstRouteIdx, srcPos, dstPos, segmentLength, XFVRPMoveUtil.NO_INVERT};
-		}
-	}
+        public float[] toArray() {
+            return new float[]{-1, srcRouteIdx, dstRouteIdx, srcPos, dstPos, segmentLength, XFVRPMoveUtil.NO_INVERT};
+        }
+    }
 }

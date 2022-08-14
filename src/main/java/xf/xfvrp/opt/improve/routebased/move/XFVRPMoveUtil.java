@@ -8,7 +8,7 @@ import xf.xfvrp.opt.Solution;
 /**
  * Copyright (c) 2012-2022 Holger Schneider
  * All rights reserved.
- *
+ * <p>
  * This source code is licensed under the MIT License (MIT) found in the
  * LICENSE file in the root directory of this source tree.
  **/
@@ -32,11 +32,11 @@ public class XFVRPMoveUtil {
         int isInverted = (int) val[6];
         int srcEnd = srcStart + segmentLength;
 
-        if(srcEnd < srcStart)
+        if (srcEnd < srcStart)
             throw new XFVRPException(XFVRPExceptionType.ILLEGAL_ARGUMENT,
                     String.format("Range is defined in wrong way (end is bigger than start) start=%d, end=%d", srcStart, srcEnd)
             );
-        if(srcStart == 0 || dstPos == 0) {
+        if (srcStart == 0 || dstPos == 0) {
             throw new XFVRPException(XFVRPExceptionType.ILLEGAL_ARGUMENT,
                     String.format("Cannot have src or dst on first node of route start=%d, end=%d, dst=%d", srcStart, srcEnd, dstPos)
             );
@@ -47,24 +47,24 @@ public class XFVRPMoveUtil {
 
         Node[] nodes = new Node[srcEnd - srcStart + 1];
         System.arraycopy(srcRoute, srcStart, nodes, 0, nodes.length);
-        if(isInverted == INVERT) swap(nodes, 0, nodes.length - 1);
+        if (isInverted == INVERT) swap(nodes, 0, nodes.length - 1);
 
-        if(srcRouteIdx != dstRouteIdx) {
+        if (srcRouteIdx != dstRouteIdx) {
             solution.setRoute(srcRouteIdx, remove(srcRoute, srcStart, srcEnd));
             solution.setRoute(dstRouteIdx, addBefore(dstRoute, nodes, dstPos));
 
-            return new Node[][] {srcRoute, dstRoute};
+            return new Node[][]{srcRoute, dstRoute};
         } else {
             solution.setRoute(srcRouteIdx, moveIntraRoute(srcStart, srcEnd, dstPos, srcRoute, nodes));
 
-            return new Node[][] {srcRoute};
+            return new Node[][]{srcRoute};
         }
     }
 
     private static Node[] moveIntraRoute(int srcStart, int srcEnd, int dstPos, Node[] srcRoute, Node[] nodes) {
         Node[] newRoute = new Node[srcRoute.length];
 
-        if(srcStart < dstPos) {
+        if (srcStart < dstPos) {
             System.arraycopy(srcRoute, 0, newRoute, 0, srcStart);
             System.arraycopy(srcRoute, srcEnd + 1, newRoute, srcStart, dstPos - srcEnd);
             System.arraycopy(nodes, 0, newRoute, dstPos - ((srcEnd - srcStart) + 1), nodes.length);
@@ -110,8 +110,8 @@ public class XFVRPMoveUtil {
      */
     private static Node[] remove(Node[] orig, int srcPosIncl, int dstPosIncl) {
         Node[] arr = new Node[orig.length - ((dstPosIncl - srcPosIncl) + 1)];
-        System.arraycopy(orig,0, arr, 0, srcPosIncl);
-        System.arraycopy(orig,dstPosIncl + 1, arr, srcPosIncl, orig.length - dstPosIncl - 1);
+        System.arraycopy(orig, 0, arr, 0, srcPosIncl);
+        System.arraycopy(orig, dstPosIncl + 1, arr, srcPosIncl, orig.length - dstPosIncl - 1);
 
         return arr;
     }
@@ -119,8 +119,8 @@ public class XFVRPMoveUtil {
     private static Node[] addBefore(Node[] orig, Node[] nodes, int pos) {
         Node[] arr = new Node[orig.length + nodes.length];
 
-        System.arraycopy(orig,0, arr, 0, pos);
-        System.arraycopy(nodes,0, arr, pos, nodes.length);
+        System.arraycopy(orig, 0, arr, 0, pos);
+        System.arraycopy(nodes, 0, arr, pos, nodes.length);
         System.arraycopy(orig, pos, arr, pos + nodes.length, orig.length - pos);
 
         return arr;
