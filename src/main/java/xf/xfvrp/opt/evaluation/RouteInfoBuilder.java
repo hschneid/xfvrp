@@ -22,7 +22,7 @@ public class RouteInfoBuilder {
 		Map<Node, RouteInfo[]> routeInfos = new HashMap<>();
 		RouteInfo[] routeInfoPerCompartment = new RouteInfo[context.getModel().getCompartments().length];
 
-		// Go over all nodes in giant route (or single route)
+		// Go over all nodes in solution (or single route)
 		for (int idx = 0; idx < route.length; idx++) {
 			createRouteInfo(route[idx], routeInfoPerCompartment, routeInfos, context);
 		}

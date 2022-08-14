@@ -92,7 +92,7 @@ public class InTurnMixedFleetHeuristic extends MixedFleetHeuristicBase implement
 		
 		if (bestRoutes.size() > 0) {
 			// Add selected routes to overall best solution
-			vehicleSolutions.add(reconstructGiantRoute(bestRoutes, solution.getModel()));
+			vehicleSolutions.add(reconstructSolution(bestRoutes, solution.getModel()));
 			
 			// Remove customers from best routes for next planning stage
 			unplannedNodes = getUnusedNodes(bestRoutes, unplannedNodes);

@@ -106,17 +106,17 @@ class XFVRPSegmentMoveIntSpec extends Specification {
 
 		when:
 		def newQuality = service.improve(sol, currentQuality)
-		def newGiantRoute = Helper.get(sol)
+		def routes = Helper.get(sol)
 		
 		then:
 		newQuality == null
-		newGiantRoute[0] == nd
-		newGiantRoute[1] == n[4]
-		newGiantRoute[2] == n[2]
-		newGiantRoute[3] == n[3]
-		newGiantRoute[4] == n[5]
-		newGiantRoute[5] == nd
-		newGiantRoute[6] == nd
+		routes[0] == nd
+		routes[1] == n[4]
+		routes[2] == n[2]
+		routes[3] == n[3]
+		routes[4] == n[5]
+		routes[5] == nd
+		routes[6] == nd
 	}
 
 	XFVRPModel initMDScen() {

@@ -129,7 +129,7 @@ public class XFPDPRandomChangeService extends XFVRPOptBase implements XFRandomCh
 			}
 		}
 
-		throw new NoSuchElementException("Structural exception of giant route, where a pickup node of a shipment has no delivery node.");
+		throw new NoSuchElementException("Structural exception of solution, where a pickup node of a shipment has no delivery node.");
 	}
 
 	private void chooseDstPickup(Choice choice, Solution solution) {

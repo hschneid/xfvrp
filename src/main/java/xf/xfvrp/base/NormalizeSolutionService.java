@@ -17,7 +17,7 @@ import java.util.List;
 public class NormalizeSolutionService {
 
 	/**
-	 * Normalizes the giant tour by applying the following methods
+	 * Normalizes the solution by applying the following methods
 	 * - Removing empty routes
 	 * - Adding empty routes for each available depot (multi depot) 
 	 * - Reindex the depotIDs which are used for build a solution report

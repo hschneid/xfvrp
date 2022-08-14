@@ -7,9 +7,8 @@ package xf.xfvrp.base;
  * This source code is licensed under the MIT License (MIT) found in the
  * LICENSE file in the root directory of this source tree.
  *
- *
  * Utility class holds indifferent methods for processing on
- * the giant tour array. All methods are static.
+ * the solutions. All methods are static.
  * 
  * @author hschneid
  *
@@ -17,8 +16,8 @@ package xf.xfvrp.base;
 public class Util {
 
 	/**
-	 * In single node problems a giant tour contains only one node multiple times. But each
-	 * version of the node in giant tour is a deep copy with a unique depotId.
+	 * In single node problems a solution contains only one node multiple times. But each
+	 * version of the node in solution is a deep copy with a unique depotId.
 	 * 
 	 * This method creates the deep copy instance and assigns the depotId.
 	 * 

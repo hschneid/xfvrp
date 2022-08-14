@@ -103,7 +103,7 @@ class FullRouteMixedFleetHeuristicSpec extends Specification {
 		result.size() == 0
 	}
 
-	def "Reconstruct giant route - normal"() {
+	def "Reconstruct solution - normal"() {
 		def nodes = [
 				new TestNode(externID: 'n0', siteType: SiteType.CUSTOMER).getNode(),
 				new TestNode(externID: 'n1', siteType: SiteType.CUSTOMER).getNode(),
@@ -137,7 +137,7 @@ class FullRouteMixedFleetHeuristicSpec extends Specification {
 		def routes = [routeReport1, routeReport3, routeReport2] as List<RouteReport>
 
 		when:
-		def result = service.reconstructGiantRoute(routes, model)
+		def result = service.reconstructSolution(routes, model)
 		def gT = Helper.get(result)
 
 		then:
@@ -153,7 +153,7 @@ class FullRouteMixedFleetHeuristicSpec extends Specification {
 		gT[7].externID == 'nD'
 	}
 
-	def "Reconstruct giant route - empty routes"() {
+	def "Reconstruct solution - empty routes"() {
 		def nodes = [
 				new TestNode(externID: 'n0', siteType: SiteType.CUSTOMER).getNode(),
 				new TestNode(externID: 'n1', siteType: SiteType.CUSTOMER).getNode(),
@@ -171,7 +171,7 @@ class FullRouteMixedFleetHeuristicSpec extends Specification {
 		def routes = [] as List<RouteReport>
 
 		when:
-		def result = service.reconstructGiantRoute(routes, model)
+		def result = service.reconstructSolution(routes, model)
 		def gT = Helper.get(result)
 
 		then:

@@ -40,7 +40,7 @@ class XFPDPRelocateIntSpec extends Specification {
 		
 		sol = NormalizeSolutionService.normalizeRoute(sol)
 		def checkedQuality = evalService.check(sol)
-		def newGiantRoute = sol.getRoutes().find {i -> i.size() > 2}
+		Node[] routes = sol.getRoutes().find {i -> i.size() > 2}
 		
 		then:
 		newQuality != null
@@ -48,12 +48,12 @@ class XFPDPRelocateIntSpec extends Specification {
 		Math.abs(newQuality.getFitness() - checkedQuality.getFitness()) < 0.001
 		newQuality.getPenalty() == 0
 		Math.abs(newQuality.getCost() - 8) < 0.001
-		newGiantRoute[0].getGlobalIdx() == nd.getGlobalIdx()
-		newGiantRoute[1] == n[1]
-		newGiantRoute[2] == n[2]
-		newGiantRoute[3] == n[3]
-		newGiantRoute[4] == n[4]
-		newGiantRoute[5].getGlobalIdx() == nd.getGlobalIdx()
+		routes[0].externID == nd.externID
+		routes[1] == n[1]
+		routes[2] == n[2]
+		routes[3] == n[3]
+		routes[4] == n[4]
+		routes[5].externID == nd.externID
 	}
 	
 	XFVRPModel initScen() {

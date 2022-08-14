@@ -34,7 +34,7 @@ public class ErrorSummary {
 	private final Map<String, Integer> statistics = new HashMap<>();
 	
 	/**
-	 * Adds the errors in an evaluated giant route. Evaluated route means,
+	 * Adds the errors in an evaluated solution. Evaluated route means,
 	 * that the route is build up by the init routine in the XFVRPInit class.
 	 */
 	public void add(Solution solution) {

@@ -70,7 +70,7 @@ public abstract class MixedFleetHeuristicBase {
 	/**
 	 * This method transforms an optimization result (report) into an input for new optimization
 	 */
-	protected Solution reconstructGiantRoute(List<RouteReport> routes, XFVRPModel model) {
+	protected Solution reconstructSolution(List<RouteReport> routes, XFVRPModel model) {
 		Map<String, Node> nodeMap = Arrays.stream(model.getNodes()).collect(Collectors.toMap(Node::getExternID, node -> node, (v1, v2) -> v1));
 
 		// Remove empty routes

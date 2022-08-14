@@ -25,7 +25,7 @@ public class XFVRPSwapUtil {
     /**
      * Changes a solution according to given parameter
      *
-     * Exchanges two segments of the giant tour. First segment
+     * Exchanges two segments of the solution. First segment
      * starts at position a and includes la many nodes. Second segments
      * starts at position b and includes lb many nodes. The two
      * segments must not overlap each other.

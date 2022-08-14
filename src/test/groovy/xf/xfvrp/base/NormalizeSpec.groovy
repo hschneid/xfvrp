@@ -229,7 +229,7 @@ class NormalizeSpec extends Specification {
 		result[20].externID == "1"
 	}
 	
-	def "Irregular normalize - giant route null"() {
+	def "Irregular normalize - solution = null"() {
 		def model = createModel()
 		def n = model.getNodes()
 		def sol = Helper.set(model, [n[0], n[1]] as Node[])
@@ -241,7 +241,7 @@ class NormalizeSpec extends Specification {
 		thrown NullPointerException
 	}
 
-	def "Irregular normalize - empty giant route"() {
+	def "Irregular normalize - empty solution"() {
 		def model = createModel()
 		def sol = Helper.set(model, [] as Node[])
 				
