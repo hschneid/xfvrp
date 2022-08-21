@@ -22,7 +22,7 @@ public class XFPDPRandomChangeService extends XFVRPOptBase implements XFRandomCh
 
     private static final int MAX_TRIES_CHOOSING = 100;
     private final int NBR_ACCEPTED_INVALIDS = 100;
-    private final int NBR_OF_VARIATIONS = 5;
+    private int NBR_OF_VARIATIONS = 5;
 
     /*
      * (non-Javadoc)

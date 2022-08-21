@@ -2,6 +2,7 @@ package xf.xfvrp.opt;
 
 import xf.xfvrp.opt.construct.insert.XFPDPFirstBestInsert;
 import xf.xfvrp.opt.construct.insert.XFVRPFirstBestInsert;
+import xf.xfvrp.opt.construct.random.RandomizedVRPSolutionBuilder;
 import xf.xfvrp.opt.construct.savings.XFVRPConst;
 import xf.xfvrp.opt.construct.savings.XFVRPSavings;
 import xf.xfvrp.opt.improve.XFVRPNoOpt;
@@ -34,6 +35,7 @@ public class XFVRPOptTypes {
     public static XFVRPOptType SAVINGS = new XFVRPOptType(XFVRPSavings.class);
     public static XFVRPOptType CONST = new XFVRPOptType(XFVRPConst.class);
     public static XFVRPOptType FIRST_BEST = new XFVRPOptType(XFVRPFirstBestInsert.class);
+    public static XFVRPOptType RANDOM = new XFVRPOptType(RandomizedVRPSolutionBuilder.class);
 
     // Improvement heuristics - Neighborhood search
     public static XFVRPOptType RELOCATE = new XFVRPOptType(XFVRPSingleMove.class);

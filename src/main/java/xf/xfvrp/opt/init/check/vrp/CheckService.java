@@ -44,8 +44,8 @@ import java.util.stream.Collectors;
  */
 public class CheckService {
 
-    private final XFVRPOptBase optimizationMethod = XFVRPOptTypes.RELOCATE.create();
-    private final CheckCustomerService checkCustomerService = new CheckCustomerService();
+    private XFVRPOptBase optimizationMethod = XFVRPOptTypes.RELOCATE.create();
+    private CheckCustomerService checkCustomerService = new CheckCustomerService();
 
     public CheckService() throws XFVRPException {
     }

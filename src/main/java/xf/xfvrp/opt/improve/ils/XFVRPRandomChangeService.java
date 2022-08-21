@@ -19,8 +19,8 @@ import xf.xfvrp.opt.improve.routebased.move.XFVRPMoveUtil;
  **/
 public class XFVRPRandomChangeService extends XFVRPOptBase implements XFRandomChangeService {
 
-    private final int NBR_ACCEPTED_INVALIDS = 100;
-    private final int NBR_OF_VARIATIONS = 5;
+    private int NBR_ACCEPTED_INVALIDS = 100;
+    private int NBR_OF_VARIATIONS = 7;
 
     /*
      * (non-Javadoc)

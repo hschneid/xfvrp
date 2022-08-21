@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
  **/
 public class PDPPreCheckService {
 
-    private static final boolean IGNORE_IMPROPER_AMOUNTS = false;
+    private static boolean IGNORE_IMPROPER_AMOUNTS = false;
 
     public Node[] precheck(Node[] nodes, Vehicle vehicle) {
         Map<SiteType, List<Node>> nodesPerType = getNodesPerType(nodes);

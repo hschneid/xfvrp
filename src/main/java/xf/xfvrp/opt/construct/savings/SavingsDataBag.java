@@ -18,7 +18,7 @@ public class SavingsDataBag {
     private List<Node> nodeList = new ArrayList<>();
     private int[] routeIdxForStartNode;
     private int[] routeIdxForEndNode;
-    private final List<float[]> savingsMatrix = new ArrayList<>();
+    private List<float[]> savingsMatrix = new ArrayList<>();
 
     public SavingsDataBag(Node[][] routes) {
         this.routes = routes;

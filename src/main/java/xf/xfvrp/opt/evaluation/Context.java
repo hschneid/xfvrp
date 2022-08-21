@@ -276,7 +276,7 @@ public class Context {
     public void setPresetRouting() {
         if (currentNode.getSiteType() == SiteType.CUSTOMER) {
             int[] routingBlackList = currentNode.getPresetRoutingBlackList();
-            for (int i = 0, routingBlackListLength = routingBlackList.length; i < routingBlackListLength; i++) {
+            for (int i = routingBlackList.length - 1; i >= 0; i--) {
                 presetRoutingBlackList[routingBlackList[i]] = true;
             }
             presetRoutingNodeList[currentNode.getGlobalIdx()] = true;

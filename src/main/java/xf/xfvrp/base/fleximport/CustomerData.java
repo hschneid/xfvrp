@@ -173,9 +173,17 @@ public class CustomerData extends NodeData {
 	}
 	
 	/**
-	 * 
-	 * @param blockName
-	 * @return
+	 * A customer can belong to a block. A block is identified by its block name.
+	 * All customers of one block must be placed together on one route.
+	 *
+	 * If this parameter is not set, customers can be placed elsewhere.
+	 * If there are too many customers in one block, then it is possible, that there
+	 * is no feasible routing. Then all customers of block will be set to unplanned.
+	 *
+	 * This is handy, if customers mean actions on a route. If the actions have
+	 * time windows for example or more complex compartment restrictions, then
+	 * they can be modeled as multiple customers, which should take place at same
+	 * route.
 	 */
 	public CustomerData setPresetBlockName(String blockName) {
 		this.presetBlockName = blockName;
@@ -183,9 +191,15 @@ public class CustomerData extends NodeData {
 	}
 	
 	/**
-	 * 
-	 * @param blockedVehicleList
-	 * @return
+	 * A customer can be dedicated to a certain subset of vehicles. Each vehicle
+	 * is identified by the vehicle name, which must fit to vehicle objects.
+	 *
+	 * If this parameter is not set, then all vehicles are possible.
+	 * If given vehicle id is not available in data set, then this customer cannot be
+	 * placed and will stay unplanned.
+	 *
+	 * This is handy for multi-vehicle problems, where certain customers cannot placed to
+	 * every vehicle: like big/heavy boxes to small vehicles.
 	 */
 	public CustomerData setPresetBlockVehicleList(Set<String> blockedVehicleList) {
 		this.presetBlockVehicleList = blockedVehicleList;
@@ -193,9 +207,19 @@ public class CustomerData extends NodeData {
 	}
 
 	/**
-	 * 
-	 * @param pos
-	 * @return
+	 * A customer, which is dedicated to a block, can get a certain position. The follower customer
+	 * of this customer with same block must have a position, which is exactly one bigger.
+	 * It is valid, if customers of one block are spreaded of the route. Hence it is valid, if
+	 * between 2 block-customers, there is a non-block customer.
+	 *
+	 * If this customer is not dedicated to a certain block, then this parameter is ignored.
+	 * If, for any reason, there is no possible solution for given block and position, then all customers
+	 * of this block will be unplanned.
+	 *
+	 * Default value is -1, where this node has no presetted position.
+	 *
+	 * This is handy, if the instance is well known and there are already best-patterns. Then
+	 * these patterns can be modeled as blocks with positions.
 	 */
 	public CustomerData setPresetBlockPos(int pos) {
 		this.presetBlockPos = pos;
@@ -204,12 +228,38 @@ public class CustomerData extends NodeData {
 	
 
 	/**
-	 * 
-	 * @param rank
-	 * @return
+	 * A customer, which is dedicated to a block, can get a rank value. All customers in a
+	 * block must be placed so, that the rank of a follower customer must be greater than ancestor.
+	 * It is valid, if customers of one block are spreaded of the route. Hence it is valid, if
+	 * between 2 block-customers, there is a non-block customer.
+	 *
+	 * If this customer is not dedicated to a certain block, then this parameter is ignored.
+	 * If, for any reason, there is no possible solution for given block and position, then all customers
+	 * of this block will be unplanned.
+	 *
+	 * Default value is 0, which means, that no rank is given. The rank must not be lower than 0.
+	 *
+	 * This is handy, if the instance is well known or other business relevant restrictions must be
+	 * considered. Also, preset positions and ranks can be mixed in a block.
 	 */
 	public CustomerData setPresetBlockRank(int rank) {
 		this.presetBlockRank = rank;
+		return this;
+	}
+
+	/**
+	 * This list of customers are not allowed to be placed on one route together with this
+	 * customer. The blacklisted customers are identified by their external id.
+	 *
+	 * If there is no feasible solution, this customer will be unplanned.
+	 *
+	 * This is handy, if a customer can retrieve multiple service, but not on same route.
+	 * For example multi-period plannings.
+	 */
+	public CustomerData setPresetRoutingBlackList(Set<String> blackListedNodeSet) {
+		if(blackListedNodeSet != null && blackListedNodeSet.size() > 0) {
+			presetRoutingBlackList.addAll(blackListedNodeSet);
+		}
 		return this;
 	}
 	
@@ -221,24 +271,16 @@ public class CustomerData extends NodeData {
 		this.serviceTimeForSite = serviceTimeForSite;
 		return this;
 	}
-	
-	/**
-	 * 
-	 * @param blackListedNodeSet
-	 * @return
-	 */
-	public CustomerData setPresetRoutingBlackList(Set<String> blackListedNodeSet) {
-		presetRoutingBlackList.addAll(blackListedNodeSet);
-		return this;
-	}
 
 	/**
 	 * 
-	 * @param depotSet
+	 * @param depots
 	 * @return
 	 */
-	public CustomerData setPresetDepotList(Set<String> depotSet) {
-		presetDepotList.addAll(depotSet);
+	public CustomerData setPresetDepotList(Set<String> depots) {
+		if(depots != null) {
+			presetDepotList.addAll(depots);
+		}
 		return this;
 	}
 
