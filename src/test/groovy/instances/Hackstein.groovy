@@ -1,6 +1,6 @@
 package instances
 
-import cern.colt.list.FloatArrayList
+
 import com.fasterxml.jackson.databind.ObjectMapper
 import spock.lang.Ignore
 import spock.lang.Specification
@@ -51,13 +51,16 @@ class Hackstein extends Specification {
 
         vehicles.forEach((depot, depotVehicles) -> {
             depotVehicles.forEach(vehicle -> {
-                Collection<Double> dblCap = vehicle.get("capacity")
-                FloatArrayList fltCap = new FloatArrayList()
-                dblCap.forEach(d -> fltCap.add((float)d))
-                fltCap.trimToSize()
+                def caps = new float[vehicle.get("capacity").size()]
+                int i = 0
+                for (double d : vehicle.get("capacity")) {
+                    caps[i++] = d
+                }
+                caps = Arrays.copyOf(caps, i)
+
                 xfvrp.getData().addVehicle()
                         .setName(vehicle.get("name"))
-                        .setCapacity(fltCap.elements())
+                        .setCapacity(caps)
                         .setMaxRouteDuration(600)
             })
         })
@@ -71,16 +74,19 @@ class Hackstein extends Specification {
 
         AtomicInteger counter = new AtomicInteger()
         customers.forEach(customer -> {
-            Collection<Double> dblDemand = customer.get("amount")
             Collection<String> vehiclesAllowed = customer.get("vehicles")
-            FloatArrayList fltDemand = new FloatArrayList()
-            dblDemand.forEach(d -> fltDemand.add((float)d))
-            fltDemand.trimToSize()
+            def caps = new float[customer.get("amount").size()]
+            int i = 0
+            for (double d : customer.get("amount")) {
+                caps[i++] = d
+            }
+            caps = Arrays.copyOf(caps, i)
+
             var cust = xfvrp.getData().addCustomer()
                     .setExternID(counter.getAndIncrement()+"")
                     .setXlong((float)customer.get("lng"))
                     .setYlat((float)customer.get("lat"))
-                    .setDemand(fltDemand.elements())
+                    .setDemand(caps)
                     .setServiceTime((float)customer.get("serviceTime"))
                     .setLoadType(LoadType.DELIVERY)
             if (vehiclesAllowed != null && vehiclesAllowed.size() > 0)
