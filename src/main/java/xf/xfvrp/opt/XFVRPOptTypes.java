@@ -11,6 +11,7 @@ import xf.xfvrp.opt.improve.ils.XFVRPILS;
 import xf.xfvrp.opt.improve.routebased.move.XFPDPSingleMove;
 import xf.xfvrp.opt.improve.routebased.move.XFVRPSegmentMove;
 import xf.xfvrp.opt.improve.routebased.move.XFVRPSingleMove;
+import xf.xfvrp.opt.improve.routebased.swap.XFVRPBorderSegmentExchange;
 import xf.xfvrp.opt.improve.routebased.swap.XFVRPSegmentExchange;
 import xf.xfvrp.opt.improve.routebased.swap.XFVRPSegmentSwap;
 import xf.xfvrp.opt.improve.routebased.swap.XFVRPSingleSwap;
@@ -43,6 +44,7 @@ public class XFVRPOptTypes {
     public static XFVRPOptType SWAP = new XFVRPOptType(XFVRPSingleSwap.class);
     public static XFVRPOptType SWAPSEGMENT = new XFVRPOptType(XFVRPSegmentSwap.class);
     public static XFVRPOptType PATH_EXCHANGE = new XFVRPOptType(XFVRPSegmentExchange.class);
+    public static XFVRPOptType BORDER_PATH_EXCHANGE = new XFVRPOptType(XFVRPBorderSegmentExchange.class);
 
     // Iterated local search
     public static XFVRPOptType ILS = new XFVRPOptType(XFVRPILS.class);

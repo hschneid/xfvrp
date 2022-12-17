@@ -1,11 +1,10 @@
 package instances
 
-import spock.lang.Ignore
+
 import spock.lang.Specification
 import xf.xfvrp.XFVRP
 import xf.xfvrp.base.SiteType
 import xf.xfvrp.base.metric.EucledianMetric
-import xf.xfvrp.base.monitor.DefaultStatusMonitor
 import xf.xfvrp.opt.XFVRPOptTypes
 import xf.xfvrp.report.Event
 import xf.xfvrp.report.Report
@@ -18,7 +17,7 @@ import java.util.stream.IntStream
 
 class CMTCheck extends Specification {
 
-    @Ignore
+    //@Ignore
     def "do single CMT CVRP tests" () {
         when:
         execute()
@@ -30,7 +29,7 @@ class CMTCheck extends Specification {
     private void execute() {
         def results = getResults(new File("./src/test/resources/CMT/RESULTS"))
 
-        def p = Path.of("./src/test/resources/CMT/CMT5.vrp")
+        def p = Path.of("./src/test/resources/CMT/CMT4.vrp")
 
         float[] deviation = new float[4]
         def instanceName = p.fileName.toString().replace(".vrp", "").toUpperCase()
@@ -120,7 +119,7 @@ class CMTCheck extends Specification {
         xfvrp.getParameters().setNbrOfILSLoops(500)
         xfvrp.addOptType(XFVRPOptTypes.ILS)*/
         xfvrp.addOptType(XFVRPOptTypes.RANDOM)
-        xfvrp.getParameters().setNbrOfILSLoops(2000)
+        xfvrp.getParameters().setNbrOfILSLoops(100)
         xfvrp.addOptType(XFVRPOptTypes.ILS)
 
         xfvrp.setMetric(new EucledianMetric())
