@@ -62,6 +62,9 @@ As a general purpose solver, XFVRP is not fully compatable with single problem s
 
 ## Change log
 
+### 11.4.6
+- Update of insecure lib (jackson-bind)
+
 ### 11.4.5
 #### Breaking Changes
 - Renamed XFVRPOptType >> XFVRPOptTypes  
