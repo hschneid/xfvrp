@@ -4,7 +4,7 @@ import xf.xfvrp.base.Node;
 import xf.xfvrp.base.Vehicle;
 
 /** 
- * Copyright (c) 2012-2022 Holger Schneider
+ * Copyright (c) 2012-2023 Holger Schneider
  * All rights reserved.
  *
  * This source code is licensed under the MIT License (MIT) found in the

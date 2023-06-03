@@ -11,7 +11,7 @@ import java.util.List;
 import static xf.xfvrp.base.Vehicle.PRIORITY_UNDEF;
 
 /**
- * Copyright (c) 2012-2022 Holger Schneider
+ * Copyright (c) 2012-2023 Holger Schneider
  * All rights reserved.
  *
  * This source code is licensed under the MIT License (MIT) found in the

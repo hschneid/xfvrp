@@ -10,7 +10,7 @@ import xf.xfvrp.opt.improve.routebased.swap.XFVRPSegmentExchange;
 import xf.xfvrp.opt.improve.routebased.swap.XFVRPSingleSwap;
 
 /**
- * Copyright (c) 2012-2022 Holger Schneider
+ * Copyright (c) 2012-2023 Holger Schneider
  * All rights reserved.
  * <p>
  * This source code is licensed under the MIT License (MIT) found in the

@@ -6,7 +6,7 @@ import xf.xfvrp.base.compartment.CompartmentLoadBuilder;
 import java.util.Arrays;
 
 /**
- * Copyright (c) 2012-2022 Holger Schneider
+ * Copyright (c) 2012-2023 Holger Schneider
  * All rights reserved.
  * <p>
  * This source code is licensed under the MIT License (MIT) found in the

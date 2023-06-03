@@ -66,6 +66,7 @@ As a general purpose solver, XFVRP is not fully compatable with single problem s
 - Removed giant route based features completely (2-Opt, 3-Opt, ...). This reduces the complexity of code drastically.
 - Randomized solution builder as base for multi-start-optimizations. It is realized as a randomized First-First construction heuristic.
 - New Border-Segment-Exchange operator. Strong operator with neighborhood complexity O(n^2)
+- Licence update (year 2023)
 
 ### 11.4.6
 - New constraint: Max (preferred) number of routes per depot.

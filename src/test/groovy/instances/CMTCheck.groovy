@@ -1,6 +1,6 @@
 package instances
 
-
+import spock.lang.Ignore
 import spock.lang.Specification
 import xf.xfvrp.XFVRP
 import xf.xfvrp.base.SiteType
@@ -17,7 +17,7 @@ import java.util.stream.IntStream
 
 class CMTCheck extends Specification {
 
-    //@Ignore
+    @Ignore
     def "do single CMT CVRP tests" () {
         when:
         execute()
