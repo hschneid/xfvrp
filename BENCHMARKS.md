@@ -1,5 +1,10 @@
 # Benchmarks
 
+## CVRP
+| Nodes      | Nbr Instances | Deviation from best - <br /> distance | Deviation from best - <br /> routes | Run time |
+| ----------- | ----------- | ----------- | ----------- | ----------- |
+| Christofides, Mingozzi and Toth (1979)<br>long run &#8594; | 14 | 3.8 %<br>1.91 % | 1.56 %<br>1.22 % |  2.22 s<br>8.5 s |
+
 ## VRPTW
 
 | Nodes      | Nbr Instances | Deviation from best - <br /> distance | Deviation from best - <br /> routes | Run time |

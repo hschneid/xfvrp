@@ -46,20 +46,6 @@ public class XFVRPSegmentExchange extends XFVRPOptImpBase {
 
 	@Override
 	protected Node[][] change(Solution solution, float[] changeParameter) throws XFVRPException {
-		if(
-				changeParameter[1] == 0 &&
-						changeParameter[2] == 10 &&
-						changeParameter[3] == 3 &&
-						changeParameter[4] == 1 &&
-						changeParameter[5] == 1 &&
-						changeParameter[6] == 1 &&
-						changeParameter[7] == 0 &&
-						changeParameter[8] == 0
-		) {
-			System.out.println();
-		}
-
-
 		if(changeParameter.length == 9) {
 			return XFVRPSwapUtil.change(solution, changeParameter);
 		} else if(changeParameter.length == 8) {

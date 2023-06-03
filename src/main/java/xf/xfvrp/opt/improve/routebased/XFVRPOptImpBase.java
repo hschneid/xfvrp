@@ -95,9 +95,8 @@ public abstract class XFVRPOptImpBase extends XFVRPOptBase {
 			// Variation
 			Node[][] oldRoutes = change(solution, val);
 
-			Quality result = checkIt(solution, (int)val[1], (int)val[2]);
+			Quality result = check(solution, (int)val[1], (int)val[2]);
 			if(isImprovement(result, bestResult, (int)val[7])) {
-				System.out.println("Z "+this.getClass().getName()+" "+ result.getCost()+" "+Arrays.toString(val));
 				solution.fixateQualities();
 				return result;
 			}
@@ -106,7 +105,11 @@ public abstract class XFVRPOptImpBase extends XFVRPOptBase {
 			reverseChange(solution, val, oldRoutes);
 		}
 
-		return null;
+	private boolean isImprovement(Quality currentResult, Quality bestResult, int overhangFlag) {
+		// Is fitness better OR
+		return currentResult.getPenalty() == 0 &&
+				(currentResult.getFitness() < bestResult.getFitness() ||
+						overhangFlag == XFVRPMoveUtil.IS_OVERHANG);
 	}
 
 	private void reverseChange(Solution solution, float[] val, Node[][] oldRoutes) {
@@ -121,20 +124,5 @@ public abstract class XFVRPOptImpBase extends XFVRPOptBase {
 		return currentResult.getPenalty() == 0 &&
 				(currentResult.getFitness() < bestResult.getFitness() ||
 						overhangFlag == XFVRPMoveUtil.IS_OVERHANG);
-	}
-
-	/**
-	 * Check a solution for 2 routes
-	 */
-	protected Quality checkIt(Solution solution, int routeIdxA, int routeIdxB) throws XFVRPException {
-		// Evaluate the costs and restrictions (penalties) of a giant route
-		Quality result = check(solution, routeIdxA, routeIdxB);
-
-		// Only valid solutions are allowed.
-		if(result.getPenalty() == 0) {
-			return result;
-		}
-
-		return result;
 	}
 }

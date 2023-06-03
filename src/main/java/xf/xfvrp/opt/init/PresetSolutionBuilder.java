@@ -46,11 +46,13 @@ public class PresetSolutionBuilder {
 		}
 
 		// Put the unassigned customers with single routes into the solution
-		Solution unassigedSolution = initialSolutionBuilder.generateSolution(
-				new ArrayList<>(dataBag.getAvailableCustomers()),
-				model
-		);
-		solution.addRoutes(unassigedSolution.getRoutes());
+		if(dataBag.getAvailableCustomers().size() > 0) {
+			Solution unassigedSolution = initialSolutionBuilder.generateSolution(
+					new ArrayList<>(dataBag.getAvailableCustomers()),
+					model
+			);
+			solution.addRoutes(unassigedSolution.getRoutes());
+		}
 
 		return solution;
 	}

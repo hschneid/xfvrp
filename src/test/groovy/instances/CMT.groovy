@@ -10,11 +10,12 @@ import xf.xfvrp.report.Report
 import java.nio.file.Files
 import java.nio.file.Path
 import java.util.stream.Collectors
+import java.util.stream.IntStream
 
-class Solomon extends Specification {
+class CMT extends Specification {
 
     @Ignore
-    def "do Solomon VRPTW tests" () {
+    def "do CMT CVRP tests" () {
         when:
         execute()
 
@@ -23,22 +24,22 @@ class Solomon extends Specification {
     }
 
     private void execute() {
-        def results = getResults(new File("./src/test/resources/solomon/RESULTS"))
+        def results = getResults(new File("./src/test/resources/CMT/RESULTS"))
 
         def files = Files
-                .list(Path.of("./src/test/resources/solomon/"))
+                .list(Path.of("./src/test/resources/CMT/"))
                 .filter({f -> !f.fileName.toString().contains("RESULTS")})
                 .sorted({c1, c2 -> (c1 <=> c2) })
                 .collect(Collectors.toList())
 
         float[] deviation = new float[4]
         for (Path p : files) {
-            def instanceName = p.fileName.toString().replace(".txt", "").toLowerCase()
-
+            def instanceName = p.fileName.toString().replace(".vrp", "").toUpperCase()
             def bestResult = results.get(instanceName)
 
             long time = System.currentTimeMillis()
             def report = executeInstance(p, (int)bestResult[1])
+
             time = System.currentTimeMillis() - time
 
             deviation[0] += time
@@ -52,8 +53,6 @@ class Solomon extends Specification {
                     String.format("%.2f", ((report.getSummary().getDistance() / bestResult[0] - 1) * 100)) + " " +
                     String.format("%.2f", ((report.getSummary().getNbrOfUsedVehicles() / bestResult[1] - 1) * 100)) + " " +
                     String.format("%.2f", time / 1000)
-
-            break
         }
         println String.format("%.0f", deviation[3]) + " " +
                 String.format("%.2f", deviation[0] / deviation[3]) + " " +
@@ -74,33 +73,40 @@ class Solomon extends Specification {
         // xfvrp.setStatusMonitor(new DefaultStatusMonitor())
 
         List<String> lines = Files.readAllLines(file.toPath())
-        int[] vehicleData = split(lines.get(4))
+        def vehicleData = lines.get(5).split(":")
+        def maxDurationIdx = IntStream.range(0, lines.size()).filter(idx -> lines.get(idx).contains("DISTANCE")).findAny().orElse(-1)
+        def maxDuration = (maxDurationIdx > 0) ? Float.parseFloat(lines.get(maxDurationIdx).split(":")[1].trim()) : 9999999
+
+        def serviceTimeIdx = IntStream.range(0, lines.size()).filter(idx -> lines.get(idx).contains("SERVICE_TIME")).findAny().orElse(-1)
+        def serviceTime = (serviceTimeIdx > 0) ? Float.parseFloat(lines.get(serviceTimeIdx).split(":")[1].trim()) : 0
+
         xfvrp.addVehicle()
                 .setName("Vehicle")
-                .setCapacity(vehicleData[1])
+                .setCapacity(Integer.parseInt(vehicleData[1].trim()))
+                .setMaxRouteDuration(maxDuration)
 
-        int[] data = split(lines.get(9))
+        int nbrOfNodes = Integer.parseInt(lines.get(3).split(":")[1].trim())
+        int coordIdx = IntStream.range(0, lines.size()).filter(idx -> lines.get(idx).trim().equals("NODE_COORD_SECTION")).findAny().orElse(-1)
+        int demandIdx = IntStream.range(0, lines.size()).filter(idx -> lines.get(idx).trim().equals("DEMAND_SECTION")).findAny().orElse(-1)
+
+        def depot = lines.get(coordIdx + 1).trim().split(" ")
         xfvrp.addDepot()
-                .setExternID(data[0]+"")
-                .setXlong(data[1])
-                .setYlat(data[2])
-                .setTimeWindow(data[4], data[5])
+                .setExternID("0")
+                .setXlong(Float.parseFloat(depot[1].trim()))
+                .setYlat(Float.parseFloat(depot[2].trim()))
                 .setMaxNbrRoutes(nbrOfMaxRoutes)
 
-        for (int i = 10; i < lines.size(); i++) {
-            String customerData = lines.get(i)
-            if(customerData.trim().length() == 0) {
-                continue
-            }
 
-            data = split(customerData)
+        for (int i = 2; i <= nbrOfNodes; i++) {
+            def coords = lines.get(coordIdx + i).trim().split(" ")
+            def demands = lines.get(demandIdx + i).trim().split(" ")
+
             xfvrp.addCustomer()
-                    .setExternID(data[0]+"")
-                    .setXlong(data[1])
-                    .setYlat(data[2])
-                    .setDemand(data[3])
-                    .setTimeWindow(data[4], data[5])
-                    .setServiceTime(data[6])
+                    .setExternID((i-1)+"")
+                    .setXlong(Float.parseFloat(coords[1].trim()))
+                    .setYlat(Float.parseFloat(coords[2].trim()))
+                    .setDemand(Float.parseFloat(demands[1].trim()))
+                    .setServiceTime(serviceTime)
         }
 
         xfvrp.addOptType(XFVRPOptTypes.SAVINGS)
@@ -108,7 +114,7 @@ class Solomon extends Specification {
         xfvrp.addOptType(XFVRPOptTypes.PATH_RELOCATE)
         xfvrp.addOptType(XFVRPOptTypes.PATH_EXCHANGE)
 
-        xfvrp.getParameters().setNbrOfILSLoops(100)
+        xfvrp.getParameters().setNbrOfILSLoops(500)
         xfvrp.addOptType(XFVRPOptTypes.ILS)
 
         xfvrp.setMetric(new EucledianMetric())
@@ -116,30 +122,8 @@ class Solomon extends Specification {
         return xfvrp
     }
 
-    private int[] split(String line) {
-        line = ";"+line
-        line = line.replace(" ",";")
-
-        String newLine = line
-        do {
-            line = newLine
-            newLine = line.replace(";;", ";")
-        } while(!newLine.equals(line))
-        line = newLine
-
-        def tokens = line.split(";")
-        int[] data = new int[tokens.length - 1]
-        for (int i = 1; i < tokens.length; i++) {
-            data[i - 1] = Integer.parseInt(tokens[i])
-        }
-
-        return data
-    }
-
     private Map<String, float[]> getResults(File file) {
-        List<String> lines = Files.readAllLines(file.toPath())
-
-        return lines.stream()
+        return Files.readAllLines(file.toPath()).stream()
                 .map({line -> line.split("\t")})
                 .collect(
                         Collectors.toMap( {k -> k[0]}, {v -> [
