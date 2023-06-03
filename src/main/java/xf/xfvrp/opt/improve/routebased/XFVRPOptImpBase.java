@@ -89,14 +89,14 @@ public abstract class XFVRPOptImpBase extends XFVRPOptBase {
 
 		Queue<float[]> improvingSteps = search(solution);
 		// Find first valid improving change
-		while(!improvingSteps.isEmpty()) {
+		while (!improvingSteps.isEmpty()) {
 			float[] val = improvingSteps.remove();
-			System.out.println("X "+this.getClass().getName()+" "+ Arrays.toString(val));
+			System.out.println("X " + this.getClass().getName() + " " + Arrays.toString(val));
 			// Variation
 			Node[][] oldRoutes = change(solution, val);
 
-			Quality result = check(solution, (int)val[1], (int)val[2]);
-			if(isImprovement(result, bestResult, (int)val[7])) {
+			Quality result = check(solution, (int) val[1], (int) val[2]);
+			if (isImprovement(result, bestResult, (int) val[7])) {
 				solution.fixateQualities();
 				return result;
 			}
@@ -104,6 +104,9 @@ public abstract class XFVRPOptImpBase extends XFVRPOptBase {
 			// Reverse
 			reverseChange(solution, val, oldRoutes);
 		}
+
+		return null;
+	}
 
 	private boolean isImprovement(Quality currentResult, Quality bestResult, int overhangFlag) {
 		// Is fitness better OR
@@ -119,10 +122,4 @@ public abstract class XFVRPOptImpBase extends XFVRPOptBase {
 		solution.resetQualities();
 	}
 
-	private boolean isImprovement(Quality currentResult, Quality bestResult, int overhangFlag) {
-		// Is fitness better OR
-		return currentResult.getPenalty() == 0 &&
-				(currentResult.getFitness() < bestResult.getFitness() ||
-						overhangFlag == XFVRPMoveUtil.IS_OVERHANG);
-	}
 }
