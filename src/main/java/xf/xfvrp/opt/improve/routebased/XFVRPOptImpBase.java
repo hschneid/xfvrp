@@ -9,7 +9,6 @@ import xf.xfvrp.opt.Solution;
 import xf.xfvrp.opt.XFVRPOptBase;
 import xf.xfvrp.opt.improve.routebased.move.XFVRPMoveUtil;
 
-import java.util.Arrays;
 import java.util.Queue;
 
 /**
@@ -91,7 +90,7 @@ public abstract class XFVRPOptImpBase extends XFVRPOptBase {
 		// Find first valid improving change
 		while (!improvingSteps.isEmpty()) {
 			float[] val = improvingSteps.remove();
-			System.out.println("X " + this.getClass().getName() + " " + Arrays.toString(val));
+
 			// Variation
 			Node[][] oldRoutes = change(solution, val);
 

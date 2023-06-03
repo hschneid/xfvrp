@@ -104,8 +104,6 @@ public class XFVRPInstanceBridge {
 		vrp.executeRoutePlanning();
 
 		Report report = vrp.getReport();
-		System.out.println("Dist " + report.getSummary().getDistance());
-		System.out.println("Nbr " + report.getSummary().getNbrOfUsedVehicles());
 	}
 
 	public static void main(String[] args) {

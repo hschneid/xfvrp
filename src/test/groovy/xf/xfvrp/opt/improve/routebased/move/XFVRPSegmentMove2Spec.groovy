@@ -9,8 +9,6 @@ import xf.xfvrp.base.LoadType
 import xf.xfvrp.base.Node
 import xf.xfvrp.base.SiteType
 import xf.xfvrp.base.XFVRPModel
-import xf.xfvrp.opt.improve.routebased.move.XFVRPMoveSearchUtil
-import xf.xfvrp.opt.improve.routebased.move.XFVRPSegmentMove
 
 class XFVRPSegmentMove2Spec extends Specification {
 

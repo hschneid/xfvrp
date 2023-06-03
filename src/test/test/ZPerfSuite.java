@@ -179,8 +179,7 @@ public class ZPerfSuite {
 //		Item[] items = itemList.toArray(new Item[0]);
 //		Container[] containers = packer.createLoadingPlan(items, container);
 //		
-//		System.out.println("IST "+containers.length+" SOLL "+nbr+" in "+(System.currentTimeMillis() - time)+" ms");
-//		
+//
 ////		ContainerMergeILS cmILS = new ContainerMergeILS();
 ////		cmILS.execute(containers);
 //	}
@@ -238,11 +237,9 @@ public class ZPerfSuite {
 ////
 ////				for (int i = 0; i < items.length; i++) {
 ////					Item v = items[i];
-////					System.out.println(v.externalIndex+" "+v.w+" "+v.l+" "+v.height+" "+v.x+" "+v.y+" "+v.z+" "+v.stackingGroup+" "+v.isRotated);
 ////				}
 ////				
 ////				for (int i = 0; i < conArr[0].getActivePosList().size(); i++)
-////					System.out.println(conArr[0].getActivePosList().get(i));
 ////
 ////				//						prepare(conArr, items);
 ////				//		
