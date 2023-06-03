@@ -11,7 +11,7 @@ import java.util.PriorityQueue;
 import java.util.Queue;
 
 /**
- * Copyright (c) 2012-2021 Holger Schneider
+ * Copyright (c) 2012-2022 Holger Schneider
  * All rights reserved.
  *
  * This source code is licensed under the MIT License (MIT) found in the
@@ -34,31 +34,24 @@ public class XFVRPSegmentExchange extends XFVRPOptImpBase {
 	private int maxSegmentLength = 3;
 
 	@Override
-	protected Queue<float[]> search(Node[][] routes) {
+	protected Queue<float[]> search(Solution solution) {
 		PriorityQueue<float[]> improvingSteps = new PriorityQueue<>(
 				(o1, o2) -> Float.compare(o2[0], o1[0])
 		);
-		XFVRPMoveSearchUtil.search(model, routes, improvingSteps, maxSegmentLength, isInvertationActive);
-		XFVRPSwapSearchUtil.search(model, routes, improvingSteps, maxSegmentLength, isSegmentLengthEqual, isInvertationActive);
+		XFVRPMoveSearchUtil.search(solution, improvingSteps, maxSegmentLength, isInvertationActive);
+		XFVRPSwapSearchUtil.search(solution, improvingSteps, maxSegmentLength, isSegmentLengthEqual, isInvertationActive);
 
 		return improvingSteps;
 	}
 
 	@Override
-	protected void change(Solution solution, float[] changeParameter) throws XFVRPException {
-		if(changeParameter.length == 8) {
-			XFVRPSwapUtil.change(solution, changeParameter);
-		} else if(changeParameter.length == 7) {
-			XFVRPMoveUtil.change(solution, changeParameter);
+	protected Node[][] change(Solution solution, float[] changeParameter) throws XFVRPException {
+		if(changeParameter.length == 9) {
+			return XFVRPSwapUtil.change(solution, changeParameter);
+		} else if(changeParameter.length == 8) {
+			return XFVRPMoveUtil.change(solution, changeParameter);
 		}
-	}
 
-	@Override
-	protected void reverseChange(Solution solution, float[] changeParameter) throws XFVRPException {
-		if(changeParameter.length == 8) {
-		XFVRPSwapUtil.reverseChange(solution, changeParameter);
-		} else if(changeParameter.length == 7) {
-			XFVRPMoveUtil.reverseChange(solution, changeParameter);
-		}
+		return null;
 	}
 }

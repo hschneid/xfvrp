@@ -5,7 +5,7 @@ import xf.xfvrp.base.Node;
 import xf.xfvrp.base.SiteType;
 
 /**
- * Copyright (c) 2012-2021 Holger Schneider
+ * Copyright (c) 2012-2022 Holger Schneider
  * All rights reserved.
  *
  * This source code is licensed under the MIT License (MIT) found in the
@@ -119,7 +119,8 @@ public class ReplenishData extends NodeData {
 				0,
 				LoadType.REPLENISH,
 				0,
-				""
+				"",
+				0
 		);
 	}
 }

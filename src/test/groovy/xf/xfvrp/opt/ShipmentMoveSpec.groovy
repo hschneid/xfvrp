@@ -1,6 +1,7 @@
 package xf.xfvrp.opt
 
 import spock.lang.Specification
+import util.instances.Helper
 import xf.xfvrp.base.Node
 import xf.xfvrp.base.SiteType
 import xf.xfvrp.opt.improve.routebased.move.XFVRPSingleMove
@@ -19,8 +20,8 @@ class ShipmentMoveSpec extends Specification {
 		def n6 = new Node(externID: "6", siteType: SiteType.CUSTOMER)
 		def n99 = new Node(externID: "99", siteType: SiteType.DEPOT)
 		
-		def sol = new Solution()
-		sol.setGiantRoute([n0, n1, n2, n3, n4, n5, n6, n99] as Node[])
+		
+		def sol = Helper.set([n0, n1, n2, n3, n4, n5, n6, n99] as Node[])
 		
 		when:
 		service.shipmentMove(sol, 1, 3, 4, 7)
@@ -48,8 +49,8 @@ class ShipmentMoveSpec extends Specification {
 		def n6 = new Node(externID: "6", siteType: SiteType.CUSTOMER)
 		def n99 = new Node(externID: "99", siteType: SiteType.DEPOT)
 		
-		def sol = new Solution()
-		sol.setGiantRoute([n0, n1, n2, n3, n4, n5, n6, n99] as Node[])
+		
+		def sol = Helper.set([n0, n1, n2, n3, n4, n5, n6, n99] as Node[])
 		
 		when:
 		service.shipmentMove(sol, 4, 6, 1, 2)
@@ -77,8 +78,8 @@ class ShipmentMoveSpec extends Specification {
 		def n6 = new Node(externID: "6", siteType: SiteType.CUSTOMER)
 		def n99 = new Node(externID: "99", siteType: SiteType.DEPOT)
 		
-		def sol = new Solution()
-		sol.setGiantRoute([n0, n1, n2, n3, n4, n5, n6, n99] as Node[])
+		
+		def sol = Helper.set([n0, n1, n2, n3, n4, n5, n6, n99] as Node[])
 		
 		when:
 		service.shipmentMove(sol, 1, 6, 3, 5)
@@ -106,8 +107,8 @@ class ShipmentMoveSpec extends Specification {
 		def n6 = new Node(externID: "6", siteType: SiteType.CUSTOMER)
 		def n99 = new Node(externID: "99", siteType: SiteType.DEPOT)
 		
-		def sol = new Solution()
-		sol.setGiantRoute([n0, n1, n2, n3, n4, n5, n6, n99] as Node[])
+		
+		def sol = Helper.set([n0, n1, n2, n3, n4, n5, n6, n99] as Node[])
 		
 		when:
 		service.shipmentMove(sol, 3, 4, 1, 7)
@@ -135,8 +136,8 @@ class ShipmentMoveSpec extends Specification {
 		def n6 = new Node(externID: "6", siteType: SiteType.CUSTOMER)
 		def n99 = new Node(externID: "99", siteType: SiteType.DEPOT)
 		
-		def sol = new Solution()
-		sol.setGiantRoute([n0, n1, n2, n3, n4, n5, n6, n99] as Node[])
+		
+		def sol = Helper.set([n0, n1, n2, n3, n4, n5, n6, n99] as Node[])
 		
 		when:
 		service.shipmentMove(sol, 2, 5, 4, 7)
@@ -164,8 +165,8 @@ class ShipmentMoveSpec extends Specification {
 		def n6 = new Node(externID: "6", siteType: SiteType.CUSTOMER)
 		def n99 = new Node(externID: "99", siteType: SiteType.DEPOT)
 		
-		def sol = new Solution()
-		sol.setGiantRoute([n0, n1, n2, n3, n4, n5, n6, n99] as Node[])
+		
+		def sol = Helper.set([n0, n1, n2, n3, n4, n5, n6, n99] as Node[])
 		
 		when:
 		service.shipmentMove(sol, 2, 5, 2, 5)
@@ -193,8 +194,8 @@ class ShipmentMoveSpec extends Specification {
 		def n6 = new Node(externID: "6", siteType: SiteType.CUSTOMER)
 		def n99 = new Node(externID: "99", siteType: SiteType.DEPOT)
 		
-		def sol = new Solution()
-		sol.setGiantRoute([n0, n1, n2, n3, n4, n5, n6, n99] as Node[])
+		
+		def sol = Helper.set([n0, n1, n2, n3, n4, n5, n6, n99] as Node[])
 		
 		when:
 		service.shipmentMove(sol, 2, 5, 3, 6)
@@ -222,8 +223,8 @@ class ShipmentMoveSpec extends Specification {
 		def n6 = new Node(externID: "6", siteType: SiteType.CUSTOMER)
 		def n99 = new Node(externID: "99", siteType: SiteType.DEPOT)
 		
-		def sol = new Solution()
-		sol.setGiantRoute([n0, n1, n2, n3, n4, n5, n6, n99] as Node[])
+		
+		def sol = Helper.set([n0, n1, n2, n3, n4, n5, n6, n99] as Node[])
 		
 		when:
 		service.shipmentMove(sol, 1, 2, 5, 5)

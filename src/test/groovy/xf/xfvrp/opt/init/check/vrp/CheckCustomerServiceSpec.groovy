@@ -5,7 +5,6 @@ import util.instances.TestNode
 import util.instances.TestVehicle
 import util.instances.TestXFVRPModel
 import xf.xfvrp.base.InvalidReason
-import xf.xfvrp.base.Node
 import xf.xfvrp.base.SiteType
 import xf.xfvrp.base.XFVRPModel
 import xf.xfvrp.opt.init.solution.vrp.SolutionBuilderDataBag
@@ -23,7 +22,7 @@ class CheckCustomerServiceSpec extends Specification {
 				).getNode()
 
 		def v = new TestVehicle(capacity: [3, 3, 3] as float[]).getVehicle()
-		def model = TestXFVRPModel.get(new Node[0], null, null, v, null)
+		def model = TestXFVRPModel.get([], v)
 
 		when:
 		def result = service.checkDemands(customer, model)
@@ -40,7 +39,7 @@ class CheckCustomerServiceSpec extends Specification {
 				).getNode()
 
 		def v = new TestVehicle(capacity: [3, 1, 3] as float[]).getVehicle()
-		def model = TestXFVRPModel.get(new Node[0], null, null, v, null)
+		def model = TestXFVRPModel.get([], v)
 
 		when:
 		def result = service.checkDemands(customer, model)
@@ -57,7 +56,7 @@ class CheckCustomerServiceSpec extends Specification {
 				).getNode()
 
 		def v = new TestVehicle(capacity: [3, 3] as float[]).getVehicle()
-		def model = TestXFVRPModel.get(new Node[0], null, null, v, null)
+		def model = TestXFVRPModel.get([], v)
 
 		when:
 		def result = service.checkDemands(customer, model)

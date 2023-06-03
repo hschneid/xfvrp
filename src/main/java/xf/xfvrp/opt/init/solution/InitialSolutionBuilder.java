@@ -8,10 +8,8 @@ import xf.xfvrp.opt.Solution;
 import xf.xfvrp.opt.init.solution.pdp.PDPInitialSolutionBuilder;
 import xf.xfvrp.opt.init.solution.vrp.VRPInitialSolutionBuilder;
 
-import java.util.ArrayList;
-
 /**
- * Copyright (c) 2012-2021 Holger Schneider
+ * Copyright (c) 2012-2022 Holger Schneider
  * All rights reserved.
  *
  * This source code is licensed under the MIT License (MIT) found in the
@@ -32,6 +30,6 @@ public class InitialSolutionBuilder {
 		if(parameter.isWithPDP())
 			return new PDPInitialSolutionBuilder().build(model);
 
-		return new VRPInitialSolutionBuilder().build(model, new ArrayList<>(), statusManager);
+		return new VRPInitialSolutionBuilder().build(model.getCustomerNodes(),  model, statusManager);
 	}
 }

@@ -184,7 +184,8 @@ class FullRouteMixedFleetHeuristicSpec extends Specification {
 				new TestNode(externID: 'n1', siteType: SiteType.CUSTOMER).getNode(),
 				new TestNode(externID: 'n2', siteType: SiteType.CUSTOMER).getNode()
 		]
-		def model = TestXFVRPModel.get(nodes, testVehicle.getVehicle())
+		def allNodes = [depot] + nodes
+		def model = TestXFVRPModel.get(allNodes, testVehicle.getVehicle())
 
 		when:
 		def result = service.buildSolutionForInvalidNodes(nodes, depot, model, statusManager)
@@ -210,7 +211,8 @@ class FullRouteMixedFleetHeuristicSpec extends Specification {
 				new TestNode(externID: 'n2', siteType: SiteType.CUSTOMER, presetBlockIdx: BlockNameConverter.DEFAULT_BLOCK_IDX).getNode(),
 				new TestNode(externID: 'n3', siteType: SiteType.CUSTOMER, presetBlockIdx: 2).getNode()
 		]
-		def model = TestXFVRPModel.get(nodes, testVehicle.getVehicle())
+		def allNodes = [depot] + nodes
+		def model = TestXFVRPModel.get(allNodes, testVehicle.getVehicle())
 
 		when:
 		def result = service.buildSolutionForInvalidNodes(nodes, depot, model, statusManager)
@@ -231,7 +233,7 @@ class FullRouteMixedFleetHeuristicSpec extends Specification {
 	def "Build solution For Invalid Nodes - no unplanned"() {
 		def statusManager = Stub StatusManager
 		def depot = new TestNode(externID: 'nD', siteType: SiteType.DEPOT).getNode()
-		def model = TestXFVRPModel.get([], testVehicle.getVehicle())
+		def model = TestXFVRPModel.get([depot], testVehicle.getVehicle())
 
 		when:
 		def result = service.buildSolutionForInvalidNodes([] as List<Node>, depot, model, statusManager)

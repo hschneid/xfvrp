@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 /** 
- * Copyright (c) 2012-2021 Holger Schneider
+ * Copyright (c) 2012-2022 Holger Schneider
  * All rights reserved.
  *
  * This source code is licensed under the MIT License (MIT) found in the
@@ -39,6 +39,9 @@ public class ErrorSummary {
 	 */
 	public void add(Solution solution) {
 		for (Node[] route : solution) {
+			if(route == null)
+				continue;
+
 			for (Node node : route) {
 				if (node != null && node.getInvalidReason() != InvalidReason.NONE) {
 					// Description

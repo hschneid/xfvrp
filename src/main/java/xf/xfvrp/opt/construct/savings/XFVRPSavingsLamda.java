@@ -1,4 +1,4 @@
-package xf.xfvrp.opt.construct;
+package xf.xfvrp.opt.construct.savings;
 
 import xf.xfvrp.base.Quality;
 import xf.xfvrp.base.exception.XFVRPException;
@@ -6,7 +6,7 @@ import xf.xfvrp.opt.Solution;
 
 
 /** 
- * Copyright (c) 2012-2021 Holger Schneider
+ * Copyright (c) 2012-2022 Holger Schneider
  * All rights reserved.
  *
  * This source code is licensed under the MIT License (MIT) found in the
@@ -38,7 +38,7 @@ public class XFVRPSavingsLamda extends XFVRPSavings {
 		bestQuality = check(best);
 		
 		for (float l : lambdaParameters) {
-			this.lamda = l;
+			this.lambda = l;
 			sol = super.execute(solution.copy());
 			quality = check(sol);
 			if(quality.getFitness() < bestQuality.getFitness()) {

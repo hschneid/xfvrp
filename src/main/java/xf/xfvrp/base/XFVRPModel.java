@@ -4,8 +4,10 @@ import xf.xfvrp.base.compartment.CompartmentType;
 import xf.xfvrp.base.metric.InternalMetric;
 import xf.xfvrp.base.preset.BlockNameConverter;
 
+import java.util.Arrays;
+
 /** 
- * Copyright (c) 2012-2021 Holger Schneider
+ * Copyright (c) 2012-2022 Holger Schneider
  * All rights reserved.
  *
  * This source code is licensed under the MIT License (MIT) found in the
@@ -13,7 +15,7 @@ import xf.xfvrp.base.preset.BlockNameConverter;
  *
  *
  * The XFVRPModel holds all necessary input data. The
- * nodeArr contains all read nodes with their attitudes.
+ * nodes contains all read nodes with their attitudes.
  * The metric can only be reached through this model for
  * getting distances or times between nodes. 
  * 
@@ -25,7 +27,7 @@ public class XFVRPModel {
 	protected final int nbrOfDepots;
 	protected final int nbrOfReplenish;
 
-	protected final Node[] nodeArr;
+	protected final Node[] nodes;
 	protected final InternalMetric metric;
 	protected final InternalMetric optMetric;
 	protected final CompartmentType[] compartments;
@@ -42,7 +44,7 @@ public class XFVRPModel {
 	protected XFVRPModel() {
 		nbrOfDepots = 0;
 		nbrOfReplenish = 0;
-		nodeArr = null;
+		nodes = null;
 		metric = null;
 		optMetric = null;
 		vehicle = null;
@@ -56,8 +58,8 @@ public class XFVRPModel {
 	 * Initialize an optimization model object with the given input data. It contains the general
 	 * parameter for all optimization procedures. It holds no solution information.
 	 */
-	public XFVRPModel(Node[] nodeArr, CompartmentType[] compartmentTypes, InternalMetric metric, InternalMetric optMetric, Vehicle vehicle, XFVRPParameter parameter) {
-		this.nodeArr = nodeArr;
+	public XFVRPModel(Node[] nodes, CompartmentType[] compartmentTypes, InternalMetric metric, InternalMetric optMetric, Vehicle vehicle, XFVRPParameter parameter) {
+		this.nodes = nodes;
 		this.metric = metric;
 		this.optMetric = optMetric;
 		this.vehicle = vehicle;
@@ -68,15 +70,15 @@ public class XFVRPModel {
 		int nbrOfReplenish = 0;
 		int nbrOfBlocks = BlockNameConverter.UNDEF_BLOCK_IDX;
 		int maxGlobalNodeIdx = 0;
-		for (int i = 0; i < nodeArr.length; i++) {
-			if(nodeArr[i].getSiteType() == SiteType.DEPOT)
+		for (int i = 0; i < nodes.length; i++) {
+			if(nodes[i].getSiteType() == SiteType.DEPOT)
 				nbrOfDepots++;
 			
-			if(nodeArr[i].getSiteType() == SiteType.REPLENISH)
+			if(nodes[i].getSiteType() == SiteType.REPLENISH)
 				nbrOfReplenish++;
 			
-			nbrOfBlocks = Math.max(nbrOfBlocks, nodeArr[i].getPresetBlockIdx());
-			maxGlobalNodeIdx = Math.max(maxGlobalNodeIdx, nodeArr[i].getGlobalIdx());
+			nbrOfBlocks = Math.max(nbrOfBlocks, nodes[i].getPresetBlockIdx());
+			maxGlobalNodeIdx = Math.max(maxGlobalNodeIdx, nodes[i].getGlobalIdx());
 		}
 		
 		// Counts for each block idx the number of nodes in it.
@@ -87,6 +89,10 @@ public class XFVRPModel {
 		this.nbrOfReplenish = nbrOfReplenish;
 
 		this.compartments = compartmentTypes;
+	}
+
+	public Node[] getCustomerNodes() {
+		return Arrays.copyOfRange(nodes, nbrOfDepots + nbrOfReplenish, nodes.length);
 	}
 
 	/**
@@ -148,7 +154,7 @@ public class XFVRPModel {
 	 * @return Number of Nodes in the current model (inclusive depots)
 	 */
 	public int getNbrOfNodes() {
-		return nodeArr.length;
+		return nodes.length;
 	}
 
 	public Vehicle getVehicle() {
@@ -160,7 +166,7 @@ public class XFVRPModel {
 	}
 
 	public Node[] getNodes() {
-		return nodeArr;
+		return nodes;
 	}
 
 	public CompartmentType[] getCompartments() {

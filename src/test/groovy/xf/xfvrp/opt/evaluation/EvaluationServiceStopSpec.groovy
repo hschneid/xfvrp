@@ -1,13 +1,11 @@
 package xf.xfvrp.opt.evaluation
 
 import spock.lang.Specification
+import util.instances.Helper
 import util.instances.TestNode
 import util.instances.TestVehicle
 import util.instances.TestXFVRPModel
 import xf.xfvrp.base.*
-import xf.xfvrp.base.metric.EucledianMetric
-import xf.xfvrp.base.metric.internal.AcceleratedMetricTransformator
-import xf.xfvrp.opt.Solution
 
 class EvaluationServiceStopSpec extends Specification {
 
@@ -27,19 +25,13 @@ class EvaluationServiceStopSpec extends Specification {
 	timeWindow: [[0,99],[2,99]]
 	).getNode()
 
-	def sol
-
-	def parameter = new XFVRPParameter()
-
-	def metric = new EucledianMetric()
-
 	def "Max Stop count - Okay"() {
 		def v = new TestVehicle(name: "V1", capacity: [3, 3], maxStopCount: 4).getVehicle()
 		def model = initScen(v)
 		def n = model.getNodes()
 
-		sol = new Solution(model)
-		sol.setGiantRoute([nd, n[2], n[3], nr, n[4], n[5], nd] as Node[])
+		
+		def sol = Helper.set(model, [nd, n[2], n[3], nr, n[4], n[5], nd] as Node[])
 
 		when:
 		def result = service.check(sol)
@@ -54,8 +46,8 @@ class EvaluationServiceStopSpec extends Specification {
 		def model = initScen(v)
 		def n = model.getNodes()
 
-		sol = new Solution(model)
-		sol.setGiantRoute([nd, n[2], n[3], nr, n[4], n[5], nd] as Node[])
+		
+		def sol = Helper.set(model, [nd, n[2], n[3], nr, n[4], n[5], nd] as Node[])
 
 		when:
 		def result = service.check(sol)
@@ -70,8 +62,8 @@ class EvaluationServiceStopSpec extends Specification {
 		def model = initScen(v)
 		def n = model.getNodes()
 
-		sol = new Solution(model)
-		sol.setGiantRoute([nd, n[2], n[4], nr, n[3], n[5], nd] as Node[])
+		
+		def sol = Helper.set(model, [nd, n[2], n[4], nr, n[3], n[5], nd] as Node[])
 
 		when:
 		def result = service.check(sol)
@@ -86,8 +78,8 @@ class EvaluationServiceStopSpec extends Specification {
 		def model = initScen(v)
 		def n = model.getNodes()
 
-		sol = new Solution(model)
-		sol.setGiantRoute([nd, n[2], n[4], nr, n[3], n[5], nd] as Node[])
+		
+		def sol = Helper.set(model, [nd, n[2], n[4], nr, n[3], n[5], nd] as Node[])
 
 		when:
 		def result = service.check(sol)
@@ -146,11 +138,9 @@ class EvaluationServiceStopSpec extends Specification {
 		n3.setIdx(4)
 		n4.setIdx(5)
 
-		def nodes = [nd, nr, n1, n2, n3, n4] as Node[]
+		def nodes = [nd, nr, n1, n2, n3, n4]
 
-		def iMetric = new AcceleratedMetricTransformator().transform(metric, nodes, v)
-
-		return TestXFVRPModel.get(nodes, iMetric, iMetric, v, parameter)
+		return TestXFVRPModel.get(nodes, v)
 	}
 
 }

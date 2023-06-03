@@ -12,11 +12,16 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Copyright (c) 2012-2021 Holger Schneider
+ * Copyright (c) 2012-2022 Holger Schneider
  * All rights reserved.
  *
  * This source code is licensed under the MIT License (MIT) found in the
  * LICENSE file in the root directory of this source tree.
+ *
+ * The solution is the central object for the representation of one single point in search space.
+ *
+ * It contains the set of chosen routes, the quality of each route and the sum of all qualities.
+ *
  **/
 public class Solution implements Iterable<Node[]> {
 
@@ -25,11 +30,18 @@ public class Solution implements Iterable<Node[]> {
 	private Node[][] routes = new Node[1][0];
 	private RouteQuality[] routeQualities = new RouteQuality[] { new RouteQuality(0, null) };
 	private Quality totalQuality = new Quality(null);
+	private int[] nbrRoutesOfDepot = new int[0];
+	// Route -> is more then allowed number of routes for this depot
+	private boolean[] isOverhang = new boolean[1];
 
 	private final List<RouteQuality> invalidatedRoutesQualities = new ArrayList<>();
 
 	public Solution(XFVRPModel model) {
 		this.model = model;
+
+		if(model != null) {
+			nbrRoutesOfDepot = new int[model.getNbrOfDepots()];
+		}
 	}
 
 	public XFVRPModel getModel() {
@@ -48,18 +60,35 @@ public class Solution implements Iterable<Node[]> {
 		return totalQuality;
 	}
 
+	public int[] getNbrRoutesOfDepot() {
+		return nbrRoutesOfDepot;
+	}
+
+	public boolean[] getOverhangRoutes() {
+		return isOverhang;
+	}
+
 	public void deleteRoute(int routeIndex) {
+		// Reduce number of routes per depot
+		nbrRoutesOfDepot[routes[routeIndex][0].getIdx()]--;
+
 		routes[routeIndex] = new Node[0];
 
 		totalQuality.sub(routeQualities[routeIndex]);
 		routeQualities[routeIndex] = new RouteQuality(0, null);
+		isOverhang[routeIndex] = false;
 	}
 
 	public void addRoute(Node[] newRoute) {
+		// Update count of routes per depot, if route has customers
+		if(newRoute[0].getSiteType() == SiteType.DEPOT)
+			nbrRoutesOfDepot[newRoute[0].getIdx()]++;
+
 		// Replace empty slot with new route, if available
 		for (int i = 0; i < routes.length; i++) {
-			if(routes[i].length == 0) {
+			if(routes[i] == null || routes[i].length == 0) {
 				routes[i] = newRoute;
+				routeQualities[i] = new RouteQuality(i, null);
 				return;
 			}
 		}
@@ -70,10 +99,12 @@ public class Solution implements Iterable<Node[]> {
 
 		routeQualities = Arrays.copyOf(routeQualities, routeQualities.length + 1);
 		routeQualities[routeQualities.length - 1] = new RouteQuality(routeQualities.length - 1, null);
+
+		isOverhang = Arrays.copyOf(isOverhang, routes.length);
 	}
 
 	public void addRoutes(Node[][] newRoutes) {
-		for (int i = 0; i < newRoutes.length; i++) {
+		for (int i = newRoutes.length - 1; i >= 0; i--) {
 			if(newRoutes[i] != null)
 				addRoute(newRoutes[i]);
 		}
@@ -164,11 +195,13 @@ public class Solution implements Iterable<Node[]> {
 
 		routes = new Node[list.size()][];
 		routeQualities = new RouteQuality[list.size()];
-		for (int i = 0; i < list.size(); i++) {
-			routes[i] = list.get(i).toArray(new Node[0]);
-			routeQualities[i] = new RouteQuality(i, null);
-		}
+		isOverhang = new boolean[list.size()];
 		totalQuality = new Quality(null);
+
+		for (int i = 0; i < list.size(); i++) {
+			addRoute(list.get(i).toArray(new Node[0]));
+		}
+
 	}
 
 	public Solution copy() {
@@ -183,6 +216,9 @@ public class Solution implements Iterable<Node[]> {
 		for (int i = 0; i < routeQualities.length; i++)
 			solution.routeQualities[i] = new RouteQuality(i, routeQualities[i]);
 		solution.totalQuality = new Quality(totalQuality);
+
+		solution.nbrRoutesOfDepot = Arrays.copyOf(nbrRoutesOfDepot, nbrRoutesOfDepot.length);
+		solution.isOverhang = Arrays.copyOf(isOverhang, isOverhang.length);
 
 		return solution;
 	}
@@ -213,7 +249,7 @@ public class Solution implements Iterable<Node[]> {
 	/**
 	 * This will purge all routes over the number of routes to retain.
 	 *
-	 * This function is called to shrink the number or routes, which makes
+	 * This function is called to shrink the number of routes, which makes
 	 * sense for the optimization. So for-loops will not test so often empty
 	 * routes.
 	 */
@@ -225,6 +261,9 @@ public class Solution implements Iterable<Node[]> {
 
 		this.routes = newRoutes;
 		this.routeQualities = newRouteQualities;
+		this.isOverhang = new boolean[newRoutes.length];
+
+		updateNbrOfRoutesPerDepot();
 	}
 
 	public boolean isValid() {
@@ -234,5 +273,28 @@ public class Solution implements Iterable<Node[]> {
 				Arrays.stream(routes)
 						.flatMap(Arrays::stream)
 						.anyMatch(n -> n.getSiteType() == SiteType.CUSTOMER);
+	}
+
+	private void updateNbrOfRoutesPerDepot() {
+		Arrays.fill(nbrRoutesOfDepot, 0);
+
+		for (int i = routes.length - 1; i >= 0; i--) {
+			if(routes[i][0].getSiteType() == SiteType.DEPOT) {
+				nbrRoutesOfDepot[routes[i][0].getIdx()]++;
+			}
+		}
+	}
+
+	public String toPrettyString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("|");
+		for (int i = 0; i < routes.length; i++) {
+			for (int j = 0; j < routes[i].length; j++) {
+				sb.append(routes[i][j].getExternID()+",");
+			}
+			sb.append("|");
+		}
+
+		return sb.toString();
 	}
 }

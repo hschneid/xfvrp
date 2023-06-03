@@ -1,13 +1,14 @@
 package xf.xfvrp.opt.improve
 
 import spock.lang.Specification
+import util.instances.Helper
 import util.instances.TestNode
 import util.instances.TestVehicle
 import util.instances.TestXFVRPModel
-import xf.xfvrp.base.*
-import xf.xfvrp.base.metric.EucledianMetric
-import xf.xfvrp.base.metric.internal.AcceleratedMetricTransformator
-import xf.xfvrp.opt.Solution
+import xf.xfvrp.base.LoadType
+import xf.xfvrp.base.Node
+import xf.xfvrp.base.SiteType
+import xf.xfvrp.base.XFVRPModel
 import xf.xfvrp.opt.improve.giantroute.XFVRP3PointMove
 
 import java.util.stream.Collectors
@@ -34,19 +35,13 @@ class XFVRP3PointMoveSpec extends Specification {
 	timeWindow: [[0,99],[2,99]]
 	).getNode()
 
-	def sol
-
-	def parameter = new XFVRPParameter()
-
-	def metric = new EucledianMetric()
-
 	def "Search - Left to right"() {
 		def model = initScen()
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
-		sol.setGiantRoute([nd, n[2], n[7], n[8], n[1], n[5], n[6], n[4], n[3], nd] as Node[])
+		
+		def sol = Helper.set(model, [nd, n[2], n[7], n[8], n[1], n[5], n[6], n[4], n[3], nd] as Node[])
 
 		when:
 		def impList = service.search(sol.getGiantRoute())
@@ -62,8 +57,7 @@ class XFVRP3PointMoveSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
-		sol.setGiantRoute([nd, n[1], nd, nd, nd, nd, nd] as Node[])
+		def sol = Helper.set(model, [nd, n[1], nd, nd, nd, nd, nd] as Node[])
 
 		when:
 		def impList = service.search(sol.getGiantRoute())
@@ -77,8 +71,8 @@ class XFVRP3PointMoveSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
-		sol.setGiantRoute([nd, n[2], n[5], n[6], n[1], n[7], n[8], n[4], n[3], nd] as Node[])
+		
+		def sol = Helper.set(model, [nd, n[2], n[5], n[6], n[1], n[7], n[8], n[4], n[3], nd] as Node[])
 
 		when:
 		def impList = service.search(sol.getGiantRoute())
@@ -93,8 +87,8 @@ class XFVRP3PointMoveSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
-		sol.setGiantRoute([nd, n[1], n[2], n[6], n[7], n[4], nd, n[5], n[3], n[8], nd] as Node[])
+		
+		def sol = Helper.set(model, [nd, n[1], n[2], n[6], n[7], n[4], nd, n[5], n[3], n[8], nd] as Node[])
 
 		def changeMove = [3, 8] as float[]
 
@@ -122,8 +116,8 @@ class XFVRP3PointMoveSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
-		sol.setGiantRoute([nd, n[1], n[3], n[4], n[2], nd, n[5], n[6], n[7], n[8], nd] as Node[])
+		
+		def sol = Helper.set(model, [nd, n[1], n[3], n[4], n[2], nd, n[5], n[6], n[7], n[8], nd] as Node[])
 
 		def changeMove = [2, 4] as float[]
 
@@ -151,8 +145,8 @@ class XFVRP3PointMoveSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
-		sol.setGiantRoute([nd, n[1], n[2], n[6], nd, n[5], n[3], n[4], n[7], n[8], nd] as Node[])
+		
+		def sol = Helper.set(model, [nd, n[1], n[2], n[6], nd, n[5], n[3], n[4], n[7], n[8], nd] as Node[])
 
 		def changeMove = [6, 3] as float[]
 
@@ -180,8 +174,8 @@ class XFVRP3PointMoveSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
-		sol.setGiantRoute([nd, n[1], n[2], n[3], n[4], nd, n[5], n[6], n[7], n[8], nd] as Node[])
+		
+		def sol = Helper.set(model, [nd, n[1], n[2], n[3], n[4], nd, n[5], n[6], n[7], n[8], nd] as Node[])
 
 		def changeMove = [3, 8] as float[]
 
@@ -209,8 +203,8 @@ class XFVRP3PointMoveSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
-		sol.setGiantRoute([nd, n[1], n[2], n[3], n[4], nd, n[5], n[6], n[7], n[8], nd] as Node[])
+		
+		def sol = Helper.set(model, [nd, n[1], n[2], n[3], n[4], nd, n[5], n[6], n[7], n[8], nd] as Node[])
 
 		def changeMove = [6, 3] as float[]
 
@@ -326,10 +320,8 @@ class XFVRP3PointMoveSpec extends Specification {
 		n7.setIdx(7)
 		n8.setIdx(8)
 
-		def nodes = [nd, n1, n2, n3, n4, n5, n6, n7, n8] as Node[]
+		def nodes = [nd, n1, n2, n3, n4, n5, n6, n7, n8]
 
-		def iMetric = new AcceleratedMetricTransformator().transform(metric, nodes, v)
-
-		return TestXFVRPModel.get(nodes, iMetric, iMetric, v, parameter)
+		return TestXFVRPModel.get(nodes, v)
 	}
 }

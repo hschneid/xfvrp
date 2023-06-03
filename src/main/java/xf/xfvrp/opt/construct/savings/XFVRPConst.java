@@ -1,4 +1,4 @@
-package xf.xfvrp.opt.construct;
+package xf.xfvrp.opt.construct.savings;
 
 import util.collection.ListMap;
 import xf.xfvrp.base.Node;
@@ -14,7 +14,7 @@ import java.util.Comparator;
 import java.util.List;
 
 /** 
- * Copyright (c) 2012-2021 Holger Schneider
+ * Copyright (c) 2012-2022 Holger Schneider
  * All rights reserved.
  *
  * This source code is licensed under the MIT License (MIT) found in the
@@ -55,7 +55,7 @@ public class XFVRPConst extends XFVRPOptBase {
 							.thenComparingInt(Node::getPresetBlockPos)
 			);
 
-			// Create temp giant tour with only one depot and allocated customers
+			// Create temp solution with only one depot and allocated customers
 			Solution savingsSolution = solutionBuilder.generateSolution(dep, customers, this.model);
 
 			// Run optimizers for each piece and choose best

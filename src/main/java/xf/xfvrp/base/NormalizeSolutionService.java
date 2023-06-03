@@ -4,10 +4,11 @@ import xf.xfvrp.base.quality.RouteQuality;
 import xf.xfvrp.opt.Solution;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
- * Copyright (c) 2012-2021 Holger Schneider
+ * Copyright (c) 2012-2022 Holger Schneider
  * All rights reserved.
  *
  * This source code is licensed under the MIT License (MIT) found in the
@@ -28,6 +29,8 @@ public class NormalizeSolutionService {
 		maxDepotId = addEmptyRoutes(solution, maxDepotId);
 
 		addReplenishRoute(solution, maxDepotId);
+
+		updateOverhangingRoutes(solution);
 
 		return solution;
 	}
@@ -92,16 +95,17 @@ public class NormalizeSolutionService {
 			if(route.length == 0)
 				continue;
 
-			if(route.length == 2) {
+			// If route contains no customers, remove route
+			if(isEmptyRoute(route)) {
 				solution.deleteRoute(routeIndex);
 				continue;
 			}
 
-			removeEmptyReplenishments(routeIndex, solution);
+			removeObsoleteReplenishments(routeIndex, solution);
 		}
 	}
 
-	private static void removeEmptyReplenishments(int routeIndex, Solution solution) {
+	private static void removeObsoleteReplenishments(int routeIndex, Solution solution) {
 		Node[] route = solution.getRoutes()[routeIndex];
 
 		// Remove empty routes
@@ -157,6 +161,40 @@ public class NormalizeSolutionService {
 		newRoute[idx] = depot;
 
 		solution.addRoute(newRoute);
+	}
+
+	private static void updateOverhangingRoutes(Solution solution) {
+		int[] nbrOfRoutes = Arrays.copyOf(solution.getNbrRoutesOfDepot(), solution.getNbrRoutesOfDepot().length);
+		boolean[] isOverhang = solution.getOverhangRoutes();
+		Node[][] routes = solution.getRoutes();
+
+		for (int i = routes.length - 1; i >= 0; i--) {
+			// If route is not empty AND the number of routes is greater than allowed -> overhang!
+			if(routes[i] != null && routes[i].length > 0 &&
+					nbrOfRoutes[routes[i][0].getIdx()] > routes[i][0].getMaxNbrOfRoutes()) {
+				isOverhang[i] = true;
+				nbrOfRoutes[routes[i][0].getIdx()]--;
+			} else {
+				isOverhang[i] = false;
+			}
+		}
+	}
+
+	private static boolean isEmptyRoute(Node[] route) {
+		if(route.length <= 2)
+			return true;
+
+		if(route[1].getSiteType() == SiteType.CUSTOMER ||
+				route[route.length - 2].getSiteType() == SiteType.CUSTOMER
+		)
+			return false;
+
+		for (Node node : route) {
+			if (node.getSiteType() == SiteType.CUSTOMER)
+				return false;
+		}
+
+		return true;
 	}
 
 }

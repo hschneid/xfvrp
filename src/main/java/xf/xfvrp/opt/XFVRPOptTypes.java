@@ -1,16 +1,18 @@
 package xf.xfvrp.opt;
 
-import xf.xfvrp.opt.construct.XFVRPConst;
-import xf.xfvrp.opt.construct.XFVRPSavings;
 import xf.xfvrp.opt.construct.insert.XFPDPFirstBestInsert;
 import xf.xfvrp.opt.construct.insert.XFVRPFirstBestInsert;
-import xf.xfvrp.opt.improve.XFPDPRelocate;
+import xf.xfvrp.opt.construct.savings.XFVRPConst;
+import xf.xfvrp.opt.construct.savings.XFVRPSavings;
+import xf.xfvrp.opt.improve.XFVRPNoOpt;
 import xf.xfvrp.opt.improve.giantroute.XFVRP2Opt;
 import xf.xfvrp.opt.improve.giantroute.XFVRP2OptIntra;
 import xf.xfvrp.opt.improve.giantroute.XFVRP3Opt;
 import xf.xfvrp.opt.improve.giantroute.XFVRP3PointMove;
 import xf.xfvrp.opt.improve.ils.XFPDPILS;
 import xf.xfvrp.opt.improve.ils.XFVRPILS;
+import xf.xfvrp.opt.improve.routebased.move.XFPDPRelocate;
+import xf.xfvrp.opt.improve.routebased.move.XFPDPSingleMove;
 import xf.xfvrp.opt.improve.routebased.move.XFVRPSegmentMove;
 import xf.xfvrp.opt.improve.routebased.move.XFVRPSingleMove;
 import xf.xfvrp.opt.improve.routebased.swap.XFVRPSegmentExchange;
@@ -18,7 +20,7 @@ import xf.xfvrp.opt.improve.routebased.swap.XFVRPSegmentSwap;
 import xf.xfvrp.opt.improve.routebased.swap.XFVRPSingleSwap;
 
 /** 
- * Copyright (c) 2012-2021 Holger Schneider
+ * Copyright (c) 2012-2022 Holger Schneider
  * All rights reserved.
  *
  * This source code is licensed under the MIT License (MIT) found in the
@@ -31,6 +33,8 @@ import xf.xfvrp.opt.improve.routebased.swap.XFVRPSingleSwap;
  *
  */
 public class XFVRPOptTypes {
+
+	public static XFVRPOptType NONE = new XFVRPOptType(XFVRPNoOpt.class);
 
 	public static XFVRPOptType SAVINGS = new XFVRPOptType(XFVRPSavings.class);
 	public static XFVRPOptType CONST = new XFVRPOptType(XFVRPConst.class);
@@ -54,5 +58,6 @@ public class XFVRPOptTypes {
 	// Pickup & Delivery
 	public static XFVRPOptType PDP_CHEAPEST_INSERT = new XFVRPOptType(XFPDPFirstBestInsert.class);
 	public static XFVRPOptType PDP_RELOCATE = new XFVRPOptType(XFPDPRelocate.class);
+	public static XFVRPOptType PDP_RELOCATE2 = new XFVRPOptType(XFPDPSingleMove.class);
 	public static XFVRPOptType PDP_ILS = new XFVRPOptType(XFPDPILS.class);
 }

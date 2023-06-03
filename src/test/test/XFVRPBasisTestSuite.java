@@ -16,7 +16,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /** 
- * Copyright (c) 2012-2021 Holger Schneider
+ * Copyright (c) 2012-2022 Holger Schneider
  * All rights reserved.
  *
  * This source code is licensed under the MIT License (MIT) found in the
@@ -609,7 +609,6 @@ public class XFVRPBasisTestSuite {
 				v.executeRoutePlanning();
 
 				Report rep = v.getReport();
-				//				System.out.println(new StringWriter().write(rep));
 				assertTrue(rep.getRoutes().size() == 2);
 				assertTrue(rep.getErrors().getStatistics().size() == 0);
 			}

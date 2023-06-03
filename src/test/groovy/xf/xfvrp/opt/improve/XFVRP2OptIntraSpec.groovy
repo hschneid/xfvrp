@@ -1,12 +1,12 @@
 package xf.xfvrp.opt.improve
 
 import spock.lang.Specification
+import util.instances.Helper
 import util.instances.TestNode
 import util.instances.TestVehicle
 import util.instances.TestXFVRPModel
 import xf.xfvrp.base.*
 import xf.xfvrp.base.metric.EucledianMetric
-import xf.xfvrp.opt.Solution
 import xf.xfvrp.opt.improve.giantroute.XFVRP2OptIntra
 
 import java.util.stream.Collectors
@@ -44,8 +44,7 @@ class XFVRP2OptIntraSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
-		sol.setGiantRoute([nd, n[2], n[5], n[4], n[3], nd, n[5], nd] as Node[])
+		def sol = Helper.set(model, [nd, n[2], n[5], n[4], n[3], nd, n[5], nd] as Node[])
 
 		when:
 		def impList = service.search(sol.getGiantRoute())
@@ -61,8 +60,8 @@ class XFVRP2OptIntraSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
-		sol.setGiantRoute([nd, n[2], n[3], n[4], n[5], nd] as Node[])
+		
+		def sol = Helper.set(model, [nd, n[2], n[3], n[4], n[5], nd] as Node[])
 
 		when:
 		def impList = service.search(sol.getGiantRoute())

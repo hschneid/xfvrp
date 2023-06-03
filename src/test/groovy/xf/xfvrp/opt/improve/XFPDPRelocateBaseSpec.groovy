@@ -1,14 +1,13 @@
 package xf.xfvrp.opt.improve
 
 import spock.lang.Specification
+import util.instances.Helper
 import util.instances.TestNode
 import util.instances.TestVehicle
 import util.instances.TestXFVRPModel
 import xf.xfvrp.base.*
 import xf.xfvrp.base.fleximport.CustomerData
-import xf.xfvrp.base.metric.EucledianMetric
-import xf.xfvrp.base.metric.internal.AcceleratedMetricTransformator
-import xf.xfvrp.opt.Solution
+import xf.xfvrp.opt.improve.routebased.move.XFPDPRelocate
 
 class XFPDPRelocateBaseSpec extends Specification {
 
@@ -22,19 +21,13 @@ class XFPDPRelocateBaseSpec extends Specification {
 	timeWindow: [[0,99],[2,99]]
 	).getNode()
 
-	def sol
-
-	def parameter = new XFVRPParameter()
-
-	def metric = new EucledianMetric()
-	
 	def "Shipment positions"() {
 		def model = initScen()
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution(model)
-		sol.setGiantRoute([nd, n[1], n[2], n[3], n[4], n[5], n[6], nd] as Node[])
+		
+		def sol = Helper.set(model, [nd, n[1], n[2], n[3], n[4], n[5], n[6], nd] as Node[])
 		def route = sol.getGiantRoute()
 
 		when:
@@ -56,8 +49,8 @@ class XFPDPRelocateBaseSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution(model)
-		sol.setGiantRoute([nd, n[1], n[2], n[3], nd, n[4], n[5], n[6], nd] as Node[])
+		
+		def sol = Helper.set(model, [nd, n[1], n[2], n[3], nd, n[4], n[5], n[6], nd] as Node[])
 		def route = sol.getGiantRoute()
 
 		when:
@@ -80,8 +73,8 @@ class XFPDPRelocateBaseSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution(model)
-		sol.setGiantRoute([nd, n[3], n[1], n[4], n[5], n[6], n[2], nd] as Node[])
+		
+		def sol = Helper.set(model, [nd, n[3], n[1], n[4], n[5], n[6], n[2], nd] as Node[])
 		
 		when:
 		service.change(sol, [2, 6, 1, 1] as float[])
@@ -104,8 +97,8 @@ class XFPDPRelocateBaseSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution(model)
-		sol.setGiantRoute([nd, n[3], n[1], n[4], n[5], n[6], n[2], nd] as Node[])
+		
+		def sol = Helper.set(model, [nd, n[3], n[1], n[4], n[5], n[6], n[2], nd] as Node[])
 
 		when:
 		service.reverseChange(sol, [1, 2, 4, 7] as float[])
@@ -128,8 +121,8 @@ class XFPDPRelocateBaseSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution(model)
-		sol.setGiantRoute([nd, n[4], n[1], n[6], n[2], n[3], n[5], nd] as Node[])
+		
+		def sol = Helper.set(model, [nd, n[4], n[1], n[6], n[2], n[3], n[5], nd] as Node[])
 
 		when:
 		service.reverseChange(sol, [4, 6, 1, 2] as float[])
@@ -152,8 +145,8 @@ class XFPDPRelocateBaseSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution(model)
-		sol.setGiantRoute([nd, n[2], n[1], n[3], n[5], n[6], n[4], nd] as Node[])
+		
+		def sol = Helper.set(model, [nd, n[2], n[1], n[3], n[5], n[6], n[4], nd] as Node[])
 
 		when:
 		service.reverseChange(sol, [1, 4, 3, 7] as float[])
@@ -176,8 +169,8 @@ class XFPDPRelocateBaseSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution(model)
-		sol.setGiantRoute([nd, n[2], n[4], n[1], n[5], n[6], n[3], nd] as Node[])
+		
+		def sol = Helper.set(model, [nd, n[2], n[4], n[1], n[5], n[6], n[3], nd] as Node[])
 
 		when:
 		service.reverseChange(sol, [1, 3, 5, 7] as float[])
@@ -200,8 +193,8 @@ class XFPDPRelocateBaseSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution(model)
-		sol.setGiantRoute([nd, n[2], n[1], n[3], n[4], n[6], n[5], nd] as Node[])
+		
+		def sol = Helper.set(model, [nd, n[2], n[1], n[3], n[4], n[6], n[5], nd] as Node[])
 
 		when:
 		service.reverseChange(sol, [1, 6, 3, 5] as float[])
@@ -224,8 +217,8 @@ class XFPDPRelocateBaseSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution(model)
-		sol.setGiantRoute([nd, n[3], n[1], n[2], n[5], n[6], n[4], nd] as Node[])
+		
+		def sol = Helper.set(model, [nd, n[3], n[1], n[2], n[5], n[6], n[4], nd] as Node[])
 
 		when:
 		service.reverseChange(sol, [3, 4, 1, 7] as float[])
@@ -248,8 +241,8 @@ class XFPDPRelocateBaseSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution(model)
-		sol.setGiantRoute([nd, n[1], n[2], n[3], n[4], nd] as Node[])
+		
+		def sol = Helper.set(model, [nd, n[1], n[2], n[3], n[4], nd] as Node[])
 
 		when:
 		service.reverseChange(sol, [2, 4, 5, 5] as float[])
@@ -354,10 +347,9 @@ class XFPDPRelocateBaseSpec extends Specification {
 
 		def nodes = [nd, n1, n2, n3, n4, n5, n6] as Node[]
 
-		def iMetric = new AcceleratedMetricTransformator().transform(metric, nodes, v)
 		new ShipmentConverter().convert(nodes, customers)
 
-		return TestXFVRPModel.get(nodes, iMetric, iMetric, v, parameter)
+		return TestXFVRPModel.get(Arrays.asList(nodes), v)
 	}
 
 }

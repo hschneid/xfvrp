@@ -1,14 +1,12 @@
 package xf.xfvrp.report
 
 import spock.lang.Specification
+import util.instances.Helper
 import util.instances.TestNode
 import util.instances.TestVehicle
 import util.instances.TestXFVRPModel
 import xf.xfvrp.base.*
 import xf.xfvrp.base.exception.XFVRPException
-import xf.xfvrp.base.metric.EucledianMetric
-import xf.xfvrp.base.metric.internal.AcceleratedMetricTransformator
-import xf.xfvrp.opt.Solution
 import xf.xfvrp.report.build.ReportBuilder
 
 class ReportBuilderStructureSpec extends Specification {
@@ -16,32 +14,26 @@ class ReportBuilderStructureSpec extends Specification {
 	def service = new ReportBuilder()
 
 	def nd = new TestNode(
-	externID: "DEP",
-	siteType: SiteType.DEPOT,
-	demand: [0, 0],
-	timeWindow: [[0,99],[2,99]]
+			externID: "DEP",
+			siteType: SiteType.DEPOT,
+			demand: [0, 0],
+			timeWindow: [[0,99],[2,99]]
 	).getNode()
 
 	def nr = new TestNode(
-	externID: "REP",
-	siteType: SiteType.REPLENISH,
-	demand: [0, 0],
-	timeWindow: [[0,99],[2,99]]
+			externID: "REP",
+			siteType: SiteType.REPLENISH,
+			demand: [0, 0],
+			timeWindow: [[0,99],[2,99]]
 	).getNode()
-
-	def sol
-
-	def parameter = new XFVRPParameter()
-
-	def metric = new EucledianMetric()
 
 	def "Feasability - Starts not with DEPOT"() {
 		def v = new TestVehicle(name: "V1", capacity: [3, 3]).getVehicle()
 		def model = initScen1(v, LoadType.DELIVERY)
 		def n = model.getNodes()
 
-		sol = new Solution(model)
-		sol.setGiantRoute([n[2], nd, n[3], n[4], nd] as Node[])
+
+		def sol = Helper.setNoNorm(model, [n[2], nd, n[3], n[4], nd] as Node[])
 
 		when:
 		service.getReport(sol)
@@ -55,8 +47,8 @@ class ReportBuilderStructureSpec extends Specification {
 		def model = initScen1(v, LoadType.DELIVERY)
 		def n = model.getNodes()
 
-		sol = new Solution(model)
-		sol.setGiantRoute([nd, n[2], n[3], n[4]] as Node[])
+
+		def sol = Helper.set(model, [nd, n[2], n[3], n[4]] as Node[])
 
 		when:
 		service.getReport(sol)
@@ -64,14 +56,14 @@ class ReportBuilderStructureSpec extends Specification {
 		then:
 		thrown XFVRPException
 	}
-	
+
 	def "Feasability - NullPointer in Route"() {
 		def v = new TestVehicle(name: "V1", capacity: [3, 3]).getVehicle()
 		def model = initScen1(v, LoadType.DELIVERY)
 		def n = model.getNodes()
 
-		sol = new Solution(model)
-		sol.setGiantRoute([nd, n[2], null, n[4]] as Node[])
+
+		def sol = Helper.setNoNorm(model, [nd, n[2], null, n[4]] as Node[])
 
 		when:
 		service.getReport(sol)
@@ -79,14 +71,12 @@ class ReportBuilderStructureSpec extends Specification {
 		then:
 		thrown XFVRPException
 	}
-	
+
 	def "Feasability - No customer"() {
 		def v = new TestVehicle(name: "V1", capacity: [3, 3]).getVehicle()
 		def model = initScen1(v, LoadType.DELIVERY)
-		def n = model.getNodes()
 
-		sol = new Solution(model)
-		sol.setGiantRoute([nd, nd] as Node[])
+		def sol = Helper.set(model, [nd, nd] as Node[])
 
 		when:
 		def result = service.getReport(sol)
@@ -95,14 +85,14 @@ class ReportBuilderStructureSpec extends Specification {
 		result != null
 		result.getSummary().getNbrOfUsedVehicles() == 0
 	}
-	
+
 	def "Feasability - No nodes"() {
 		def v = new TestVehicle(name: "V1", capacity: [3, 3]).getVehicle()
 		def model = initScen1(v, LoadType.DELIVERY)
 		def n = model.getNodes()
 
-		sol = new Solution(model)
-		sol.setGiantRoute([] as Node[])
+
+		def sol = Helper.set(model, [] as Node[])
 
 		when:
 		def result = service.getReport(sol)
@@ -110,20 +100,20 @@ class ReportBuilderStructureSpec extends Specification {
 		then:
 		result.getRoutes().isEmpty()
 	}
-	
+
 	def "Feasability - Null route"() {
 		def v = new TestVehicle(name: "V1", capacity: [3, 3]).getVehicle()
 		def model = initScen1(v, LoadType.DELIVERY)
 		def n = model.getNodes()
 
-		sol = new Solution(model)
-		sol.setGiantRoute(null)
+		def sol = Helper.setNoNorm(model, nd)
+		sol.getRoutes()[0] = null
 
 		when:
-		def result = service.getReport(sol)
+		service.getReport(sol)
 
 		then:
-		result.getRoutes().isEmpty()
+		thrown(XFVRPException)
 	}
 
 	def "Ignore empty routes"() {
@@ -131,8 +121,7 @@ class ReportBuilderStructureSpec extends Specification {
 		def model = initScen1(v, LoadType.DELIVERY)
 		def n = model.getNodes()
 
-		def sol = new Solution(model)
-		sol.setGiantRoute([nd, nd, nr, nr, n[2], n[3], n[4], nr, nd, nd] as Node[])
+		def sol = Helper.set(model, [nd, nd, nr, nr, n[2], n[3], n[4], nr, nd, nd] as Node[])
 
 		when:
 		def result = service.getReport(sol)
@@ -182,10 +171,8 @@ class ReportBuilderStructureSpec extends Specification {
 		n2.setIdx(3)
 		n3.setIdx(4)
 
-		def nodes = [nd, nr, n1, n2, n3] as Node[]
+		def nodes = [nd, nr, n1, n2, n3]
 
-		def iMetric = new AcceleratedMetricTransformator().transform(metric, nodes, v)
-
-		return TestXFVRPModel.get(nodes, iMetric, iMetric, v, parameter)
+		return TestXFVRPModel.get(nodes, v)
 	}
 }

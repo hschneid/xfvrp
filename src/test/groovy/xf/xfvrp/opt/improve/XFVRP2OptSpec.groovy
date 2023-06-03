@@ -1,12 +1,14 @@
 package xf.xfvrp.opt.improve
 
 import spock.lang.Specification
+import util.instances.Helper
 import util.instances.TestNode
 import util.instances.TestVehicle
 import util.instances.TestXFVRPModel
-import xf.xfvrp.base.*
-import xf.xfvrp.base.metric.EucledianMetric
-import xf.xfvrp.opt.Solution
+import xf.xfvrp.base.LoadType
+import xf.xfvrp.base.Node
+import xf.xfvrp.base.SiteType
+import xf.xfvrp.base.XFVRPModel
 import xf.xfvrp.opt.improve.giantroute.XFVRP2Opt
 
 import java.util.stream.Collectors
@@ -16,36 +18,29 @@ class XFVRP2OptSpec extends Specification {
 	def service = new XFVRP2Opt()
 
 	def nd = new TestNode(
-	externID: "DEP",
-	globalIdx: 0,
-	siteType: SiteType.DEPOT,
-	demand: [0, 0],
-	timeWindow: [[0,99],[2,99]]
+			externID: "DEP",
+			globalIdx: 0,
+			siteType: SiteType.DEPOT,
+			demand: [0, 0],
+			timeWindow: [[0,99],[2,99]]
 	).getNode()
 
 	def nd2 = new TestNode(
-	externID: "DEP2",
-	globalIdx: 5,
-	xlong: 3,
-	ylat: 0,
-	siteType: SiteType.DEPOT,
-	demand: [0, 0],
-	timeWindow: [[0,99],[2,99]]
+			externID: "DEP2",
+			globalIdx: 5,
+			xlong: 3,
+			ylat: 0,
+			siteType: SiteType.DEPOT,
+			demand: [0, 0],
+			timeWindow: [[0,99],[2,99]]
 	).getNode()
-
-	def sol
-
-	def parameter = new XFVRPParameter()
-
-	def metric = new EucledianMetric()
 
 	def "Search single depot - Find improve"() {
 		def model = initScen()
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
-		sol.setGiantRoute([nd, n[2], n[5], n[4], nd, nd, n[3], nd] as Node[])
+		def sol = Helper.setNoNorm(model, [nd, n[2], n[5], n[4], nd, nd, n[3], nd] as Node[])
 
 		def impList = [] as List<float[]>
 
@@ -54,7 +49,7 @@ class XFVRP2OptSpec extends Specification {
 
 		then:
 		impList.size() > 0
-		impList.stream().filter({f -> f[0] == 2 && f[1] == 6}).count() == 1
+		impList.count({f -> f[0] == 2 && f[1] == 6}) == 1
 		Math.abs(impList.stream().filter({f -> f[0] == 2 && f[1] == 6}).collect(Collectors.toList()).get(0)[2] - 1.390) < 0.001f
 	}
 
@@ -63,8 +58,7 @@ class XFVRP2OptSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
-		sol.setGiantRoute([nd, n[2], n[3], n[4], n[5], nd] as Node[])
+		def sol = Helper.setNoNorm(model, [nd, n[2], n[3], n[4], n[5], nd] as Node[])
 
 		def impList = [] as List<float[]>
 
@@ -74,14 +68,14 @@ class XFVRP2OptSpec extends Specification {
 		then:
 		impList.size() == 0
 	}
-	
+
 	def "Search multi depot - Find improve"() {
 		def model = initScen()
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
-		sol.setGiantRoute([nd, n[2], n[4], nd2, n[3], n[5], nd2] as Node[])
+
+		def sol = Helper.set(model, [nd, n[2], n[4], nd2, n[3], n[5], nd2] as Node[])
 
 		def impList = [] as List<float[]>
 
@@ -99,8 +93,8 @@ class XFVRP2OptSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
-		sol.setGiantRoute([nd, n[2], n[3], nd2, n[4], n[5], nd2] as Node[])
+
+		def sol = Helper.set(model, [nd, n[2], n[3], nd2, n[4], n[5], nd2] as Node[])
 
 		def impList = [] as List<float[]>
 
@@ -162,8 +156,8 @@ class XFVRP2OptSpec extends Specification {
 		n3.setIdx(4)
 		n4.setIdx(5)
 
-		def nodes = [nd, nd2, n1, n2, n3, n4] as Node[]
+		def nodes = [nd, nd2, n1, n2, n3, n4]
 
-		return TestXFVRPModel.get(Arrays.asList(nodes), v)
+		return TestXFVRPModel.get(nodes, v)
 	}
 }

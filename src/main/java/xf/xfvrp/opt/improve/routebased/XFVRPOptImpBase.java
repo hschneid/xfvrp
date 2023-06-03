@@ -7,11 +7,12 @@ import xf.xfvrp.base.XFVRPModel;
 import xf.xfvrp.base.exception.XFVRPException;
 import xf.xfvrp.opt.Solution;
 import xf.xfvrp.opt.XFVRPOptBase;
+import xf.xfvrp.opt.improve.routebased.move.XFVRPMoveUtil;
 
 import java.util.Queue;
 
 /**
- * Copyright (c) 2012-2021 Holger Schneider
+ * Copyright (c) 2012-2022 Holger Schneider
  * All rights reserved.
  *
  * This source code is licensed under the MIT License (MIT) found in the
@@ -39,9 +40,8 @@ public abstract class XFVRPOptImpBase extends XFVRPOptBase {
 		isSplittable = true;
 	}
 
-	protected abstract Queue<float[]> search(Node[][] routes);
-	protected abstract void change(Solution solution, float[] changeParameter) throws XFVRPException;
-	protected abstract void reverseChange(Solution solution, float[] changeParameter) throws XFVRPException;
+	protected abstract Queue<float[]> search(Solution solution);
+	protected abstract Node[][] change(Solution solution, float[] changeParameter) throws XFVRPException;
 
 	/**
 	 * This method calls the abstract improve method of this optimization class with
@@ -50,10 +50,10 @@ public abstract class XFVRPOptImpBase extends XFVRPOptBase {
 	 *
 	 * Currently it is only used by the PathExchange operator.
 	 */
-	public Quality improve(Solution giantTour, Quality bestResult, XFVRPModel model) throws XFVRPException {
+	public Quality improve(Solution solution, Quality bestResult, XFVRPModel model) throws XFVRPException {
 		this.model = model;
 
-		return improve(giantTour, bestResult);
+		return improve(solution, bestResult);
 	}
 
 	/*
@@ -69,11 +69,12 @@ public abstract class XFVRPOptImpBase extends XFVRPOptBase {
 		long startTime = System.currentTimeMillis();
 		while((System.currentTimeMillis() - startTime) / 1000.0 < model.getParameter().getMaxRunningTimeInSec()) {
 			Quality result = improve(solution, bestResult);
-
 			if (result == null)
 				break;
 
 			bestResult = result;
+
+			NormalizeSolutionService.normalizeRoute(solution);
 		}
 
 		// Normalize resulting solution - Remove empty routes
@@ -83,60 +84,41 @@ public abstract class XFVRPOptImpBase extends XFVRPOptBase {
 	}
 
 	private Quality improve(final Solution solution, Quality bestResult) throws XFVRPException {
-		checkIt(solution);
+		check(solution);
 
-		Queue<float[]> improvingSteps = search(solution.getRoutes());
-
+		Queue<float[]> improvingSteps = search(solution);
 		// Find first valid improving change
-		while(!improvingSteps.isEmpty()) {
+		while (!improvingSteps.isEmpty()) {
 			float[] val = improvingSteps.remove();
 
 			// Variation
-			change(solution, val);
+			Node[][] oldRoutes = change(solution, val);
 
-			Quality result = checkIt(solution, (int)val[1], (int)val[2]);
-			if(result != null && result.getFitness() < bestResult.getFitness()) {
+			Quality result = check(solution, (int) val[1], (int) val[2]);
+			if (isImprovement(result, bestResult, (int) val[7])) {
 				solution.fixateQualities();
 				return result;
 			}
 
-			// Reverse-Variation
-			reverseChange(solution, val);
-			solution.resetQualities();
+			// Reverse
+			reverseChange(solution, val, oldRoutes);
 		}
 
 		return null;
 	}
 
-	/**
-	 * This method checks a new solution, if it is better than the current best solution. If
-	 * the result of this method is not null, then the new solution is better. Otherwise not. The
-	 * check includes a possible check of the loading restrictions.
-	 */
-	protected Quality checkIt(Solution solution) throws XFVRPException {
-		// Evaluate the costs and restrictions (penalties) of a giant route
-		Quality result = check(solution);
-
-		// Only valid solutions are allowed.
-		if(result.getPenalty() == 0) {
-			return result;
-		}
-
-		return null;
+	private boolean isImprovement(Quality currentResult, Quality bestResult, int overhangFlag) {
+		// Is fitness better OR
+		return currentResult.getPenalty() == 0 &&
+				(currentResult.getFitness() < bestResult.getFitness() ||
+						overhangFlag == XFVRPMoveUtil.IS_OVERHANG);
 	}
 
-	/**
-	 * Check a solution for 2 routes
-	 */
-	protected Quality checkIt(Solution solution, int routeIdxA, int routeIdxB) throws XFVRPException {
-		// Evaluate the costs and restrictions (penalties) of a giant route
-		Quality result = check(solution, routeIdxA, routeIdxB);
-
-		// Only valid solutions are allowed.
-		if(result.getPenalty() == 0) {
-			return result;
-		}
-
-		return null;
+	private void reverseChange(Solution solution, float[] val, Node[][] oldRoutes) {
+		solution.setRoute((int)val[1], oldRoutes[0]);
+		if(oldRoutes.length > 1)
+			solution.setRoute((int)val[2], oldRoutes[1]);
+		solution.resetQualities();
 	}
+
 }

@@ -6,7 +6,7 @@ import xf.xfvrp.base.exception.XFVRPException;
 import xf.xfvrp.base.exception.XFVRPExceptionType;
 
 /**
- * Copyright (c) 2012-2021 Holger Schneider
+ * Copyright (c) 2012-2022 Holger Schneider
  * All rights reserved.
  *
  * This source code is licensed under the MIT License (MIT) found in the
@@ -18,9 +18,9 @@ public class FeasibilityAnalzer {
 		if(route == null)
 			throw new XFVRPException(XFVRPExceptionType.ILLEGAL_STATE, "Empty route is not allowed to report");
 		if(route[0].getSiteType() != SiteType.DEPOT)
-			throw new XFVRPException(XFVRPExceptionType.ILLEGAL_STATE, "First node in giant route is not a depot.");
+			throw new XFVRPException(XFVRPExceptionType.ILLEGAL_STATE, "First node in route is not a depot.");
 		if(route[route.length - 1].getSiteType() != SiteType.DEPOT)
-			throw new XFVRPException(XFVRPExceptionType.ILLEGAL_STATE, "Last node in giant route is not a depot.");
+			throw new XFVRPException(XFVRPExceptionType.ILLEGAL_STATE, "Last node in route is not a depot.");
 		if(hasNullObjects(route))
 			throw new XFVRPException(XFVRPExceptionType.ILLEGAL_STATE, "Route contains null objects!");
 	}

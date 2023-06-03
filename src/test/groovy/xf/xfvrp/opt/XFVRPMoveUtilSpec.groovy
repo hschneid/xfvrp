@@ -1,6 +1,7 @@
 package xf.xfvrp.opt
 
 import spock.lang.Specification
+import util.instances.Helper
 import xf.xfvrp.base.Node
 import xf.xfvrp.base.SiteType
 import xf.xfvrp.base.exception.XFVRPException
@@ -17,13 +18,11 @@ class XFVRPMoveUtilSpec extends Specification {
 	def n7 = new Node(externID: "7", siteType: SiteType.CUSTOMER)
 	def n8 = new Node(externID: "8", siteType: SiteType.DEPOT)
 
-	def sol = new Solution()
-
 	def "segment move - normal move"() {
-		sol.setGiantRoute([n1, n2, n3, n4, n5, n6, n7, n8] as Node[])
+		def sol = Helper.set([n1, n2, n3, n4, n5, n6, n7, n8] as Node[])
 
 		when:
-		XFVRPMoveUtil.move(sol, 0, 1, 2, 3, 2)
+		XFVRPMoveUtil.change(sol, [-1, 0, 1, 2, 2, 1, 0] as float[])
 
 		def result = sol.getGiantRoute()
 
@@ -35,31 +34,32 @@ class XFVRPMoveUtilSpec extends Specification {
 		result[4].externID == "3"
 		result[5].externID == "4"
 		result[6].externID == "7"
-		result[7].externID == "5"
+		result[7].externID == "1"
 	}
 
 	def "segment move - take all from 1 route to another"() {
-		sol.setGiantRoute([n1, n2, n3, n4, n5, n8] as Node[])
+		def sol = Helper.set([n1, n2, n3, n4, n5, n8] as Node[])
 
 		when:
-		XFVRPMoveUtil.move(sol, 0, 1, 1, 3, 1)
+		XFVRPMoveUtil.change(sol, [-1, 0, 2, 1, 1, 2, 0] as float[])
 
 		def result = sol.getGiantRoute()
 
 		then:
 		result[0].externID == "1"
-		result[1].externID == "5"
-		result[2].externID == "2"
-		result[3].externID == "3"
-		result[4].externID == "4"
-		result[5].externID == "5"
+		result[1].externID == "1"
+		result[2].externID == "5"
+		result[3].externID == "2"
+		result[4].externID == "3"
+		result[5].externID == "4"
+		result[6].externID == "8"
 	}
 
 	def "segment move - move segment to same position normally impossible"() {
-		sol.setGiantRoute([n1, n2, n3, n4, n5, n6, n7, n8] as Node[])
+		def sol = Helper.set([n1, n2, n3, n4, n5, n6, n7, n8] as Node[])
 
 		when:
-		XFVRPMoveUtil.move(sol, 0, 0, 2, 3, 4)
+		XFVRPMoveUtil.change(sol, [-1, 0, 0, 2, 4, 1, 0] as float[])
 
 		def result = sol.getGiantRoute()
 
@@ -71,14 +71,14 @@ class XFVRPMoveUtilSpec extends Specification {
 		result[4].externID == "5"
 		result[5].externID == "6"
 		result[6].externID == "7"
-		result[7].externID == "5"
+		result[7].externID == "1"
 	}
 
 	def "segment move - with segment size = 1"() {
-		sol.setGiantRoute([n1, n2, n3, n4, n5, n6, n7, n8] as Node[])
+		def sol = Helper.set([n1, n2, n3, n4, n5, n6, n7, n8] as Node[])
 
 		when:
-		XFVRPMoveUtil.move(sol, 0, 1,1, 1, 1)
+		XFVRPMoveUtil.change(sol, [-1, 0, 1, 1, 1, 0, 0] as float[])
 
 		def result = sol.getGiantRoute()
 
@@ -90,14 +90,14 @@ class XFVRPMoveUtilSpec extends Specification {
 		result[4].externID == "2"
 		result[5].externID == "6"
 		result[6].externID == "7"
-		result[7].externID == "5"
+		result[7].externID == "1"
 	}
 
 	def "segment move - same route - move to the right"() {
-		sol.setGiantRoute([n1, n2, n3, n4, n6, n7, n8] as Node[])
+		def sol = Helper.set([n1, n2, n3, n4, n6, n7, n8] as Node[])
 
 		when:
-		XFVRPMoveUtil.move(sol, 0, 0,2, 3, 6)
+		XFVRPMoveUtil.change(sol, [-1, 0, 0, 2, 6, 1, 0] as float[])
 
 		def result = sol.getGiantRoute()
 
@@ -112,10 +112,10 @@ class XFVRPMoveUtilSpec extends Specification {
 	}
 
 	def "segment move - same route - move to the left"() {
-		sol.setGiantRoute([n1, n2, n3, n4, n6, n7, n8] as Node[])
+		def sol = Helper.set([n1, n2, n3, n4, n6, n7, n8] as Node[])
 
 		when:
-		XFVRPMoveUtil.move(sol, 0, 0,4, 5, 2)
+		XFVRPMoveUtil.change(sol, [-1, 0, 0, 4, 2, 1, 0] as float[])
 
 		def result = sol.getGiantRoute()
 
@@ -130,10 +130,10 @@ class XFVRPMoveUtilSpec extends Specification {
 	}
 
 	def "segment move - same route - move directly before src"() {
-		sol.setGiantRoute([n1, n2, n3, n4, n6, n7, n8] as Node[])
+		def sol = Helper.set([n1, n2, n3, n4, n6, n7, n8] as Node[])
 
 		when:
-		XFVRPMoveUtil.move(sol, 0, 0,3, 5, 2)
+		XFVRPMoveUtil.change(sol, [-1, 0, 0, 3, 2, 2, 0] as float[])
 
 		def result = sol.getGiantRoute()
 
@@ -148,10 +148,10 @@ class XFVRPMoveUtilSpec extends Specification {
 	}
 
 	def "segment move - negative area size"() {
-		sol.setGiantRoute([n1, n2, n3, n4, n5, n6, n7, n8] as Node[])
+		def sol = Helper.set([n1, n2, n3, n4, n5, n6, n7, n8] as Node[])
 
 		when:
-		XFVRPMoveUtil.move(sol, 0, 1, 2, 1, 3)
+		XFVRPMoveUtil.change(sol, [-1, 0, 1, 2, 3, -1, 0] as float[])
 
 		sol.getGiantRoute()
 		

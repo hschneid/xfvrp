@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Copyright (c) 2012-2021 Holger Schneider
+ * Copyright (c) 2012-2022 Holger Schneider
  * All rights reserved.
  *
  * This source code is licensed under the MIT License (MIT) found in the
@@ -122,8 +122,6 @@ public class XFVRP extends XFVRPData {
 						solution = splitter.execute(solution, model, statusManager, xfvrp);
 					else
 						solution = xfvrp.execute(solution, model, statusManager);
-
-					System.out.println("CCC "+solution.getQuality().toString());
 				} catch (UnsupportedOperationException usoex) {
 					statusManager.fireMessage(StatusCode.EXCEPTION, "Splitting encountert problem:\n" + usoex.getMessage());
 				}
@@ -131,7 +129,6 @@ public class XFVRP extends XFVRPData {
 
 			// Normalization of last result
 			NormalizeSolutionService.normalizeRoute(solution);
-
 		}
 
 		lastModel = model;

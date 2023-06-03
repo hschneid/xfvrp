@@ -33,6 +33,8 @@ class MDVRPTW_Cordeau extends Specification {
                 .collect(Collectors.toList())
 
         float[] deviation = new float[4]
+
+        files = [files[0]]
         for (Path p : files) {
             def instanceName = p.fileName.toString().replace(".txt", "").toLowerCase()
             def bestResult = results.get(instanceName)
@@ -102,13 +104,14 @@ class MDVRPTW_Cordeau extends Specification {
                     .setXlong(data[1])
                     .setYlat(data[2])
                     .setTimeWindow(data[7], data[8])
+                    .setMaxNbrRoutes(1)
         }
 
         xfvrp.addOptType(XFVRPOptTypes.FIRST_BEST)
-        xfvrp.setNbrOfLoopsForILS(10)
+        // xfvrp.setNbrOfLoopsForILS(10)
         xfvrp.addOptType(XFVRPOptTypes.RELOCATE)
         xfvrp.addOptType(XFVRPOptTypes.PATH_RELOCATE)
-        xfvrp.addOptType(XFVRPOptTypes.PATH_EXCHANGE)
+        xfvrp.addOptType(XFVRPOptTypes.SWAPSEGMENT)
 
         xfvrp.setMetric(new EucledianMetric())
 

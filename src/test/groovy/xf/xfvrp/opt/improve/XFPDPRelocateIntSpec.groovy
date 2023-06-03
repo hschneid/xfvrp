@@ -1,15 +1,14 @@
 package xf.xfvrp.opt.improve
 
 import spock.lang.Specification
+import util.instances.Helper
 import util.instances.TestNode
 import util.instances.TestVehicle
 import util.instances.TestXFVRPModel
 import xf.xfvrp.base.*
 import xf.xfvrp.base.fleximport.CustomerData
-import xf.xfvrp.base.metric.EucledianMetric
-import xf.xfvrp.base.metric.internal.AcceleratedMetricTransformator
-import xf.xfvrp.opt.Solution
 import xf.xfvrp.opt.evaluation.EvaluationService
+import xf.xfvrp.opt.improve.routebased.move.XFPDPRelocate
 
 class XFPDPRelocateIntSpec extends Specification {
 
@@ -24,19 +23,14 @@ class XFPDPRelocateIntSpec extends Specification {
 	timeWindow: [[0,99],[2,99]]
 	).getNode()
 
-	def sol
-
 	def parameter = new XFVRPParameter()
-
-	def metric = new EucledianMetric()
 
 	def "Find improvement"() {
 		def model = initScen()
 		def n = model.getNodes()
 		service.setModel(model)
-
-		sol = new Solution(model)
-		sol.setGiantRoute([nd, n[1], n[2], nd, n[3], n[4], nd] as Node[])
+		
+		def sol = Helper.set(model, [nd, n[1], n[2], nd, n[3], n[4], nd] as Node[])
 
 		def currentQuality = evalService.check(sol)
 		
@@ -151,12 +145,11 @@ class XFPDPRelocateIntSpec extends Specification {
 
 		def nodes = [nd, n1, n2, n3, n4, n5, n6] as Node[]
 
-		def iMetric = new AcceleratedMetricTransformator().transform(metric, nodes, v)
 		new ShipmentConverter().convert(nodes, customers)
 
 		parameter.setWithPDP(true)
 
-		return TestXFVRPModel.get(nodes, iMetric, iMetric, v, parameter)
+		return TestXFVRPModel.get(nodes.toList(), v, parameter)
 	}
 
 }

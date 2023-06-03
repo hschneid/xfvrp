@@ -5,7 +5,7 @@ import xf.xfvrp.base.monitor.StatusManager;
 import xf.xfvrp.opt.Solution;
 
 /** 
- * Copyright (c) 2012-2021 Holger Schneider
+ * Copyright (c) 2012-2022 Holger Schneider
  * All rights reserved.
  *
  * This source code is licensed under the MIT License (MIT) found in the
@@ -25,17 +25,17 @@ public abstract class XFVRPBase<M extends XFVRPModel> {
 	/**
 	 * Executes the planning or optimization method
 	 */
-	protected abstract Solution execute(Solution giantTour) throws XFVRPException;
+	protected abstract Solution execute(Solution solution) throws XFVRPException;
 
 	/**
 	 * Sets necessary variables and 
 	 * Executes afterwards the planning or optimization method
 	 */
-	public Solution execute(Solution giantRoute, M model, StatusManager statusManager) throws XFVRPException {
+	public Solution execute(Solution solution, M model, StatusManager statusManager) throws XFVRPException {
 		this.model = model;
 		this.statusManager = statusManager;
 		
-		return execute(giantRoute);
+		return execute(solution);
 	}
 
 	/**

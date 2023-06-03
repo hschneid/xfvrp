@@ -13,7 +13,7 @@ import java.util.Random;
 
 
 /** 
- * Copyright (c) 2012-2021 Holger Schneider
+ * Copyright (c) 2012-2022 Holger Schneider
  * All rights reserved.
  *
  * This source code is licensed under the MIT License (MIT) found in the
@@ -168,7 +168,7 @@ public abstract class XFVRPOptBase extends XFVRPBase<XFVRPModel> {
 	 * Processes a check evaluation for two routes.
 	 */
 	public Quality check(Solution solution, int routeIdxA, int routeIdxB) throws XFVRPException {
-		return evaluationService.check(solution, solution.getModel(), routeIdxA, routeIdxB);
+		return evaluationService.check(solution, routeIdxA, routeIdxB);
 	}
 
 	public Random getRandom() {

@@ -8,7 +8,7 @@ import xf.xfvrp.base.quality.RouteQuality;
 import xf.xfvrp.opt.Solution;
 
 /**
- * Copyright (c) 2012-2021 Holger Schneider
+ * Copyright (c) 2012-2022 Holger Schneider
  * All rights reserved.
  *
  * This source code is licensed under the MIT License (MIT) found in the
@@ -45,8 +45,8 @@ public class EvaluationService {
 	 *
 	 * Here only 2 routes are checked, which are changed by neighborhood search.
 	 */
-	public Quality check(Solution solution, XFVRPModel model, int routeIdxA, int routeIdxB) throws XFVRPException {
-		Context context = contextBuilder.build(model);
+	public Quality check(Solution solution, int routeIdxA, int routeIdxB) throws XFVRPException {
+		Context context = contextBuilder.build(solution.getModel());
 
 		solution.invalidateRouteQuality(routeIdxA);
 		checkAndUpdateRoutes(routeIdxA, solution, context);
@@ -69,7 +69,7 @@ public class EvaluationService {
 	private void checkAndUpdateRoutes(int routeIdx, Solution solution, Context context) throws XFVRPException {
 		Node[] route = solution.getRoutes()[routeIdx];
 		if(route.length == 0) {
-			solution.setRouteQuality(routeIdx, new Quality(null));
+			solution.setRouteQuality(routeIdx, new RouteQuality(-1, null));
 			return;
 		}
 

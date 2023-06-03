@@ -5,7 +5,6 @@ import util.instances.TestNode
 import util.instances.TestVehicle
 import util.instances.TestXFVRPModel
 import xf.xfvrp.base.*
-import xf.xfvrp.base.metric.EucledianMetric
 import xf.xfvrp.opt.Solution
 import xf.xfvrp.opt.evaluation.EvaluationService
 
@@ -33,10 +32,6 @@ class XFVRPSegmentMoveIntSpec extends Specification {
 	).getNode()
 
 	def sol
-
-	def parameter = new XFVRPParameter()
-
-	def metric = new EucledianMetric()
 
 	def "Find improvement for single depot"() {
 		def model = initSDScen()

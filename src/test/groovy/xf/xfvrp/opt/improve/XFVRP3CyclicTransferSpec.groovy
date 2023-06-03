@@ -1,13 +1,14 @@
 package xf.xfvrp.opt.improve
 
 import spock.lang.Specification
+import util.instances.Helper
 import util.instances.TestNode
 import util.instances.TestVehicle
 import util.instances.TestXFVRPModel
-import xf.xfvrp.base.*
-import xf.xfvrp.base.metric.EucledianMetric
-import xf.xfvrp.base.metric.internal.AcceleratedMetricTransformator
-import xf.xfvrp.opt.Solution
+import xf.xfvrp.base.LoadType
+import xf.xfvrp.base.Node
+import xf.xfvrp.base.SiteType
+import xf.xfvrp.base.XFVRPModel
 import xf.xfvrp.opt.evaluation.EvaluationService
 import xf.xfvrp.opt.improve.giantroute.XFVRP3CyclicTransfer
 
@@ -16,46 +17,40 @@ import java.util.stream.Collectors
 class XFVRP3CyclicTransferSpec extends Specification {
 
 	def service = new XFVRP3CyclicTransfer()
-	
+
 	def s = new EvaluationService()
 
 	def nd = new TestNode(
-	externID: "DEP",
-	globalIdx: 0,
-	xlong: -1,
-	ylat: 0,
-	siteType: SiteType.DEPOT,
-	demand: [0, 0],
-	timeWindow: [[0,99],[2,99]]
+			externID: "DEP",
+			globalIdx: 0,
+			xlong: -1,
+			ylat: 0,
+			siteType: SiteType.DEPOT,
+			demand: [0, 0],
+			timeWindow: [[0,99],[2,99]]
 	).getNode()
 
 	def nd2 = new TestNode(
-	externID: "DEP2",
-	globalIdx: 1,
-	xlong: 1,
-	ylat: 0,
-	siteType: SiteType.DEPOT,
-	demand: [0, 0],
-	timeWindow: [[0,99],[2,99]]
+			externID: "DEP2",
+			globalIdx: 1,
+			xlong: 1,
+			ylat: 0,
+			siteType: SiteType.DEPOT,
+			demand: [0, 0],
+			timeWindow: [[0,99],[2,99]]
 	).getNode()
-
-	def sol
-
-	def parameter = new XFVRPParameter()
-
-	def metric = new EucledianMetric()
 
 	def "Search - found"() {
 		def model = initScen()
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
-		sol.setGiantRoute([nd, n[1], n[7], n[3], n[2], nd, n[5], n[6], n[4], n[8], nd] as Node[])
+
+		def sol = Helper.set(model, [nd, n[1], n[7], n[3], n[2], nd, n[5], n[6], n[4], n[8], nd] as Node[])
 
 		when:
 		def impList = service.search(sol.getGiantRoute())
-		
+
 		then:
 		impList.size() > 0
 		impList.stream().filter({f -> f[0] == 2 && f[1] == 8 && f[2] == 4}).count() == 1
@@ -67,24 +62,24 @@ class XFVRP3CyclicTransferSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
-		sol.setGiantRoute([nd, n[2], n[1], n[5], n[6], n[7], n[8], n[4], n[3], nd] as Node[])
+
+		def sol = Helper.set(model, [nd, n[2], n[1], n[5], n[6], n[7], n[8], n[4], n[3], nd] as Node[])
 
 		when:
 		def impList = service.search(sol.getGiantRoute())
-		
+
 		then:
 		impList.size() == 0
 	}
 
-		
+
 	def "Change"() {
 		def model = initScen()
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
-		sol.setGiantRoute([nd, n[1], n[7], n[3], n[2], nd, n[5], n[6], n[4], n[8], nd] as Node[])
+
+		def sol = Helper.set(model, [nd, n[1], n[7], n[3], n[2], nd, n[5], n[6], n[4], n[8], nd] as Node[])
 
 		def changeMove = [2, 8, 4] as float[]
 
@@ -112,8 +107,8 @@ class XFVRP3CyclicTransferSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		sol = new Solution()
-		sol.setGiantRoute([nd, n[1], n[2], n[3], n[4], nd, n[5], n[6], n[7], n[8], nd] as Node[])
+
+		def sol = Helper.set(model, [nd, n[1], n[2], n[3], n[4], nd, n[5], n[6], n[7], n[8], nd] as Node[])
 
 		def changeMove = [2, 8, 4] as float[]
 
@@ -229,10 +224,8 @@ class XFVRP3CyclicTransferSpec extends Specification {
 		n7.setIdx(7)
 		n8.setIdx(8)
 
-		def nodes = [nd, n1, n2, n3, n4, n5, n6, n7, n8] as Node[]
+		def nodes = [nd, n1, n2, n3, n4, n5, n6, n7, n8]
 
-		def iMetric = new AcceleratedMetricTransformator().transform(metric, nodes, v)
-
-		return TestXFVRPModel.get(nodes, iMetric, iMetric, v, parameter)
+		return TestXFVRPModel.get(nodes, v)
 	}
 }

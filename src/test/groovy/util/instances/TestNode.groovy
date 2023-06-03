@@ -29,6 +29,7 @@ class TestNode {
 	int presetVehicleIdx2 = -1
 	int presetBlackNodeIdx = -1
 	InvalidReason invalidReason = InvalidReason.NONE
+	int maxNbrOfRoutes = Integer.MAX_VALUE;
 
 	Node getNode() {
 		Node node = new Node(
@@ -44,7 +45,8 @@ class TestNode {
 				serviceTimeForSite,
 				loadType,
 				presetBlockRank,
-				shipID
+				shipID,
+				maxNbrOfRoutes
 				)
 		node.setPresetBlockIdx(presetBlockIdx)
 		node.setPresetBlockPos(presetBlockPos)

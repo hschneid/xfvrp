@@ -9,7 +9,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Copyright (c) 2012-2021 Holger Schneider
+ * Copyright (c) 2012-2022 Holger Schneider
  * All rights reserved.
  *
  * This source code is licensed under the MIT License (MIT) found in the
@@ -140,7 +140,8 @@ public class PDPPreCheckService {
 	private Node[] getValidNodes(List<Node> customers, Map<SiteType, List<Node>> nodesPerType) {
 		List<Node> nodes = new ArrayList<>();
 		nodes.addAll(nodesPerType.get(SiteType.DEPOT));
-		nodes.addAll(nodesPerType.get(SiteType.REPLENISH));
+		if(nodesPerType.containsKey(SiteType.REPLENISH) && nodesPerType.get(SiteType.REPLENISH).size() > 0)
+			nodes.addAll(nodesPerType.get(SiteType.REPLENISH));
 		nodes.addAll(customers);
 
 		return nodes.toArray(new Node[0]);

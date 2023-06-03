@@ -5,10 +5,11 @@ import xf.xfvrp.base.preset.BlockPositionConverter;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 /** 
- * Copyright (c) 2012-2021 Holger Schneider
+ * Copyright (c) 2012-2022 Holger Schneider
  * All rights reserved.
  *
  * This source code is licensed under the MIT License (MIT) found in the
@@ -61,6 +62,9 @@ public class Node implements Cloneable {
 	/** A list of node ids (global idx), which must not be routed with this node. **/
 	private int[] presetRoutingBlackList = new int[0];
 
+	/** Only for depots **/
+	private final int maxNbrOfRoutes;
+
 	/** If customer is invalid for whole route plan, the reason is written to invalid states **/
 	private InvalidReason invalidReason = InvalidReason.NONE;
 
@@ -83,6 +87,8 @@ public class Node implements Cloneable {
 		serviceTimeForSite = 0;
 
 		shipID = "";
+
+		maxNbrOfRoutes = Integer.MAX_VALUE;
 	}
 
 	/**
@@ -102,7 +108,8 @@ public class Node implements Cloneable {
 			float serviceTimeForSite,
 			LoadType loadType,
 			int presetBlockRank,
-			String shipID
+			String shipID,
+			int maxNbrOfRoutes
 			) {
 		this.globalIdx = globalIdx;
 		this.externID = externID;
@@ -117,6 +124,7 @@ public class Node implements Cloneable {
 		this.geoId = geoId;
 		this.presetBlockRank = presetBlockRank;
 		this.shipID = shipID;
+		this.maxNbrOfRoutes = maxNbrOfRoutes;
 	}
 
 	/**
@@ -325,6 +333,10 @@ public class Node implements Cloneable {
 		this.invalidArguments = a;
 	}
 
+	public int getMaxNbrOfRoutes() {
+		return maxNbrOfRoutes;
+	}
+
 	/**
 	 * 
 	 * @param reason The reason why this customer leads to a invalid route plan
@@ -359,5 +371,18 @@ public class Node implements Cloneable {
 
 	public void setDemands(float[] demands) {
 		this.demand = demands;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		Node node = (Node) o;
+		return idx == node.idx && globalIdx == node.globalIdx && externID.equals(node.externID);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(externID, idx, globalIdx);
 	}
 }

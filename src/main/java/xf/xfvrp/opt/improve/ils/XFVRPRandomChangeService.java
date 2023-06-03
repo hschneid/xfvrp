@@ -11,7 +11,7 @@ import xf.xfvrp.opt.XFVRPOptBase;
 import xf.xfvrp.opt.improve.routebased.move.XFVRPMoveUtil;
 
 /**
- * Copyright (c) 2012-2021 Holger Schneider
+ * Copyright (c) 2012-2022 Holger Schneider
  * All rights reserved.
  *
  * This source code is licensed under the MIT License (MIT) found in the
@@ -68,15 +68,22 @@ public class XFVRPRandomChangeService extends XFVRPOptBase implements XFRandomCh
 	}
 
 	private boolean checkMove(Choice choice, Solution solution) throws XFVRPException {
-		XFVRPMoveUtil.change(solution, choice.toArray());
+		Node[][] oldRoutes = XFVRPMoveUtil.change(solution, choice.toArray());
 
 		Quality q = check(solution);
 		if(q.getPenalty() == 0) {
 			return true;
 		}
 
-		XFVRPMoveUtil.reverseChange(solution, choice.toArray());
+		reverseChange(solution, choice.toArray(), oldRoutes);
 		return false;
+	}
+
+	private void reverseChange(Solution solution, float[] val, Node[][] oldRoutes) {
+		solution.setRoute((int)val[1], oldRoutes[0]);
+		if(oldRoutes.length > 1)
+			solution.setRoute((int)val[2], oldRoutes[1]);
+		solution.resetQualities();
 	}
 
 	private void chooseSrc(Choice choice, Solution solution) {

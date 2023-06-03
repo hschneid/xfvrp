@@ -4,10 +4,13 @@ import spock.lang.Specification
 import util.instances.TestNode
 import util.instances.TestVehicle
 import util.instances.TestXFVRPModel
-import xf.xfvrp.base.*
-import xf.xfvrp.base.metric.EucledianMetric
-import xf.xfvrp.base.metric.internal.AcceleratedMetricTransformator
+import xf.xfvrp.base.LoadType
+import xf.xfvrp.base.Node
+import xf.xfvrp.base.SiteType
+import xf.xfvrp.base.XFVRPModel
 import xf.xfvrp.opt.Solution
+import xf.xfvrp.opt.construct.savings.SavingsDataBag
+import xf.xfvrp.opt.construct.savings.XFVRPSavings
 
 class XFVRPSavingsSpec extends Specification {
 
@@ -42,12 +45,6 @@ class XFVRPSavingsSpec extends Specification {
 			demand: [0, 0],
 			timeWindow: [[0,99],[2,99]]
 	).getNode()
-
-	def sol
-
-	def parameter = new XFVRPParameter()
-
-	def metric = new EucledianMetric()
 
 	def "Prepare"() {
 		def model = initScen()
@@ -87,22 +84,22 @@ class XFVRPSavingsSpec extends Specification {
 		def depot = nd
 
 		def dataBag = new SavingsDataBag(null)
-		dataBag.nodeList = [n[2], n[3], n[4], n[5]]
-		dataBag.routeIdxForStartNode = [-1, -1, 0, -1, 1, -1, -1, -1, -1, -1]
-		dataBag.routeIdxForEndNode = [-1, -1, -1, 0, -1, 1, -1, -1, -1, -1]
+		dataBag.nodeList = [n[3], n[4], n[5], n[6]]
+		dataBag.routeIdxForStartNode = [-1, -1, -1, 0, -1, 1, -1, -1, -1, -1, -1]
+		dataBag.routeIdxForEndNode = [-1, -1, -1, -1, 0, -1, 1, -1, -1, -1, -1]
 
 		when:
-		service.createSavingsMatrix(depot, dataBag)
+		service.createSavingsMatrix(depot, dataBag, false)
 		def savings = dataBag.getSavingsMatrix()
 
 		then:
 		savings.size() == 6
-		savings.stream().filter({f -> f[0] == 2 && f[1] == 4 && Math.abs(f[2] - 1537) < 1}).count() == 1
-		savings.stream().filter({f -> f[0] == 2 && f[1] == 5 && Math.abs(f[2] - 2118) < 1}).count() == 1
 		savings.stream().filter({f -> f[0] == 3 && f[1] == 5 && Math.abs(f[2] - 1537) < 1}).count() == 1
-		savings.stream().filter({f -> f[0] == 4 && f[1] == 2 && Math.abs(f[2] - 1537) < 1}).count() == 1
-		savings.stream().filter({f -> f[0] == 5 && f[1] == 2 && Math.abs(f[2] - 2118) < 1}).count() == 1
+		savings.stream().filter({f -> f[0] == 3 && f[1] == 6 && Math.abs(f[2] - 2118) < 1}).count() == 1
+		savings.stream().filter({f -> f[0] == 4 && f[1] == 6 && Math.abs(f[2] - 1537) < 1}).count() == 1
 		savings.stream().filter({f -> f[0] == 5 && f[1] == 3 && Math.abs(f[2] - 1537) < 1}).count() == 1
+		savings.stream().filter({f -> f[0] == 6 && f[1] == 3 && Math.abs(f[2] - 2118) < 1}).count() == 1
+		savings.stream().filter({f -> f[0] == 6 && f[1] == 4 && Math.abs(f[2] - 1537) < 1}).count() == 1
 	}
 
 	def "Merge routes without invertation"() {
@@ -234,13 +231,11 @@ class XFVRPSavingsSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 		def sol = new Solution(model)
-		sol.routes = [
-				[nd, nd],
-				[nd, n[2], n[7], n[3], nd],
-				[nd, n[5], nr, n[4], nd],
-				[nd, n[6], nd],
-				[nd, nr, nd]
-		] as Node[][]
+		sol.addRoute([nd, nd] as Node[])
+		sol.addRoute([nd, n[3], n[8], n[4], nd] as Node[])
+		sol.addRoute([nd, n[6], nr, n[5], nd] as Node[])
+		sol.addRoute([nd, n[7], nd] as Node[])
+		sol.addRoute([nd, nr, nd] as Node[])
 
 		when:
 		def result = service.buildRoutes(sol)
@@ -248,12 +243,12 @@ class XFVRPSavingsSpec extends Specification {
 
 		then:
 		routes.length == 3
-		routes[0][0] == n[2]
-		routes[0][1] == n[7]
-		routes[0][2] == n[3]
-		routes[1][0] == n[5]
-		routes[1][1] == n[4]
-		routes[2][0] == n[6]
+		routes[0][0] == n[3]
+		routes[0][1] == n[8]
+		routes[0][2] == n[4]
+		routes[1][0] == n[6]
+		routes[1][1] == n[5]
+		routes[2][0] == n[7]
 	}
 
 	def "Update routes - Invert B"() {
@@ -538,10 +533,8 @@ class XFVRPSavingsSpec extends Specification {
 		n8.setIdx(9)
 		nr.setIdx(10)
 
-		def nodes = [nd, nd2, n1, n2, n3, n4, n5, n6, n7, n8, nr] as Node[]
+		def nodes = [nd, nd2, n1, n2, n3, n4, n5, n6, n7, n8, nr]
 
-		def iMetric = new AcceleratedMetricTransformator().transform(metric, nodes, v)
-
-		return TestXFVRPModel.get(nodes, iMetric, iMetric, v, parameter)
+		return TestXFVRPModel.get(nodes, v)
 	}
 }

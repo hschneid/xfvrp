@@ -1,4 +1,4 @@
-package xf.xfvrp.opt.construct;
+package xf.xfvrp.opt.construct.savings;
 
 import xf.xfvrp.base.Node;
 
@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Copyright (c) 2012-2021 Holger Schneider
+ * Copyright (c) 2012-2022 Holger Schneider
  * All rights reserved.
  *
  * This source code is licensed under the MIT License (MIT) found in the
@@ -25,7 +25,7 @@ public class SavingsDataBag {
 	}
 
 	public void addSaving(int srcIdx, int dstIdx, float potential) {
-		savingsMatrix.add(new float[] {srcIdx, dstIdx, 1000f / potential});
+		savingsMatrix.add(new float[] {srcIdx, dstIdx, 1000f / (potential + 0.00001f)});
 	}
 	
 	public List<Node> getNodeList() {

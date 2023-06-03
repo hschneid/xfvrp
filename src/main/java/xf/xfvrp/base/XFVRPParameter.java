@@ -6,7 +6,7 @@ import xf.xfvrp.opt.fleetmix.IMixedFleetHeuristic;
 import java.io.Serializable;
 
 /** 
- * Copyright (c) 2012-2021 Holger Schneider
+ * Copyright (c) 2012-2022 Holger Schneider
  * All rights reserved.
  *
  * This source code is licensed under the MIT License (MIT) found in the
@@ -126,7 +126,11 @@ public class XFVRPParameter implements Serializable {
 	}
 
 	/**
-	 * @param predefinedSolutionString the predefinedSolutionString to set
+	 * Insert a node sequence, which will be used to generate an initial solution.
+	 * Multiple patterns can be given. A Node-Id must be given in node sequence as
+	 * external id. In patterns an ID must be unique.
+	 *
+	 * @param predefinedSolutionString Format: {(Node-Id,Node-Id,...),(...)}
 	 */
 	public final void setPredefinedSolutionString(String predefinedSolutionString) {
 		this.predefinedSolutionString = predefinedSolutionString;

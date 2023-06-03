@@ -9,7 +9,7 @@ import java.util.PriorityQueue;
 import java.util.Queue;
 
 /**
- * Copyright (c) 2012-2021 Holger Schneider
+ * Copyright (c) 2012-2022 Holger Schneider
  * All rights reserved.
  *
  * This source code is licensed under the MIT License (MIT) found in the
@@ -29,23 +29,18 @@ public class XFVRPSingleSwap extends XFVRPOptImpBase {
 	private int maxSegmentLength = 1;
 
 	@Override
-	protected Queue<float[]> search(Node[][] routes) {
+	protected Queue<float[]> search(Solution solution) {
 		PriorityQueue<float[]> improvingSteps = new PriorityQueue<>(
 				(o1, o2) -> Float.compare(o2[0], o1[0])
 		);
-		XFVRPSwapSearchUtil.search(model, routes, improvingSteps, maxSegmentLength, isSegmentLengthEqual, isInvertationActive);
+		XFVRPSwapSearchUtil.search(solution, improvingSteps, maxSegmentLength, isSegmentLengthEqual, isInvertationActive);
 
 		return improvingSteps;
 	}
 
 	@Override
-	protected void change(Solution solution, float[] changeParameter) throws XFVRPException {
-		XFVRPSwapUtil.change(solution, changeParameter);
-	}
-
-	@Override
-	protected void reverseChange(Solution solution, float[] changeParameter) throws XFVRPException {
-		XFVRPSwapUtil.reverseChange(solution, changeParameter);
+	protected Node[][] change(Solution solution, float[] changeParameter) throws XFVRPException {
+		return XFVRPSwapUtil.change(solution, changeParameter);
 	}
 
 	public void setInvertationMode(boolean isInvertationActive) {

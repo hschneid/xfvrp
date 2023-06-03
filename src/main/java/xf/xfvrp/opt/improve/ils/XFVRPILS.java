@@ -4,9 +4,10 @@ import xf.xfvrp.base.exception.XFVRPException;
 import xf.xfvrp.opt.Solution;
 import xf.xfvrp.opt.XFVRPOptBase;
 import xf.xfvrp.opt.improve.routebased.move.XFVRPSegmentMove;
+import xf.xfvrp.opt.improve.routebased.swap.XFVRPSegmentExchange;
 
 /** 
- * Copyright (c) 2012-2021 Holger Schneider
+ * Copyright (c) 2012-2022 Holger Schneider
  * All rights reserved.
  *
  * This source code is licensed under the MIT License (MIT) found in the
@@ -29,15 +30,15 @@ public class XFVRPILS extends XFILS {
 	@Override
 	public Solution execute(Solution solution) throws XFVRPException {
 		optArr = new XFVRPOptBase[]{
-				new XFVRPSegmentMove()
+				new XFVRPSegmentMove(),
 				/*new XFVRPSingleMove(),
 				new XFVRPSingleSwap(),
-				new XFVRPSegmentMove(),
-				new XFVRPSegmentExchange()*/
+				new XFVRPSegmentMove(),*/
+				new XFVRPSegmentExchange()
 		};
 		
 		optPropArr = new double[] {
-				1
+				0.9, 0.1
 				//0.4, 0.3, 0.2, 0.1
 		};
 		
