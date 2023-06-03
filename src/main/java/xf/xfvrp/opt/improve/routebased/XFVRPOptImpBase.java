@@ -100,17 +100,17 @@ public abstract class XFVRPOptImpBase extends XFVRPOptBase {
         return null;
     }
 
-    private void reverseChange(Solution solution, float[] val, Node[][] oldRoutes) {
+    private boolean isImprovement(Quality currentResult, Quality bestResult, int overhangFlag) {
+		// Is fitness better OR
+		return currentResult.getPenalty() == 0 &&
+				(currentResult.getFitness() < bestResult.getFitness() ||
+						overhangFlag == XFVRPMoveUtil.IS_OVERHANG);
+	}private void reverseChange(Solution solution, float[] val, Node[][] oldRoutes) {
         solution.setRoute((int) val[1], oldRoutes[0]);
         if (oldRoutes.length > 1)
             solution.setRoute((int) val[2], oldRoutes[1]);
         solution.resetQualities();
     }
 
-    private boolean isImprovement(Quality currentResult, Quality bestResult, int overhangFlag) {
-        // Is fitness better OR
-        return currentResult.getPenalty() == 0 &&
-                (currentResult.getFitness() < bestResult.getFitness() ||
-                        overhangFlag == XFVRPMoveUtil.IS_OVERHANG);
-    }
+
 }

@@ -31,7 +31,7 @@ mainClassName = 'util.Application'
 // In this section you declare the dependencies for your production and test code
 dependencies {
     testImplementation 'org.spockframework:spock-core:2.1-groovy-3.0'
-    testImplementation 'com.fasterxml.jackson.core:jackson-databind:2.13.2.2'
+    testImplementation 'com.fasterxml.jackson.core:jackson-databind:2.11.1'
 
     spotbugsPlugins 'com.h3xstream.findsecbugs:findsecbugs-plugin:1.11.0'
     spotbugsPlugins 'com.mebigfatguy.fb-contrib:fb-contrib:7.4.7'

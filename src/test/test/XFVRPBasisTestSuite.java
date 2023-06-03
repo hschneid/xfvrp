@@ -609,7 +609,6 @@ public class XFVRPBasisTestSuite {
 				v.executeRoutePlanning();
 
 				Report rep = v.getReport();
-				//				System.out.println(new StringWriter().write(rep));
 				assertTrue(rep.getRoutes().size() == 2);
 				assertTrue(rep.getErrors().getStatistics().size() == 0);
 			}

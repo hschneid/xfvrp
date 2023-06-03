@@ -33,24 +33,12 @@ class Solomon extends Specification {
 
         float[] deviation = new float[4]
         for (Path p : files) {
-            /*if(!p.getFileName().toString().equals("c203.txt")) {
-                continue
-            }*/
-
             def instanceName = p.fileName.toString().replace(".txt", "").toLowerCase()
 
             def bestResult = results.get(instanceName)
 
             long time = System.currentTimeMillis()
             def report = executeInstance(p, (int)bestResult[1])
-
-            /*report.routes.forEach(r -> {
-                r.events.forEach(e -> {
-                    print e.ID+" "
-                })
-                println ''
-            })*/
-
             time = System.currentTimeMillis() - time
 
             deviation[0] += time
@@ -64,6 +52,8 @@ class Solomon extends Specification {
                     String.format("%.2f", ((report.getSummary().getDistance() / bestResult[0] - 1) * 100)) + " " +
                     String.format("%.2f", ((report.getSummary().getNbrOfUsedVehicles() / bestResult[1] - 1) * 100)) + " " +
                     String.format("%.2f", time / 1000)
+
+            break
         }
         println String.format("%.0f", deviation[3]) + " " +
                 String.format("%.2f", deviation[0] / deviation[3]) + " " +
