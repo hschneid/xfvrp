@@ -5,7 +5,7 @@ buildscript {
 }
 
 plugins {
-    id "com.github.spotbugs" version "4.7.0"
+    id "com.github.spotbugs" version "4.7.1"
 }
 
 apply plugin:'java'
@@ -19,8 +19,8 @@ apply plugin:'com.github.spotbugs'
 group = "com.github.hschneid"
 archivesBaseName = "xfvrp"
 version = "11.5.0-RELEASE"
-sourceCompatibility = JavaVersion.VERSION_11
-targetCompatibility = JavaVersion.VERSION_11
+sourceCompatibility = JavaVersion.VERSION_17
+targetCompatibility = JavaVersion.VERSION_17
 
 repositories {
     mavenCentral()
@@ -30,8 +30,9 @@ mainClassName = 'util.Application'
 
 // In this section you declare the dependencies for your production and test code
 dependencies {
-    testImplementation 'org.spockframework:spock-core:2.1-groovy-3.0'
-    testImplementation 'com.fasterxml.jackson.core:jackson-databind:2.11.1'
+    testImplementation "org.spockframework:spock-core:2.3-groovy-4.0"
+    testImplementation 'com.fasterxml.jackson.core:jackson-databind:2.15.2'
+    testImplementation 'net.bytebuddy:byte-buddy:1.14.5'
 
     spotbugsPlugins 'com.h3xstream.findsecbugs:findsecbugs-plugin:1.11.0'
     spotbugsPlugins 'com.mebigfatguy.fb-contrib:fb-contrib:7.4.7'

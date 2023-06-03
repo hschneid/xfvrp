@@ -13,7 +13,6 @@ import xf.xfvrp.opt.evaluation.EvaluationService;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 public class RandomizedVRPSolutionBuilder extends XFVRPOptBase {
 
