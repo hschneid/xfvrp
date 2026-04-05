@@ -1,6 +1,6 @@
 [![MIT License](https://img.shields.io/apm/l/atomic-design-ui.svg?)](https://github.com/tterb/atomic-design-ui/blob/master/LICENSEs)
 [![BCH compliance](https://bettercodehub.com/edge/badge/hschneid/xfvrp?branch=master)](https://bettercodehub.com/)
-![alt text](https://img.shields.io/static/v1?label=version&message=11.5.0&color=-)
+![alt text](https://img.shields.io/static/v1?label=version&message=11.6.0&color=-)
 
 xfvrp
 ======
@@ -87,6 +87,13 @@ As a general purpose solver, XFVRP is not fully compatable with single problem s
 - Added Solomon (VRPTW) and Christofides (CVRP) instances for benchmarking
 - Licence update (year 2022)
 - Updated libs for security fixes
+
+### 11.6.0
+- Update to Java 21
+- Update of Gradle
+- Update of other dependencies
+- Update of Copyright
+- Changed publish mechanism
 
 ### 11.4.5
 #### Breaking Changes
