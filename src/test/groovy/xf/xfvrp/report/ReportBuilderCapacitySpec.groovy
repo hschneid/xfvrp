@@ -1,11 +1,11 @@
 package xf.xfvrp.report
 
 import spock.lang.Specification
+import util.instances.Helper
 import util.instances.TestNode
 import util.instances.TestVehicle
 import util.instances.TestXFVRPModel
 import xf.xfvrp.base.*
-import xf.xfvrp.opt.Solution
 import xf.xfvrp.report.build.ReportBuilder
 
 class ReportBuilderCapacitySpec extends Specification {
@@ -33,8 +33,7 @@ class ReportBuilderCapacitySpec extends Specification {
 		def model = initScen1(v, LoadType.DELIVERY)
 		def n = model.getNodes()
 
-		sol = new Solution(model)
-		sol.setGiantRoute([nd, n[1], n[2], n[3], nd] as Node[])
+		sol = Helper.set(model, [nd, n[1], n[2], n[3], nd] as Node[])
 
 		when:
 		def result = service.getReport(sol)
@@ -58,8 +57,7 @@ class ReportBuilderCapacitySpec extends Specification {
 		def model = initScen1(v, LoadType.DELIVERY)
 		def n = model.getNodes()
 
-		sol = new Solution(model)
-		sol.setGiantRoute([nd, n[1], n[2], n[3], nd] as Node[])
+		sol = Helper.set(model, [nd, n[1], n[2], n[3], nd] as Node[])
 
 		when:
 		def result = service.getReport(sol)
@@ -89,8 +87,7 @@ class ReportBuilderCapacitySpec extends Specification {
 		def model = initScen1(v, LoadType.DELIVERY)
 		def n = model.getNodes()
 
-		sol = new Solution(model)
-		sol.setGiantRoute([nd, n[1], n[2], n[3], nd] as Node[])
+		sol = Helper.set(model, [nd, n[1], n[2], n[3], nd] as Node[])
 
 		when:
 		def result = service.getReport(sol)
@@ -122,8 +119,7 @@ class ReportBuilderCapacitySpec extends Specification {
 		def model = initScen1(v, LoadType.DELIVERY)
 		def n = model.getNodes()
 
-		sol = new Solution(model)
-		sol.setGiantRoute([nd, n[1], n[2], n[3], nd] as Node[])
+		sol = Helper.set(model, [nd, n[1], n[2], n[3], nd] as Node[])
 
 		when:
 		def result = service.getReport(sol)
@@ -155,8 +151,7 @@ class ReportBuilderCapacitySpec extends Specification {
 		def model = initScen1(v, LoadType.PICKUP)
 		def n = model.getNodes()
 
-		sol = new Solution(model)
-		sol.setGiantRoute([nd, n[1], n[2], n[3], nd] as Node[])
+		sol = Helper.set(model, [nd, n[1], n[2], n[3], nd] as Node[])
 
 		when:
 		def result = service.getReport(sol)
@@ -187,8 +182,7 @@ class ReportBuilderCapacitySpec extends Specification {
 		def model = initScen1(v, LoadType.PICKUP)
 		def n = model.getNodes()
 
-		sol = new Solution(model)
-		sol.setGiantRoute([nd, n[1], n[2], n[3], nd] as Node[])
+		sol = Helper.set(model, [nd, n[1], n[2], n[3], nd] as Node[])
 
 		when:
 		def result = service.getReport(sol)
@@ -219,8 +213,7 @@ class ReportBuilderCapacitySpec extends Specification {
 		def model = initScen1(v, LoadType.PICKUP)
 		def n = model.getNodes()
 
-		sol = new Solution(model)
-		sol.setGiantRoute([nd, n[1], n[2], n[3], nd] as Node[])
+		sol = Helper.set(model, [nd, n[1], n[2], n[3], nd] as Node[])
 
 		when:
 		def result = service.getReport(sol)
@@ -251,8 +244,7 @@ class ReportBuilderCapacitySpec extends Specification {
 		def model = initScen2(v)
 		def n = model.getNodes()
 
-		sol = new Solution(model)
-		sol.setGiantRoute([nd, n[1], n[3], n[2], nd] as Node[])
+		sol = Helper.set(model, [nd, n[1], n[3], n[2], nd] as Node[])
 
 		when:
 		def result = service.getReport(sol)
@@ -294,8 +286,7 @@ class ReportBuilderCapacitySpec extends Specification {
 		def model = initScen2(v)
 		def n = model.getNodes()
 
-		sol = new Solution(model)
-		sol.setGiantRoute([nd, n[1], n[2], n[3], nd] as Node[])
+		sol = Helper.set(model, [nd, n[1], n[2], n[3], nd] as Node[])
 
 		when:
 		def result = service.getReport(sol)
@@ -323,8 +314,7 @@ class ReportBuilderCapacitySpec extends Specification {
 		def model = initScen3(v)
 		def n = model.getNodes()
 
-		sol = new Solution(model)
-		sol.setGiantRoute([nd, n[2], n[4], nr, n[6], n[3], nd] as Node[])
+		sol = Helper.set(model, [nd, n[2], n[4], nr, n[6], n[3], nd] as Node[])
 
 		when:
 		def result = service.getReport(sol)
@@ -353,8 +343,7 @@ class ReportBuilderCapacitySpec extends Specification {
 		def model = initScen3(v)
 		def n = model.getNodes()
 
-		sol = new Solution(model)
-		sol.setGiantRoute([nd, n[2], n[4], nr, n[3], n[5], nd] as Node[])
+		sol = Helper.set(model, [nd, n[2], n[4], nr, n[3], n[5], nd] as Node[])
 
 		when:
 		def result = service.getReport(sol)
@@ -384,8 +373,7 @@ class ReportBuilderCapacitySpec extends Specification {
 		def model = initScen3(v)
 		def n = model.getNodes()
 
-		sol = new Solution(model)
-		sol.setGiantRoute([nd, n[2], n[4], n[6], nr, n[3], nd] as Node[])
+		sol = Helper.set(model, [nd, n[2], n[4], n[6], nr, n[3], nd] as Node[])
 
 		when:
 		def result = service.getReport(sol)
@@ -415,8 +403,7 @@ class ReportBuilderCapacitySpec extends Specification {
 		def model = initScen3(v)
 		def n = model.getNodes()
 
-		sol = new Solution(model)
-		sol.setGiantRoute([nd, n[4], n[5], n[2], nr, n[6], n[3], nd] as Node[])
+		sol = Helper.set(model, [nd, n[4], n[5], n[2], nr, n[6], n[3], nd] as Node[])
 
 		when:
 		def result = service.getReport(sol)

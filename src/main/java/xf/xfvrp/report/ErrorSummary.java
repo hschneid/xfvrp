@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 /** 
- * Copyright (c) 2012-2022 Holger Schneider
+ * Copyright (c) 2012-2026 Holger Schneider
  * All rights reserved.
  *
  * This source code is licensed under the MIT License (MIT) found in the
@@ -34,7 +34,7 @@ public class ErrorSummary {
 	private final Map<String, Integer> statistics = new HashMap<>();
 	
 	/**
-	 * Adds the errors in an evaluated giant route. Evaluated route means,
+	 * Adds the errors in an evaluated solution. Evaluated route means,
 	 * that the route is build up by the init routine in the XFVRPInit class.
 	 */
 	public void add(Solution solution) {

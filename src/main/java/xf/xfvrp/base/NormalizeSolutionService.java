@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Copyright (c) 2012-2022 Holger Schneider
+ * Copyright (c) 2012-2026 Holger Schneider
  * All rights reserved.
  *
  * This source code is licensed under the MIT License (MIT) found in the
@@ -17,7 +17,7 @@ import java.util.List;
 public class NormalizeSolutionService {
 
 	/**
-	 * Normalizes the giant tour by applying the following methods
+	 * Normalizes the solution by applying the following methods
 	 * - Removing empty routes
 	 * - Adding empty routes for each available depot (multi depot) 
 	 * - Reindex the depotIDs which are used for build a solution report

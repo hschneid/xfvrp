@@ -7,12 +7,13 @@ import util.instances.TestVehicle
 import util.instances.TestXFVRPModel
 import xf.xfvrp.base.*
 import xf.xfvrp.base.fleximport.CustomerData
+import xf.xfvrp.opt.Solution
 import xf.xfvrp.opt.evaluation.EvaluationService
-import xf.xfvrp.opt.improve.routebased.move.XFPDPRelocate
+import xf.xfvrp.opt.improve.routebased.move.XFPDPSingleMove
 
 class XFPDPRelocateIntSpec extends Specification {
 
-	def service = new XFPDPRelocate()
+	def service = new XFPDPSingleMove()
 	def evalService = new EvaluationService()
 
 	def nd = new TestNode(
@@ -25,21 +26,21 @@ class XFPDPRelocateIntSpec extends Specification {
 
 	def parameter = new XFVRPParameter()
 
-	def "Find improvement"() {
+	def "Find one improvement"() {
 		def model = initScen()
 		def n = model.getNodes()
 		service.setModel(model)
-		
-		def sol = Helper.set(model, [nd, n[1], n[2], nd, n[3], n[4], nd] as Node[])
 
-		def currentQuality = evalService.check(sol)
-		
+		Solution sol = Helper.set(model, [nd, n[1], n[2], nd, n[3], n[4], nd] as Node[])
+
+		Quality currentQuality = evalService.check(sol)
+
 		when:
 		def newQuality = service.improve(sol, currentQuality)
 		
 		sol = NormalizeSolutionService.normalizeRoute(sol)
 		def checkedQuality = evalService.check(sol)
-		def newGiantRoute = sol.getGiantRoute()
+		Node[] routes = sol.getRoutes().find {i -> i.size() > 2}
 		
 		then:
 		newQuality != null
@@ -47,13 +48,12 @@ class XFPDPRelocateIntSpec extends Specification {
 		Math.abs(newQuality.getFitness() - checkedQuality.getFitness()) < 0.001
 		newQuality.getPenalty() == 0
 		Math.abs(newQuality.getCost() - 8) < 0.001
-		newGiantRoute[0].getGlobalIdx() == nd.getGlobalIdx()
-		newGiantRoute[1].getGlobalIdx() == nd.getGlobalIdx()
-		newGiantRoute[2] == n[1]
-		newGiantRoute[3] == n[2]
-		newGiantRoute[4] == n[3]
-		newGiantRoute[5] == n[4]
-		newGiantRoute[6].getGlobalIdx() == nd.getGlobalIdx()
+		routes[0].externID == nd.externID
+		routes[1] == n[1]
+		routes[2] == n[2]
+		routes[3] == n[3]
+		routes[4] == n[4]
+		routes[5].externID == nd.externID
 	}
 	
 	XFVRPModel initScen() {

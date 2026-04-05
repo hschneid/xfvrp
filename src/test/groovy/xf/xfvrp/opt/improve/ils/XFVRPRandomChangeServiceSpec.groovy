@@ -201,7 +201,7 @@ class XFVRPRandomChangeServiceSpec extends Specification {
 
 		when:
 		def result = service.checkMove(choice, sol)
-		def gt = sol.getGiantRoute()
+		def gt = Helper.get(sol)
 
 		then:
 		result
@@ -209,9 +209,10 @@ class XFVRPRandomChangeServiceSpec extends Specification {
 		eq(gt[1], n[3])
 		eq(gt[2], n[4])
 		eq(gt[3], nd)
-		eq(gt[4], n[2])
-		eq(gt[5], n[5])
-		eq(gt[6], nd)
+		eq(gt[4], nd)
+		eq(gt[5], n[2])
+		eq(gt[6], n[5])
+		eq(gt[7], nd)
 	}
 
 	def "Check move - Not Okay 1"() {
@@ -231,7 +232,7 @@ class XFVRPRandomChangeServiceSpec extends Specification {
 
 		when:
 		def result = service.checkMove(choice, sol)
-		def gt = sol.getGiantRoute()
+		def gt = Helper.get(sol)
 
 		then:
 		!result
@@ -240,8 +241,9 @@ class XFVRPRandomChangeServiceSpec extends Specification {
 		eq(gt[2], n[3])
 		eq(gt[3], n[4])
 		eq(gt[4], nd)
-		eq(gt[5], n[5])
-		eq(gt[6], nd)
+		eq(gt[5], nd)
+		eq(gt[6], n[5])
+		eq(gt[7], nd)
 	}
 
 	def "Check move - Not Okay 2"() {
@@ -261,17 +263,18 @@ class XFVRPRandomChangeServiceSpec extends Specification {
 
 		when:
 		def result = service.checkMove(choice, sol)
-		def gt = sol.getGiantRoute()
+		def gt = Helper.get(sol)
 
 		then:
 		!result
 		eq(gt[0], nd)
 		eq(gt[1], n[2])
 		eq(gt[2], nd)
-		eq(gt[3], n[3])
-		eq(gt[4], n[4])
-		eq(gt[5], n[5])
-		eq(gt[6], nd)
+		eq(gt[3], nd)
+		eq(gt[4], n[3])
+		eq(gt[5], n[4])
+		eq(gt[6], n[5])
+		eq(gt[7], nd)
 	}
 
 	def "Execute - Okay"() {
@@ -286,8 +289,8 @@ class XFVRPRandomChangeServiceSpec extends Specification {
 		service.NBR_OF_VARIATIONS = 2
 
 		when:
-		def result = service.change(sol)
-		def gt = result.getGiantRoute()
+		service.change(sol)
+		def gt = Helper.get(sol)
 
 		then:
 		eq(gt[0], nd)
@@ -295,8 +298,9 @@ class XFVRPRandomChangeServiceSpec extends Specification {
 		eq(gt[2], n[5])
 		eq(gt[3], n[4])
 		eq(gt[4], nd)
-		eq(gt[5], n[2])
-		eq(gt[6], nd)
+		eq(gt[5], nd)
+		eq(gt[6], n[2])
+		eq(gt[7], nd)
 	}
 
 	def "Execute - Reach termination criteria"() {
@@ -312,8 +316,8 @@ class XFVRPRandomChangeServiceSpec extends Specification {
 		service.NBR_ACCEPTED_INVALIDS = 10
 
 		when:
-		def result = service.change(sol)
-		def gt = result.getGiantRoute()
+		service.change(sol)
+		def gt = Helper.get(sol)
 
 		then:
 		eq(gt[0], nd)
@@ -321,8 +325,9 @@ class XFVRPRandomChangeServiceSpec extends Specification {
 		eq(gt[2], n[2])
 		eq(gt[3], n[4])
 		eq(gt[4], nd)
-		eq(gt[5], n[5])
-		eq(gt[6], nd)
+		eq(gt[5], nd)
+		eq(gt[6], n[5])
+		eq(gt[7], nd)
 	}
 
 	XFVRPModel initBase(int[] presetBlocks, int[] presetPos) {

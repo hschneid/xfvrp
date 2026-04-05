@@ -109,10 +109,10 @@ class CMT extends Specification {
                     .setServiceTime(serviceTime)
         }
 
-        xfvrp.addOptType(XFVRPOptTypes.SAVINGS)
-        xfvrp.addOptType(XFVRPOptTypes.RELOCATE)
+        xfvrp.addOptType(XFVRPOptTypes.RANDOM)
+        /*xfvrp.addOptType(XFVRPOptTypes.RELOCATE)
         xfvrp.addOptType(XFVRPOptTypes.PATH_RELOCATE)
-        xfvrp.addOptType(XFVRPOptTypes.PATH_EXCHANGE)
+        xfvrp.addOptType(XFVRPOptTypes.PATH_EXCHANGE)*/
 
         xfvrp.getParameters().setNbrOfILSLoops(500)
         xfvrp.addOptType(XFVRPOptTypes.ILS)

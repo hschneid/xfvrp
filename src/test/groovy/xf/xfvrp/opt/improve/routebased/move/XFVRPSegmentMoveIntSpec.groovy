@@ -1,11 +1,11 @@
 package xf.xfvrp.opt.improve.routebased.move
 
 import spock.lang.Specification
+import util.instances.Helper
 import util.instances.TestNode
 import util.instances.TestVehicle
 import util.instances.TestXFVRPModel
 import xf.xfvrp.base.*
-import xf.xfvrp.opt.Solution
 import xf.xfvrp.opt.evaluation.EvaluationService
 
 class XFVRPSegmentMoveIntSpec extends Specification {
@@ -37,16 +37,15 @@ class XFVRPSegmentMoveIntSpec extends Specification {
 		def model = initSDScen()
 		def n = model.getNodes()
 
-		sol = new Solution(model)
-		sol.setGiantRoute([nd, n[2], n[1], nd, n[3], n[4], nd] as Node[])
+		sol = Helper.set(model, [nd, n[2], n[1], nd, n[3], n[4], nd] as Node[])
 
 		def currentQuality = evalService.check(sol)
 		
 		when:
-		def newQuality = service.improve(sol, currentQuality, model)
+		def newQuality = service.improve(sol, currentQuality)
 		sol = NormalizeSolutionService.normalizeRoute(sol)
 		def checkedQuality = evalService.check(sol)
-		def newGiantRoute = sol.getGiantRoute()
+		def routes = Helper.get(sol)
 		
 		then:
 		newQuality != null
@@ -54,29 +53,29 @@ class XFVRPSegmentMoveIntSpec extends Specification {
 		Math.abs(newQuality.getFitness() - checkedQuality.getFitness()) < 0.001
 		newQuality.getPenalty() == 0
 		Math.abs(newQuality.getCost() - 9.656) < 0.001
-		newGiantRoute[0].getGlobalIdx() == nd.getGlobalIdx()
-		newGiantRoute[1].getGlobalIdx() == nd.getGlobalIdx()
-		newGiantRoute[2] == n[3]
-		newGiantRoute[3] == n[1]
-		newGiantRoute[4] == n[2]
-		newGiantRoute[5] == n[4]
-		newGiantRoute[6].getGlobalIdx() == nd.getGlobalIdx()
+		routes[0].externID == 'DEP'
+		routes[1].externID == 'DEP'
+		routes[2].externID == 'DEP'
+		routes[3] == n[3]
+		routes[4] == n[1]
+		routes[5] == n[2]
+		routes[6] == n[4]
+		routes[7].externID == 'DEP'
 	}
 	
 	def "Find improvement for multi depot"() {
 		def model = initMDScen()
 		def n = model.getNodes()
 
-		sol = new Solution(model)
-		sol.setGiantRoute([nd, n[3], n[2], nd, n[4], n[5], nd] as Node[])
+		sol = Helper.set(model, [nd, n[3], n[2], nd, n[4], n[5], nd] as Node[])
 
 		def currentQuality = evalService.check(sol)
 
 		when:
-		def newQuality = service.improve(sol, currentQuality, model)
+		def newQuality = service.improve(sol, currentQuality)
 		sol = NormalizeSolutionService.normalizeRoute(sol)
 		def checkedQuality = evalService.check(sol)
-		def newGiantRoute = sol.getGiantRoute()
+		def routes = Helper.get(sol)
 		
 		then:
 		newQuality != null
@@ -84,38 +83,39 @@ class XFVRPSegmentMoveIntSpec extends Specification {
 		Math.abs(newQuality.getFitness() - checkedQuality.getFitness()) < 0.001
 		newQuality.getPenalty() == 0
 		Math.abs(newQuality.getCost() - 9.656) < 0.001
-		newGiantRoute[0].getGlobalIdx() == nd.getGlobalIdx()
-		newGiantRoute[1].getGlobalIdx() == nd.getGlobalIdx()
-		newGiantRoute[2] == n[4]
-		newGiantRoute[3] == n[2]
-		newGiantRoute[4] == n[3]
-		newGiantRoute[5] == n[5]
-		newGiantRoute[6].getGlobalIdx() == nd2.getGlobalIdx()
-		newGiantRoute[7].getGlobalIdx() == nd2.getGlobalIdx()
+		routes[0].externID == 'DEP'
+		routes[1].externID == 'DEP'
+		routes[2].externID == 'DEP'
+		routes[3] == n[4]
+		routes[4] == n[2]
+		routes[5] == n[3]
+		routes[6] == n[5]
+		routes[7].externID == 'DEP'
+		routes[8].externID == 'DEP2'
+		routes[9].externID == 'DEP2'
 	}
 	
 	def "Find no improvement"() {
 		def model = initMDScen()
 		def n = model.getNodes()
 
-		sol = new Solution(model)
-		sol.setGiantRoute([nd, n[4], n[2], n[3], n[5], nd, nd] as Node[])
+		sol = Helper.set(model, [nd, n[4], n[2], n[3], n[5], nd, nd] as Node[])
 
 		def currentQuality = evalService.check(sol)
 
 		when:
-		def newQuality = service.improve(sol, currentQuality, model)
-		def newGiantRoute = sol.getGiantRoute()
+		def newQuality = service.improve(sol, currentQuality)
+		def routes = Helper.get(sol)
 		
 		then:
 		newQuality == null
-		newGiantRoute[0] == nd
-		newGiantRoute[1] == n[4]
-		newGiantRoute[2] == n[2]
-		newGiantRoute[3] == n[3]
-		newGiantRoute[4] == n[5]
-		newGiantRoute[5] == nd
-		newGiantRoute[6] == nd
+		routes[0] == nd
+		routes[1] == n[4]
+		routes[2] == n[2]
+		routes[3] == n[3]
+		routes[4] == n[5]
+		routes[5] == nd
+		routes[6] == nd
 	}
 
 	XFVRPModel initMDScen() {

@@ -1,6 +1,7 @@
 package xf.xfvrp.report
 
 import spock.lang.Specification
+import util.instances.Helper
 import util.instances.TestNode
 import util.instances.TestVehicle
 import util.instances.TestXFVRPModel
@@ -8,7 +9,6 @@ import xf.xfvrp.base.*
 import xf.xfvrp.base.compartment.CompartmentType
 import xf.xfvrp.base.metric.EucledianMetric
 import xf.xfvrp.base.metric.internal.AcceleratedMetricTransformator
-import xf.xfvrp.opt.Solution
 import xf.xfvrp.report.build.ReportBuilder
 
 class ReportBuilderReplenishSpec extends Specification {
@@ -39,8 +39,7 @@ class ReportBuilderReplenishSpec extends Specification {
 		def model = initScen(v, new boolean[] {true, true, true})
 		def n = model.getNodes()
 
-		sol = new Solution(model)
-		sol.setGiantRoute([nd, n[2], n[3], nr, n[4], n[5], nd] as Node[])
+		sol = Helper.set(model, nd, n[2], n[3], nr, n[4], n[5], nd)
 
 		when:
 		def result = service.getReport(sol)
@@ -70,8 +69,7 @@ class ReportBuilderReplenishSpec extends Specification {
 		def model = initScen(v, new boolean[] {true, false, true})
 		def n = model.getNodes()
 
-		sol = new Solution(model)
-		sol.setGiantRoute([nd, n[2], n[3], nr, n[4], n[5], nd] as Node[])
+		sol = Helper.set(model, nd, n[2], n[3], nr, n[4], n[5], nd)
 
 		when:
 		def result = service.getReport(sol)
@@ -87,8 +85,7 @@ class ReportBuilderReplenishSpec extends Specification {
 		def model = initScen(v, new boolean[] {true, false, true})
 		def n = model.getNodes()
 
-		sol = new Solution(model)
-		sol.setGiantRoute([nd, n[2], n[3], nr, n[4], n[5], nd] as Node[])
+		sol = Helper.set(model, nd, n[2], n[3], nr, n[4], n[5], nd)
 
 		when:
 		def result = service.getReport(sol)
@@ -102,8 +99,7 @@ class ReportBuilderReplenishSpec extends Specification {
 		def model = initScen(v, new boolean[] {false, false, false})
 		def n = model.getNodes()
 
-		sol = new Solution(model)
-		sol.setGiantRoute([nd, n[2], n[3], nr, n[4], n[5], nd] as Node[])
+		sol = Helper.set(model, nd, n[2], n[3], nr, n[4], n[5], nd)
 
 		when:
 		def result = service.getReport(sol)
@@ -119,8 +115,7 @@ class ReportBuilderReplenishSpec extends Specification {
 		def model = initScen(v, new boolean[] {false, false, false})
 		def n = model.getNodes()
 
-		sol = new Solution(model)
-		sol.setGiantRoute([nd, n[2], n[3], nr, n[4], n[5], nd] as Node[])
+		sol = Helper.set(model, nd, n[2], n[3], nr, n[4], n[5], nd)
 
 		when:
 		def result = service.getReport(sol)

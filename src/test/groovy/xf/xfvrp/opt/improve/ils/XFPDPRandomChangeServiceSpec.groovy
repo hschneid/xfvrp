@@ -9,6 +9,7 @@ import xf.xfvrp.base.*
 import xf.xfvrp.opt.Solution
 import xf.xfvrp.opt.evaluation.EvaluationService
 import xf.xfvrp.opt.improve.ils.XFPDPRandomChangeService.Choice
+import xf.xfvrp.opt.improve.routebased.move.XFPDPMoveUtil
 
 class XFPDPRandomChangeServiceSpec extends Specification {
 
@@ -57,32 +58,14 @@ class XFPDPRandomChangeServiceSpec extends Specification {
 		service.chooseSrcPickup(choice, sol)
 
 		then:
-		choice.srcPickupIdx == 1
-	}
-
-	def "Choose Src Pickup - On depot"() {
-		def model = initBase([0, 0, 0, 0] as int[], [0, 0, 0, 0] as int[])
-		def n = model.getNodes()
-		service.setModel(model)
-
-
-		def sol = Helper.set(model, [nd, n[2], nd, n[3], n[4], n[5], nd] as Node[])
-
-		def choice = new Choice()
-		random.nextInt(_) >>> [1, 3]
-
-		when:
-		service.chooseSrcPickup(choice, sol)
-
-		then:
-		choice.srcPickupIdx == 4
+		choice.srcRouteIdx == 0
+		choice.srcPickPos == 1
 	}
 
 	def "Choose Src Pickup - On delivery"() {
 		def model = initBase([0, 1, 1, 0] as int[], [0, 0, 0, 0] as int[])
 		def n = model.getNodes()
 		service.setModel(model)
-
 
 		def sol = Helper.set(model, [nd, n[2], n[3], n[4], n[5], nd] as Node[])
 
@@ -93,7 +76,8 @@ class XFPDPRandomChangeServiceSpec extends Specification {
 		service.chooseSrcPickup(choice, sol)
 
 		then:
-		choice.srcPickupIdx == 1
+		choice.srcRouteIdx == 0
+		choice.srcPickPos == 1
 	}
 
 	def "Choose Src Delivery - Okay"() {
@@ -105,13 +89,14 @@ class XFPDPRandomChangeServiceSpec extends Specification {
 		def sol = Helper.set(model, [nd, n[2], n[4], n[5], n[3], nd] as Node[])
 
 		def choice = new Choice()
-		choice.srcPickupIdx = 1
+		choice.srcRouteIdx = 0
+		choice.srcPickPos = 1
 
 		when:
 		service.chooseSrcDelivery(choice, sol)
 
 		then:
-		choice.srcDeliveryIdx == 4
+		choice.srcDeliPos == 4
 	}
 
 	def "Choose Src Delivery - Not Okay"() {
@@ -121,11 +106,11 @@ class XFPDPRandomChangeServiceSpec extends Specification {
 
 		n[3].setShipmentIdx(12)
 
-
 		def sol = Helper.set(model, [nd, n[2], n[4], n[5], n[3], nd] as Node[])
 
 		def choice = new Choice()
-		choice.srcPickupIdx = 1
+		choice.srcRouteIdx = 0
+		choice.srcPickPos = 1
 
 		when:
 		service.chooseSrcDelivery(choice, sol)
@@ -140,19 +125,20 @@ class XFPDPRandomChangeServiceSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-
 		def sol = Helper.set(model, [nd, n[2], n[3], n[4], n[5], nd] as Node[])
 
 		def choice = new Choice()
-		choice.srcPickupIdx = 1
-		choice.srcDeliveryIdx = 2
-		random.nextInt(_) >> 3
+		choice.srcRouteIdx = 0
+		choice.srcPickPos = 1
+		choice.srcDeliPos = 2
+		random.nextInt(_) >>> [0, 3]
 
 		when:
 		service.chooseDstPickup(choice, sol)
 
 		then:
-		choice.dstPickupIdx == 4
+		choice.dstRouteIdx == 0
+		choice.dstPickPos == 4
 	}
 
 	def "Choose Dst Pickup - On src pickup"() {
@@ -160,19 +146,19 @@ class XFPDPRandomChangeServiceSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-
 		def sol = Helper.set(model, [nd, n[2], n[3], n[4], n[5], nd] as Node[])
 
 		def choice = new Choice()
-		choice.srcPickupIdx = 1
-		choice.srcDeliveryIdx = 2
-		random.nextInt(_) >>> [0, 3]
+		choice.srcRouteIdx = 0
+		choice.srcPickPos = 1
+		choice.srcDeliPos = 2
+		random.nextInt(_) >>> [0, 0, 3]
 
 		when:
 		service.chooseDstPickup(choice, sol)
 
 		then:
-		choice.dstPickupIdx == 4
+		choice.dstPickPos == 4
 	}
 
 	def "Choose Dst Pickup - On src delivery"() {
@@ -180,19 +166,19 @@ class XFPDPRandomChangeServiceSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-
 		def sol = Helper.set(model, [nd, n[2], n[3], n[4], n[5], nd] as Node[])
 
 		def choice = new Choice()
-		choice.srcPickupIdx = 1
-		choice.srcDeliveryIdx = 2
-		random.nextInt(_) >>> [1, 3]
+		choice.srcRouteIdx = 0
+		choice.srcPickPos = 1
+		choice.srcDeliPos = 2
+		random.nextInt(_) >>> [0, 1, 3]
 
 		when:
 		service.chooseDstPickup(choice, sol)
 
 		then:
-		choice.dstPickupIdx == 4
+		choice.dstPickPos == 4
 	}
 
 	def "Choose Dst Delivery - Simple okay"() {
@@ -200,20 +186,21 @@ class XFPDPRandomChangeServiceSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-
 		def sol = Helper.set(model, [nd, n[2], n[3], n[4], n[5], nd] as Node[])
 
 		def choice = new Choice()
-		choice.srcPickupIdx = 1
-		choice.srcDeliveryIdx = 2
-		choice.dstPickupIdx = 3
+		choice.srcRouteIdx = 0
+		choice.srcPickPos = 1
+		choice.srcDeliPos = 2
+		choice.dstRouteIdx = 0
+		choice.dstPickPos = 3
 		random.nextInt(_) >> 3
 
 		when:
 		service.chooseDstDelivery(choice, sol)
 
 		then:
-		choice.dstDeliveryIdx == 4
+		choice.dstDeliPos == 4
 	}
 
 	def "Choose Dst Delivery - Okay same pos"() {
@@ -221,20 +208,21 @@ class XFPDPRandomChangeServiceSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-
 		def sol = Helper.set(model, [nd, n[2], n[3], n[4], n[5], nd] as Node[])
 
 		def choice = new Choice()
-		choice.srcPickupIdx = 1
-		choice.srcDeliveryIdx = 2
-		choice.dstPickupIdx = 4
+		choice.srcRouteIdx = 0
+		choice.srcPickPos = 1
+		choice.srcDeliPos = 2
+		choice.dstRouteIdx = 0
+		choice.dstPickPos = 4
 		random.nextInt(_) >> 3
 
 		when:
 		service.chooseDstDelivery(choice, sol)
 
 		then:
-		choice.dstDeliveryIdx == 4
+		choice.dstDeliPos == 4
 	}
 
 	def "Choose Dst Delivery - Not Okay - no-op pos"() {
@@ -242,20 +230,21 @@ class XFPDPRandomChangeServiceSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-
 		def sol = Helper.set(model, [nd, n[2], n[3], n[4], n[5], nd] as Node[])
 
 		def choice = new Choice()
-		choice.srcPickupIdx = 1
-		choice.srcDeliveryIdx = 2
-		choice.dstPickupIdx = 3
+		choice.srcRouteIdx = 0
+		choice.srcPickPos = 1
+		choice.srcDeliPos = 2
+		choice.dstRouteIdx = 0
+		choice.dstPickPos = 3
 		random.nextInt(_) >>> [2, 3]
 
 		when:
 		service.chooseDstDelivery(choice, sol)
 
 		then:
-		choice.dstDeliveryIdx == 4
+		choice.dstDeliPos == 4
 	}
 
 	def "Choose Dst Delivery - Delivery before pickup"() {
@@ -263,62 +252,21 @@ class XFPDPRandomChangeServiceSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-
 		def sol = Helper.set(model, [nd, n[2], n[3], n[4], n[5], nd] as Node[])
 
 		def choice = new Choice()
-		choice.srcPickupIdx = 1
-		choice.srcDeliveryIdx = 2
-		choice.dstPickupIdx = 3
+		choice.srcRouteIdx = 0
+		choice.srcPickPos = 1
+		choice.srcDeliPos = 2
+		choice.dstRouteIdx = 0
+		choice.dstPickPos = 3
 		random.nextInt(_) >>> [1, 3]
 
 		when:
 		service.chooseDstDelivery(choice, sol)
 
 		then:
-		choice.dstDeliveryIdx == 4
-	}
-
-	def "Choose Dst Delivery - Not same route"() {
-		def model = initBase([0, 0, 0, 0] as int[], [0, 0, 0, 0] as int[])
-		def n = model.getNodes()
-		service.setModel(model)
-
-
-		def sol = Helper.set(model, [nd, n[2], n[3], n[4], nd, n[5], nd] as Node[])
-
-		def choice = new Choice()
-		choice.srcPickupIdx = 1
-		choice.srcDeliveryIdx = 2
-		choice.dstPickupIdx = 3
-		random.nextInt(_) >>> [4, 3]
-
-		when:
-		service.chooseDstDelivery(choice, sol)
-
-		then:
-		choice.dstDeliveryIdx == 4
-	}
-
-	def "Choose Dst Delivery - Dead lock"() {
-		def model = initBase([0, 0, 0, 0] as int[], [0, 0, 0, 0] as int[])
-		def n = model.getNodes()
-		service.setModel(model)
-
-
-		def sol = Helper.set(model, [nd, n[2], n[3], nd, n[4], n[5], nd] as Node[])
-
-		def choice = new Choice()
-		choice.srcPickupIdx = 1
-		choice.srcDeliveryIdx = 2
-		choice.dstPickupIdx = 3
-		random.nextInt(_) >> 2
-
-		when:
-		service.chooseDstDelivery(choice, sol)
-
-		then:
-		thrown NoSuchElementException
+		choice.dstDeliPos == 4
 	}
 
 	def "Check move - Okay"() {
@@ -326,18 +274,19 @@ class XFPDPRandomChangeServiceSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-
 		def sol = Helper.set(model, [nd, n[2], n[4], n[3], n[5], nd] as Node[])
 
 		def choice = new Choice()
-		choice.srcPickupIdx = 2
-		choice.srcDeliveryIdx = 4
-		choice.dstPickupIdx = 4
-		choice.dstDeliveryIdx = 5
+		choice.srcRouteIdx = 0
+		choice.srcPickPos = 2
+		choice.srcDeliPos = 4
+		choice.dstRouteIdx = 0
+		choice.dstPickPos = 5
+		choice.dstDeliPos = 5
 
 		when:
 		def result = service.checkMove(choice, sol)
-		def gt = sol.getGiantRoute()
+		def gt = sol.routes[0]
 
 		then:
 		result
@@ -354,21 +303,22 @@ class XFPDPRandomChangeServiceSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-
 		def sol = Helper.set(model, [nd, n[2], n[4], n[3], n[5], nd] as Node[])
 
 		def choice = new Choice()
-		choice.srcPickupIdx = 2
-		choice.srcDeliveryIdx = 4
-		choice.dstPickupIdx = 4
-		choice.dstDeliveryIdx = 5
+		choice.srcRouteIdx = 0
+		choice.srcPickPos = 2
+		choice.srcDeliPos = 4
+		choice.dstRouteIdx = 0
+		choice.dstPickPos = 5
+		choice.dstDeliPos = 5
 
-		evaluationService.check(_) >> new Quality(cost: 100, penalty: 1)
+		evaluationService.check(sol) >> new Quality(cost: 100, penalty: 1)
 		service.evaluationService = evaluationService
 
 		when:
 		def result = service.checkMove(choice, sol)
-		def gt = sol.getGiantRoute()
+		def gt = sol.routes[0]
 
 		then:
 		!result
@@ -405,25 +355,26 @@ class XFPDPRandomChangeServiceSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-
 		def sol = Helper.set(model, [nd, n[2], n[3], n[4], n[5], n[6], n[7], nd] as Node[])
 		// 0, 4,5,2,3,6,7
-		random.nextInt(_) >>> [2, 0, 0, 4, 0, 6]
+		random.nextInt(_) >>> [2, 0, 0, 0, 4, 6, 0, 0, 1, 0]
 		service.NBR_OF_VARIATIONS = 2
 
 		when:
 		def result = service.change(sol)
-		def gt = result.getGiantRoute()
+		def gt = Helper.get(result)
 
 		then:
-		eq(gt[0], nd)
-		eq(gt[1], n[6])
-		eq(gt[2], n[4])
-		eq(gt[3], n[5])
-		eq(gt[4], n[2])
-		eq(gt[5], n[3])
-		eq(gt[6], n[7])
-		eq(gt[7], nd)
+		gt[0].externID == 'DEP'
+		gt[1].externID == '1'
+		gt[2].externID == '5'
+		gt[3].externID == '6'
+		gt[4].externID == '2'
+		gt[5].externID == 'DEP'
+		gt[6].externID == 'DEP'
+		gt[7].externID == '3'
+		gt[8].externID == '4'
+		gt[9].externID == 'DEP'
 	}
 
 	boolean doRandomChange(Solution sol, Node[] n) {
@@ -433,10 +384,10 @@ class XFPDPRandomChangeServiceSpec extends Specification {
 		service.chooseDstPickup(choice, sol)
 		service.chooseDstDelivery(choice, sol)
 
-		service.operator.change(sol, choice.toArray())
-		service.operator.reverseChange(sol, choice.toArray())
+		def oldRoutes = XFPDPMoveUtil.change(sol, choice.toArray())
+		service.reverseChange(sol, choice.toArray(), oldRoutes)
 
-		def gt = sol.getGiantRoute()
+		def gt = sol.routes[0]
 
 		def result = (gt[0].externID == nd.externID &&
 				gt[1] == n[2] &&

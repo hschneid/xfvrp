@@ -1,11 +1,11 @@
 package xf.xfvrp.opt.construct
 
 import spock.lang.Specification
+import util.instances.Helper
 import util.instances.TestNode
 import util.instances.TestVehicle
 import util.instances.TestXFVRPModel
 import xf.xfvrp.base.*
-import xf.xfvrp.opt.Solution
 import xf.xfvrp.opt.construct.savings.XFVRPSavings
 import xf.xfvrp.opt.evaluation.EvaluationService
 
@@ -37,9 +37,7 @@ class XFVRPSavingsIntSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		def sol = new Solution(model)
-		sol.setGiantRoute([nd, n[1], nd, n[2], nd, n[3], nd, n[4], nd] as Node[])
-
+		def sol = Helper.set(model, [nd, n[1], nd, n[2], nd, n[3], nd, n[4], nd] as Node[])
 		evalService.check(sol)
 		
 		when:
@@ -47,19 +45,19 @@ class XFVRPSavingsIntSpec extends Specification {
 		sol = NormalizeSolutionService.normalizeRoute(sol)
 		
 		def checkedQuality = evalService.check(sol)
-		def newGiantRoute = sol.getGiantRoute()
+		def routes = Helper.get(sol)
 		
 		then:
 		checkedQuality != null
 		checkedQuality.getPenalty() == 0
 		Math.abs(checkedQuality.getCost() - 9.656) < 0.001
-		newGiantRoute[0].getGlobalIdx() == nd.getGlobalIdx()
-		newGiantRoute[1] == n[4]
-		newGiantRoute[2] == n[2]
-		newGiantRoute[3] == n[1]
-		newGiantRoute[4] == n[3]
-		newGiantRoute[5].getGlobalIdx() == nd.getGlobalIdx()
-		newGiantRoute[6].getGlobalIdx() == nd.getGlobalIdx()
+		routes[0].getGlobalIdx() == nd.getGlobalIdx()
+		routes[1] == n[4]
+		routes[2] == n[2]
+		routes[3] == n[1]
+		routes[4] == n[3]
+		routes[5].getGlobalIdx() == nd.getGlobalIdx()
+		routes[6].getGlobalIdx() == nd.getGlobalIdx()
 	}
 	
 	def "Find no improvement"() {
@@ -67,8 +65,7 @@ class XFVRPSavingsIntSpec extends Specification {
 		def n = model.getNodes()
 		service.setModel(model)
 
-		def sol = new Solution(model)
-		sol.setGiantRoute([nd, n[4], n[2], n[1], n[3], nd] as Node[])
+		def sol = Helper.set(model, [nd, n[4], n[2], n[1], n[3], nd] as Node[])
 
 		evalService.check(sol)
 		
@@ -77,19 +74,19 @@ class XFVRPSavingsIntSpec extends Specification {
 		sol = NormalizeSolutionService.normalizeRoute(sol)
 		
 		def checkedQuality = evalService.check(sol)
-		def newGiantRoute = sol.getGiantRoute()
+		def routes = Helper.get(sol)
 		
 		then:
 		checkedQuality != null
 		checkedQuality.getPenalty() == 0
 		Math.abs(checkedQuality.getCost() - 9.656) < 0.001
-		newGiantRoute[0].getGlobalIdx() == nd.getGlobalIdx()
-		newGiantRoute[1] == n[4]
-		newGiantRoute[2] == n[2]
-		newGiantRoute[3] == n[1]
-		newGiantRoute[4] == n[3]
-		newGiantRoute[5].getGlobalIdx() == nd.getGlobalIdx()
-		newGiantRoute[6].getGlobalIdx() == nd.getGlobalIdx()
+		routes[0].getGlobalIdx() == nd.getGlobalIdx()
+		routes[1] == n[4]
+		routes[2] == n[2]
+		routes[3] == n[1]
+		routes[4] == n[3]
+		routes[5].getGlobalIdx() == nd.getGlobalIdx()
+		routes[6].getGlobalIdx() == nd.getGlobalIdx()
 	}
 	
 	XFVRPModel initSDScen() {

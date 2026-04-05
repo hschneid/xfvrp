@@ -22,16 +22,17 @@ class XFVRPMoveUtilNodeMoveSpec extends Specification {
 
 		when:
 		XFVRPMoveUtil.change(sol, [0, 0, 1, 1, 2, 0, 0] as float[])
-		def result = sol.getGiantRoute()
+		def result = Helper.get(sol)
 		
 		then:
 		result[0].externID == "1"
 		result[1].externID == "3"
-		result[2].externID == "4"
-		result[3].externID == "5"
-		result[4].externID == "2"
-		result[5].externID == "6"
-		result[6].externID == "1"
+		result[2].externID == "1"
+		result[3].externID == "4"
+		result[4].externID == "5"
+		result[5].externID == "2"
+		result[6].externID == "6"
+		result[7].externID == "4"
 	}
 
 	def "Regular move - same route and src < dst"() {
@@ -39,16 +40,17 @@ class XFVRPMoveUtilNodeMoveSpec extends Specification {
 
 		when:
 		XFVRPMoveUtil.change(sol, [0, 0, 0, 1, 3, 0, 0] as float[])
-		def result = sol.getGiantRoute()
+		def result = Helper.get(sol)
 
 		then:
 		result[0].externID == "1"
 		result[1].externID == "3"
 		result[2].externID == "2"
-		result[3].externID == "4"
-		result[4].externID == "5"
-		result[5].externID == "6"
-		result[6].externID == "1"
+		result[3].externID == "1"
+		result[4].externID == "4"
+		result[5].externID == "5"
+		result[6].externID == "6"
+		result[7].externID == "4"
 	}
 
 	def "Regular move - same route and src > dst"() {
@@ -57,7 +59,7 @@ class XFVRPMoveUtilNodeMoveSpec extends Specification {
 
 		when:
 		XFVRPMoveUtil.change(sol, [0, 0, 0, 3, 1, 0, 0] as float[])
-		def result = sol.getGiantRoute()
+		def result = Helper.get(sol)
 
 		then:
 		result[0].externID == "1"
@@ -74,16 +76,17 @@ class XFVRPMoveUtilNodeMoveSpec extends Specification {
 
 		when:
 		XFVRPMoveUtil.change(sol, [0, 0, 0, 1, 1, 0, 0] as float[])
-		def result = sol.getGiantRoute()
+		def result = Helper.get(sol)
 
 		then:
 		result[0].externID == "1"
 		result[1].externID == "2"
 		result[2].externID == "3"
-		result[3].externID == "4"
-		result[4].externID == "5"
-		result[5].externID == "6"
-		result[6].externID == "1"
+		result[3].externID == "1"
+		result[4].externID == "4"
+		result[5].externID == "5"
+		result[6].externID == "6"
+		result[7].externID == "4"
 	}
 
 	def "Regular move - no move - different positions"() {
@@ -92,16 +95,17 @@ class XFVRPMoveUtilNodeMoveSpec extends Specification {
 
 		when:
 		XFVRPMoveUtil.change(sol, [0, 0, 0, 1, 2, 0, 0] as float[])
-		def result = sol.getGiantRoute()
+		def result = Helper.get(sol)
 
 		then:
 		result[0].externID == "1"
 		result[1].externID == "2"
 		result[2].externID == "3"
-		result[3].externID == "4"
-		result[4].externID == "5"
-		result[5].externID == "6"
-		result[6].externID == "1"
+		result[3].externID == "1"
+		result[4].externID == "4"
+		result[5].externID == "5"
+		result[6].externID == "6"
+		result[7].externID == "4"
 	}
 
 	def "Irregular move - src is first node"() {
