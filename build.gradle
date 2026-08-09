@@ -5,7 +5,7 @@ buildscript {
 }
 
 plugins {
-    id "com.vanniktech.maven.publish" version "0.36.0"
+    id "com.vanniktech.maven.publish" version "0.37.0"
 }
 
 apply plugin:'java'
@@ -33,8 +33,8 @@ application {
 // In this section you declare the dependencies for your production and test code
 dependencies {
     testImplementation "org.spockframework:spock-core:2.4-M5-groovy-4.0"
-    testImplementation 'com.fasterxml.jackson.core:jackson-databind:2.21.2'
-    testImplementation 'net.bytebuddy:byte-buddy:1.14.5'
+    testImplementation 'com.fasterxml.jackson.core:jackson-databind:2.22.1'
+    testImplementation 'net.bytebuddy:byte-buddy:1.18.11'
 }
 
 
