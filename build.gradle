@@ -34,7 +34,7 @@ application {
 dependencies {
     testImplementation "org.spockframework:spock-core:2.4-M5-groovy-4.0"
     testImplementation 'com.fasterxml.jackson.core:jackson-databind:2.21.2'
-    testImplementation 'net.bytebuddy:byte-buddy:1.14.5'
+    testImplementation 'net.bytebuddy:byte-buddy:1.18.11'
 }
 
 
