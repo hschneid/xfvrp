@@ -53,11 +53,10 @@ public class MixedFleetSelector implements IMixedFleetSelector {
         if (amount == 0)
             quality = 0;
 
-        RouteQuality routeQuality = new RouteQuality();
-        routeQuality.route = route;
-        routeQuality.quality = quality;
-
-        return routeQuality;
+        return new RouteQuality(
+                route,
+                quality
+        );
     }
 
     private float sum(float[] arr) {
@@ -69,8 +68,8 @@ public class MixedFleetSelector implements IMixedFleetSelector {
         return sum;
     }
 
-    private class RouteQuality {
-        RouteReport route;
-        double quality;
-    }
+    private record RouteQuality (
+            RouteReport route,
+            double quality
+    ) {}
 }

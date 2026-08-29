@@ -1,5 +1,5 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-![alt text](https://img.shields.io/static/v1?label=version&message=11.6.0&color=-)
+![alt text](https://img.shields.io/static/v1?label=version&message=11.6.1&color=-)
 
 xfvrp
 ======
@@ -60,6 +60,10 @@ report.getSummary().getDistance();
 As a general purpose solver, XFVRP is not fully compatable with single problem solvers. But even though it can prove its relevance by [benchmarks](BENCHMARKS.md).
 
 ## Change log
+
+### 11.6.0
+- Updates (infrastructure, security and so)
+- No changes in business logic
 
 ### 11.5.0
 - Removed giant route based features completely (2-Opt, 3-Opt, ...). This reduces the complexity of code drastically.

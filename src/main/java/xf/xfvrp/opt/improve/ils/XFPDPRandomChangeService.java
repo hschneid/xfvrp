@@ -193,7 +193,7 @@ public class XFPDPRandomChangeService extends XFVRPOptBase implements XFRandomCh
         return true;
     }
 
-    private class Choice {
+    private static class Choice {
         int srcRouteIdx;
         int dstRouteIdx;
         int srcPickPos;

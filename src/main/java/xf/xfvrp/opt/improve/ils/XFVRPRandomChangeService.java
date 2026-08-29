@@ -166,7 +166,7 @@ public class XFVRPRandomChangeService extends XFVRPOptBase implements XFRandomCh
         return pos;
     }
 
-    private class Choice {
+    private static class Choice {
         int srcRouteIdx;
         int dstRouteIdx;
         int srcPos;
