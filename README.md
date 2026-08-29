@@ -1,5 +1,4 @@
-[![MIT License](https://img.shields.io/apm/l/atomic-design-ui.svg?)](https://github.com/tterb/atomic-design-ui/blob/master/LICENSEs)
-[![BCH compliance](https://bettercodehub.com/edge/badge/hschneid/xfvrp?branch=master)](https://bettercodehub.com/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 ![alt text](https://img.shields.io/static/v1?label=version&message=11.6.0&color=-)
 
 xfvrp

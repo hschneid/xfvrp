@@ -258,7 +258,7 @@ public class Context {
 
         int sum = 0;
         for (int compartment = 0; compartment < model.getCompartments().length; compartment++) {
-            sum += amountsOfRoute[compartment].checkCapacity(vehicle.getCapacity());
+            sum += (int) amountsOfRoute[compartment].checkCapacity(vehicle.getCapacity());
         }
 
         return sum;

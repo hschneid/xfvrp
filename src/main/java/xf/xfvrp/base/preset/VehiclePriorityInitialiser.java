@@ -33,13 +33,14 @@ public class VehiclePriorityInitialiser {
 		List<Vehicle> withPrios = Arrays
 			.stream(vehicles)
 			.filter(v -> (v.getPriority() != Vehicle.PRIORITY_UNDEF))
-			.sorted(Comparator.comparingInt(a -> a.getPriority()))
-			.collect(Collectors.toList());
+			.sorted(Comparator.comparingInt(Vehicle::getPriority))
+			.toList();
+
 		// Get the highest given priority value from user
 		// ( all automatically filled priorities must be greater than this value) 
 		int maxPresetPriority = 0;
-		if(withPrios.size() > 0) 
-			maxPresetPriority = withPrios.stream().mapToInt(v -> v.getPriority()).max().getAsInt();
+		if(!withPrios.isEmpty())
+			maxPresetPriority = withPrios.stream().mapToInt(Vehicle::getPriority).max().getAsInt();
 		
 		// Without priorities (sorted descend by capacity)
 		List<Vehicle> withoutPrios = Arrays
@@ -48,11 +49,13 @@ public class VehiclePriorityInitialiser {
 				.sorted((a, b) -> {
 					int c = 0;
 					for (int i = 0; i < b.getCapacity().length; i++)
-						c += ((b.getCapacity()[i] == Float.MAX_VALUE) ? 0 : b.getCapacity()[i]) -
-								((a.getCapacity()[i] == Float.MAX_VALUE) ? 0 : a.getCapacity()[i]);
+						c += (int) (
+								((b.getCapacity()[i] == Float.MAX_VALUE) ? 0 : b.getCapacity()[i]) -
+                                                        ((a.getCapacity()[i] == Float.MAX_VALUE) ? 0 : a.getCapacity()[i])
+						);
 					return c * 1000;	
 				})
-				.collect(Collectors.toList());
+				.toList();
 
 		// Set the automatically filled priority
 		for (Vehicle v : withoutPrios)

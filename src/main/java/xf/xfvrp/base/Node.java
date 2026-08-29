@@ -385,4 +385,9 @@ public class Node implements Cloneable {
 	public int hashCode() {
 		return Objects.hash(externID, idx, globalIdx);
 	}
+
+	@Override
+	protected Object clone() throws CloneNotSupportedException {
+		return super.clone();
+	}
 }
