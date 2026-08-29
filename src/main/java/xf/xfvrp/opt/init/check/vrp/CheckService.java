@@ -50,6 +50,13 @@ public class CheckService {
     public CheckService() throws XFVRPException {
     }
 
+    /** Code for Testing purposes **/
+    public CheckService(XFVRPOptBase optimizationMethod,
+                        CheckCustomerService checkCustomerService) throws XFVRPException {
+        this.optimizationMethod = optimizationMethod;
+        this.checkCustomerService = checkCustomerService;
+    }
+
     /**
      * If nodes cannot be served within the given constraints, these nodes
      * are excluded from optimization in the invalidNodes list.
@@ -89,7 +96,7 @@ public class CheckService {
             // Check non default blocks
             checkBlock(solutionBuilderDataBag, model, blockIdx, nodesOfBlock);
 
-            checkMaxWaiting(nodesOfBlock, model);
+            // checkMaxWaiting(nodesOfBlock, model);
         }
 
         return solutionBuilderDataBag;
@@ -150,10 +157,10 @@ public class CheckService {
     /**
      * Checks a situation where no customer can be reached in waiting time limit.
      */
-    private void checkMaxWaiting(List<Node> nodeList, XFVRPModel model) {
+    /*private void checkMaxWaiting(List<Node> nodeList, XFVRPModel model) {
         // TODO Auto-generated method stub
 
-    }
+    }*/
 
     /**
      * Checks the block constraints like

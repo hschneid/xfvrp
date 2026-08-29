@@ -144,6 +144,8 @@ public class ReportBuilder {
                         context.getCurrentNode().getLoadType()
                 );
                 break;
+            case DEPOT, PAUSE:
+                break;
         }
 
         e.setDelay(context.getRouteVar()[Context.DELAY]);

@@ -2,6 +2,8 @@ package xf.xfvrp.report;
 
 import util.ArrayUtil;
 import xf.xfvrp.base.Vehicle;
+import xf.xfvrp.base.exception.XFVRPException;
+import xf.xfvrp.base.exception.XFVRPExceptionType;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -59,6 +61,8 @@ public class ReportSummary {
 		if(this.overloads == null && routeOverload != null) {
 			this.overloads = new float[routeOverload.length];
 		}
+		if(this.overloads == null)
+			throw new XFVRPException(XFVRPExceptionType.ILLEGAL_STATE, "Error in Route Summary");
 		else if (this.overloads.length < routeOverload.length){
 			this.overloads = Arrays.copyOf(this.overloads, routeOverload.length);
 		}

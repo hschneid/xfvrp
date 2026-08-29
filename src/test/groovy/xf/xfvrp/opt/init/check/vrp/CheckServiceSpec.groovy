@@ -17,8 +17,7 @@ class CheckServiceSpec extends Specification {
 	def checkCustomerService = Stub CheckCustomerService
 
 	def service = new CheckService(
-			checkCustomerService: checkCustomerService,
-			optimizationMethod: opt
+			opt, checkCustomerService
 	)
 
 	def setup() {
