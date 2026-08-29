@@ -300,7 +300,7 @@ public class Context {
     }
 
     public int checkPresetDepot() {
-        if (currentNode.getPresetDepotList().size() > 0 && !currentNode.isInPresetDepotList(currentDepot.getGlobalIdx()))
+        if (!currentNode.getPresetDepotList().isEmpty() && !currentNode.isInPresetDepotList(currentDepot.getGlobalIdx()))
             return 1;
 
         return 0;
@@ -324,8 +324,10 @@ public class Context {
 
     public int checkPresetBlackList() {
         for (int j = 0; j < presetRoutingBlackList.length; j++) {
-            if (presetRoutingBlackList[j] & presetRoutingNodeList[j]) {
-                return 1;
+            if (presetRoutingBlackList[j]) {
+                if (presetRoutingNodeList[j]) {
+                    return 1;
+                }
             }
         }
 

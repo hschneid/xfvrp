@@ -60,13 +60,13 @@ public class ReportSummary {
 		float[] routeOverload = routeSummary.getOverloads();
 		if(this.overloads == null && routeOverload != null) {
 			this.overloads = new float[routeOverload.length];
-		}
-		if(this.overloads == null)
+		} else if (this.overloads == null) {
 			throw new XFVRPException(XFVRPExceptionType.ILLEGAL_STATE, "Error in Route Summary");
-		else if (this.overloads.length < routeOverload.length){
+		} else if (routeOverload == null) {
+			throw new XFVRPException(XFVRPExceptionType.ILLEGAL_STATE, "Error in Route Overload Summary");
+		} else if (this.overloads.length < routeOverload.length) {
 			this.overloads = Arrays.copyOf(this.overloads, routeOverload.length);
-		}
-		else if (routeOverload.length < this.overloads.length){
+		} else if (routeOverload.length < this.overloads.length){
 			routeOverload = Arrays.copyOf(routeOverload, this.overloads.length);
 		}
 		ArrayUtil.add(this.overloads, routeOverload, this.overloads);
