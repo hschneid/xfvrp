@@ -26,48 +26,58 @@ public class XFVRPSwapSearchUtil {
 
         int nbrOfRoutes = routes.length;
         for (int aRtIdx = 0; aRtIdx < nbrOfRoutes; aRtIdx++) {
-            Node[] aRoute = routes[aRtIdx];
             for (int bRtIdx = aRtIdx; bRtIdx < nbrOfRoutes; bRtIdx++) {
-                Node[] bRoute = routes[bRtIdx];
-                for (int aPos = 1; aPos < aRoute.length - 1; aPos++) {
+                searchRoutePair(solution, improvingSteps, aRtIdx, bRtIdx, maxSegmentLength, isSegmentLengthEqual, isInvertActive);
+            }
+        }
+    }
 
-                    int aMaxSegmentLength = Math.min(maxSegmentLength, aRoute.length - aPos - 1);
-                    for (int aSegmentLength = 0; aSegmentLength < aMaxSegmentLength; aSegmentLength++) {
+    /**
+     * Searches improving swap steps between routes aRtIdx and bRtIdx.
+     * Expects aRtIdx &lt;= bRtIdx.
+     */
+    public static void searchRoutePair(Solution solution, Queue<float[]> improvingSteps, int aRtIdx, int bRtIdx, int maxSegmentLength, boolean isSegmentLengthEqual, boolean isInvertActive) {
+        Node[][] routes = solution.getRoutes();
+        Node[] aRoute = routes[aRtIdx];
+        Node[] bRoute = routes[bRtIdx];
 
-                        for (int bPos = 1; bPos < bRoute.length - 1; bPos++) {
-                            // aPos must not be identical to bPos
-                            if (aRtIdx == bRtIdx && bPos == aPos) {
-                                continue;
-                            }
+        for (int aPos = 1; aPos < aRoute.length - 1; aPos++) {
 
-                            // Both segments must not overlap - Is bPos in A-segment
-                            if (aRtIdx == bRtIdx && bPos >= aPos && bPos <= aPos + aSegmentLength) {
-                                continue;
-                            }
+            int aMaxSegmentLength = Math.min(maxSegmentLength, aRoute.length - aPos - 1);
+            for (int aSegmentLength = 0; aSegmentLength < aMaxSegmentLength; aSegmentLength++) {
 
-                            int bMaxSegmentLength = Math.min(maxSegmentLength, bRoute.length - bPos - 1);
-                            for (int bSegmentLength = 0; bSegmentLength < bMaxSegmentLength; bSegmentLength++) {
-                                // Both segments must not overlap - Is B-segment in A-segment
-                                if (aRtIdx == bRtIdx && bPos < aPos && bPos + bSegmentLength >= aPos) {
-                                    continue;
-                                }
+                for (int bPos = 1; bPos < bRoute.length - 1; bPos++) {
+                    // aPos must not be identical to bPos
+                    if (aRtIdx == bRtIdx && bPos == aPos) {
+                        continue;
+                    }
 
-                                // If segment length should be equal
-                                if (isSegmentLengthEqual && aSegmentLength != bSegmentLength) {
-                                    continue;
-                                }
+                    // Both segments must not overlap - Is bPos in A-segment
+                    if (aRtIdx == bRtIdx && bPos >= aPos && bPos <= aPos + aSegmentLength) {
+                        continue;
+                    }
 
-                                searchInRoutes(
-                                        solution,
-                                        aRoute, bRoute,
-                                        aRtIdx, bRtIdx,
-                                        aPos, aSegmentLength,
-                                        bPos, bSegmentLength,
-                                        improvingSteps,
-                                        isInvertActive
-                                );
-                            }
+                    int bMaxSegmentLength = Math.min(maxSegmentLength, bRoute.length - bPos - 1);
+                    for (int bSegmentLength = 0; bSegmentLength < bMaxSegmentLength; bSegmentLength++) {
+                        // Both segments must not overlap - Is B-segment in A-segment
+                        if (aRtIdx == bRtIdx && bPos < aPos && bPos + bSegmentLength >= aPos) {
+                            continue;
                         }
+
+                        // If segment length should be equal
+                        if (isSegmentLengthEqual && aSegmentLength != bSegmentLength) {
+                            continue;
+                        }
+
+                        searchInRoutes(
+                                solution,
+                                aRoute, bRoute,
+                                aRtIdx, bRtIdx,
+                                aPos, aSegmentLength,
+                                bPos, bSegmentLength,
+                                improvingSteps,
+                                isInvertActive
+                        );
                     }
                 }
             }

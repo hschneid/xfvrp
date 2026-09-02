@@ -33,14 +33,35 @@ public class XFVRPSegmentExchange extends XFVRPOptImpBase {
     private final int maxSegmentLength = 3;
 
     @Override
-    protected Queue<float[]> search(Solution solution) {
-        PriorityQueue<float[]> improvingSteps = new PriorityQueue<>(
-                (o1, o2) -> Float.compare(o2[0], o1[0])
-        );
-        XFVRPMoveSearchUtil.search(solution, improvingSteps, maxSegmentLength, isInvertationActive);
-        XFVRPSwapSearchUtil.search(solution, improvingSteps, maxSegmentLength, isSegmentLengthEqual, isInvertationActive);
+    protected void searchRoutePair(Solution solution, Queue<float[]> queue, int routeIdxA, int routeIdxB) {
+        // Move search (both directions for inter-route)
+        XFVRPMoveSearchUtil.searchDirectedRoutePair(solution, queue, routeIdxA, routeIdxB, maxSegmentLength, isInvertationActive);
+        if (routeIdxA != routeIdxB) {
+            XFVRPMoveSearchUtil.searchDirectedRoutePair(solution, queue, routeIdxB, routeIdxA, maxSegmentLength, isInvertationActive);
+        }
 
-        return improvingSteps;
+        // Swap search
+        XFVRPSwapSearchUtil.searchRoutePair(solution, queue, routeIdxA, routeIdxB, maxSegmentLength, isSegmentLengthEqual, isInvertationActive);
+    }
+
+    @Override
+    protected Queue<float[]> search(Solution solution) {
+        evaluateDirtyPairs(solution);
+        PriorityQueue<float[]> queue = new PriorityQueue<>((o1, o2) -> Float.compare(o2[0], o1[0]));
+        int nbrOfRoutes = solution.getRoutes().length;
+        // Moves first: src 0..N, dst 0..N (move arrays have length 8)
+        for (int src = 0; src < nbrOfRoutes; src++) {
+            for (int dst = 0; dst < nbrOfRoutes; dst++) {
+                collectDirectedMoves(src, dst, queue, 8);
+            }
+        }
+        // Swaps second: a 0..N, b a..N (swap arrays have length 9)
+        for (int a = 0; a < nbrOfRoutes; a++) {
+            for (int b = a; b < nbrOfRoutes; b++) {
+                collectPairMoves(a, b, queue, 9);
+            }
+        }
+        return queue;
     }
 
     @Override

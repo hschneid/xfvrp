@@ -24,13 +24,24 @@ import java.util.Queue;
 public class XFPDPSingleMove extends XFVRPOptImpBase {
 
     @Override
-    protected Queue<float[]> search(Solution solution) {
-        PriorityQueue<float[]> improvingSteps = new PriorityQueue<>(
-                (o1, o2) -> Float.compare(o2[0], o1[0])
-        );
-        XFPDPMoveSearchUtil.search(solution, improvingSteps);
+    protected void searchRoutePair(Solution solution, Queue<float[]> queue, int routeIdxA, int routeIdxB) {
+        XFPDPMoveSearchUtil.searchDirectedRoutePair(solution, queue, routeIdxA, routeIdxB);
+        if (routeIdxA != routeIdxB) {
+            XFPDPMoveSearchUtil.searchDirectedRoutePair(solution, queue, routeIdxB, routeIdxA);
+        }
+    }
 
-        return improvingSteps;
+    @Override
+    protected Queue<float[]> search(Solution solution) {
+        evaluateDirtyPairs(solution);
+        PriorityQueue<float[]> queue = new PriorityQueue<>((o1, o2) -> Float.compare(o2[0], o1[0]));
+        int nbrOfRoutes = solution.getRoutes().length;
+        for (int src = 0; src < nbrOfRoutes; src++) {
+            for (int dst = 0; dst < nbrOfRoutes; dst++) {
+                collectDirectedMoves(src, dst, queue);
+            }
+        }
+        return queue;
     }
 
     @Override

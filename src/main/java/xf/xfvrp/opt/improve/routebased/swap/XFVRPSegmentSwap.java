@@ -31,13 +31,21 @@ public class XFVRPSegmentSwap extends XFVRPOptImpBase {
     private final int maxSegmentLength = 3;
 
     @Override
-    protected Queue<float[]> search(Solution solution) {
-        PriorityQueue<float[]> improvingSteps = new PriorityQueue<>(
-                (o1, o2) -> Float.compare(o2[0], o1[0])
-        );
-        XFVRPSwapSearchUtil.search(solution, improvingSteps, maxSegmentLength, isSegmentLengthEqual, isInvertationActive);
+    protected void searchRoutePair(Solution solution, Queue<float[]> queue, int routeIdxA, int routeIdxB) {
+        XFVRPSwapSearchUtil.searchRoutePair(solution, queue, routeIdxA, routeIdxB, maxSegmentLength, isSegmentLengthEqual, isInvertationActive);
+    }
 
-        return improvingSteps;
+    @Override
+    protected Queue<float[]> search(Solution solution) {
+        evaluateDirtyPairs(solution);
+        PriorityQueue<float[]> queue = new PriorityQueue<>((o1, o2) -> Float.compare(o2[0], o1[0]));
+        int nbrOfRoutes = solution.getRoutes().length;
+        for (int a = 0; a < nbrOfRoutes; a++) {
+            for (int b = a; b < nbrOfRoutes; b++) {
+                collectPairMoves(a, b, queue);
+            }
+        }
+        return queue;
     }
 
     @Override

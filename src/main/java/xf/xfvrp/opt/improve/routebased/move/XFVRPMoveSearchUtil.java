@@ -26,33 +26,43 @@ public class XFVRPMoveSearchUtil {
 
         int nbrOfRoutes = routes.length;
         for (int srcRtIdx = 0; srcRtIdx < nbrOfRoutes; srcRtIdx++) {
-            Node[] srcRoute = routes[srcRtIdx];
             for (int dstRtIdx = 0; dstRtIdx < nbrOfRoutes; dstRtIdx++) {
-                Node[] dstRoute = routes[dstRtIdx];
-                for (int srcPos = 1; srcPos < routes[srcRtIdx].length - 1; srcPos++) {
-                    // src node must not be a depot
-                    if (routes[srcRtIdx][srcPos].getSiteType() == SiteType.DEPOT)
-                        continue;
+                searchDirectedRoutePair(solution, improvingSteps, srcRtIdx, dstRtIdx, maxSegmentLength, isInvertationActive);
+            }
+        }
+    }
 
-                    for (int dstPos = 1; dstPos < routes[dstRtIdx].length; dstPos++) {
-                        // src and dst must be different positions
-                        if (srcRtIdx == dstRtIdx && (srcPos == dstPos || dstPos - srcPos == 1)) {
-                            continue;
-                        }
+    /**
+     * Searches improving move steps from srcRtIdx to dstRtIdx (one direction).
+     * This method does NOT search the reverse direction.
+     */
+    public static void searchDirectedRoutePair(Solution solution, Queue<float[]> improvingSteps, int srcRtIdx, int dstRtIdx, int maxSegmentLength, boolean isInvertationActive) {
+        Node[][] routes = solution.getRoutes();
+        Node[] srcRoute = routes[srcRtIdx];
+        Node[] dstRoute = routes[dstRtIdx];
 
-                        for (int segmentLength = 0; segmentLength < maxSegmentLength; segmentLength++) {
-                            // src segment must not too big for src route
-                            if ((srcPos + segmentLength) > srcRoute.length - 2) {
-                                break;
-                            }
-                            // Dst must not lay in the segment or directly behind it (no-move)
-                            if (srcRoute == dstRoute && dstPos <= srcPos + segmentLength + 1 && dstPos >= srcPos) {
-                                break;
-                            }
+        for (int srcPos = 1; srcPos < srcRoute.length - 1; srcPos++) {
+            // src node must not be a depot
+            if (srcRoute[srcPos].getSiteType() == SiteType.DEPOT)
+                continue;
 
-                            searchInRoutes(solution, srcRoute, dstRoute, srcRtIdx, dstRtIdx, srcPos, dstPos, segmentLength, improvingSteps, isInvertationActive);
-                        }
+            for (int dstPos = 1; dstPos < dstRoute.length; dstPos++) {
+                // src and dst must be different positions
+                if (srcRtIdx == dstRtIdx && (srcPos == dstPos || dstPos - srcPos == 1)) {
+                    continue;
+                }
+
+                for (int segmentLength = 0; segmentLength < maxSegmentLength; segmentLength++) {
+                    // src segment must not too big for src route
+                    if ((srcPos + segmentLength) > srcRoute.length - 2) {
+                        break;
                     }
+                    // Dst must not lay in the segment or directly behind it (no-move)
+                    if (srcRoute == dstRoute && dstPos <= srcPos + segmentLength + 1 && dstPos >= srcPos) {
+                        break;
+                    }
+
+                    searchInRoutes(solution, srcRoute, dstRoute, srcRtIdx, dstRtIdx, srcPos, dstPos, segmentLength, improvingSteps, isInvertationActive);
                 }
             }
         }

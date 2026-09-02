@@ -33,6 +33,10 @@ public class Solution implements Iterable<Node[]> {
     // Route -> is more then allowed number of routes for this depot
     private boolean[] isOverhang = new boolean[1];
 
+    // Monotonically increasing route identity counter
+    private int nextRouteId = 1;
+    private int[] routeIds = new int[]{0};
+
     public Solution(XFVRPModel model) {
         this.model = model;
 
@@ -65,6 +69,10 @@ public class Solution implements Iterable<Node[]> {
         return isOverhang;
     }
 
+    public int[] getRouteIds() {
+        return routeIds;
+    }
+
     public void deleteRoute(int routeIndex) {
         // Reduce number of routes per depot
         nbrRoutesOfDepot[routes[routeIndex][0].getIdx()]--;
@@ -74,6 +82,7 @@ public class Solution implements Iterable<Node[]> {
         totalQuality.sub(routeQualities[routeIndex]);
         routeQualities[routeIndex] = new RouteQuality(0, null);
         isOverhang[routeIndex] = false;
+        routeIds[routeIndex] = -1;
     }
 
     public void addRoute(Node[] newRoute) {
@@ -86,6 +95,7 @@ public class Solution implements Iterable<Node[]> {
             if (routes[i] == null || routes[i].length == 0) {
                 routes[i] = newRoute;
                 routeQualities[i] = new RouteQuality(i, null);
+                routeIds[i] = nextRouteId++;
                 return;
             }
         }
@@ -98,6 +108,9 @@ public class Solution implements Iterable<Node[]> {
         routeQualities[routeQualities.length - 1] = new RouteQuality(routeQualities.length - 1, null);
 
         isOverhang = Arrays.copyOf(isOverhang, routes.length);
+
+        routeIds = Arrays.copyOf(routeIds, routes.length);
+        routeIds[routes.length - 1] = nextRouteId++;
     }
 
     public void addRoutes(Node[][] newRoutes) {
@@ -109,6 +122,7 @@ public class Solution implements Iterable<Node[]> {
 
     public void setRoute(int routeIndex, Node[] route) {
         routes[routeIndex] = route;
+        routeIds[routeIndex] = nextRouteId++;
     }
 
     /**
@@ -149,6 +163,8 @@ public class Solution implements Iterable<Node[]> {
 
         solution.nbrRoutesOfDepot = Arrays.copyOf(nbrRoutesOfDepot, nbrRoutesOfDepot.length);
         solution.isOverhang = Arrays.copyOf(isOverhang, isOverhang.length);
+        solution.routeIds = Arrays.copyOf(routeIds, routeIds.length);
+        solution.nextRouteId = nextRouteId;
 
         return solution;
     }
@@ -192,6 +208,7 @@ public class Solution implements Iterable<Node[]> {
         this.routes = newRoutes;
         this.routeQualities = newRouteQualities;
         this.isOverhang = new boolean[newRoutes.length];
+        this.routeIds = Arrays.copyOf(routeIds, nbrOfRoutesToRetain);
 
         updateNbrOfRoutesPerDepot();
     }

@@ -31,14 +31,35 @@ public class XFVRPBorderSegmentExchange extends XFVRPOptImpBase {
     private final boolean isInvertationActive = true;
 
     @Override
-    protected Queue<float[]> search(Solution solution) {
-        var improvingSteps = new PriorityQueue<float[]>(
-                (o1, o2) -> Float.compare(o2[0], o1[0])
-        );
-        XFVRPBorderMoveSearchUtil.search(solution, improvingSteps, isInvertationActive);
-        XFVRPBorderSwapSearchUtil.search(solution, improvingSteps, isInvertationActive);
+    protected void searchRoutePair(Solution solution, Queue<float[]> queue, int routeIdxA, int routeIdxB) {
+        // Border move search (both directions for inter-route)
+        XFVRPBorderMoveSearchUtil.searchDirectedRoutePair(solution, queue, routeIdxA, routeIdxB, isInvertationActive);
+        if (routeIdxA != routeIdxB) {
+            XFVRPBorderMoveSearchUtil.searchDirectedRoutePair(solution, queue, routeIdxB, routeIdxA, isInvertationActive);
+        }
 
-        return improvingSteps;
+        // Border swap search
+        XFVRPBorderSwapSearchUtil.searchRoutePair(solution, queue, routeIdxA, routeIdxB, isInvertationActive);
+    }
+
+    @Override
+    protected Queue<float[]> search(Solution solution) {
+        evaluateDirtyPairs(solution);
+        PriorityQueue<float[]> queue = new PriorityQueue<>((o1, o2) -> Float.compare(o2[0], o1[0]));
+        int nbrOfRoutes = solution.getRoutes().length;
+        // Border moves first: src 0..N, dst 0..N (move arrays have length 8)
+        for (int src = 0; src < nbrOfRoutes; src++) {
+            for (int dst = 0; dst < nbrOfRoutes; dst++) {
+                collectDirectedMoves(src, dst, queue, 8);
+            }
+        }
+        // Border swaps second: a 0..N, b a..N (swap arrays have length 9)
+        for (int a = 0; a < nbrOfRoutes; a++) {
+            for (int b = a; b < nbrOfRoutes; b++) {
+                collectPairMoves(a, b, queue, 9);
+            }
+        }
+        return queue;
     }
 
     @Override

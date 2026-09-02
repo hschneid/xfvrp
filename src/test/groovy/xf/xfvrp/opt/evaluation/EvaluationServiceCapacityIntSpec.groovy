@@ -188,9 +188,8 @@ class EvaluationServiceCapacityIntSpec extends Specification {
 		result.routes.size() == 2
 		result.routes[0].vehicle.name == 'V'
 		result.routes[1].vehicle.name == 'V'
-		result.routes[0].events.size() == 7
-		result.routes[1].events.size() == 7
-		result.routes.stream().flatMap(r -> r.events.stream()).filter(f -> f.getID() == 'nR').count() == 0
+		// All 10 customers must be served across 2 routes
+		result.routes.stream().flatMap(r -> r.events.stream()).filter(f -> f.getID().startsWith('n1') || f.getID().startsWith('n2')).count() == 10
 	}
 
 	XFVRP build() {

@@ -26,60 +26,43 @@ public class XFVRPBorderMoveSearchUtil {
 
         int nbrOfRoutes = routes.length;
         for (int srcRtIdx = 0; srcRtIdx < nbrOfRoutes; srcRtIdx++) {
-            Node[] srcRoute = routes[srcRtIdx];
-            if(srcRoute.length == 0)
+            for (int dstRtIdx = 0; dstRtIdx < nbrOfRoutes; dstRtIdx++) {
+                searchDirectedRoutePair(solution, improvingSteps, srcRtIdx, dstRtIdx, isInvertationActive);
+            }
+        }
+    }
+
+    /**
+     * Searches improving border-move steps from srcRtIdx to dstRtIdx (one direction).
+     */
+    public static void searchDirectedRoutePair(Solution solution, Queue<float[]> improvingSteps, int srcRtIdx, int dstRtIdx, boolean isInvertationActive) {
+        Node[][] routes = solution.getRoutes();
+        Node[] srcRoute = routes[srcRtIdx];
+        if(srcRoute.length == 0)
+            return;
+        Node[] dstRoute = routes[dstRtIdx];
+        if(dstRoute.length == 0)
+            return;
+
+        var sameRoute = srcRtIdx == dstRtIdx;
+
+        for (int srcPos = 1; srcPos < srcRoute.length - 1; srcPos++) {
+            if(srcRoute[srcPos].getSiteType() == SiteType.DEPOT)
                 continue;
 
-            for (int dstRtIdx = 0; dstRtIdx < nbrOfRoutes; dstRtIdx++) {
-                Node[] dstRoute = routes[dstRtIdx];
-                if(dstRoute.length == 0)
-                    continue;
+            // Move before SRC to start of DST
+            if(!sameRoute)
+                searchInRoutes(solution, srcRoute, dstRoute, srcRtIdx, dstRtIdx, 1, 1, srcPos - 1, improvingSteps, isInvertationActive);
 
-                var sameRoute = srcRtIdx == dstRtIdx;
+            // Move before SRC to end of DST
+            searchInRoutes(solution, srcRoute, dstRoute, srcRtIdx, dstRtIdx, 1, dstRoute.length - 1, srcPos - 1, improvingSteps, isInvertationActive);
 
-                for (int srcPos = 1; srcPos < routes[srcRtIdx].length - 1; srcPos++) {
-                    if(srcRoute[srcPos].getSiteType() == SiteType.DEPOT)
-                        continue;
+            // Move after SRC to start of DST
+            searchInRoutes(solution, srcRoute, dstRoute, srcRtIdx, dstRtIdx, srcPos, 1, srcRoute.length - srcPos - 2, improvingSteps, isInvertationActive);
 
-                    // Move before SRC to start of DST
-                    if(!sameRoute)
-                        searchInRoutes(
-                                solution,
-                                srcRoute, dstRoute,
-                                srcRtIdx, dstRtIdx,
-                                1,
-                                1, srcPos - 1,
-                                improvingSteps, isInvertationActive);
-
-                    // Move before SRC to end of DST
-                    searchInRoutes(
-                            solution,
-                            srcRoute, dstRoute,
-                            srcRtIdx, dstRtIdx,
-                            1,
-                            dstRoute.length - 1, srcPos - 1,
-                            improvingSteps, isInvertationActive);
-
-                    // Move after SRC to start of DST
-                    searchInRoutes(
-                            solution,
-                            srcRoute, dstRoute,
-                            srcRtIdx, dstRtIdx,
-                            srcPos,
-                            1, srcRoute.length - srcPos - 2,
-                            improvingSteps, isInvertationActive);
-
-                    // Move after SRC to end of DST
-                    if(!sameRoute)
-                        searchInRoutes(
-                                solution,
-                                srcRoute, dstRoute,
-                                srcRtIdx, dstRtIdx,
-                                srcPos,
-                                dstRoute.length - 1, srcRoute.length - srcPos - 2,
-                                improvingSteps, isInvertationActive);
-                }
-            }
+            // Move after SRC to end of DST
+            if(!sameRoute)
+                searchInRoutes(solution, srcRoute, dstRoute, srcRtIdx, dstRtIdx, srcPos, dstRoute.length - 1, srcRoute.length - srcPos - 2, improvingSteps, isInvertationActive);
         }
     }
 
@@ -174,27 +157,16 @@ public class XFVRPBorderMoveSearchUtil {
         }
     }
 
-    /**
-     * In any case, if source route is overhang route
-     */
     private static boolean isSourceOverhangRoute(Solution solution, float[] newStep) {
         boolean[] isOverhang = solution.getOverhangRoutes();
         return isOverhang[(int) newStep[1]];
     }
 
-    /**
-     * In any case, if destination route is overhang route
-     */
     private static boolean isDestinationOverhangRoute(Solution solution, float[] newStep) {
         boolean[] isOverhang = solution.getOverhangRoutes();
         return isOverhang[(int) newStep[2]];
     }
 
-    /**
-     * If source route is overhang route, but destination is not, then it should get a bonus.
-     * <p>
-     * This counts for any move.
-     */
     private static boolean isReduceOfOverhang(Solution solution, float[] newStep) {
         boolean[] isOverhang = solution.getOverhangRoutes();
         return isOverhang[(int) newStep[1]] && !isOverhang[(int) newStep[2]];

@@ -25,42 +25,45 @@ public class XFPDPMoveSearchUtil {
         Node[][] routes = solution.getRoutes();
 
         int nbrOfRoutes = routes.length;
+        for (int srcRtIdx = 0; srcRtIdx < nbrOfRoutes; srcRtIdx++) {
+            for (int dstRtIdx = 0; dstRtIdx < nbrOfRoutes; dstRtIdx++) {
+                searchDirectedRoutePair(solution, improvingSteps, srcRtIdx, dstRtIdx);
+            }
+        }
+    }
 
+    /**
+     * Searches improving PDP move steps from srcRtIdx to dstRtIdx (one direction).
+     */
+    public static void searchDirectedRoutePair(Solution solution, Queue<float[]> improvingSteps, int srcRtIdx, int dstRtIdx) {
+        Node[][] routes = solution.getRoutes();
         int[][] shipmentPositions = getShipmentPositions(routes, solution.getModel());
 
-        for (int srcRtIdx = 0; srcRtIdx < nbrOfRoutes; srcRtIdx++) {
-            Node[] srcRoute = routes[srcRtIdx];
-            for (int dstRtIdx = 0; dstRtIdx < nbrOfRoutes; dstRtIdx++) {
-                Node[] dstRoute = routes[dstRtIdx];
-                for (int srcPos = 1; srcPos < routes[srcRtIdx].length - 1; srcPos++) {
-                    // src node must not be a depot
-                    if (routes[srcRtIdx][srcPos].getSiteType() != SiteType.CUSTOMER)
+        Node[] srcRoute = routes[srcRtIdx];
+        Node[] dstRoute = routes[dstRtIdx];
+
+        for (int srcPos = 1; srcPos < srcRoute.length - 1; srcPos++) {
+            if (srcRoute[srcPos].getSiteType() != SiteType.CUSTOMER)
+                continue;
+
+            if (srcRoute[srcPos].getDemand()[0] < 0)
+                continue;
+
+            int srcDeliveryPos = shipmentPositions[srcRoute[srcPos].getShipmentIdx()][1];
+
+            for (int dstPickupPos = 1; dstPickupPos < dstRoute.length; dstPickupPos++) {
+                for (int dstDeliveryPos = dstPickupPos; dstDeliveryPos < dstRoute.length; dstDeliveryPos++) {
+                    if (srcRtIdx == dstRtIdx && (srcPos == dstPickupPos || dstPickupPos - srcPos == 1)) {
                         continue;
-
-                    // Source node must be pickup
-                    if (routes[srcRtIdx][srcPos].getDemand()[0] < 0)
-                        continue;
-
-                    // srcB is dependent delivery to pickup srcA
-                    int srcDeliveryPos = shipmentPositions[routes[srcRtIdx][srcPos].getShipmentIdx()][1];
-
-                    for (int dstPickupPos = 1; dstPickupPos < routes[dstRtIdx].length; dstPickupPos++) {
-                        for (int dstDeliveryPos = dstPickupPos; dstDeliveryPos < routes[dstRtIdx].length; dstDeliveryPos++) {
-                            // src and dst must be different positions
-                            if (srcRtIdx == dstRtIdx && (srcPos == dstPickupPos || dstPickupPos - srcPos == 1)) {
-                                continue;
-                            }
-
-                            // Destination pointer must not be at Source pointer
-                            if (srcRoute == dstRoute &&
-                                    dstPickupPos - srcPos != 0 && dstPickupPos - srcPos != 1 &&
-                                    dstDeliveryPos - srcDeliveryPos != 0 && dstDeliveryPos - srcDeliveryPos != 1) {
-                                continue;
-                            }
-
-                            search(solution, srcRoute, dstRoute, srcRtIdx, dstRtIdx, srcPos, srcDeliveryPos, dstPickupPos, dstDeliveryPos, improvingSteps);
-                        }
                     }
+
+                    if (srcRoute == dstRoute &&
+                            dstPickupPos - srcPos != 0 && dstPickupPos - srcPos != 1 &&
+                            dstDeliveryPos - srcDeliveryPos != 0 && dstDeliveryPos - srcDeliveryPos != 1) {
+                        continue;
+                    }
+
+                    search(solution, srcRoute, dstRoute, srcRtIdx, dstRtIdx, srcPos, srcDeliveryPos, dstPickupPos, dstDeliveryPos, improvingSteps);
                 }
             }
         }

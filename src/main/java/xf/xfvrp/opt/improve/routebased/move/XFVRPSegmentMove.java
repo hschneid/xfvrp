@@ -41,13 +41,24 @@ public class XFVRPSegmentMove extends XFVRPOptImpBase {
     }
 
     @Override
-    protected Queue<float[]> search(Solution solution) {
-        PriorityQueue<float[]> improvingSteps = new PriorityQueue<>(
-                (o1, o2) -> Float.compare(o2[0], o1[0])
-        );
-        XFVRPMoveSearchUtil.search(solution, improvingSteps, MAX_SEGMENT_LENGTH, IS_INVERT_ACTIVE);
+    protected void searchRoutePair(Solution solution, Queue<float[]> queue, int routeIdxA, int routeIdxB) {
+        XFVRPMoveSearchUtil.searchDirectedRoutePair(solution, queue, routeIdxA, routeIdxB, MAX_SEGMENT_LENGTH, IS_INVERT_ACTIVE);
+        if (routeIdxA != routeIdxB) {
+            XFVRPMoveSearchUtil.searchDirectedRoutePair(solution, queue, routeIdxB, routeIdxA, MAX_SEGMENT_LENGTH, IS_INVERT_ACTIVE);
+        }
+    }
 
-        return improvingSteps;
+    @Override
+    protected Queue<float[]> search(Solution solution) {
+        evaluateDirtyPairs(solution);
+        PriorityQueue<float[]> queue = new PriorityQueue<>((o1, o2) -> Float.compare(o2[0], o1[0]));
+        int nbrOfRoutes = solution.getRoutes().length;
+        for (int src = 0; src < nbrOfRoutes; src++) {
+            for (int dst = 0; dst < nbrOfRoutes; dst++) {
+                collectDirectedMoves(src, dst, queue);
+            }
+        }
+        return queue;
     }
 
     @Override

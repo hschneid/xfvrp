@@ -1,5 +1,5 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-![Version](https://img.shields.io/static/v1?label=version&message=11.6.1&color=-)
+![Version](https://img.shields.io/static/v1?label=version&message=11.7.0&color=-)
 ![Java](https://img.shields.io/badge/Java-21-blue)
 
 # xfvrp
@@ -280,6 +280,9 @@ Copyright (c) 2012-2026 Holger Schneider
 ---
 
 ## Change Log
+
+### 11.7.0
+- Reduction of duplicate checks during neighborhood search with a cache. This improves speed by ca. 25%.
 
 ### 11.6.1
 - Latest release
