@@ -35,7 +35,7 @@ dependencies {
     testImplementation "org.spockframework:spock-core:2.4-M5-groovy-4.0"
     testRuntimeOnly "org.junit.platform:junit-platform-launcher"
     testImplementation 'net.bytebuddy:byte-buddy:1.18.17'
-    testImplementation 'com.fasterxml.jackson.core:jackson-databind:2.22.3'
+    testImplementation 'com.fasterxml.jackson.core:jackson-databind:2.22.4'
 }
 
 test {
