@@ -13,7 +13,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Java JDK einrichten
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v6
         with:
           java-version: '21'
           distribution: 'temurin'
@@ -21,7 +21,8 @@ jobs:
       - name: Gradle validieren (Sicherheit)
         uses: gradle/actions/wrapper-validation@v6
 
-      - name: Build mit Gradle ausführen
+      - name: Gradle einrichten
         uses: gradle/actions/setup-gradle@v6
-        with:
-          arguments: build
+
+      - name: Build mit Gradle ausführen
+        run: ./gradlew build
