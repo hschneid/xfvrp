@@ -1,0 +1,338 @@
+package xf.xfvrp.base.fleximport;
+
+import xf.xfvrp.base.Node;
+import xf.xfvrp.base.ShipmentConverter;
+import xf.xfvrp.base.Vehicle;
+import xf.xfvrp.base.compartment.CompartmentInitializer;
+import xf.xfvrp.base.compartment.CompartmentType;
+import xf.xfvrp.base.exception.XFVRPException;
+import xf.xfvrp.base.exception.XFVRPExceptionType;
+import xf.xfvrp.base.monitor.StatusManager;
+import xf.xfvrp.base.preset.*;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/** 
+ * Copyright (c) 2012-2023 Holger Schneider
+ * All rights reserved.
+ *
+ * This source code is licensed under the MIT License (MIT) found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ *
+ * FlexiImporter is the class which holds the concept for flexible and adaptive
+ * import of data into the XFVRP suite. The general points are
+ * - abstraction of data handling between chaotic user and stable algorithms
+ * - abstraction of import sequence (which data is first?)
+ * - Easy-to-fill data objects by eliminating import methods (set/add) with static parameters
+ * - Handling of vehicles (default or fleet)
+ * - Assiging the vehicle priority by sorting the vehicles with their capacities
+ * 
+ * After import collected data can be accessed XFVRP suite. 
+ * 
+ * @author hschneid
+ *
+ */
+public class FlexiImporter {
+
+	private final List<DepotData> depotList = new ArrayList<>();
+	private final List<CustomerData> customerList = new ArrayList<>();
+	private final List<ReplenishData> replenishList = new ArrayList<>();
+	private final List<TransshipmentData> transshipmentList = new ArrayList<>();
+	private final List<VehicleData> vehicleList = new ArrayList<>();
+	private final List<CompartmentType> compartmentTypes = new ArrayList<>();
+
+	public final VehicleData defaultVehicle = VehicleData.createDefault();
+
+	private DepotData lastDepotData = null;
+	private CustomerData lastCustomerData = null;
+	private ReplenishData lastReplenishData = null;
+	private TransshipmentData lastTransshipmentData = null;
+	private VehicleData lastVehicleData = null;
+
+	/**
+	 * Standard constructor
+	 * 
+	 * Here default vehicle is added to data.
+	 */
+	public FlexiImporter() {
+		vehicleList.add(defaultVehicle);
+	}
+
+	/**
+	 * Transforms the imported nodes (depots, customers and replenishments)
+	 * into an array. This is used by internal algorithm to gather the
+	 * imported data.
+	 */
+	public Node[] getNodes(Vehicle[] vehicles, StatusManager statusManager) {
+		int idx = 0;
+		Node[] nodes = new Node[depotList.size() + replenishList.size() + transshipmentList.size() + customerList.size()];
+
+		// Depots
+		for (DepotData dep : depotList) {
+			nodes[idx] = dep.createDepot(idx);
+			idx++;
+		}
+
+		// Replenishing depots
+		for (ReplenishData rep : replenishList) {
+			nodes[idx] = rep.createReplenishment(idx);
+			idx++;
+		}
+
+		// Transshipment locations
+		for (TransshipmentData ts : transshipmentList) {
+			nodes[idx] = ts.createTransshipment(idx);
+			idx++;
+		}
+
+		// Customers
+		for (CustomerData cust : customerList) {
+			nodes[idx] = cust.createCustomer(idx);
+			idx++;
+		}
+
+		// Convert external node data to internal node data
+		// Indexing, replacing, transforming
+		CompartmentInitializer.check(nodes, compartmentTypes, vehicles);
+		BlockedVehicleListConverter.convert(nodes, customerList, vehicles, statusManager);
+		TrailerAccessibilityConverter.convert(nodes, customerList, vehicles);
+		BlockNameConverter.convert(nodes, customerList);
+		BlockPositionConverter.convert(nodes, customerList);
+		PresetBlacklistedNodeConverter.convert(nodes, customerList);
+		PresetDepotConverter.convert(nodes, customerList, statusManager);
+		ShipmentConverter.convert(nodes, customerList);
+
+		return nodes;
+	}
+
+	/**
+	 * If XFVRP suite begins execution, the import process is finished
+	 * and all achieved data objects are finalized and inserted into the
+	 * data lists.
+	 */
+	public void finishImport() {
+		if(lastDepotData != null)
+			depotList.add(lastDepotData);
+		if(lastCustomerData != null)
+			customerList.add(lastCustomerData);
+		if(lastReplenishData != null)
+			replenishList.add(lastReplenishData);
+		if(lastTransshipmentData != null)
+			transshipmentList.add(lastTransshipmentData);
+		if(lastVehicleData != null)
+			vehicleList.add(lastVehicleData);
+
+		lastDepotData = null;
+		lastCustomerData = null;
+		lastReplenishData = null;
+		lastTransshipmentData = null;
+		lastVehicleData = null;
+	}
+
+	/**
+	 * Achieve a depot data object, where user can import data in any
+	 * sequence. The call of this method means, that the last achieved
+	 * depot data object is finalized and added to the internal depot list.
+	 * 
+	 * @return Depot data, where user can import data in any sequence
+	 */
+	public DepotData getDepotData() {
+		if(lastDepotData != null)
+			depotList.add(lastDepotData);
+
+		lastDepotData = new DepotData();
+
+		return lastDepotData;
+	}
+
+	/**
+	 * Achieve a customer data object, where user can import data in any
+	 * sequence. The call of this method means, that the last achieved
+	 * customer data object is finalized and added to the internal customer list.
+	 * 
+	 * @return Customer data, where user can import data in any sequence
+	 */
+	public CustomerData getCustomerData() {
+		if(lastCustomerData != null)
+			customerList.add(lastCustomerData);
+
+		lastCustomerData = new CustomerData();
+
+		return lastCustomerData;
+	}
+
+	/**
+	 * Returns a data object, which describes a replenishment node. At
+	 * a replenishment node, the loaded amounts are cleared.
+	 *
+	 * Replenishment nodes are optional.
+	 */
+	public ReplenishData getReplenishData() {
+		if(lastReplenishData != null)
+			replenishList.add(lastReplenishData);
+
+		lastReplenishData = new ReplenishData();
+
+		return lastReplenishData;
+	}
+
+	/**
+	 * Returns a data object, which describes a transshipment location. At a
+	 * transshipment location load can be transferred between vehicles and
+	 * trailers can be parked (trailer drop point).
+	 *
+	 * Transshipment locations are optional.
+	 */
+	public TransshipmentData getTransshipmentData() {
+		if(lastTransshipmentData != null)
+			transshipmentList.add(lastTransshipmentData);
+
+		lastTransshipmentData = new TransshipmentData();
+
+		return lastTransshipmentData;
+	}
+
+	/**
+	 * Achieve a vehicle data object, where user can import data in any
+	 * sequence. The call of this method means, that the last achieved
+	 * vehicle data object is finalized and added to the internal vehicle list.
+	 * 
+	 * By achieving a vehicle data object, the default vehicle is put out of
+	 * vehicle list. So the default vehicle parameter have to be announced in
+	 * specific own vehicle data.
+	 * 
+	 * @return Container data, where user can import data in any sequence
+	 */
+	public VehicleData getVehicleData() {
+		// Zur Sicherheit wird das default-vehicle entfernt, auch wenn es
+		// offensichtlich nicht mehr im Set drin ist.
+		vehicleList.remove(defaultVehicle);
+
+		if(lastVehicleData != null) {
+			vehicleList.add(lastVehicleData);
+		}
+
+		lastVehicleData = new VehicleData();
+
+		return lastVehicleData;
+	}
+
+	public void addCompartmentType(CompartmentType type) {
+		compartmentTypes.add(type);
+	}
+
+	/**
+	 * Clears all imported customers
+	 */
+	public void clearCustomers() {
+		customerList.clear();
+	}
+
+	/**
+	 * Clears all imported depots.
+	 */
+	public void clearDepots() {
+		depotList.clear();
+	}
+
+	/**
+	 * Removes all inserted vehicles and reset the planning parameters to default.
+	 * (See setCapacity() and setMaxRouteDuration() )
+	 */
+	public void clearVehicles() {
+		vehicleList.clear();
+		vehicleList.add(defaultVehicle);
+	}
+
+	public List<DepotData> getDepotList() {
+		return depotList;
+	}
+
+	public List<CustomerData> getCustomerList() {
+		return customerList;
+	}
+
+	public CompartmentType[] getCompartmentTypes() {return compartmentTypes.toArray(new CompartmentType[0]);}
+
+	public Vehicle[] getVehicles() throws XFVRPException {
+		Vehicle[] vehicles = new Vehicle[vehicleList.size()];
+		for (int i = 0; i < vehicleList.size(); i++) {
+			vehicles[i] = vehicleList.get(i).createVehicle(i);
+			vehicles[i].setAutonomous(vehicleList.get(i).isAutonomous());
+		}
+
+		bindTrailerCouplings(vehicleList, vehicles);
+
+		return vehicles;
+	}
+
+	/**
+	 * Resolves the declared lorry-trailer couplings into vehicle indexes and
+	 * validates them. Each lorry, which is coupled to a trailer, must reference
+	 * an existing non-autonomous vehicle. Each trailer must be referenced by at
+	 * least one lorry, otherwise the input is invalid.
+	 */
+	private void bindTrailerCouplings(List<VehicleData> vehicleDataList, Vehicle[] vehicles) throws XFVRPException {
+		for (int i = 0; i < vehicleDataList.size(); i++) {
+			VehicleData vehData = vehicleDataList.get(i);
+
+			if (vehData.getTrailerId().isEmpty())
+				continue;
+
+			int trailerIdx = NO_VEHICLE_IDX;
+			for (int j = 0; j < vehicleDataList.size(); j++) {
+				VehicleData trailerData = vehicleDataList.get(j);
+				if (trailerDataMatches(vehData, trailerData)) {
+					trailerIdx = j;
+					break;
+				}
+			}
+
+			if (trailerIdx == NO_VEHICLE_IDX)
+				throw new XFVRPException(XFVRPExceptionType.ILLEGAL_INPUT, "Trailer with name " + vehData.getTrailerId() + " is not found in vehicle data.");
+
+			vehicles[i].setTrailerId(trailerIdx);
+
+			// Additive coupled capacity: While the lorry pulls the trailer, the
+			// effective capacity is the train capacity (lorry + trailer).
+			addTrainCapacity(vehicles[i], vehicles[trailerIdx]);
+		}
+
+		for (VehicleData vehData : vehicleDataList) {
+			if (vehData.isAutonomous())
+				continue;
+
+			if (!hasPullingLorry(vehData, vehicleDataList))
+				throw new XFVRPException(XFVRPExceptionType.ILLEGAL_INPUT, "Trailer with name " + vehData.getName() + " has no lorry, which is allowed to pull it.");
+		}
+	}
+
+	private boolean trailerDataMatches(VehicleData lorry, VehicleData trailer) {
+		return lorry.getTrailerId().equals(trailer.getName()) && !trailer.isAutonomous();
+	}
+
+	/**
+	 * Adds the capacity of the trailer to the capacity of the pulling lorry
+	 * (additive coupled capacity). As the coupling is fixed during planning,
+	 * the lorry always travels as a train with the trailer, so that its
+	 * effective capacity is the train capacity per compartment.
+	 */
+	private void addTrainCapacity(Vehicle lorry, Vehicle trailer) {
+		float[] lorryCapacity = lorry.getCapacity();
+		float[] trailerCapacity = trailer.getCapacity();
+
+		for (int compartmentIdx = 0; compartmentIdx < lorryCapacity.length && compartmentIdx < trailerCapacity.length; compartmentIdx++)
+			lorryCapacity[compartmentIdx] += trailerCapacity[compartmentIdx];
+	}
+
+	private boolean hasPullingLorry(VehicleData trailer, List<VehicleData> vehicleDataList) {
+		for (VehicleData lorry : vehicleDataList)
+			if (lorry.isAutonomous() && lorry.getTrailerId().equals(trailer.getName()))
+				return true;
+		return false;
+	}
+
+	private static final int NO_VEHICLE_IDX = -1;
+}

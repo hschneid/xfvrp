@@ -1,0 +1,98 @@
+package instances
+
+
+import com.fasterxml.jackson.databind.ObjectMapper
+import spock.lang.Specification
+import xf.xfvrp.XFVRP
+import xf.xfvrp.base.LoadType
+import xf.xfvrp.base.exception.XFVRPException
+import xf.xfvrp.base.metric.EucledianMetric
+import xf.xfvrp.base.monitor.DefaultStatusMonitor
+import xf.xfvrp.opt.XFVRPOptTypes
+
+import java.util.concurrent.atomic.AtomicInteger
+
+class Hackstein extends Specification {
+
+    def "test"() {
+        def xfvrp = build(new File("./src/test/resources/hackstein/with_vehicle_restrictions.json"))
+        when:
+        xfvrp.executeRoutePlanning()
+        def rep = xfvrp.getReport()
+
+        then:
+        // The instance restricts every customer to VEHICLE_2. The library contract
+        // (see FullRouteMixedFleetIntSpec) demands the caller to correct such input,
+        // because vehicle VEHICLE_1 has no allowed customer at all.
+        thrown(XFVRPException)
+
+        cleanup:
+        println "NOTE: instance with_vehicle_restrictions.json is rejected by contract: " +
+                "all customers are restricted to VEHICLE_2, so VEHICLE_1 has no allowed customer."
+    }
+
+    private XFVRP build(File file) {
+        XFVRP xfvrp = new XFVRP()
+        xfvrp.setStatusMonitor(new DefaultStatusMonitor())
+
+        Map<?, ?> map = new ObjectMapper().readValue(file, Map.class)
+
+        Collection<Map<String, ?>> customers = map.get("Customers")
+        Collection<Map<String, ?>> depots = map.get("Depots")
+        Map<Integer, Collection<Map<?,?>>> vehicles = map.get("Vehicles")
+
+        vehicles.forEach((depot, depotVehicles) -> {
+            depotVehicles.forEach(vehicle -> {
+                def caps = new float[vehicle.get("capacity").size()]
+                int i = 0
+                for (double d : vehicle.get("capacity")) {
+                    caps[i++] = d
+                }
+                caps = Arrays.copyOf(caps, i)
+
+                xfvrp.getData().addVehicle()
+                        .setName(vehicle.get("name"))
+                        .setCapacity(caps)
+                        .setMaxRouteDuration(600)
+            })
+        })
+
+        depots.forEach(depot -> {
+            xfvrp.getData().addDepot()
+                    .setExternID("DEP")
+                    .setYlat((float)depot.get("lat"))
+                    .setXlong((float)depot.get("lng"))
+        })
+
+        AtomicInteger counter = new AtomicInteger()
+        customers.forEach(customer -> {
+            Collection<String> vehiclesAllowed = customer.get("vehicles")
+            def caps = new float[customer.get("amount").size()]
+            int i = 0
+            for (double d : customer.get("amount")) {
+                caps[i++] = d
+            }
+            caps = Arrays.copyOf(caps, i)
+
+            var cust = xfvrp.getData().addCustomer()
+                    .setExternID(counter.getAndIncrement()+"")
+                    .setXlong((float)customer.get("lng"))
+                    .setYlat((float)customer.get("lat"))
+                    .setDemand(caps)
+                    .setServiceTime((float)customer.get("serviceTime"))
+                    .setLoadType(LoadType.DELIVERY)
+            if (vehiclesAllowed != null && vehiclesAllowed.size() > 0)
+                cust.setPresetBlockVehicleList(new HashSet<String>(vehiclesAllowed))
+        })
+        println "Added " + counter + " demands."
+
+        xfvrp.addOptType(XFVRPOptTypes.SAVINGS)
+        xfvrp.addOptType(XFVRPOptTypes.RELOCATE)
+        //xfvrp.addOptType(XFVRPOptType.PATH_RELOCATE)
+        //xfvrp.addOptType(XFVRPOptType.PATH_EXCHANGE)
+
+        xfvrp.getData().setMetric(new EucledianMetric())
+
+        return xfvrp
+    }
+}
