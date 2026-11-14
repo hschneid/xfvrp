@@ -1,6 +1,7 @@
 package xf.xfvrp.opt.evaluation;
 
 import xf.xfvrp.base.Node;
+import xf.xfvrp.base.SiteType;
 
 import static xf.xfvrp.base.SiteType.DEPOT;
 import static xf.xfvrp.base.SiteType.REPLENISH;
@@ -36,6 +37,17 @@ public class ActiveNodeAnalyzer {
             activeFlags[i] = true;
 
             Node currNode = route[i];
+
+            // A transshipment visit without transferred amount and without
+            // following customers is a pure detour. It is deactivated, so that
+            // the optimization can leave it behind when customers are relocated.
+            if (currNode.getSiteType() == SiteType.TRANSSHIPMENT &&
+                    transfersNoLoad(currNode) &&
+                    !hasFollowingCustomer(route, i)) {
+                activeFlags[i] = false;
+                nbrOfInactiveNodes++;
+                continue;
+            }
 
             if (currNode.getSiteType() == DEPOT &&
                     lastNode.getSiteType() == DEPOT) {
@@ -78,5 +90,28 @@ public class ActiveNodeAnalyzer {
         }
 
         return activeRoute;
+    }
+
+    /**
+     * A transshipment visit transfers no load, if it carries no amount (i.e.
+     * it is part of no transshipment record).
+     */
+    private static boolean transfersNoLoad(Node node) {
+        return node.getDemand().length == 0 || node.getDemand()[0] == 0;
+    }
+
+    /**
+     * Checks, if customers with demand follow the transshipment visit until
+     * the next transshipment location or depot.
+     */
+    private static boolean hasFollowingCustomer(Node[] route, int pos) {
+        for (int j = pos + 1; j < route.length; j++) {
+            Node node = route[j];
+            if (node.getSiteType() != SiteType.CUSTOMER)
+                break;
+            if (node.getDemand().length > 0 && node.getDemand()[0] > 0)
+                return true;
+        }
+        return false;
     }
 }

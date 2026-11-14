@@ -7,6 +7,8 @@ import xf.xfvrp.base.preset.BlockNameConverter;
 import xf.xfvrp.base.quality.RouteQuality;
 import xf.xfvrp.opt.Solution;
 
+import java.util.Arrays;
+
 /**
  * Copyright (c) 2012-2026 Holger Schneider
  * All rights reserved.
@@ -19,6 +21,23 @@ import xf.xfvrp.opt.Solution;
 public class EvaluationService {
 
     private final ContextBuilder contextBuilder = new ContextBuilder();
+
+    /*
+     * Record context of the joint multi-vehicle plan (VRPTT Phase 3): routes
+     * of other vehicles, which are not evaluated, but visible for the
+     * transshipment record pairing.
+     */
+    private Node[][] recordContextRoutes = new Node[0][];
+    private XFVRPModel[] recordContextModels = new XFVRPModel[0];
+
+    /**
+     * Sets the routes of other vehicles of the joint plan, which are visible
+     * for the transshipment record pairing of all following checks.
+     */
+    public void setRecordContext(Node[][] recordContextRoutes, XFVRPModel[] recordContextModels) {
+        this.recordContextRoutes = (recordContextRoutes != null) ? recordContextRoutes : new Node[0][];
+        this.recordContextModels = (recordContextModels != null) ? recordContextModels : new XFVRPModel[0];
+    }
 
     /**
      * Evaluates the costs and validates the restrictions of the
@@ -33,6 +52,33 @@ public class EvaluationService {
     public Quality check(Solution solution) throws XFVRPException {
         Context context = contextBuilder.build(solution.getModel());
 
+        context.setRoutes(mergedRoutes(solution));
+        context.setRouteModels(mergedModels(solution));
+
+        checkRoutes(solution, context);
+
+        return new Quality(solution.getQuality());
+    }
+
+    /**
+     * Checks, if routes are valid and returns the quality.
+     * <p>
+     * The given record context routes are not evaluated themselves, but they
+     * are visible for the transshipment record pairing (VRPTT Phase 3): a
+     * record of the solution may span the routes of another vehicle, which is
+     * planned in its own solution with its own model. The model of a context
+     * route is used for its side of the temporal consistency check.
+     *
+     * @param solution             Solution, which is evaluated
+     * @param recordContextRoutes  Routes of other vehicles, which share transshipment records with the solution
+     * @param recordContextModels  Models of the context routes (aligned with recordContextRoutes)
+     */
+    public Quality check(Solution solution, Node[][] recordContextRoutes, XFVRPModel[] recordContextModels) throws XFVRPException {
+        Context context = contextBuilder.build(solution.getModel());
+
+        context.setRoutes(mergedRoutes(solution, recordContextRoutes));
+        context.setRouteModels(mergedModels(solution, recordContextModels));
+
         checkRoutes(solution, context);
 
         return new Quality(solution.getQuality());
@@ -42,15 +88,30 @@ public class EvaluationService {
      * Checks, if routes are valid and returns the quality.
      * <p>
      * Here only 2 routes are checked, which are changed by neighborhood search.
+     * Routes, which share a transshipment record with the changed routes, are
+     * re-evaluated as well, so that the synchronization penalties stay
+     * consistent (VRPTT). With a record context of the joint multi-vehicle
+     * plan, the foreign routes are visible for the record pairing, but only
+     * own routes are re-evaluated.
      */
     public Quality check(Solution solution, int routeIdxA, int routeIdxB) throws XFVRPException {
         Context context = contextBuilder.build(solution.getModel());
+        context.setRoutes(mergedRoutes(solution));
+        context.setRouteModels(mergedModels(solution));
 
         solution.invalidateRouteQuality(routeIdxA);
         checkAndUpdateRoutes(routeIdxA, solution, context);
         if (routeIdxA != routeIdxB) {
             solution.invalidateRouteQuality(routeIdxB);
             checkAndUpdateRoutes(routeIdxB, solution, context);
+        }
+
+        for (int partnerIdx : SynchronizationAnalyzer.findRecordPartners(solution.getRoutes(), routeIdxA, routeIdxB)) {
+            if (partnerIdx >= solution.getRoutes().length)
+                continue; // Foreign routes of the joint plan are evaluated in their own solution
+
+            solution.invalidateRouteQuality(partnerIdx);
+            checkAndUpdateRoutes(partnerIdx, solution, context);
         }
 
         return new Quality(solution.getQuality());
@@ -120,6 +181,9 @@ public class EvaluationService {
         int penalty = context.checkPresetBlockCount();
         q.addPenalty(penalty, Quality.PENALTY_REASON_PRESETTING);
 
+        // Check synchronization constraints at transshipment locations (VRPTT)
+        SynchronizationAnalyzer.analyze(route, context.getRoutes(), context.getModel(), context.getRouteModels(), q);
+
         return q;
     }
 
@@ -150,8 +214,26 @@ public class EvaluationService {
                         currentNode.getDemand(),
                         currentNode.getLoadType()
                 );
+            } else if (isTransshipmentLoadChange(currentNode)) {
+                // Transshipment record visit: load is taken (+amount) from or
+                // dropped (-amount) at a transshipment location
+                amounts[i].addAmount(
+                        currentNode.getDemand(),
+                        LoadType.PICKUP
+                );
             }
         }
+    }
+
+    /**
+     * A visit of a transshipment location changes the vehicle load, if it is
+     * part of a transshipment record (load transfer between two vehicles).
+     * Pass-through visits carry no amount.
+     */
+    private boolean isTransshipmentLoadChange(Node node) {
+        return node.getSiteType() == SiteType.TRANSSHIPMENT &&
+                node.getDemand().length > 0 &&
+                Math.abs(node.getDemand()[0]) > 0.001f;
     }
 
     private void checkTimeWindow(Quality q, Context context) {
@@ -280,5 +362,35 @@ public class EvaluationService {
                 return route[i];
         }
         return null;
+    }
+
+    /**
+     * Merges the routes of the solution with the record context routes of
+     * the joint multi-vehicle plan (VRPTT Phase 3).
+     */
+    private Node[][] mergedRoutes(Solution solution) {
+        Node[][] ownRoutes = solution.getRoutes();
+        Node[][] allRoutes = Arrays.copyOf(ownRoutes, ownRoutes.length + recordContextRoutes.length);
+        System.arraycopy(recordContextRoutes, 0, allRoutes, ownRoutes.length, recordContextRoutes.length);
+        return allRoutes;
+    }
+
+    private Node[][] mergedRoutes(Solution solution, Node[][] recordContextRoutes) {
+        Node[][] ownRoutes = solution.getRoutes();
+        Node[][] allRoutes = Arrays.copyOf(ownRoutes, ownRoutes.length + recordContextRoutes.length);
+        System.arraycopy(recordContextRoutes, 0, allRoutes, ownRoutes.length, recordContextRoutes.length);
+        return allRoutes;
+    }
+
+    private XFVRPModel[] mergedModels(Solution solution) {
+        return mergedModels(solution, recordContextModels);
+    }
+
+    private XFVRPModel[] mergedModels(Solution solution, XFVRPModel[] recordContextModels) {
+        Node[][] ownRoutes = solution.getRoutes();
+        XFVRPModel[] allModels = new XFVRPModel[ownRoutes.length + recordContextModels.length];
+        for (int i = 0; i < allModels.length; i++)
+            allModels[i] = (i < ownRoutes.length) ? solution.getModel() : recordContextModels[i - ownRoutes.length];
+        return allModels;
     }
 }

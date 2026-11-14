@@ -83,7 +83,7 @@ public class XFVRP extends XFVRPData {
 				.execute(
 						nodes,
 						importer.getCompartmentTypes(),
-						vehicles,
+						getPlanningVehicles(vehicles),
 						this::executeRoutePlanning,
 						metric,
 						parameters,
@@ -93,6 +93,19 @@ public class XFVRP extends XFVRPData {
 		vehicleSolutionList.addAll(solutions);
 
 		statusManager.fireMessage(StatusCode.FINISHED, "XFVRP finished successfully.");
+	}
+
+	/**
+	 * Returns only the vehicles, which are planned by themselves. Non-autonomous
+	 * vehicles (trailers of the VRPTT) are moved while coupled to a pulling
+	 * lorry and get no own planning run.
+	 */
+	private Vehicle[] getPlanningVehicles(Vehicle[] vehicles) {
+		List<Vehicle> planningVehicles = new ArrayList<>();
+		for (Vehicle veh : vehicles)
+			if (veh.isAutonomous())
+				planningVehicles.add(veh);
+		return planningVehicles.toArray(new Vehicle[0]);
 	}
 
 	/**
