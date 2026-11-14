@@ -43,6 +43,9 @@ public class CustomerData extends NodeData {
 	protected Set<String> presetBlockVehicleList = new HashSet<>();
 	protected Set<String> presetDepotList = new HashSet<>();
 	protected Set<String> presetRoutingBlackList = new HashSet<>();
+
+	/** VRPTT - parameter : if false, this customer is a lorry customer, which is not accessible with a trailer. **/
+	protected boolean trailerAccessible = true;
 	
 	/**
 	 * @param pdType the pdType to set
@@ -284,6 +287,24 @@ public class CustomerData extends NodeData {
 		return this;
 	}
 
+	/**
+	 * Defines, whether this customer is accessible by a vehicle, which pulls a
+	 * trailer. Default is true (trailer customer).
+	 *
+	 * If false, this customer is a lorry customer. It is blocked for all
+	 * vehicle types, which are coupled to a trailer (trailer capable vehicles).
+	 */
+	public CustomerData setTrailerAccessible(boolean trailerAccessible) {
+		this.trailerAccessible = trailerAccessible;
+		return this;
+	}
+
+	/**
+	 * @return whether this customer is accessible by trailer capable vehicles (lorry customer if false).
+	 */
+	public boolean isTrailerAccessible() {
+		return trailerAccessible;
+	}
 	///////////////////////////////////////
 
 	public float[] getDemand() {

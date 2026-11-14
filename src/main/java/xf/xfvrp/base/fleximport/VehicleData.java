@@ -40,6 +40,12 @@ public class VehicleData implements Serializable {
 	
 	protected int priority = PRIORITY_UNDEF;
 
+	/** VRPTT - parameter : a lorry is autonomous, a trailer is not. **/
+	protected boolean autonomous = true;
+
+	/** VRPTT - parameter : name of the trailer vehicle, which is pulled by this vehicle. Empty, if no trailer. **/
+	protected String trailerName = "";
+
 	protected float[] capacities;
 	protected List<CompartmentCapacity> compartments;
 	
@@ -143,6 +149,42 @@ public class VehicleData implements Serializable {
 	public VehicleData setPriority(int priority) {
 		this.priority = priority;
 		return this;
+	}
+
+	/**
+	 * Defines, whether this vehicle is autonomous. Lorries are autonomous
+	 * (default), trailers are not. A non-autonomous vehicle is not planned
+	 * by itself; it is only moved while coupled to a pulling lorry.
+	 */
+	public VehicleData setAutonomous(boolean autonomous) {
+		this.autonomous = autonomous;
+		return this;
+	}
+
+	public boolean isAutonomous() {
+		return autonomous;
+	}
+
+	/**
+	 * Sets the trailer, which is pulled by this vehicle. The parameter must
+	 * fit to the vehicle name of a non-autonomous vehicle (trailer).
+	 *
+	 * If this parameter is not set, this vehicle pulls no trailer.
+	 */
+	public VehicleData setTrailerId(String trailerName) {
+		this.trailerName = (trailerName != null) ? trailerName.trim() : "";
+		return this;
+	}
+
+	public String getTrailerId() {
+		return trailerName;
+	}
+
+	/**
+	 * @return the vehicle name
+	 */
+	public String getName() {
+		return name;
 	}
 	
 	/**
