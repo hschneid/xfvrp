@@ -16,6 +16,7 @@ xfvrp is a fast and easy-to-use solver for Rich Vehicle Routing Problems like
 - Heterogeneous fleet
 - Pick and delivery or backhauls
 - Replenishment sites
+- Trailers, transshipment locations and customer accessibility ([VRPTT](docs/VRPTT.md))
 - State of the art optimization heuristics
 - Presettings (i.e. packages must be loaded together or not)
 - Open route planning (start and/or end)
@@ -253,9 +254,15 @@ summary.getWaitingTime();       // Total waiting time
 
 ---
 
+## Documentation
+- [VRPTT guide](docs/VRPTT.md) — planning with lorries and trailers, transshipment locations and customer accessibility, with a complete example case
+- [VRPTT design spec](docs/VRPTT-SPEC.md) — decomposition approach, synchronization checks and benchmark results
+
+---
+
 ## Benchmarks
 
-As a general purpose solver, XFVRP is not fully compatible with single problem solvers. But even though it can prove its relevance by [benchmarks](BENCHMARKS.md).
+As a general purpose solver, XFVRP is not fully compatible with single problem solvers. But even though it can prove its relevance by [benchmarks](BENCHMARKS.md). This includes the VRPTT benchmark instances (see [docs/VRPTT-SPEC.md](docs/VRPTT-SPEC.md)).
 
 ---
 
