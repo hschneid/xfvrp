@@ -144,7 +144,14 @@ public class ReportBuilder {
                         context.getCurrentNode().getLoadType()
                 );
                 break;
-            default: break;
+            case TRANSSHIPMENT:
+                // Transshipment record visit: the visit transfers the amount
+                // between two vehicles (drop: negative, take: positive)
+                setAmountsToEvent(e,
+                        context.getCurrentNode().getDemand(),
+                        LoadType.PICKUP
+                );
+                break;
         }
 
         e.setDelay(context.getRouteVar()[Context.DELAY]);

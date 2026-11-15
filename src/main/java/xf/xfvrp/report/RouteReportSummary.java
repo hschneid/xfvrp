@@ -82,6 +82,13 @@ public class RouteReportSummary {
 				context.getAmountsOfRoute()[i].addAmount(e.getAmounts(), e.getLoadType());
 				if(e.getLoadType() == LoadType.PICKUP) pickups[i] += e.getAmounts()[i];
 				if(e.getLoadType() == LoadType.DELIVERY) deliveries[i] += e.getAmounts()[i];
+			} else if (e.getSiteType() == SiteType.TRANSSHIPMENT) {
+				// Transshipment record visit: the transferred amount is
+				// picked up (take) or relieved (drop) like in the evaluation
+				if (e.getAmounts() != null && e.getAmounts().length > 0) {
+					context.getAmountsOfRoute()[i].addAmount(e.getAmounts(), LoadType.PICKUP);
+					pickups[i] += e.getAmounts()[i];
+				}
 			}
 			overloads[i] = context.getAmountsOfRoute()[i].checkCapacity(vehicle.getCapacity());
 		}

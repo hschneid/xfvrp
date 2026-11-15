@@ -14,6 +14,9 @@ package xf.xfvrp.base;
  * CUSTOMERs are visited and has demands, which have
  * to be satisfied.
  *
+ * TRANSSHIPMENTs are locations, where load can be
+ * transferred between vehicles (transshipment locations).
+ *
  * @author hschneid
  *
  */
@@ -22,5 +25,6 @@ public enum SiteType {
 	DEPOT,
 	CUSTOMER,
 	REPLENISH,
-	PAUSE
+	PAUSE,
+	TRANSSHIPMENT
 }

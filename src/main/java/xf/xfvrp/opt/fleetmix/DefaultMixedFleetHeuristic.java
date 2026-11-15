@@ -2,6 +2,7 @@ package xf.xfvrp.opt.fleetmix;
 
 import xf.xfvrp.RoutingDataBag;
 import xf.xfvrp.base.Node;
+import xf.xfvrp.base.SiteType;
 import xf.xfvrp.base.Vehicle;
 import xf.xfvrp.base.XFVRPParameter;
 import xf.xfvrp.base.compartment.CompartmentType;
@@ -53,6 +54,14 @@ public class DefaultMixedFleetHeuristic extends MixedFleetHeuristicBase implemen
 
         List<Solution> vehicleSolutions = new ArrayList<>();
         for (Vehicle veh : vehicles) {
+            // In VRPTT planning, vehicle types, which cannot serve any unplanned
+            // customer (e.g. a trailer capable lorry, whose unplanned customers
+            // are all lorry customers), are skipped. These runs would abort with
+            // an input error, although another vehicle type later in the sequence
+            // may serve the unplanned customers.
+            if (containsTransshipment(nodes) && !hasAllowedCustomer(unplannedNodes, veh))
+                continue;
+
             statusManager.fireMessage(StatusCode.RUNNING, "Run with vehicle " + veh.getName() + " started.");
 
             // Optimize all nodes with current vehicle type
@@ -85,5 +94,23 @@ public class DefaultMixedFleetHeuristic extends MixedFleetHeuristicBase implemen
     @Override
     public MixedFleetSelector getSelector() {
         return selector;
+    }
+
+    /**
+     * Checks, if at least one unplanned customer is allowed to be served by
+     * the given vehicle type. This mirrors the check of the precheck service,
+     * but skips the vehicle instead of aborting the whole planning.
+     */
+    private boolean hasAllowedCustomer(List<Node> nodes, Vehicle veh) {
+        return getCustomers(nodes).stream()
+                .anyMatch(n -> n.getPresetBlockVehicleList().isEmpty() ||
+                        n.getPresetBlockVehicleList().contains(veh.getIdx()));
+    }
+
+    /**
+     * VRPTT models contain transshipment locations.
+     */
+    private boolean containsTransshipment(Node[] nodes) {
+        return Arrays.stream(nodes).anyMatch(n -> n.getSiteType() == SiteType.TRANSSHIPMENT);
     }
 }

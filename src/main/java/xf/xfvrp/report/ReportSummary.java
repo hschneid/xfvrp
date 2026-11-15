@@ -108,6 +108,10 @@ public class ReportSummary {
 		return overloads;
 	}
 
+	public float getOverload() {
+		return overloads != null && overloads.length > 0 ? overloads[0] : 0;
+	}
+
 	public float getCost(Vehicle veh) {
 		return dataMap.get(veh).getCost();
 	}

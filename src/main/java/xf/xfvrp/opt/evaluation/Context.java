@@ -40,6 +40,10 @@ public class Context {
     private boolean[] presetRoutingNodeList;
     // Pre-evaluated infos of a route (service times and amounts)
     private Map<Node, RouteInfo[]> routeInfos;
+    // All routes of the solution, which is currently evaluated (VRPTT: transshipment records)
+    private Node[][] routes;
+    // Models of the routes (VRPTT Phase 3: foreign routes of other vehicles carry their own model)
+    private XFVRPModel[] routeModels;
     private Node currentDepot;
     private Node currentNode;
     private Node lastNode;
@@ -210,6 +214,32 @@ public class Context {
 
     public void setRouteInfos(Map<Node, RouteInfo[]> routeDepotServiceMap) {
         this.routeInfos = routeDepotServiceMap;
+    }
+
+    /**
+     * All routes of the solution, which is currently evaluated. It is used by
+     * the SynchronizationAnalyzer to evaluate transshipment records between
+     * two routes (VRPTT).
+     */
+    public Node[][] getRoutes() {
+        return routes;
+    }
+
+    /**
+     * Sets the models of the routes (aligned with the routes array). A null
+     * entry or a null array means, that the model of the currently evaluated
+     * solution is used for the route.
+     */
+    public void setRouteModels(XFVRPModel[] routeModels) {
+        this.routeModels = routeModels;
+    }
+
+    public XFVRPModel[] getRouteModels() {
+        return routeModels;
+    }
+
+    public void setRoutes(Node[][] routes) {
+        this.routes = routes;
     }
 
     public void setCurrentDepot(Node newDepot) {

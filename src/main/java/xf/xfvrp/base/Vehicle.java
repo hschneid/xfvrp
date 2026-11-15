@@ -18,11 +18,14 @@ import xf.xfvrp.base.exception.XFVRPException;
  */
 public class Vehicle {
 	public static final int PRIORITY_UNDEF = -1;
-	
+
+	/** Marker for vehicles, which pull no trailer. */
+	public static final int NO_TRAILER = -1;
+
 	private final int idx;
 	private final String name;
 	private int nbrOfAvailableVehicles;
-	
+
 	private float[] capacity;
 	private final float fixCost;
 	private final float varCost;
@@ -35,6 +38,12 @@ public class Vehicle {
 	private final float waitingTimeBetweenShifts;
 
 	private int priority;
+
+	/** VRPTT - parameter : a lorry is autonomous, a trailer is not. **/
+	private boolean autonomous = true;
+
+	/** VRPTT - parameter : index of the coupled trailer vehicle, {@link #NO_TRAILER} if none. **/
+	private int trailerId = NO_TRAILER;
 
 	public Vehicle(int idx, String name, int nbrOfAvailableVehicles, float[] capacity,
 				   float maxRouteDuration, int maxStopCount, float maxWaitingTime, float fixCost, float varCost, int vehicleMetricId,
@@ -60,6 +69,8 @@ public class Vehicle {
 		this(other.idx, other.name, other.nbrOfAvailableVehicles, other.capacity, other.maxRouteDuration, other.maxStopCount,
 				other.maxWaitingTime, other.fixCost, other.varCost, other.vehicleMetricId, other.maxDrivingTimePerShift, other.waitingTimeBetweenShifts,
 				other.priority);
+		this.autonomous = other.autonomous;
+		this.trailerId = other.trailerId;
 	}
 	
 	public int getIdx() {
@@ -121,8 +132,30 @@ public class Vehicle {
 	public int getPriority() {
 		return priority;
 	}
-	
+
 	public void setPriority(int priority) {
 		this.priority = priority;
+	}
+
+	/**
+	 * @return true, if this vehicle can move on its own (lorry). False for trailers.
+	 */
+	public boolean isAutonomous() {
+		return autonomous;
+	}
+
+	public void setAutonomous(boolean autonomous) {
+		this.autonomous = autonomous;
+	}
+
+	/**
+	 * @return index of the coupled trailer vehicle or {@link #NO_TRAILER}, if this vehicle pulls no trailer.
+	 */
+	public int getTrailerId() {
+		return trailerId;
+	}
+
+	public void setTrailerId(int trailerId) {
+		this.trailerId = trailerId;
 	}
 }

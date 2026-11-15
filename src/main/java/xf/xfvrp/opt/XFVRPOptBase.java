@@ -67,6 +67,16 @@ public abstract class XFVRPOptBase extends XFVRPBase<XFVRPModel> {
     }
 
     /**
+     * Sets the evaluation service, which is used for the checks of this
+     * optimization. It is used by the joint multi-vehicle plan of the VRPTT
+     * (Phase 3), where the neighborhood moves evaluate with the record
+     * context of the other vehicles.
+     */
+    public void setEvaluationService(EvaluationService evaluationService) {
+        this.evaluationService = evaluationService;
+    }
+
+    /**
      * Returns the distance between two given XFNodes
      */
     protected float getDistanceForOptimization(Node n1, Node n2) {

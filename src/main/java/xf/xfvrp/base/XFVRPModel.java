@@ -26,6 +26,7 @@ public class XFVRPModel {
 
 	protected final int nbrOfDepots;
 	protected final int nbrOfReplenish;
+	protected final int nbrOfTransshipments;
 	protected final int nbrOfShipments;
 
 	protected final Node[] nodes;
@@ -45,6 +46,7 @@ public class XFVRPModel {
 	protected XFVRPModel() {
 		nbrOfDepots = 0;
 		nbrOfReplenish = 0;
+		nbrOfTransshipments = 0;
 		nbrOfShipments = 0;
 		nodes = null;
 		metric = null;
@@ -70,36 +72,41 @@ public class XFVRPModel {
 		// Counts the number of different depots and max block number
 		int nbrOfDepots = 0;
 		int nbrOfReplenish = 0;
+		int nbrOfTransshipments = 0;
 		int nbrOfBlocks = BlockNameConverter.UNDEF_BLOCK_IDX;
 		int maxGlobalNodeIdx = 0;
 		int maxShipmentIdx = 0;
 		for (int i = 0; i < nodes.length; i++) {
 			if(nodes[i].getSiteType() == SiteType.DEPOT)
 				nbrOfDepots++;
-			
+
 			if(nodes[i].getSiteType() == SiteType.REPLENISH)
 				nbrOfReplenish++;
 
+			if(nodes[i].getSiteType() == SiteType.TRANSSHIPMENT)
+				nbrOfTransshipments++;
+
 			if(nodes[i].getSiteType() == SiteType.CUSTOMER)
 				maxShipmentIdx = Math.max(maxShipmentIdx, nodes[i].getShipmentIdx());
-			
+
 			nbrOfBlocks = Math.max(nbrOfBlocks, nodes[i].getPresetBlockIdx());
 			maxGlobalNodeIdx = Math.max(maxGlobalNodeIdx, nodes[i].getGlobalIdx());
 		}
-		
+
 		// Counts for each block idx the number of nodes in it.
 		blockCountArr = new int[Math.max(0, nbrOfBlocks) + 1];
-		
+
 		this.maxGlobalNodeIdx = maxGlobalNodeIdx;
 		this.nbrOfDepots = nbrOfDepots;
 		this.nbrOfReplenish = nbrOfReplenish;
+		this.nbrOfTransshipments = nbrOfTransshipments;
 		this.nbrOfShipments = maxShipmentIdx + 1;
 
 		this.compartments = compartmentTypes;
 	}
 
 	public Node[] getCustomerNodes() {
-		return Arrays.copyOfRange(nodes, nbrOfDepots + nbrOfReplenish, nodes.length);
+		return Arrays.copyOfRange(nodes, nbrOfDepots + nbrOfReplenish + nbrOfTransshipments, nodes.length);
 	}
 
 	/**

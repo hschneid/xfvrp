@@ -40,6 +40,11 @@ public class RouteInfoBuilder {
                 updateInfo(node, routeInfoPerCompartment);
                 break;
             }
+            // A transshipment location is a pass-through point of the route. The
+            // load, which is transferred there, was preloaded at the depot, so
+            // the load segment is not restarted.
+            case TRANSSHIPMENT:
+                break;
             default: {
                 throw new XFVRPException(XFVRPExceptionType.ILLEGAL_ARGUMENT, "Found unexpected site type (" + node.getSiteType().toString() + ")");
             }

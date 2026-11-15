@@ -56,6 +56,20 @@ public class XFVRPData extends XFVRPBase {
     }
 
     /**
+     * Akquire a transshipment data object to insert data for
+     * a new transshipment location. The next call of this method will
+     * finalize the before akquired transshipment data object.
+     * <p>
+     * At a transshipment location load can be transferred between
+     * vehicles (VRPTT).
+     *
+     * @return Transshipment data object
+     */
+    public TransshipmentData addTransshipment() {
+        return importer.getTransshipmentData();
+    }
+
+    /**
      * Akquire a vehicle data object to insert data for
      * a new vehicle. The next call of this method will
      * finalize the before akquired vehicle data object.

@@ -1,0 +1,17 @@
+# Synthetic VRPTT benchmark instance (NOT an original Drexl instance).
+# Structure faithfully generated per M. Drexl (2012), LM-2012-1210, section 6.1.
+# See README.md in this folder for the generation rules and deviations.
+NAME 444_03
+HORIZON 1320
+DEPOT DEP 50.00 50.00
+CUSTOMER C001 42.26 63.23 8413 0 16
+CUSTOMER C002 36.87 39.27 2656 0 5
+CUSTOMER C003 28.26 0.48 6080 1 12
+CUSTOMER C004 52.34 6.22 4004 1 8
+TL TL01 28.26 0.48 11
+TL TL02 52.34 6.22 11
+TL TL03 38.78 45.68 11
+TL TL04 2.49 31.20 11
+LORRY L1_0 10000 180 0.845
+LORRY L2_0 15000 200 0.910
+TRAILER T1_0 10000 20 0.052 L2_0

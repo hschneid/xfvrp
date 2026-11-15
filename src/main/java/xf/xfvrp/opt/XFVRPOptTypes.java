@@ -5,9 +5,11 @@ import xf.xfvrp.opt.construct.insert.XFVRPFirstBestInsert;
 import xf.xfvrp.opt.construct.random.RandomizedVRPSolutionBuilder;
 import xf.xfvrp.opt.construct.savings.XFVRPConst;
 import xf.xfvrp.opt.construct.savings.XFVRPSavings;
+import xf.xfvrp.opt.construct.VRPTTSolutionBuilder;
 import xf.xfvrp.opt.improve.XFVRPNoOpt;
 import xf.xfvrp.opt.improve.ils.XFPDPILS;
 import xf.xfvrp.opt.improve.ils.XFVRPILS;
+import xf.xfvrp.opt.improve.ils.VRPTTILS;
 import xf.xfvrp.opt.improve.routebased.move.XFPDPSingleMove;
 import xf.xfvrp.opt.improve.routebased.move.XFVRPSegmentMove;
 import xf.xfvrp.opt.improve.routebased.move.XFVRPSingleMove;
@@ -53,4 +55,8 @@ public class XFVRPOptTypes {
     public static XFVRPOptType PDP_CHEAPEST_INSERT = new XFVRPOptType(XFPDPFirstBestInsert.class);
     public static XFVRPOptType PDP_RELOCATE2 = new XFVRPOptType(XFPDPSingleMove.class);
     public static XFVRPOptType PDP_ILS = new XFVRPOptType(XFPDPILS.class);
+
+    // Vehicle Routing Problem with Trailers and Transshipments
+    public static XFVRPOptType VRPTT = new XFVRPOptType(VRPTTSolutionBuilder.class);
+    public static XFVRPOptType VRPTT_ILS = new XFVRPOptType(VRPTTILS.class);
 }
